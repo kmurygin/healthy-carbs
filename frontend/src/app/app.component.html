@@ -1,1 +1,24 @@
-<app-user></app-user>
+<main>
+  <mat-toolbar>
+    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>Healthy Carbs</span>
+    <span class="example-spacer"></span>
+    <div class="example-button-row">
+      <mat-divider></mat-divider>
+      <div>
+        <!-- Replace the @if with *ngIf for Angular template syntax -->
+        @if (!ifLoggedIn) {
+          <button mat-flat-button class="register-button">Register</button>
+          <button mat-flat-button class="register-button">Log In</button>
+        }
+        @else {
+          <button mat-flat-button>k.murygin</button>
+        }
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <app-user></app-user>
+</main>
