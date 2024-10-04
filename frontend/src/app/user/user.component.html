@@ -1,0 +1,8 @@
+<p>user works!</p>
+<div *ngIf="allUsers.length > 0">
+  <ul>
+    @for (u of allUsers; track u.id) {
+      <li>{{ u.id }} - {{ u.username }} - {{ u.password }}</li>
+    }
+  </ul>
+</div>
