@@ -24,10 +24,14 @@ jobs:
           java-version: '17'
 
       - name: Build and Test Spring Boot Application
-        run: mvn clean install
+        run: |
+          cd backend
+          mvn clean install
 
       - name: Run Checkstyle for Java
-        run: mvn checkstyle:check
+        run: |
+          cd backend
+          mvn checkstyle:check
 
   angular:
     name: Check Angular Code
@@ -43,13 +47,21 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd frontend
+          npm install
 
       - name: Run ESLint
-        run: npm run lint
+        run: |
+          cd frontend
+          npm run lint
 
       - name: Run Angular unit tests
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        run: |
+          cd frontend
+          npm run test -- --watch=false --browsers=ChromeHeadless
 
       - name: Build Angular application
-        run: npm run build -- --configuration production
+        run: |
+          cd frontend
+          npm run build -- --configuration production
