@@ -1,0 +1,24 @@
+<mat-toolbar>
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Healthy Carbs</span>
+  <span class="example-spacer"></span>
+  <div class="example-button-row">
+    <mat-divider></mat-divider>
+    <div>
+      @if (!isLoggedIn) {
+        <button mat-flat-button class="register-button" routerLink="register">Register</button>
+        <button mat-flat-button class="register-button" routerLink="login">Log In</button>
+      }
+      @else {
+        <button mat-flat-button>@defer (when user) { {{ user?.username }} }</button>
+        <button mat-flat-button class="register-button" (click)="logout()">Logout</button>
+      }
+    </div>
+  </div>
+</mat-toolbar>
+
+<main>
+  <router-outlet></router-outlet>
+</main>

@@ -1,0 +1,33 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <h2>Login</h2>
+    <form [formGroup]="form" (submit)="onSubmit()">
+      <mat-form-field appearance="fill">
+        <mat-label>First name</mat-label>
+        <input matInput placeholder="Enter your first name" formControlName="firstname" type="text" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Last name</mat-label>
+        <input matInput placeholder="Enter your last name" formControlName="lastname" type="text" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Username</mat-label>
+        <input matInput placeholder="Enter your username" formControlName="username" type="text" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput placeholder="Enter your email" formControlName="email" type="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Password</mat-label>
+        <input matInput placeholder="Enter your password" formControlName="password" type="password" />
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Register</button>
+    </form>"
+  </mat-card>
+</div>
