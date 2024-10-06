@@ -5,6 +5,7 @@ import {LoginComponent} from "./pages/login/login.component";
 import {RegisterComponent} from "./pages/register/register.component";
 import {authGuard} from "./core/guards/auth.guard";
 import {guestGuard} from "./core/guards/guest.guard";
+import {ErrorComponent} from "./pages/error/error.component";
 
 export const routes: Routes = [
   { path: '', component: LayoutComponent,
@@ -15,5 +16,6 @@ export const routes: Routes = [
         component: DashboardComponent },
       { path: 'login', canActivate: [guestGuard], component: LoginComponent },
       { path: 'register', canActivate: [guestGuard], component: RegisterComponent },
+      { path: '**', component: ErrorComponent },
     ]}
 ];
