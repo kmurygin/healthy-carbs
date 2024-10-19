@@ -51,27 +51,4 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
-
-    public MeResponse getUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username;
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return null;
-        }
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails) principal).getUsername();
-        } else {
-            username = principal.toString();
-        }
-
-        Optional<User> user = userService.getUserByUsername(username);
-        User selectedUser = null;
-        if (user.isPresent()) {
-            selectedUser = user.get();
-        }
-
-        return MeResponse.builder().data(selectedUser).build();
-    }
 }
