@@ -1,16 +1,19 @@
-import {HttpErrorResponse, HttpInterceptorFn} from '@angular/common/http';
-import {AuthService} from "../services/auth.service";
-import {inject} from "@angular/core";
-import {catchError, retry, throwError} from "rxjs";
-import {LocalStorage} from "../constants/constants";
-import {Router} from "@angular/router";
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
+import { inject } from '@angular/core';
+import { catchError, retry, throwError } from 'rxjs';
+import { Router } from '@angular/router';
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
-
   const authService = inject(AuthService);
-  const router  = inject(Router);
+  const router = inject(Router);
 
-  if(authService.isLoggedIn()) {
+  if (authService.isLoggedIn()) {
+    if (authService.isTokenExpired()) {
+      authService.logout();
+      return throwError(() => new Error('Session expired. Please log in again.'));
+    }
+
     req = req.clone({
       setHeaders: {
         Authorization: `Bearer ${authService.getUserToken()}`
@@ -19,10 +22,9 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   return next(req).pipe(
-    retry(2),  // Retry the request twice before failing
+    retry(2),
     catchError((e: HttpErrorResponse) => {
-
-      let errorMessage = 'An unknown error occurred';  // Default error message
+      let errorMessage = 'An unknown error occurred';
 
       switch (e.status) {
         case 400:
@@ -31,33 +33,32 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
 
         case 401:
           errorMessage = 'Unauthorized. Redirecting to login.';
-          localStorage.removeItem(LocalStorage.token);
-          router.navigate(['']);
+          authService.logout();
           break;
 
         case 403:
-          errorMessage = 'Access denied. Endpoint.';
+          errorMessage = 'Access denied.';
           break;
 
         case 404:
-          errorMessage = 'Resource not found. Please check the URL or try again later.';
-          router.navigate(['']); //TODO navigate to error page
+          errorMessage = 'Resource not found.';
+          router.navigate(['/error/404']);
           break;
 
         case 500:
-          errorMessage = 'Internal server error. Please try again later.';
+          errorMessage = 'Internal server error.';
           break;
 
         case 503:
-          errorMessage = 'Service unavailable. Please check your connection or try again later.';
+          errorMessage = 'Service unavailable.';
           break;
 
         default:
           errorMessage = e.error.message || e.statusText || errorMessage;
           break;
       }
-      console.error(`Error Status: ${e.status}, Message: ${errorMessage}`);
 
+      console.error(`Error Status: ${e.status}, Message: ${errorMessage}`);
       return throwError(() => errorMessage);
     })
   );
