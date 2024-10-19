@@ -44,10 +44,6 @@ export class AuthService {
     );
   }
 
-  fetchUser() {
-    return this.httpClient.get<ApiResponse<User>>(ApiEndpoints.Auth.Me);
-  }
-
   isTokenExpired(): boolean {
     const token = this.getUserToken();
     if (!token) {
@@ -78,6 +74,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem(LocalStorage.token);
+    console.log("dddd");
     this.isLoggedIn.set(false);
     this.user.set(undefined);
     this.router.navigate(['login']);
