@@ -40,6 +40,7 @@ export class LoginComponent {
         next: (response) => {
           console.log(response);
           this.router.navigate(['']);
+          window.location.reload();
         },
       });
     }
