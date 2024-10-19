@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -23,12 +26,24 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Integer id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
+//    @GetMapping("/{id}")
+//    public ResponseEntity<User> getUserById(@PathVariable Integer id) {
+//        return userService.getUserById(id)
+//                .map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.notFound().build());
+//    }
+
+    @GetMapping("getUserByUsername/{username}")
+    public ResponseEntity<Map<String, Object>> getUserByUsername(@PathVariable String username) {
+        return userService.getUserByUsername(username)
+                .map(user -> {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("data", user);  // Wrap user in the data key
+                    return ResponseEntity.ok(response);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
+
 
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
