@@ -1,12 +1,12 @@
 spring:
   datasource:
-   url: jdbc:postgresql://db:5432/${POSTGRES_DB}
-    # url: jdbc:postgresql://localhost:5432/healthy_carbs
+  #  url: jdbc:postgresql://db:5432/${POSTGRES_DB}
+   url: jdbc:postgresql://localhost:5432/healthy_carbs
    driver-class-name: org.postgresql.Driver
-   username: postgres
-   password: postgres
-  #  username:
-  #  password:
+  #  username: postgres
+  #  password: postgres
+   username:
+   password:
   jpa:
     hibernate:
       ddl-auto: create
