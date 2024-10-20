@@ -37,7 +37,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
           break;
 
         case 403:
-          errorMessage = 'Access denied.';
+          errorMessage = 'Access denied';
           break;
 
         case 404:

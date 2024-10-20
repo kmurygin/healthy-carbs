@@ -25,6 +25,7 @@ export class LoginComponent {
   form: FormGroup;
   authService = inject(AuthService);
   router = inject(Router);
+  errorMessage: string = "";
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
@@ -42,6 +43,9 @@ export class LoginComponent {
           this.router.navigate(['']);
           window.location.reload();
         },
+        error: (error) => {
+          if (error == "Access denied") this.errorMessage = "Wrong username/password";
+        }
       });
     }
   }
