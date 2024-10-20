@@ -6,6 +6,7 @@ import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {AuthService} from "../../core/services/auth.service";
 import {Router} from "@angular/router";
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-register',
@@ -17,7 +18,8 @@ import {Router} from "@angular/router";
         MatFormField,
         MatInput,
         MatLabel,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        NgIf
     ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
@@ -26,6 +28,8 @@ export class RegisterComponent {
   form: FormGroup;
   authService = inject(AuthService);
   router = inject(Router);
+  errorMessage: string = "";
+
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
@@ -37,13 +41,20 @@ export class RegisterComponent {
     })
   }
 
+  get email() {
+    return this.form.get("email");
+  }
+
   onSubmit(){
     if (this.form.valid) {
       console.log(this.form.value);
       this.authService.register(this.form.value).subscribe({
         next: (response) => {
           console.log(response);
-          this.router.navigate(['login']);
+          if (response.token)
+            this.router.navigate(['login']);
+          else if (response.error)
+            this.errorMessage = response.error;
         },
       });
     }

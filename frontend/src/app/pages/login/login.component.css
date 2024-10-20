@@ -1,17 +1,22 @@
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f5f5f5;
+.form-signin {
+  max-width: 330px;
+  padding-top: 3rem;
 }
 
-.login-card {
-  width: 400px;
-  padding: 20px;
+.form-signin .form-floating:focus-within {
+  z-index: 2;
 }
 
-mat-form-field {
-  width: 100%;
-  margin-bottom: 16px;
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+}
+
+.form-signin input {
+  margin-top: .5rem;
 }

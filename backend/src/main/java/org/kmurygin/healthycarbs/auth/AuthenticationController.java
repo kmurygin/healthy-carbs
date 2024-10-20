@@ -20,8 +20,4 @@ public class AuthenticationController {
         return ResponseEntity.ok(service.authenticate(request));
     };
 
-    @GetMapping("/me")
-    public ResponseEntity<MeResponse> getUsername() {
-        return ResponseEntity.ok(service.getUsername());
-    }
 }

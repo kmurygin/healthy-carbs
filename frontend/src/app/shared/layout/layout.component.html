@@ -1,23 +1,33 @@
-<mat-toolbar>
-  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span>Healthy Carbs</span>
-  <span class="example-spacer"></span>
-  <div class="example-button-row">
-    <mat-divider></mat-divider>
-    <div>
-      @if (!isLoggedIn) {
-        <button mat-flat-button class="register-button" routerLink="register">Register</button>
-        <button mat-flat-button class="register-button" routerLink="login">Log In</button>
-      }
-      @else {
-        <button mat-flat-button>@defer (when user) { {{ user?.username }} }</button>
-        <button mat-flat-button class="register-button" (click)="logout()">Logout</button>
-      }
+<header class="p-3 text-bg-dark">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+        <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg>
+      </a>
+
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="#" class="nav-link px-2 text-secondary">Healthy Carbs</a></li>
+        <li><a href="oferta" class="nav-link px-2 text-white">Oferta</a></li>
+        <li><a href="cennik" class="nav-link px-2 text-white">Cennik</a></li>
+        <li><a href="faq" class="nav-link px-2 text-white">FAQs</a></li>
+        <li><a href="o-nas" class="nav-link px-2 text-white">O nas</a></li>
+      </ul>
+
+      <div class="text-end">
+        @if (!isLoggedIn)
+        {
+          <button type="button" class="btn btn-outline-light me-2" [routerLink]="['/login']">Login</button>
+          <button type="button" class="btn btn-warning" [routerLink]="['/register']">Sign-up</button>
+        }
+        @else
+        {
+          <button type="button" class="btn btn-outline-light me-2" [routerLink]="['/user']">{{ username }}</button>
+          <button type="button" class="btn btn-warning" (click)="logout()">Logout</button>
+        }
+      </div>
     </div>
   </div>
-</mat-toolbar>
+</header>
 
 <main>
   <router-outlet></router-outlet>
