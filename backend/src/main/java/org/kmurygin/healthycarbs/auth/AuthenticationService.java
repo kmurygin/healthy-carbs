@@ -34,7 +34,14 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-        repository.save(user);
+//        repository.save(user);
+        try {
+            userService.saveUser(user);
+        } catch (IllegalArgumentException e) {
+            return AuthenticationResponse.builder()
+                    .error(e.getMessage())
+                    .build();
+        }
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
@@ -46,8 +53,16 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = repository.findByUsername(request.getUsername())
-                .orElseThrow();
+        var user = new User();
+        try {
+            user = repository.findByUsername(request.getUsername())
+                    .orElseThrow();
+        }
+        catch (Exception e) {
+            return AuthenticationResponse.builder()
+                    .error(e.getMessage())
+                    .build();
+        }
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
