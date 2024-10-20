@@ -8,6 +8,7 @@ import {guestGuard} from "./core/guards/guest.guard";
 import {ErrorComponent} from "./pages/error/error.component";
 import {RecipeComponent} from "./pages/recipe/recipe.component";
 import {UserComponent} from "./pages/user/user.component";
+import {UserDetailComponent} from "./components/userdetail/user-detail.component";
 
 export const routes: Routes = [
   { path: '', component: LayoutComponent,
@@ -19,7 +20,11 @@ export const routes: Routes = [
       { path: 'login', canActivate: [guestGuard], component: LoginComponent },
       { path: 'register', canActivate: [guestGuard], component: RegisterComponent },
       { path: 'recipe', canActivate: [authGuard], component: RecipeComponent },
-      { path: 'user', canActivate: [authGuard], component: UserComponent },
+      { path: 'user', canActivate: [authGuard], component: UserComponent,
+        children: [
+          { path: 'edit_user_details', component: UserDetailComponent, canActivate: [authGuard] },
+          { path: '**', component: ErrorComponent },
+          ]},
       { path: '**', component: ErrorComponent },
     ]}
 ];

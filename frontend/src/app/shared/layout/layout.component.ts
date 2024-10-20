@@ -23,7 +23,7 @@ export class LayoutComponent implements OnInit{
 
     if (user) {
       this.isLoggedIn = true;
-      this.username = user.username; // Set username from the decoded token
+      this.username = user.username;
     } else {
       this.isLoggedIn = false;
       this.username = null;
@@ -32,6 +32,6 @@ export class LayoutComponent implements OnInit{
 
   logout() {
     this.isLoggedIn = false;
-    this.authService.logout(); // Call logout on AuthService
+    this.authService.logout();
   }
 }
