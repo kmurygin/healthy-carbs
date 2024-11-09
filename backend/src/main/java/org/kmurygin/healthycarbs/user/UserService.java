@@ -41,13 +41,16 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User updateUser(Integer id, User updatedUser) {
-        return userRepository.findById(id)
+    public User updateUser(String username, User updatedUser) {
+        return userRepository.findByUsername(username)
                 .map(user -> {
-                    user.setUsername(updatedUser.getUsername());
-                    user.setPassword(updatedUser.getPassword());
+//                    user.setUsername(updatedUser.getUsername());
+//                    user.setPassword(updatedUser.getPassword());
+                    user.setFirstname(updatedUser.getFirstname());
+                    user.setLastname(updatedUser.getLastname());
+                    user.setEmail(updatedUser.getEmail());
                     return userRepository.save(user);
                 })
-                .orElseThrow(() -> new RuntimeException("User not found with id " + id));
+                .orElseThrow(() -> new RuntimeException("User not found with username" + username));
     }
 }
