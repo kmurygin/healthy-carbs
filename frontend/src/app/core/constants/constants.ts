@@ -7,6 +7,7 @@ export const ApiEndpoints = {
   },
 
   User: {
+    User: `${apiUrl}/users/`,
     GetUserByUsername: `${apiUrl}/users/getUserByUsername/`,
   }
 };

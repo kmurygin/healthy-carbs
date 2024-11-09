@@ -1,4 +1,4 @@
-<header class="p-3 text-bg-dark">
+<header class="p-3" id="navbar">
   <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
       <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
@@ -21,8 +21,8 @@
         }
         @else
         {
-          <button type="button" class="btn btn-outline-light me-2" [routerLink]="['/user']">{{ username }}</button>
-          <button type="button" class="btn btn-warning" (click)="logout()">Logout</button>
+          <button type="button" class="btn btn-outline-light me-2 btn-username" [routerLink]="['/user']">{{ username }}</button>
+          <button type="button" class="btn btn-outline-light me-2" (click)="logout()">Logout</button>
         }
       </div>
     </div>

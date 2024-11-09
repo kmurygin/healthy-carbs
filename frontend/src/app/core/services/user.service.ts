@@ -3,6 +3,7 @@ import {ApiResponse} from "../../models/payloads";
 import {User} from "../../models/user.model";
 import {ApiEndpoints} from "../constants/constants";
 import {HttpClient} from "@angular/common/http";
+import {Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -13,5 +14,9 @@ export class UserService {
 
   getUserByUsername(username: string) {
     return this.httpClient.get<ApiResponse<User>>(ApiEndpoints.User.GetUserByUsername + username);
+  }
+
+  updateUser(id: Number, updatedUser: User) {
+    return this.httpClient.put<ApiResponse<User>>(ApiEndpoints.User.User + id, updatedUser);
   }
 }

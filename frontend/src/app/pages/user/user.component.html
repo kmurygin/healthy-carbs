@@ -1,10 +1,11 @@
 <div class="container">
-  <button type="button" class="btn btn-outline-light col-lg-3" [routerLink]="['/user/edit_user_details']">Edit user details</button>
-  <button type="button" class="btn btn-outline-light col-lg-3" [routerLink]="['/user/my_subscription']">My subscription</button>
-  <button type="button" class="btn btn-outline-light col-lg-3" [routerLink]="['/user/history']">History</button>
+  <div id="user_settings_nav" class="d-flex justify-content-center">
+    <button type="button" class="btn btn-outline-dark col-lg-3 me-3 user-button" [routerLink]="['/user/edit_user_details']">Edit user details</button>
+    <button type="button" class="btn btn-outline-dark col-lg-3 me-3 user-button" [routerLink]="['/user/edit_password']">Edit password</button>
+    <button type="button" class="btn btn-outline-dark col-lg-3 me-3 user-button" [routerLink]="['/user/my_subscription']">My subscription</button>
+    <button type="button" class="btn btn-outline-dark col-lg-3 user-button" [routerLink]="['/user/history']">History</button>
+  </div>
 
-  <main>
     <router-outlet></router-outlet>
-  </main>
 
 </div>

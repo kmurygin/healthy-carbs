@@ -14,6 +14,7 @@ export const routes: Routes = [
   { path: '', component: LayoutComponent,
     children: [
       { path: '', redirectTo: "dashboard", pathMatch: 'full' },
+      { path: 'user', redirectTo: "user/edit_user_details", pathMatch: 'full' },
       { path: 'dashboard',
         canActivate: [authGuard],
         component: DashboardComponent },

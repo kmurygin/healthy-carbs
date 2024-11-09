@@ -44,8 +44,10 @@ public class UserService {
     public User updateUser(Integer id, User updatedUser) {
         return userRepository.findById(id)
                 .map(user -> {
+                    user.setFirstname(updatedUser.getFirstname());
+                    user.setLastname(updatedUser.getLastname());
                     user.setUsername(updatedUser.getUsername());
-                    user.setPassword(updatedUser.getPassword());
+                    user.setEmail(updatedUser.getEmail());
                     return userRepository.save(user);
                 })
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
