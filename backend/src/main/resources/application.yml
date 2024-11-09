@@ -1,12 +1,12 @@
+spring.config.import: optional:file:.env[.properties]
+
 spring:
   datasource:
-  #  url: jdbc:postgresql://db:5432/${POSTGRES_DB}
-   url: jdbc:postgresql://localhost:5432/healthy_carbs
+   url: ${DB_URL}
    driver-class-name: org.postgresql.Driver
-  #  username: postgres
-  #  password: postgres
-   username:
-   password:
+   username: ${DB_USERNAME}
+   password: ${DB_PASSWORD}
+
   jpa:
     hibernate:
       ddl-auto: create
@@ -17,6 +17,19 @@ spring:
       database: postgresql
       database-platform: org.hibernate.dialect.PostgreSQLDialect
     defer-datasource-initialization: true
+
   sql:
     init:
       mode: always
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
