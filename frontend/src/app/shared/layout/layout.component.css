@@ -18,3 +18,8 @@
 #navbar {
   background-color: var(--nav-bg-color);
 }
+
+.btn-username:hover {
+  background-color: var(--button-nav-color);
+  border-color: #000;
+}

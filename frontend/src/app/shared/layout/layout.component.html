@@ -21,8 +21,8 @@
         }
         @else
         {
-          <button type="button" class="btn btn-outline-light me-2" [routerLink]="['/user']">{{ username }}</button>
-          <button type="button" class="btn btn-warning" (click)="logout()">Logout</button>
+          <button type="button" class="btn btn-outline-light me-2 btn-username" [routerLink]="['/user']">{{ username }}</button>
+          <button type="button" class="btn btn-outline-light me-2" (click)="logout()">Logout</button>
         }
       </div>
     </div>

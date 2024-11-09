@@ -1,3 +1,7 @@
 #user_settings_nav {
   margin-top: 1rem;
 }
+
+.user-button:hover {
+  background-color: var(--button-nav-color);
+}
