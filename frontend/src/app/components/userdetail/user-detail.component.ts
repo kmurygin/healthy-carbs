@@ -36,9 +36,9 @@ export class UserDetailComponent {
     }
 
     this.form = this.fb.group({
-      firstname: new FormControl(this.user?.firstname || "", [Validators.required]),
-      lastname: new FormControl(this.user?.lastname || "", [Validators.required]),
-      email: new FormControl(this.user?.email || "", [Validators.required, Validators.email]),
+      firstname: new FormControl(this.user?.firstname || ""),
+      lastname: new FormControl(this.user?.lastname || ""),
+      email: new FormControl(this.user?.email || "", [Validators.email]),
     });
   }
 
