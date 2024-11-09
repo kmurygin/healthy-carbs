@@ -54,14 +54,9 @@ public class UserController {
         }
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
-//        return ResponseEntity.ok(userService.updateUser(id, updatedUser));
-//    }
-
-    @PutMapping("/{username}")
-    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User updatedUser) {
-        return ResponseEntity.ok(userService.updateUser(username, updatedUser));
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
+        return ResponseEntity.ok(userService.updateUser(id, updatedUser));
     }
 
     @DeleteMapping("/{id}")

@@ -16,7 +16,7 @@ export class UserService {
     return this.httpClient.get<ApiResponse<User>>(ApiEndpoints.User.GetUserByUsername + username);
   }
 
-  updateUser(username: String, updatedUser: User) {
-    return this.httpClient.put<ApiResponse<User>>(ApiEndpoints.User.User + username, updatedUser);
+  updateUser(id: Number, updatedUser: User) {
+    return this.httpClient.put<ApiResponse<User>>(ApiEndpoints.User.User + id, updatedUser);
   }
 }

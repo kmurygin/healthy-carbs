@@ -63,7 +63,7 @@ export class UserDetailComponent {
       console.log("aaa");
       console.log(this.updatedUser);
       // @ts-ignore
-      this.userService.updateUser(this.user.username, this.updatedUser).subscribe({
+      this.userService.updateUser(this.user.id, this.updatedUser).subscribe({
         next: (response) => {
           console.log(response);
         },
