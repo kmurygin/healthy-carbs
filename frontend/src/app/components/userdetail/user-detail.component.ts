@@ -5,13 +5,12 @@ import {User} from "../../models/user.model";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 
 @Component({
-  selector: 'app-userdetail',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule
-  ],
-  templateUrl: './user-detail.component.html',
-  styleUrl: './user-detail.component.css'
+    selector: 'app-userdetail',
+    imports: [
+        ReactiveFormsModule
+    ],
+    templateUrl: './user-detail.component.html',
+    styleUrl: './user-detail.component.css'
 })
 export class UserDetailComponent {
   userService: UserService = inject(UserService);

@@ -8,18 +8,17 @@ import {AuthService} from "../../core/services/auth.service";
 import {Router} from "@angular/router";
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [
-    MatCard,
-    MatFormField,
-    MatInput,
-    MatButton,
-    MatLabel,
-    ReactiveFormsModule
-  ],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+    selector: 'app-login',
+    imports: [
+        MatCard,
+        MatFormField,
+        MatInput,
+        MatButton,
+        MatLabel,
+        ReactiveFormsModule
+    ],
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.css'
 })
 export class LoginComponent {
   form: FormGroup;

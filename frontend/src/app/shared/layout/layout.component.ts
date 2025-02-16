@@ -7,11 +7,10 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-  selector: 'app-layout',
-  standalone: true,
-  imports: [RouterModule, MatDivider, MatIcon, MatToolbar, MatButton, MatIconButton],
-  templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.css']
+    selector: 'app-layout',
+    imports: [RouterModule, MatDivider, MatIcon, MatToolbar, MatButton, MatIconButton],
+    templateUrl: './layout.component.html',
+    styleUrls: ['./layout.component.css']
 })
 export class LayoutComponent implements OnInit{
   authService = inject(AuthService); // Inject AuthService

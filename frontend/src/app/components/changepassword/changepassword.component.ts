@@ -3,21 +3,19 @@ import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, V
 import {UserService} from "../../core/services/user.service";
 
 @Component({
-  selector: 'app-changepassword',
-  standalone: true,
-  imports: [
-    FormsModule,
-    ReactiveFormsModule
-  ],
-  templateUrl: './changepassword.component.html',
-  styleUrl: './changepassword.component.css'
+    selector: 'app-changepassword',
+    imports: [
+        FormsModule,
+        ReactiveFormsModule
+    ],
+    templateUrl: './changepassword.component.html',
+    styleUrl: './changepassword.component.css'
 })
 export class ChangepasswordComponent {
   form: FormGroup;
   userService: UserService = inject(UserService);
   fb: FormBuilder = inject(FormBuilder);
   errorMessage: string | undefined = "";
-
   constructor() {
     this.form = this.fb.group({
       oldPassword: new FormControl("", [Validators.required]),

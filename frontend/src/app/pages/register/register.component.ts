@@ -9,8 +9,7 @@ import {Router} from "@angular/router";
 import {NgIf} from "@angular/common";
 
 @Component({
-  selector: 'app-register',
-  standalone: true,
+    selector: 'app-register',
     imports: [
         FormsModule,
         MatButton,
@@ -21,8 +20,8 @@ import {NgIf} from "@angular/common";
         ReactiveFormsModule,
         NgIf
     ],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+    templateUrl: './register.component.html',
+    styleUrl: './register.component.css'
 })
 export class RegisterComponent {
   form: FormGroup;
