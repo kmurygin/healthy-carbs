@@ -1,21 +1,65 @@
 <div class="container">
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" style="margin-top: 10px;">
-  @for (category of categories; track category)
-  {
+<!--  @for (category of categories; track category)-->
+<!--  {-->
+<!--    <div class="col">-->
+<!--      <div class="card shadow-sm">-->
+<!--        <img src="assets/images/food_1.jpg" width="100%" height="225">-->
+<!--        <div class="card-body">-->
+<!--          <p class="card-text"> {{ category }} </p>-->
+<!--          <div class="d-flex justify-content-between align-items-center">-->
+<!--            <div class="btn-group">-->
+<!--              <button type="button" class="btn btn-sm btn-outline-secondary" [routerLink]="['/', category]">Zobacz</button>-->
+<!--              &lt;!&ndash;              <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>&ndash;&gt;-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  }-->
     <div class="col">
       <div class="card shadow-sm">
-        <img src="assets/images/food_1.jpg" width="100%" height="225">
+        <img src="assets/images/kalendarz-1.jpg" width="100%" height="225">
         <div class="card-body">
-          <p class="card-text"> {{ category }} </p>
+          <p class="card-text"> Plan żywieniowy </p>
           <div class="d-flex justify-content-between align-items-center">
             <div class="btn-group">
-              <button type="button" class="btn btn-sm btn-outline-secondary" [routerLink]="['/', category]">Zobacz</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" [routerLink]="['/', 'plan_zywieniowy']">Zobacz</button>
               <!--              <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>-->
             </div>
           </div>
         </div>
       </div>
     </div>
-  }
+
+    <div class="col">
+      <div class="card shadow-sm">
+        <img src="assets/images/dietetyk-kliniczny-1024x683.jpg" width="100%" height="225">
+        <div class="card-body">
+          <p class="card-text"> Współpraca z dietetykiem </p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm btn-outline-secondary" [routerLink]="['/', 'plan_zywieniowy']">Zobacz</button>
+              <!--              <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>-->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card shadow-sm">
+        <img src="assets/images/mierzenie.jpg" width="100%" height="225">
+        <div class="card-body">
+          <p class="card-text"> Pomiary obwodów </p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm btn-outline-secondary" [routerLink]="['/', 'plan_zywieniowy']">Zobacz</button>
+              <!--              <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>-->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

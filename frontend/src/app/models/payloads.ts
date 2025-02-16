@@ -19,3 +19,8 @@ export interface ApiResponse<T> {
   data?: T,
   user?: string,
 }
+
+export interface ChangePasswordPayload {
+  oldPassword: string,
+  newPassword: string,
+}

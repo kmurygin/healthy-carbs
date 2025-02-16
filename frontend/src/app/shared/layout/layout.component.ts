@@ -1,17 +1,12 @@
 import {Component, inject, OnInit} from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { MatDivider } from '@angular/material/divider';
-import { MatIcon } from '@angular/material/icon';
-import { MatToolbar } from '@angular/material/toolbar';
-import { MatButton, MatIconButton } from '@angular/material/button';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-  selector: 'app-layout',
-  standalone: true,
-  imports: [RouterModule, MatDivider, MatIcon, MatToolbar, MatButton, MatIconButton],
-  templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.css']
+    selector: 'app-layout',
+    imports: [RouterModule],
+    templateUrl: './layout.component.html',
+    styleUrls: ['./layout.component.css']
 })
 export class LayoutComponent implements OnInit{
   authService = inject(AuthService); // Inject AuthService

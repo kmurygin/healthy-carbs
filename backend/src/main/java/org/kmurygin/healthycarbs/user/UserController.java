@@ -1,5 +1,7 @@
 package org.kmurygin.healthycarbs.user;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     public UserController(UserService userService) {
@@ -63,6 +66,20 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request ) {
+        boolean success = userService.changePassword(request.getOldPassword(), request.getNewPassword());
+        Map<String, String> responseBody = new HashMap<>();
+        if (success) {
+            logger.info("Success!");
+            responseBody.put("message", "Password has been changed successfully");
+            return ResponseEntity.ok(responseBody);
+        }
+        logger.info("NOT Success!");
+        responseBody.put("error", "Old password is incorrect");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
     }
 }
 

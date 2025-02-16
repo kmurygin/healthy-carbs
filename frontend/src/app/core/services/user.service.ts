@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {ApiResponse} from "../../models/payloads";
+import {ApiResponse, ChangePasswordPayload} from "../../models/payloads";
 import {User} from "../../models/user.model";
 import {ApiEndpoints} from "../constants/constants";
 import {HttpClient} from "@angular/common/http";
@@ -18,5 +18,9 @@ export class UserService {
 
   updateUser(id: Number, updatedUser: User) {
     return this.httpClient.put<ApiResponse<User>>(ApiEndpoints.User.User + id, updatedUser);
+  }
+
+  changePassword(changePasswordPayload: ChangePasswordPayload) {
+    return this.httpClient.post<ApiResponse<any>>(ApiEndpoints.User.ChangePassword, changePasswordPayload);
   }
 }

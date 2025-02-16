@@ -9,6 +9,7 @@ import {ErrorComponent} from "./pages/error/error.component";
 import {RecipeComponent} from "./pages/recipe/recipe.component";
 import {UserComponent} from "./pages/user/user.component";
 import {UserDetailComponent} from "./components/userdetail/user-detail.component";
+import {ChangepasswordComponent} from "./components/changepassword/changepassword.component";
 
 export const routes: Routes = [
   { path: '', component: LayoutComponent,
@@ -24,6 +25,7 @@ export const routes: Routes = [
       { path: 'user', canActivate: [authGuard], component: UserComponent,
         children: [
           { path: 'edit_user_details', component: UserDetailComponent, canActivate: [authGuard] },
+          { path: 'change_password', component: ChangepasswordComponent, canActivate: [authGuard] },
           { path: '**', component: ErrorComponent },
           ]},
       { path: '**', component: ErrorComponent },

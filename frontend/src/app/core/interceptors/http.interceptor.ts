@@ -28,7 +28,15 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
 
       switch (e.status) {
         case 400:
-          errorMessage = 'Bad Request. Please check your input.';
+          console.log(e);
+          if (e.error.error == "Old password is incorrect")
+          {
+            errorMessage = "Wrong old password";
+          }
+          else
+          {
+            errorMessage = 'Bad Request. Please check your input.';
+          }
           break;
 
         case 401:
