@@ -13,8 +13,4 @@ import {NgIf} from "@angular/common";
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
-  title = 'healthy-carbs';
-  ifLoggedIn = false;
-  // username: 'kmurygin';
-}
+export class AppComponent {}
