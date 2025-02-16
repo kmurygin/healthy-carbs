@@ -14,9 +14,8 @@ public class EmailController {
     public String
     sendMail(@RequestBody EmailDetails details)
     {
-        String status
-                = emailService.sendMail(details);
+        emailService.sendMail(details);
 
-        return status;
+        return "";
     }
 }
