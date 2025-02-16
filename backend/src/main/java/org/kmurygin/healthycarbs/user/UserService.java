@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -48,7 +49,7 @@ public class UserService {
                     user.setFirstname(updatedUser.getFirstname());
                     user.setLastname(updatedUser.getLastname());
 
-                    if (userRepository.findByEmail(updatedUser.getEmail()).isPresent()) {
+                    if (!Objects.equals(user.getEmail(), updatedUser.getEmail()) && userRepository.findByEmail(updatedUser.getEmail()).isPresent()) {
                         throw new IllegalArgumentException("Email already exists");
                     }
                     user.setEmail(updatedUser.getEmail());

@@ -16,6 +16,7 @@ export class UserDetailComponent {
   userService: UserService = inject(UserService);
   authService: AuthService = inject(AuthService);
   form: FormGroup;
+  errorMessage: string | undefined = "";
 
   user: User | undefined;
 
@@ -65,9 +66,11 @@ export class UserDetailComponent {
       this.userService.updateUser(this.user.id, this.updatedUser).subscribe({
         next: (response) => {
           console.log(response);
+          this.errorMessage = response.message;
         },
         error: (error) => {
           console.error(error);
+          this.errorMessage = error;
         }
       });
     }
