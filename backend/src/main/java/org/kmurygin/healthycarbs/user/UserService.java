@@ -1,19 +1,20 @@
 package org.kmurygin.healthycarbs.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -46,10 +47,28 @@ public class UserService {
                 .map(user -> {
                     user.setFirstname(updatedUser.getFirstname());
                     user.setLastname(updatedUser.getLastname());
-                    user.setUsername(updatedUser.getUsername());
+
+                    if (userRepository.findByEmail(updatedUser.getEmail()).isPresent()) {
+                        throw new IllegalArgumentException("Email already exists");
+                    }
                     user.setEmail(updatedUser.getEmail());
+
                     return userRepository.save(user);
                 })
-                .orElseThrow(() -> new RuntimeException("User not found with id " + id));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+    }
+
+    public boolean changePassword(String oldPassword, String newPassword) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        Optional<User> user = this.getUserByUsername(username);
+
+        if (!passwordEncoder.matches(oldPassword, user.get().getPassword())) {
+            return false;
+        }
+        user.get().setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user.get());
+        return true;
     }
 }
