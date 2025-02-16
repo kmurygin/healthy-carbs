@@ -22,7 +22,7 @@ export class ChangepasswordComponent {
     this.form = this.fb.group({
       oldPassword: new FormControl("", [Validators.required]),
       newPassword: new FormControl("", [Validators.required])
-    })
+    });
   }
 
   onSubmit(){
