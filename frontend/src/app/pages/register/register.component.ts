@@ -12,11 +12,6 @@ import {NgIf} from "@angular/common";
     selector: 'app-register',
     imports: [
         FormsModule,
-        MatButton,
-        MatCard,
-        MatFormField,
-        MatInput,
-        MatLabel,
         ReactiveFormsModule,
         NgIf
     ],
