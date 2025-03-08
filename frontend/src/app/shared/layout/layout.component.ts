@@ -1,6 +1,7 @@
 import {Component, inject, OnInit} from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-layout',
@@ -10,6 +11,9 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class LayoutComponent implements OnInit{
   authService = inject(AuthService); // Inject AuthService
+
+  constructor(private router: Router){}
+
   isLoggedIn: boolean = false;
   username: string | null = null;
 
@@ -28,5 +32,9 @@ export class LayoutComponent implements OnInit{
   logout() {
     this.isLoggedIn = false;
     this.authService.logout();
+  }
+
+  isActive(route: string): boolean {
+    return this.router.url === `/${route}`;
   }
 }
