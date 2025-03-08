@@ -28,13 +28,9 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
 
       switch (e.status) {
         case 400:
-          console.log(e);
-          if (e.error != undefined)
-          {
-            if (e.error.error != undefined)
-            {
+          if (e.error?.error) {
               errorMessage = e.error.error;
-            }
+          } else if (e.error) {
             errorMessage = e.error;
           }
           else
