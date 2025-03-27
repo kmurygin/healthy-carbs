@@ -13,7 +13,12 @@ import org.slf4j.LoggerFactory;
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
+
+    @Autowired
+    public EmailServiceImpl(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
+    }
 
     @Value("${spring.mail.username}") private String sender;
     private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
