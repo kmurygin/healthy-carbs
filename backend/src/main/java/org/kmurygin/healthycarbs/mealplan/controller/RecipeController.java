@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.controller;
 
-import org.kmurygin.healthycarbs.mealplan.model.Recipe;
+import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
+import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
 import org.kmurygin.healthycarbs.mealplan.service.RecipeService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,24 +19,24 @@ public class RecipeController {
     }
 
     @GetMapping
-    public List<Recipe> getAll() {
+    public List<RecipeDTO> getAll() {
         return recipeService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Recipe getById(@PathVariable Long id) {
+    public RecipeDTO getById(@PathVariable Long id) {
         return recipeService.findById(id);
     }
 
     @PostMapping
-    public Recipe create(@RequestBody Recipe recipe) {
-        return recipeService.save(recipe);
+    public RecipeDTO create(@RequestBody RecipeDTO recipeDTO) {
+        return recipeService.save(recipeDTO);
     }
 
     @PutMapping("/{id}")
-    public Recipe update(@PathVariable Long id, @RequestBody Recipe recipe) {
-        recipe.setId(id);
-        return recipeService.save(recipe);
+    public RecipeDTO update(@PathVariable Long id, @RequestBody RecipeDTO recipeDTO) {
+        recipeDTO.setId(id);
+        return recipeService.save(recipeDTO);
     }
 
     @DeleteMapping("/{id}")
@@ -43,4 +44,21 @@ public class RecipeController {
         recipeService.deleteById(id);
     }
 
+    @GetMapping("{id}/ingredients")
+    public List<RecipeIngredientDTO> findAllIngredients(@PathVariable Long id) {
+        return recipeService.findAllIngredients(id);
+    }
+
+    @PostMapping("/{recipeId}/ingredients/{ingredientId}")
+    public RecipeDTO addIngredient(@PathVariable Long recipeId,
+                                   @PathVariable Long ingredientId,
+                                   @RequestParam Double quantity) {
+        return recipeService.addIngredient(recipeId, ingredientId, quantity);
+    }
+
+    @DeleteMapping("/{recipeId}/ingredients/{ingredientId}")
+    public RecipeDTO removeIngredient(@PathVariable Long recipeId, @PathVariable Long ingredientId) {
+        return recipeService.removeIngredient(recipeId, ingredientId);
+    }
 }
+

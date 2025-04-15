@@ -1,6 +1,6 @@
 package org.kmurygin.healthycarbs.mealplan.controller;
 
-import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
+import org.kmurygin.healthycarbs.mealplan.dto.IngredientDTO;
 import org.kmurygin.healthycarbs.mealplan.service.IngredientService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,24 +18,24 @@ public class IngredientController {
     }
 
     @GetMapping
-    public List<Ingredient> getAll() {
+    public List<IngredientDTO> getAll() {
         return ingredientService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Ingredient getById(@PathVariable Long id) {
+    public IngredientDTO getById(@PathVariable Long id) {
         return ingredientService.findById(id);
     }
 
     @PostMapping
-    public Ingredient create(@RequestBody Ingredient ingredient) {
-        return ingredientService.save(ingredient);
+    public IngredientDTO create(@RequestBody IngredientDTO ingredientDTO) {
+        return ingredientService.save(ingredientDTO);
     }
 
     @PutMapping("/{id}")
-    public Ingredient update(@PathVariable Long id, @RequestBody Ingredient ingredient) {
-        ingredient.setId(id);
-        return ingredientService.save(ingredient);
+    public IngredientDTO update(@PathVariable Long id, @RequestBody IngredientDTO ingredientDTO) {
+        ingredientDTO.setId(id);
+        return ingredientService.save(ingredientDTO);
     }
 
     @DeleteMapping("/{id}")
