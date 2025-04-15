@@ -1,9 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
-import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRepository;
-import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

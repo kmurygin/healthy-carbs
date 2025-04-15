@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -27,7 +28,8 @@ public class Recipe {
     private String description;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
-    private List<RecipeIngredient> ingredients;
+    @Builder.Default
+    private List<RecipeIngredient> ingredients = new ArrayList<>();
 
     private Integer calories;
 
@@ -37,6 +39,31 @@ public class Recipe {
 
     private Integer fat;
 
+    public boolean addIngredient(RecipeIngredient ingredient)
+    {
+        if (ingredient == null)
+        {
+            return false;
+        }
+        if (this.ingredients == null)
+        {
+            this.ingredients = new ArrayList<>();
+        }
+        this.ingredients.add(ingredient);
+        ingredient.setRecipe(this);
+        return true;
+    }
+
+    public boolean removeIngredient(RecipeIngredient ingredient)
+    {
+        if (this.ingredients == null || ingredient == null)
+        {
+            return false;
+        }
+        this.ingredients.remove(ingredient);
+        ingredient.setRecipe(null);
+        return true;
+    }
 
     @ManyToMany
     @JoinTable(
