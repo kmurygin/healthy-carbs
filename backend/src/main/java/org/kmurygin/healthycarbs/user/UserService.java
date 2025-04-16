@@ -1,7 +1,13 @@
 package org.kmurygin.healthycarbs.user;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
+import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
+import org.kmurygin.healthycarbs.user.dto.UserDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +22,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -29,6 +36,28 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    @Transactional
+    public UserDTO saveUser(CreateUserRequest request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .firstname(request.getFirstname())
+                .lastname(request.getLastname())
+                .email(request.getEmail().toLowerCase())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.valueOf(request.getRole().toUpperCase()))
+                .build();
+
+        return UserMapper.toDto(userRepository.save(user));
+    }
+
+    @Transactional
     public User saveUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Username already exists");
@@ -43,33 +72,39 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User updateUser(Integer id, User updatedUser) {
+    @Transactional
+    public UserDTO updateUser(Integer id, UpdateUserRequest request) {
         return userRepository.findById(id)
                 .map(user -> {
-                    user.setFirstname(updatedUser.getFirstname());
-                    user.setLastname(updatedUser.getLastname());
+                    user.setFirstname(request.getFirstname());
+                    user.setLastname(request.getLastname());
 
-                    if (!Objects.equals(user.getEmail(), updatedUser.getEmail()) && userRepository.findByEmail(updatedUser.getEmail()).isPresent()) {
+                    String newEmail = request.getEmail().toLowerCase();
+                    if (!user.getEmail().equalsIgnoreCase(newEmail) &&
+                            userRepository.findByEmail(newEmail).isPresent()) {
                         throw new IllegalArgumentException("Email already exists");
                     }
-                    user.setEmail(updatedUser.getEmail());
-
-                    return userRepository.save(user);
+                    user.setEmail(newEmail);
+                    return UserMapper.toDto(userRepository.save(user));
                 })
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
     }
 
+    @Transactional
     public boolean changePassword(String oldPassword, String newPassword) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
 
-        Optional<User> user = this.getUserByUsername(username);
+        User user = this.getUserByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
 
-        if (!passwordEncoder.matches(oldPassword, user.get().getPassword())) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             return false;
         }
-        user.get().setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user.get());
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        logger.info("User {} changed password", username);
         return true;
     }
 }

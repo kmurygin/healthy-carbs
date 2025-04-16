@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.config.JwtService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
-import org.kmurygin.healthycarbs.user.UserRepository;
-import org.kmurygin.healthycarbs.user.User;
-import org.kmurygin.healthycarbs.user.Role;
-import org.kmurygin.healthycarbs.user.UserService;
+import org.kmurygin.healthycarbs.user.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,30 +21,23 @@ public class AuthenticationService {
     private final EmailService emailService;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
-                .build();
+        User user = UserMapper.fromRegisterRequest(request, passwordEncoder);
+
         try {
             userService.saveUser(user);
         } catch (IllegalArgumentException e) {
-            return AuthenticationResponse.builder()
-                    .error(e.getMessage())
-                    .build();
+            return AuthenticationResponse.builder().error(e.getMessage()).build();
         }
 
-        String message = "Thank you for registering " + user.getUsername() + " <3";
-        EmailDetails emailDetails = new EmailDetails(user.getEmail(), message, "HealthyCarbs registration");
-        emailService.sendMail(emailDetails);
+        emailService.sendMail(new EmailDetails(
+                user.getEmail(),
+                String.format("Thank you for registering, %s!", user.getUsername()),
+                "HealthyCarbs registration"
+        ));
 
-        var jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
-
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
