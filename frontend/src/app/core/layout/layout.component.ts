@@ -21,7 +21,7 @@ import { NgIf } from '@angular/common';
     MatMenuModule
   ],
   templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.css']
+  styleUrls: ['./layout.component.scss']
 })
 export class LayoutComponent implements OnInit {
   authService = inject(AuthService);
