@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import {LayoutComponent} from "./core/layout/layout.component";
 import {DashboardComponent} from "./features/dashboard/dashboard.component";
 import {LoginComponent} from "./features/auth/login/login.component";
 import {RegisterComponent} from "./features/auth/register/register.component";
@@ -14,27 +13,28 @@ import {MealplanFormComponent} from "./features/mealplan/mealplan-form/mealplan-
 import {IndexComponent} from "./pages/index/index.component";
 
 export const routes: Routes = [
-  { path: '', component: LayoutComponent,
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'user', redirectTo: 'user/edit_user_details', pathMatch: 'full' },
+
+  { path: 'dashboard', canActivate: [authGuard], component: DashboardComponent },
+  { path: 'login', canActivate: [guestGuard], component: LoginComponent },
+  { path: 'register', canActivate: [guestGuard], component: RegisterComponent },
+  { path: 'recipe', canActivate: [authGuard], component: RecipeComponent },
+  { path: 'mealplan-form', canActivate: [authGuard], component: MealplanFormComponent },
+  { path: 'index', canActivate: [guestGuard], component: IndexComponent },
+
+  {
+    path: 'user',
+    canActivate: [authGuard],
+    component: UserComponent,
     children: [
-      { path: '', redirectTo: "dashboard", pathMatch: 'full' },
-      { path: 'user', redirectTo: "user/edit_user_details", pathMatch: 'full' },
-      { path: 'dashboard',
-        canActivate: [authGuard],
-        component: DashboardComponent },
-      { path: 'login', canActivate: [guestGuard], component: LoginComponent },
-      { path: 'register', canActivate: [guestGuard], component: RegisterComponent },
-      { path: 'recipe', canActivate: [authGuard], component: RecipeComponent },
-      { path: 'user',
-        canActivate: [authGuard],
-        component: UserComponent,
-        children: [
-          { path: '', redirectTo: "user/edit_user_details", pathMatch: 'full' },
-          { path: 'edit_user_details', component: UserDetailComponent },
-          { path: 'change_password', component: ChangepasswordComponent },
-          { path: '**', component: ErrorComponent },
-          ]},
-      { path: 'mealplan-form', canActivate: [authGuard], component: MealplanFormComponent },
-      { path: 'index', canActivate: [guestGuard], component: IndexComponent },
+      { path: '', redirectTo: 'edit_user_details', pathMatch: 'full' },
+      { path: 'edit_user_details', component: UserDetailComponent },
+      { path: 'change_password', component: ChangepasswordComponent },
       { path: '**', component: ErrorComponent },
-    ]}
+    ]
+  },
+
+  { path: '**', component: ErrorComponent }
 ];
+

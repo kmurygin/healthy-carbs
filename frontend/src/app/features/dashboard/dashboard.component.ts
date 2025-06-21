@@ -1,17 +1,14 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-// Angular Material UI modules
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
     RouterLink,
-    NgFor,
     MatCardModule,
     MatButtonModule
   ],
@@ -34,6 +31,31 @@ export class DashboardComponent {
       name: 'Pomiary obwodów',
       route: 'plan_zywieniowy',
       image: 'assets/images/mierzenie.jpg'
-    }
+    },
+    {
+      name: 'TEST',
+      route: 'plan_zywieniowy',
+      image: 'assets/images/senyszyn_imperator.jpg'
+    },
+    {
+      name: 'TEST',
+      route: 'plan_zywieniowy',
+      image: 'assets/images/senyszyn_imperator.jpg'
+    },
+    {
+      name: 'TEST',
+      route: 'plan_zywieniowy',
+      image: 'assets/images/senyszyn_imperator.jpg'
+    },
+    {
+      name: 'TEST',
+      route: 'plan_zywieniowy',
+      image: 'assets/images/senyszyn_imperator.jpg'
+    },
+    {
+      name: 'TEST',
+      route: 'plan_zywieniowy',
+      image: 'assets/images/senyszyn_imperator.jpg'
+    },
   ];
 }

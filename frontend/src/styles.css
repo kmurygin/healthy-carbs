@@ -13,3 +13,22 @@ body {
   font-family: var(--font-family), serif;
   background-color: var(--background-color);
 }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1 0 auto;
+}
+
+app-footer {
+  flex-shrink: 0;
+}
