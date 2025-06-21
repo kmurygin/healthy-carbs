@@ -17,7 +17,7 @@ import {NgIf} from '@angular/common';
         NgIf
     ],
     templateUrl: './changepassword.component.html',
-    styleUrl: './changepassword.component.scss'
+    styleUrl: './changepassword.component.css'
 })
 export class ChangepasswordComponent {
   form: FormGroup;

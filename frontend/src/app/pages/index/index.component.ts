@@ -7,7 +7,7 @@ import { MatCardModule } from '@angular/material/card';
     MatCardModule,
   ],
   templateUrl: './index.component.html',
-  styleUrl: './index.component.scss'
+  styleUrl: './index.component.css'
 })
 export class IndexComponent {
 

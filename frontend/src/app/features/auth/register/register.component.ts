@@ -23,7 +23,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule
   ],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
   form: FormGroup;

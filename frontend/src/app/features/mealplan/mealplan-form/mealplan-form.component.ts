@@ -8,7 +8,7 @@ import {ReactiveFormsModule} from "@angular/forms";
     ReactiveFormsModule
   ],
   templateUrl: './mealplan-form.component.html',
-  styleUrl: './mealplan-form.component.scss'
+  styleUrl: './mealplan-form.component.css'
 })
 export class MealplanFormComponent {
 

@@ -21,7 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule
   ],
   templateUrl: './user-detail.component.html',
-  styleUrls: ['./user-detail.component.scss']
+  styleUrls: ['./user-detail.component.css']
 })
 export class UserDetailComponent implements OnInit {
   form!: FormGroup;
