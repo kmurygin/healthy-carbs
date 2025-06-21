@@ -4,15 +4,18 @@ import jakarta.transaction.Transactional;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
+import org.kmurygin.healthycarbs.mealplan.model.UserProfile;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeIngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
+import org.kmurygin.healthycarbs.mealplan.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class RecipeService {
@@ -20,11 +23,17 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
+//    private final UserProfileRepository userProfileRepository;
 
-    public RecipeService(RecipeRepository recipeRepository, IngredientRepository ingredientRepository, RecipeIngredientRepository recipeIngredientRepository) {
+    private UserProfile userProfile;
+
+    public RecipeService(RecipeRepository recipeRepository, IngredientRepository ingredientRepository, RecipeIngredientRepository recipeIngredientRepository, UserProfileRepository userProfileRepository) {
         this.recipeRepository = recipeRepository;
         this.ingredientRepository = ingredientRepository;
         this.recipeIngredientRepository = recipeIngredientRepository;
+//        this.userProfileRepository = userProfileRepository;
+
+//        this.userProfile = userProfileRepository.findByUserId();
     }
 
     public RecipeDTO toDTO(Recipe recipe) {

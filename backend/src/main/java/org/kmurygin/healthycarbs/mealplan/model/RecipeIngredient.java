@@ -26,11 +26,11 @@ public class RecipeIngredient {
     @Column(nullable = false)
     private Double quantity;
 
-    private Integer caloriesForQuantity;
+    private Double caloriesForQuantity;
 
-    private Integer carbsForQuantity;
+    private Double carbsForQuantity;
 
-    private Integer proteinForQuantity;
+    private Double proteinForQuantity;
 
-    private Integer fatForQuantity;
+    private Double fatForQuantity;
 }

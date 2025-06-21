@@ -17,4 +17,17 @@ public class DailyPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "breakfast_id")
+    private Recipe breakfast;
+
+    @ManyToOne
+    @JoinColumn(name = "lunch_id")
+    private Recipe lunch;
+
+    @ManyToOne
+    @JoinColumn(name = "dinner_id")
+    private Recipe dinner;
+
+
 }

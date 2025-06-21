@@ -1,42 +1,33 @@
-package org.kmurygin.healthycarbs.mealplan.service;
+package org.kmurygin.healthycarbs.mealplan;
 
 import org.kmurygin.healthycarbs.mealplan.model.DailyPlan;
-import org.kmurygin.healthycarbs.mealplan.repository.DailyPlanRepository;
-import org.kmurygin.healthycarbs.mealplan.repository.UserProfileRepository;
-import org.springframework.stereotype.Service;
+import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
+import org.kmurygin.healthycarbs.mealplan.model.Recipe;
+import org.kmurygin.healthycarbs.mealplan.model.UserProfile;
+import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
 
-import java.util.List;
 import java.util.Random;
 
-@Service
-public class DailyPlanService {
+public class GeneticAlgorithm {
 
-    private final DailyPlanRepository dailyPlanRepository;
-    private final UserProfileRepository userProfileRepository;
-
-    private double fitness;
-
-    public DailyPlanService(DailyPlanRepository dailyPlanRepository, UserProfileRepository userProfileRepository) {
-        this.dailyPlanRepository = dailyPlanRepository;
-        this.userProfileRepository = userProfileRepository;
-    }
-
-    public List<DailyPlan> findAll() {
-        return dailyPlanRepository.findAll();
-    }
-
-    public DailyPlan findById(Long id) {
-        return dailyPlanRepository.findById(id).orElse(null);
-    }
-
-    public DailyPlan save(DailyPlan dailyPlan) {
-        return dailyPlanRepository.save(dailyPlan);
-    }
-
-    public void deleteById(Long id) {
-        dailyPlanRepository.deleteById(id);
-    }
-
+//    private UserProfile userProfile;
+//
+//    private final int MAX_POPULATION_SIZE = 100;
+//    private final int MAX_GENERATIONS = 1000;
+//    private final double MUTATION_RATE = 0.05;
+//
+//    private double fitness;
+//
+//    private MealPlan mealPlan;
+//
+//    private DailyPlan dailyPlan;
+//
+//    GeneticAlgorithm(UserProfile userProfile)
+//    {
+//        this.userProfile = userProfile;
+//
+//    }
+//
 //    void calculateFitness() {
 //        double caloriesGoal = userProfile.getCaloriesPerDay();
 //        double carbsGoal = userProfile.getCarbsPerDay();
@@ -57,22 +48,22 @@ public class DailyPlanService {
 //
 //        this.fitness = (int)(1000 - penalty);
 //    }
-
-//    void crossover() {
+//
+//     void crossover() {
 //        Random rand = new Random();
 //        for (int i = 0; i < 3; i++) {
 //            childMeals.add(rand.nextBoolean() ? this.meals.get(i) : partner.meals.get(i));
 //        }
-//        dailyPlan.getBreakfast() = rand.nextBoolean() ? dailyPlan.getBreakfast() : recipeReposiotory.findRandomRecipe();
+//         dailyPlan.getBreakfast() = rand.nextBoolean() ? dailyPlan.getBreakfast() : recipeReposiotory.findRandomRecipe();
 //
 ////        return new DailyPlan(this.breakfast, this.lunch, this.dinner);
 //    }
-
-    void mutate() {
-        // Implement the mutation logic here
-    }
-
-    void run() {
-        // Implement the main loop of the genetic algorithm here
-    }
+//
+//    void mutate() {
+//        // Implement the mutation logic here
+//    }
+//
+//    void run() {
+//        // Implement the main loop of the genetic algorithm here
+//    }
 }

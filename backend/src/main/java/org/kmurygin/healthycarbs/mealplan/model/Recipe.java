@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.kmurygin.healthycarbs.mealplan.DietType;
+import org.kmurygin.healthycarbs.mealplan.MealType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,5 +66,7 @@ public class Recipe {
     )
     private List<Allergen> allergens;
 
+    private DietType dietType;
 
+    private MealType mealType;
 }

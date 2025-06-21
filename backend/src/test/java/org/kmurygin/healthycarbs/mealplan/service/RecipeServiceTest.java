@@ -30,7 +30,7 @@ class RecipeServiceTest {
         recipeRepository = mock(RecipeRepository.class);
         ingredientRepository = mock(IngredientRepository.class);
         recipeIngredientRepository = mock(RecipeIngredientRepository.class);
-        recipeService = new RecipeService(recipeRepository, ingredientRepository, recipeIngredientRepository);
+//        recipeService = new RecipeService(recipeRepository, ingredientRepository, recipeIngredientRepository);
     }
 
     @Test
