@@ -1,0 +1,9 @@
+#mealplan-form {
+  width: 50%;
+
+}
+
+#select-button {
+  background-color: var(--button-color);
+  border-color: #000;
+}

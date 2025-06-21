@@ -10,6 +10,8 @@ import {RecipeComponent} from "./pages/recipe/recipe.component";
 import {UserComponent} from "./pages/user/user.component";
 import {UserDetailComponent} from "./components/userdetail/user-detail.component";
 import {ChangepasswordComponent} from "./components/changepassword/changepassword.component";
+import {MealplanFormComponent} from "./components/mealplan-form/mealplan-form.component";
+import {IndexComponent} from "./pages/index/index.component";
 
 export const routes: Routes = [
   { path: '', component: LayoutComponent,
@@ -22,12 +24,17 @@ export const routes: Routes = [
       { path: 'login', canActivate: [guestGuard], component: LoginComponent },
       { path: 'register', canActivate: [guestGuard], component: RegisterComponent },
       { path: 'recipe', canActivate: [authGuard], component: RecipeComponent },
-      { path: 'user', canActivate: [authGuard], component: UserComponent,
+      { path: 'user',
+        canActivate: [authGuard],
+        component: UserComponent,
         children: [
-          { path: 'edit_user_details', component: UserDetailComponent, canActivate: [authGuard] },
-          { path: 'change_password', component: ChangepasswordComponent, canActivate: [authGuard] },
+          { path: '', redirectTo: "user/edit_user_details", pathMatch: 'full' },
+          { path: 'edit_user_details', component: UserDetailComponent },
+          { path: 'change_password', component: ChangepasswordComponent },
           { path: '**', component: ErrorComponent },
           ]},
+      { path: 'mealplan-form', canActivate: [authGuard], component: MealplanFormComponent },
+      { path: 'index', canActivate: [guestGuard], component: IndexComponent },
       { path: '**', component: ErrorComponent },
     ]}
 ];
