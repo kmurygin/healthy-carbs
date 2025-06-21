@@ -11,6 +11,14 @@ export interface RegisterPayload {
   password: string,
 }
 
+export interface UserProfilePayload {
+  weight: number,
+  height: number,
+  dietGoal: DietGoal,
+  dietType: DietType,
+  gender: Gender
+}
+
 export interface ApiResponse<T> {
   status?: boolean,
   message?: string,
@@ -23,4 +31,20 @@ export interface ApiResponse<T> {
 export interface ChangePasswordPayload {
   oldPassword: string,
   newPassword: string,
+}
+
+enum DietGoal {
+  REDUCE,
+  GAIN,
+  MAINTAIN
+}
+
+enum Gender {
+  MAN,
+  WOMAN
+}
+
+enum DietType {
+  VEGETARIAN,
+  VEGAN
 }

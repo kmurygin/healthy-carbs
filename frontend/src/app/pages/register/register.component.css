@@ -1,36 +1,33 @@
-.form-signup {
-  max-width: 430px;
-  padding-top: 3rem;
-  border-style: solid;
-  border-radius: 15px;
-  padding: 3rem;
-  margin-top: 3rem !important;
+.register-card {
+  max-width: 420px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: #1e1e1e; /* dark background */
+  color: #ffffff; /* white text */
+  border-radius: 8px;
 }
 
-.form-signup .form-floating:focus-within {
-  z-index: 2;
+.register-card h2 {
+  color: #ffffff; /* ensure header is readable */
 }
 
-.form-signup input[type="text"] {
-  margin-bottom: -1px;
-  background-color: #fff;
-}
-
-.form-signup input[type="password"] {
-  margin-bottom: 10px;
-  background-color: #fff;
-}
-
-.form-signup input {
+.full-width {
+  width: 100%;
   margin-top: 1rem;
 }
 
-.error-message {
-  color: red;
+/* Override Material Input Label and Field */
+mat-form-field {
+  color: #ffffff;
 }
 
-.btn-signup {
-  margin-top: 1rem;
-  background-color: var(--button-color);
-  border-color: #000;
+mat-label,
+.mat-input-element {
+  color: #ffffff !important;
+}
+
+/* Error styling */
+mat-error {
+  color: #f44336;
+  font-size: 0.85rem;
 }

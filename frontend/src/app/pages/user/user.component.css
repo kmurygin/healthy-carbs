@@ -1,7 +1,25 @@
-#user_settings_nav {
-  margin-top: 1rem;
+.user-settings-wrapper {
+  padding: 2rem;
+  text-align: center;
 }
 
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.user-button {
+  min-width: 200px;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+/* Optional hover override */
 .user-button:hover {
   background-color: var(--button-nav-color);
+  color: white;
 }

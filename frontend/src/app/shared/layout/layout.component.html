@@ -1,34 +1,42 @@
-<header class="p-3" id="navbar">
-  <div class="container">
-    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-      <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-        <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg>
-      </a>
+<mat-toolbar color="primary" class="mat-elevation-z4 responsive-toolbar">
 
-      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a [routerLink]="['']" class="nav-link px-2" id="navbar-logo">Healthy Carbs</a></li>
-        <li><a [routerLink]="['oferta']" class="nav-link px-2" [class.text-secondary]="isActive('oferta')" [class.text-white]="!isActive('oferta')">Oferta</a></li>
-        <li><a [routerLink]="['cennik']" class="nav-link px-2" [class.text-secondary]="isActive('cennik')" [class.text-white]="!isActive('cennik')">Cennik</a></li>
-        <li><a [routerLink]="['FAQs']" class="nav-link px-2" [class.text-secondary]="isActive('FAQs')" [class.text-white]="!isActive('FAQs')">FAQs</a></li>
-        <li><a [routerLink]="['o-nas']" class="nav-link px-2" [class.text-secondary]="isActive('o-nas')" [class.text-white]="!isActive('o-nas')">O nas</a></li>
-      </ul>
+  <span class="logo" [routerLink]="['/']">Healthy Carbs</span>
 
-      <div class="text-end">
-        @if (!isLoggedIn)
-        {
-          <button type="button" class="btn btn-outline-light me-2" [routerLink]="['/login']">Login</button>
-          <button type="button" class="btn btn-warning" [routerLink]="['/register']">Sign-up</button>
-        }
-        @else
-        {
-          <button type="button" class="btn btn-outline-light me-2 btn-username" [routerLink]="['/user']">{{ username }}</button>
-          <button type="button" class="btn btn-outline-light me-2" (click)="logout()">Logout</button>
-        }
-      </div>
-    </div>
+  <span class="spacer"></span>
+
+  <!-- Navigation menu -->
+  <nav class="desktop-only nav-links">
+    <a mat-button [routerLink]="['/oferta']">Oferta</a>
+    <a mat-button [routerLink]="['/cennik']">Cennik</a>
+    <a mat-button [routerLink]="['/FAQs']">FAQs</a>
+    <a mat-button [routerLink]="['/o-nas']">O nas</a>
+  </nav>
+
+  <!-- Mobile menu icon (only for nav links) -->
+  <button mat-icon-button [matMenuTriggerFor]="navMenu" class="mobile-only">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #navMenu="matMenu">
+    <button mat-menu-item [routerLink]="['/oferta']">Oferta</button>
+    <button mat-menu-item [routerLink]="['/cennik']">Cennik</button>
+    <button mat-menu-item [routerLink]="['/FAQs']">FAQs</button>
+    <button mat-menu-item [routerLink]="['/o-nas']">O nas</button>
+  </mat-menu>
+
+  <!-- Desktop and Mobile buttons for Sign In/Up -->
+  <div class="auth-buttons">
+    <ng-container *ngIf="!isLoggedIn; else loggedIn">
+      <button mat-stroked-button color="accent" [routerLink]="['/login']" class="login-btn">Login</button>
+      <button mat-stroked-button color="accent" [routerLink]="['/register']" class="register-btn">Sign-up</button>
+    </ng-container>
+    <ng-template #loggedIn>
+      <button mat-flat-button color="accent" [routerLink]="['/user']">{{ username }}</button>
+      <button mat-stroked-button (click)="logout()">Logout</button>
+    </ng-template>
   </div>
-</header>
 
-<main>
+</mat-toolbar>
+
+<main class="main-container">
   <router-outlet></router-outlet>
 </main>

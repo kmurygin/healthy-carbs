@@ -1,54 +1,68 @@
-import {Component, inject} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {MatButton} from "@angular/material/button";
-import {MatCard} from "@angular/material/card";
-import {MatFormField, MatLabel} from "@angular/material/form-field";
-import {MatInput} from "@angular/material/input";
-import {AuthService} from "../../core/services/auth.service";
-import {Router} from "@angular/router";
-import {NgIf} from "@angular/common";
+import { Component, inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { NgIf } from '@angular/common';
+import { AuthService } from '../../core/services/auth.service';
+
+// Angular Material modules
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-    selector: 'app-register',
-    imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        NgIf
-    ],
-    templateUrl: './register.component.html',
-    styleUrl: './register.component.css'
+  selector: 'app-register',
+  standalone: true,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NgIf,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule
+  ],
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
   form: FormGroup;
+  errorMessage = '';
+  isSubmitting = false;
+
   authService = inject(AuthService);
   router = inject(Router);
-  errorMessage: string = "";
-
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
-      firstname: new FormControl("", [Validators.required]),
-      lastname: new FormControl("", [Validators.required]),
-      username: new FormControl("", [Validators.required]),
-      email: new FormControl("", [Validators.required, Validators.email]),
-      password: new FormControl("", [Validators.required])
-    })
+      firstname: ['', Validators.required],
+      lastname: ['', Validators.required],
+      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
   }
 
   get email() {
-    return this.form.get("email");
+    return this.form.get('email');
   }
 
-  onSubmit(){
+  onSubmit(): void {
     if (this.form.valid) {
+      this.isSubmitting = true;
       this.authService.register(this.form.value).subscribe({
         next: (response) => {
-          console.log(response);
-          if (response.token)
+          this.isSubmitting = false;
+          if (response.token) {
             this.router.navigate(['login']);
-          else if (response.error)
+          } else if (response.error) {
             this.errorMessage = response.error;
+          }
         },
+        error: () => {
+          this.isSubmitting = false;
+          this.errorMessage = 'Something went wrong. Please try again.';
+        }
       });
     }
   }

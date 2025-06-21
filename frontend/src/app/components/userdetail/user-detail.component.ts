@@ -1,90 +1,87 @@
-import {Component, inject} from '@angular/core';
-import {UserService} from "../../core/services/user.service";
-import {AuthService} from "../../core/services/auth.service";
-import {User} from "../../models/user.model";
-import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { UserService } from '../../core/services/user.service';
+import { AuthService } from '../../core/services/auth.service';
+import { User } from '../../models/user.model';
+import { NgIf } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-    selector: 'app-userdetail',
-    imports: [
-        ReactiveFormsModule
-    ],
-    templateUrl: './user-detail.component.html',
-    styleUrl: './user-detail.component.css'
+  selector: 'app-userdetail',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    NgIf,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCardModule,
+    MatButtonModule
+  ],
+  templateUrl: './user-detail.component.html',
+  styleUrls: ['./user-detail.component.css']
 })
-export class UserDetailComponent {
-  userService: UserService = inject(UserService);
-  authService: AuthService = inject(AuthService);
-  form: FormGroup;
-  errorMessage: string | undefined = "";
+export class UserDetailComponent implements OnInit {
+  form!: FormGroup;
+  errorMessage: string = '';
+  user?: User;
 
-  user: User | undefined;
+  userService = inject(UserService);
+  authService = inject(AuthService);
+  fb = inject(FormBuilder);
 
-  updatedUser: User = {
-    id: 0,
-    firstname: '',
-    lastname: '',
-    username: '',
-    email: '',
-    password: ''
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      firstname: ['', Validators.required],
+      lastname: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]]
+    });
+
+    const tokenUser = this.authService.getUserFromToken();
+    if (tokenUser?.username) {
+      this.getUserDetails(tokenUser.username);
+    }
   }
 
-  constructor(private fb: FormBuilder) {
-    const user = this.authService.getUserFromToken();
-    if (user) {
-      this.getUserDetails(user.username);
-    }
-
-    this.form = this.fb.group({
-      firstname: new FormControl(this.user?.firstname || ""),
-      lastname: new FormControl(this.user?.lastname || ""),
-      email: new FormControl(this.user?.email || "", [Validators.email]),
+  getUserDetails(username: string): void {
+    this.userService.getUserByUsername(username).subscribe({
+      next: (response) => {
+        this.user = response.data;
+        if (this.user) {
+          this.form.patchValue({
+            firstname: this.user.firstname,
+            lastname: this.user.lastname,
+            email: this.user.email
+          });
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.errorMessage = 'Failed to fetch user data';
+      }
     });
   }
 
-
-  onSubmit() {
-    console.log(this.form.valid);
-    console.log(this.form.value);
-
-    if (this.form.valid) {
-      const submittedValues = {
-        email: this.form.value.email || this.user?.email,
-        firstname: this.form.value.firstname || this.user?.firstname,
-        lastname: this.form.value.lastname || this.user?.lastname,
+  onSubmit(): void {
+    if (this.form.valid && this.user) {
+      const updatedUser: User = {
+        ...this.user,
+        firstname: this.form.value.firstname,
+        lastname: this.form.value.lastname,
+        email: this.form.value.email
       };
 
-      console.log(submittedValues);
-
-      this.updatedUser.email = submittedValues.email;
-      this.updatedUser.firstname = submittedValues.firstname;
-      this.updatedUser.lastname = submittedValues.lastname;
-
-      console.log("aaa");
-      console.log(this.updatedUser);
-      // @ts-ignore
-      this.userService.updateUser(this.user.id, this.updatedUser).subscribe({
+      this.userService.updateUser(this.user.id, updatedUser).subscribe({
         next: (response) => {
-          console.log(response);
-          this.errorMessage = response.message;
+          this.errorMessage = response.message || 'Updated successfully!';
         },
-        error: (error) => {
-          console.error(error);
-          this.errorMessage = error;
+        error: (err) => {
+          console.error(err);
+          this.errorMessage = 'Update failed.';
         }
       });
     }
-  }
-
-
-  getUserDetails(username: any) {
-    this.userService.getUserByUsername(username).subscribe({
-      next: (response) => {
-        console.log(response);
-        this.user = response.data;
-        console.log(this.user);
-      },
-      error: (error) => {console.error(error);}
-    });
   }
 }

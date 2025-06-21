@@ -8,8 +8,13 @@ export const ApiEndpoints = {
 
   User: {
     User: `${apiUrl}/users/`,
-    GetUserByUsername: `${apiUrl}/users/getUserByUsername/`,
+    GetUserByUsername: `${apiUrl}/users/username/`,
     ChangePassword: `${apiUrl}/users/change-password`,
+  },
+
+  MealPlan: {
+    userprofile: `${apiUrl}/meal-plan/userprofile`,
+    mealplan: `${apiUrl}/meal-plan`,
   }
 };
 

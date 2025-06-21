@@ -1,11 +1,18 @@
-<div class="container">
-  <div id="user_settings_nav" class="d-flex justify-content-center">
-    <button type="button" class="btn btn-outline-dark col-lg-3 me-3 user-button" [routerLink]="['/user/edit_user_details']">Edit user details</button>
-    <button type="button" class="btn btn-outline-dark col-lg-3 me-3 user-button" [routerLink]="['/user/change_password']">Edit password</button>
-    <button type="button" class="btn btn-outline-dark col-lg-3 me-3 user-button" [routerLink]="['/user/my_subscription']">My subscription</button>
-    <button type="button" class="btn btn-outline-dark col-lg-3 user-button" [routerLink]="['/user/history']">History</button>
+<div class="user-settings-wrapper">
+  <div class="button-group">
+    <button mat-stroked-button color="primary" class="user-button" [routerLink]="['/user/edit_user_details']">
+      Edit user details
+    </button>
+    <button mat-stroked-button color="primary" class="user-button" [routerLink]="['/user/change_password']">
+      Edit password
+    </button>
+    <button mat-stroked-button color="primary" class="user-button" [routerLink]="['/user/my_subscription']">
+      My subscription
+    </button>
+    <button mat-stroked-button color="primary" class="user-button" [routerLink]="['/user/history']">
+      History
+    </button>
   </div>
 
-    <router-outlet></router-outlet>
-
+  <router-outlet></router-outlet>
 </div>

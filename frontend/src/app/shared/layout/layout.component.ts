@@ -1,37 +1,45 @@
-import {Component, inject, OnInit} from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, OnInit, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { Router } from '@angular/router';
+
+// Angular Material imports
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { NgIf } from '@angular/common';
 
 @Component({
-    selector: 'app-layout',
-    imports: [RouterModule],
-    templateUrl: './layout.component.html',
-    styleUrls: ['./layout.component.css']
+  selector: 'app-layout',
+  standalone: true,
+  imports: [
+    RouterModule,
+    NgIf,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule
+  ],
+  templateUrl: './layout.component.html',
+  styleUrls: ['./layout.component.css']
 })
-export class LayoutComponent implements OnInit{
-  authService = inject(AuthService); // Inject AuthService
+export class LayoutComponent implements OnInit {
+  authService = inject(AuthService);
+  router = inject(Router);
 
-  constructor(private router: Router){}
-
-  isLoggedIn: boolean = false;
+  isLoggedIn = false;
   username: string | null = null;
 
-  ngOnInit() {
+  ngOnInit(): void {
     const user = this.authService.getUserFromToken();
-
-    if (user) {
-      this.isLoggedIn = true;
-      this.username = user.username;
-    } else {
-      this.isLoggedIn = false;
-      this.username = null;
-    }
+    this.isLoggedIn = !!user;
+    this.username = user?.username || null;
   }
 
-  logout() {
-    this.isLoggedIn = false;
+  logout(): void {
     this.authService.logout();
+    this.isLoggedIn = false;
+    this.router.navigate(['/login']);
   }
 
   isActive(route: string): boolean {

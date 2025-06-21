@@ -1,14 +1,39 @@
-import {Component, inject} from '@angular/core';
-import {RouterLink} from "@angular/router";
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+// Angular Material UI modules
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { NgFor } from '@angular/common';
 
 @Component({
-    selector: 'app-dashboard',
-    imports: [
-        RouterLink,
-    ],
-    templateUrl: './dashboard.component.html',
-    styleUrl: './dashboard.component.css'
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [
+    RouterLink,
+    NgFor,
+    MatCardModule,
+    MatButtonModule
+  ],
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent{
-  categories = [ "mealplan_generator", "dietician", "diets_to_buy"];
+export class DashboardComponent {
+  categories = [
+    {
+      name: 'Plan żywieniowy',
+      route: 'mealplan-form',
+      image: 'assets/images/kalendarz-1.jpg'
+    },
+    {
+      name: 'Współpraca z dietetykiem',
+      route: 'plan_zywieniowy',
+      image: 'assets/images/dietetyk-kliniczny-1024x683.jpg'
+    },
+    {
+      name: 'Pomiary obwodów',
+      route: 'plan_zywieniowy',
+      image: 'assets/images/mierzenie.jpg'
+    }
+  ];
 }

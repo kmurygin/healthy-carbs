@@ -1,12 +1,20 @@
 import {Component, inject} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {UserService} from "../../core/services/user.service";
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {NgIf} from '@angular/common';
 
 @Component({
     selector: 'app-changepassword',
     imports: [
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        NgIf
     ],
     templateUrl: './changepassword.component.html',
     styleUrl: './changepassword.component.css'

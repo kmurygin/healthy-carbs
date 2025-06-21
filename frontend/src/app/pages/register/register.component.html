@@ -1,44 +1,45 @@
-<div class="container">
-  <main class="form-signup w-80 m-auto">
-    <h2>Register</h2>
-    <form [formGroup]="form" (submit)="onSubmit()">
-      <div class="form-floating">
-        <input type="text" class="form-control" id="firstname" placeholder="firstname" formControlName="firstname">
-        <label for="firstname">First Name</label>
-      </div>
+<mat-card class="register-card">
+  <h2 class="text-center">Create Your Account</h2>
 
-      <div class="form-floating">
-        <input type="text" class="form-control" id="lastname" placeholder="lastname" formControlName="lastname">
-        <label for="lastname">lastname</label>
-      </div>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="firstname" required />
+    </mat-form-field>
 
-      <div class="form-floating">
-        <input type="text" class="form-control" id="username" placeholder="username" formControlName="username">
-        <label for="username">username</label>
-      </div>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Last Name</mat-label>
+      <input matInput formControlName="lastname" required />
+    </mat-form-field>
 
-      <div class="form-floating">
-        <input type="text" class="form-control" id="email" placeholder="email" formControlName="email">
-        <label for="email">email</label>
-      </div>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" required />
+    </mat-form-field>
 
-      <div *ngIf="email?.invalid" class="error-message">
-        <span *ngIf="email?.errors?.['email']">Invalid email format</span>
-      </div>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" required />
+      <mat-error *ngIf="email?.hasError('email')">Invalid email format</mat-error>
+    </mat-form-field>
 
-      <div class="form-floating">
-        <input type="password" class="form-control" id="password" placeholder="Password" formControlName="password">
-        <label for="password">Password</label>
-      </div>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" required />
+    </mat-form-field>
 
-      <button class="btn btn-primary w-100 py-2 btn-signup" type="submit" [disabled]="form.invalid">Register</button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="full-width"
+      type="submit"
+      [disabled]="form.invalid || isSubmitting"
+    >
+      {{ isSubmitting ? 'Registering...' : 'Register' }}
+    </button>
 
-      @if (errorMessage != "") {
-        <div class="alert alert-danger" role="alert">
-          {{ errorMessage }}
-        </div>
-      }
-
-    </form>
-  </main>
-</div>
+    <mat-error *ngIf="errorMessage" class="mt-2">
+      {{ errorMessage }}
+    </mat-error>
+  </form>
+</mat-card>
