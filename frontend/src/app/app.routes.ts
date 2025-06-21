@@ -1,16 +1,16 @@
 import { Routes } from '@angular/router';
-import {LayoutComponent} from "./shared/layout/layout.component";
-import {DashboardComponent} from "./pages/dashboard/dashboard.component";
-import {LoginComponent} from "./pages/login/login.component";
-import {RegisterComponent} from "./pages/register/register.component";
+import {LayoutComponent} from "./core/layout/layout.component";
+import {DashboardComponent} from "./features/dashboard/dashboard.component";
+import {LoginComponent} from "./features/auth/login/login.component";
+import {RegisterComponent} from "./features/auth/register/register.component";
 import {authGuard} from "./core/guards/auth.guard";
 import {guestGuard} from "./core/guards/guest.guard";
 import {ErrorComponent} from "./pages/error/error.component";
-import {RecipeComponent} from "./pages/recipe/recipe.component";
-import {UserComponent} from "./pages/user/user.component";
-import {UserDetailComponent} from "./components/userdetail/user-detail.component";
-import {ChangepasswordComponent} from "./components/changepassword/changepassword.component";
-import {MealplanFormComponent} from "./components/mealplan-form/mealplan-form.component";
+import {RecipeComponent} from "./features/recipe/recipe.component";
+import {UserComponent} from "./features/user/user/user.component";
+import {UserDetailComponent} from "./features/user/userdetail/user-detail.component";
+import {ChangepasswordComponent} from "./features/user/changepassword/changepassword.component";
+import {MealplanFormComponent} from "./features/mealplan/mealplan-form/mealplan-form.component";
 import {IndexComponent} from "./pages/index/index.component";
 
 export const routes: Routes = [

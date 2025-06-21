@@ -1,8 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiEndpoints, LocalStorage } from '../constants/constants';
-import { User } from '../../models/user.model';
-import { ApiResponse, LoginPayload, RegisterPayload } from '../../models/payloads';
+import { User } from '../models/user.model';
+import { ApiResponse, LoginPayload, RegisterPayload } from '../models/payloads';
 import { Router } from '@angular/router';
 import {map, Observable} from 'rxjs';
 import { jwtDecode } from "jwt-decode";
