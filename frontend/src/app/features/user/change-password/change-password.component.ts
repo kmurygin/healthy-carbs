@@ -6,7 +6,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 
 @Component({
-    selector: 'app-changepassword',
+    selector: 'app-change-password',
     imports: [
         FormsModule,
         ReactiveFormsModule,
@@ -14,10 +14,10 @@ import {MatButtonModule} from '@angular/material/button';
         MatInputModule,
         MatButtonModule
     ],
-    templateUrl: './changepassword.component.html',
-    styleUrl: './changepassword.component.scss'
+    templateUrl: './change-password.component.html',
+    styleUrl: './change-password.component.scss'
 })
-export class ChangepasswordComponent {
+export class ChangePasswordComponent {
   form: FormGroup;
   userService: UserService = inject(UserService);
   fb: FormBuilder = inject(FormBuilder);
