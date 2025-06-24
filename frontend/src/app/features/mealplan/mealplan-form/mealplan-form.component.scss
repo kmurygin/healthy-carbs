@@ -1,6 +1,32 @@
 #mealplan-form {
-  width: 50%;
+  max-width: 90%;
+  margin: 2rem auto;
+}
 
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-field {
+  flex: 1 1 0;
+  min-width: 200px;
+}
+
+.allergy-label {
+  display: block;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.allergy-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 #select-button {

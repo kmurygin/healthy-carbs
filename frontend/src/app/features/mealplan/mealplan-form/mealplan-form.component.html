@@ -1,85 +1,94 @@
 <div class="container">
-  <main class=" w-80 m-auto" id="mealplan-form">
+  <main id="mealplan-form">
     <h2>Create your user profile</h2>
-    <form>
-      <div class="form-floating mb-3">
-        <input type="number" class="form-control" id="age" placeholder="Age">
-        <label for="age">Age</label>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Age</mat-label>
+          <input matInput type="number" formControlName="age">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Gender</mat-label>
+          <mat-select formControlName="gender">
+            <mat-option value="male">Male</mat-option>
+            <mat-option value="female">Female</mat-option>
+            <mat-option value="other">Other</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Weight [kg]</mat-label>
+          <input matInput type="number" formControlName="weight">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Height [cm]</mat-label>
+          <input matInput type="number" formControlName="height">
+        </mat-form-field>
       </div>
 
-      <div class="form-floating mb-3">
-        <input type="number" class="form-control" id="weight" placeholder="Weight">
-        <label for="weight">Weight</label>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Goal</mat-label>
+          <mat-select formControlName="goal">
+            @for (goal of goals; track goal) {
+              <mat-option [value]="goal.toLowerCase().replace(' ', '-')">
+                {{ goal }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Dietary preference</mat-label>
+          <mat-select formControlName="dietaryPreference">
+            @for (diet_preference of diets; track diet_preference) {
+              <mat-option [value]="diet_preference.toLowerCase().replace(' ', '-')">
+                {{ diet_preference }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Activity level</mat-label>
+          <mat-select formControlName="activityLevel">
+            @for (activityLevel of activityLevels; track activityLevel) {
+              <mat-option [value]="activityLevel.toLowerCase().replace(' ', '-')">
+                {{ activityLevel }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
       </div>
 
-      <div class="form-floating mb-3">
-        <select class="form-select" id="goal" aria-label="Diet goal">
-          <option selected>Select your goal</option>
-          <option value="reduce">reduce</option>
-          <option value="gain">gain</option>
-          <option value="maintain">maintain</option>
-        </select>
-        <label for="goal">Goal</label>
+      <!-- Allergies -->
+      <label class="allergy-label">Allergies</label>
+      <div class="allergy-list">
+        @for (allergy of allergies; track allergy) {
+          <mat-checkbox
+            [value]="allergy.toLowerCase().replace(' ', '-')"
+            (change)="
+              $event.checked
+                ? form.value.allergies.push($event.source.value)
+                : form.value.allergies.splice(form.value.allergies.indexOf($event.source.value), 1)
+            ">
+            {{ allergy }}
+          </mat-checkbox>
+        }
       </div>
 
-      <div class="form-floating mb-3">
-        <select class="form-select" id="gender" aria-label="Gender">
-          <option selected>Select gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
-        <label for="gender">Gender</label>
-      </div>
-
-      <div class="form-floating mb-3">
-        <select class="form-select" id="dietary-preference" aria-label="dietary-preference">
-          <option selected>Select dietary preference</option>
-          <option value="vegan">vegan</option>
-          <option value="vegetarian">vegetarian</option>
-          <option value="no-fish">no fish</option>
-          <option value="standard">standard</option>
-        </select>
-        <label for="dietary-preference">Dietary preference</label>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Allergies</label>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="allergies-peanuts" value="peanuts">
-          <label class="form-check-label" for="allergies-peanuts">Peanuts</label>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="allergies-tree-nuts" value="tree-nuts">
-          <label class="form-check-label" for="allergies-tree-nuts">Tree Nuts</label>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="allergies-milk" value="milk">
-          <label class="form-check-label" for="allergies-milk">Milk</label>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="allergies-eggs" value="eggs">
-          <label class="form-check-label" for="allergies-eggs">Eggs</label>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="allergies-wheat" value="wheat">
-          <label class="form-check-label" for="allergies-wheat">Wheat</label>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="allergies-soy" value="soy">
-          <label class="form-check-label" for="allergies-soy">Soy</label>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="allergies-fish" value="fish">
-          <label class="form-check-label" for="allergies-fish">Fish</label>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="allergies-shellfish" value="shellfish">
-          <label class="form-check-label" for="allergies-shellfish">Shellfish</label>
-        </div>
-      </div>
-
-      <button class="btn btn-primary w- py-2" id="select-button" type="submit">Generate Meal Plan</button>
+      <button
+        mat-raised-button
+        color="primary"
+        id="select-button"
+        type="submit"
+        [disabled]="form.invalid"
+      >
+        Generate Meal Plan
+      </button>
     </form>
   </main>
 </div>
