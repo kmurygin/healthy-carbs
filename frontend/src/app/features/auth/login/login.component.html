@@ -1,25 +1,41 @@
-<mat-card class="login-card">
-  <h2 class="text-center">Please sign in</h2>
+<div class="light-form-wrapper">
+  <h2 class="text-center mb-4">Please sign in</h2>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="light-form">
+    <!-- Recommended by browser for accessibility -->
+    <input type="text" autocomplete="username" hidden />
 
-    <mat-form-field appearance="outline" class="full-width">
+    <!-- Username -->
+    <mat-form-field appearance="outline" class="form-field">
       <mat-label>Username</mat-label>
-      <input matInput formControlName="username" required />
+      <input matInput formControlName="username" autocomplete="username" />
+      @if (form.get('username')?.hasError('required')) {
+        <mat-error>Username is required</mat-error>
+      }
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
+    <!-- Password -->
+    <mat-form-field appearance="outline" class="form-field">
       <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" required />
+      <input matInput type="password" formControlName="password" autocomplete="current-password" />
+      @if (form.get('password')?.hasError('required')) {
+        <mat-error>Password is required</mat-error>
+      }
     </mat-form-field>
 
-    <button mat-raised-button color="primary" class="full-width" type="submit" [disabled]="form.invalid || isSubmitting">
+    <!-- Submit Button -->
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      class="small-button"
+      [disabled]="form.invalid || isSubmitting">
       {{ isSubmitting ? 'Signing in...' : 'Sign in' }}
     </button>
 
-    <mat-error *ngIf="errorMessage" class="mt-2">
-      {{ errorMessage }}
-    </mat-error>
-
+    <!-- Global error -->
+    @if (errorMessage) {
+      <mat-error class="mt-2">{{ errorMessage }}</mat-error>
+    }
   </form>
-</mat-card>
+</div>

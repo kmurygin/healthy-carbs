@@ -16,18 +16,26 @@
   margin-top: 1rem;
 }
 
-/* Override Material Input Label and Field */
-mat-form-field {
-  color: #ffffff;
-}
-
-mat-label,
-.mat-input-element {
-  color: #ffffff !important;
-}
-
 /* Error styling */
 mat-error {
   color: #f44336;
   font-size: 0.85rem;
+}
+
+.light-form-wrapper {
+  background-color: #f9f9f9;
+  padding: 3rem 1rem;
+  font-family: Roboto, sans-serif;
+}
+
+.light-form {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field {
+  margin-bottom: 1.5rem;
+  border-radius: 9999px !important;
 }

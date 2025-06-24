@@ -4,7 +4,7 @@
   padding: 2rem;
   border-radius: 12px;
   background-color: #1e1e1e;
-  color: #fff;
+  //color: #fff;
 }
 
 .full-width {
@@ -13,7 +13,7 @@
 }
 
 h2 {
-  color: #ffffff;
+  color: #000;
   text-align: center;
   margin-bottom: 1.5rem;
 }
@@ -21,10 +21,29 @@ h2 {
 mat-label,
 input,
 mat-form-field {
-  color: #fff !important;
+  //color: #fff !important;
 }
 
 mat-error {
   color: #f44336;
   font-size: 0.85rem;
+}
+
+.light-form-wrapper {
+  background-color: #f9f9f9;
+  color: #212121;
+  padding: 3rem 1rem;
+  font-family: Roboto, sans-serif;
+}
+
+.light-form {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field {
+  margin-bottom: 1.5rem;
+  border-radius: 9999px !important;
 }
