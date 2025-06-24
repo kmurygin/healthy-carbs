@@ -20,42 +20,55 @@ export class DashboardComponent {
     {
       name: 'Plan żywieniowy',
       route: 'mealplan-form',
-      image: 'assets/images/kalendarz-1.jpg'
+      image: 'assets/images/6325254.jpg'
     },
     {
       name: 'Współpraca z dietetykiem',
       route: 'plan_zywieniowy',
-      image: 'assets/images/dietetyk-kliniczny-1024x683.jpg'
+      image: 'assets/images/6325254.jpg'
     },
     {
       name: 'Pomiary obwodów',
       route: 'plan_zywieniowy',
-      image: 'assets/images/mierzenie.jpg'
+      image: 'assets/images/6325254.jpg'
     },
     {
-      name: 'TEST',
-      route: 'plan_zywieniowy',
-      image: 'assets/images/senyszyn_imperator.jpg'
+      name: 'Cele żywieniowe',
+      route: 'cele',
+      image: 'assets/images/6325254.jpg'
     },
     {
-      name: 'TEST',
-      route: 'plan_zywieniowy',
-      image: 'assets/images/senyszyn_imperator.jpg'
+      name: 'Historia planów',
+      route: 'historia-planow',
+      image: 'assets/images/6325254.jpg'
     },
     {
-      name: 'TEST',
-      route: 'plan_zywieniowy',
-      image: 'assets/images/senyszyn_imperator.jpg'
+      name: 'Postępy i statystyki',
+      route: 'postepy',
+      image: 'assets/images/6325254.jpg'
     },
     {
-      name: 'TEST',
-      route: 'plan_zywieniowy',
-      image: 'assets/images/senyszyn_imperator.jpg'
+      name: 'Baza przepisów',
+      route: 'przepisy',
+      image: 'assets/images/6325254.jpg'
     },
     {
-      name: 'TEST',
-      route: 'plan_zywieniowy',
-      image: 'assets/images/senyszyn_imperator.jpg'
+      name: 'Ulubione przepisy',
+      route: 'ulubione',
+      image: 'assets/images/6325254.jpg'
     },
+    {
+      name: 'Baza wiedzy',
+      route: 'wiedza',
+      image: 'assets/images/6325254.jpg'
+    },
+    {
+      name: 'Zakup diety',
+      route: 'kup-diete',
+      image: 'assets/images/6325254.jpg'
+    }
   ];
+
+
+
 }
