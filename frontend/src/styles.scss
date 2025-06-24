@@ -1,4 +1,8 @@
 @use '@angular/material' as mat;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
 // Customize palettes
 $primary: mat.m2-define-palette(mat.$m2-green-palette, 900); // e.g. dark green
@@ -18,6 +22,10 @@ $custom-theme: mat.m2-define-light-theme((
 @include mat.all-component-themes($custom-theme);
 
 :root{
+  @include mat.form-field-overrides((
+          outlined-container-shape: var(--mat-sys-corner-medium) // example value
+  ));
+
   --background-color: #f9f9f9;
   --font-family: Roboto, "Helvetica Neue", sans-serif;
   --button-color: #31572C;
@@ -56,3 +64,37 @@ app-footer {
 button {
   border-radius: 9999px !important;
 }
+
+.mat-menu-panel,
+.mat-mdc-menu-panel {
+  border-radius: 12px !important;
+  background-color: #f0f0f0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.mat-select-panel,
+.mat-mdc-select-panel {
+  border-radius: 12px !important;
+  background-color: #f0f0f0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.mat-option,
+.mat-mdc-option {
+  padding: 12px;
+  font-size: 14px;
+}
+
+.mat-option:hover,
+.mat-mdc-option:hover {
+  background-color: #e0e0e0;
+}
+
+.small-button {
+  width: 20rem;
+  padding: 4px 8px;
+  font-size: 13px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
