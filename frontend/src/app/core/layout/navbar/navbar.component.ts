@@ -2,21 +2,24 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { Component, OnInit, inject } from '@angular/core';
+import {Component, OnInit, inject, ViewEncapsulation} from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import {MatDivider} from "@angular/material/divider";
 
 @Component({
   selector: 'app-navbar',
-    imports: [
-      RouterModule,
-      MatToolbarModule,
-      MatButtonModule,
-      MatIconModule,
-      MatMenuModule
-    ],
+  imports: [
+    RouterModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatDivider
+  ],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss'
+  styleUrl: './navbar.component.scss',
+  encapsulation: ViewEncapsulation.Emulated
 })
 export class NavbarComponent implements OnInit {
   authService = inject(AuthService);

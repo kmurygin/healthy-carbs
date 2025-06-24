@@ -4,32 +4,71 @@
 
   <span class="spacer"></span>
 
+  <!-- Desktop navigation -->
   <nav class="desktop-only nav-links">
-    <a mat-button [routerLink]="['/oferta']">Oferta</a>
-    <a mat-button [routerLink]="['/cennik']">Cennik</a>
-    <a mat-button [routerLink]="['/FAQs']">FAQs</a>
-    <a mat-button [routerLink]="['/o-nas']">O nas</a>
+    <button mat-button='filled' [routerLink]="['/oferta']">Oferta</button>
+    <button mat-button [routerLink]="['/cennik']">Cennik</button>
+    <button mat-button [routerLink]="['/FAQs']">FAQs</button>
+    <button mat-button [routerLink]="['/o-nas']">O nas</button>
   </nav>
 
-  <button mat-icon-button [matMenuTriggerFor]="navMenu" class="mobile-only">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <mat-menu #navMenu="matMenu">
-    <button mat-menu-item [routerLink]="['/oferta']">Oferta</button>
-    <button mat-menu-item [routerLink]="['/cennik']">Cennik</button>
-    <button mat-menu-item [routerLink]="['/FAQs']">FAQs</button>
-    <button mat-menu-item [routerLink]="['/o-nas']">O nas</button>
-  </mat-menu>
-
-  <div class="auth-buttons">
+  <!-- Desktop auth buttons -->
+  <div class="auth-buttons desktop-only">
     @if (!isLoggedIn) {
-      <button mat-stroked-button color="accent" [routerLink]="['/login']" class="login-btn">Login</button>
+      <button matButton="elevated" color="accent" [routerLink]="['/login']" class="login-btn">Login</button>
       <button mat-stroked-button color="accent" [routerLink]="['/register']" class="register-btn">Sign-up</button>
     } @else {
-      <button mat-flat-button color="accent" [routerLink]="['/user']">{{ username }}</button>
-      <button mat-stroked-button (click)="logout()">Logout</button>
+      <button matButton="elevated" color="accent" [routerLink]="['/user']">{{ username }}</button>
+      <button matButton="outlined" (click)="logout()">Logout</button>
     }
   </div>
+
+  <!-- Mobile menu trigger -->
+  <button matIconButton [matMenuTriggerFor]="navMenu" class="mobile-only" aria-label="Menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <!-- Mobile menu -->
+  <mat-menu #navMenu="matMenu">
+    @if (!isLoggedIn) {
+      <button mat-menu-item [routerLink]="['/login']">
+        <mat-icon>login</mat-icon>
+        <span>Login</span>
+      </button>
+      <button mat-menu-item [routerLink]="['/register']">
+        <mat-icon>person_add</mat-icon>
+        <span>Sign-up</span>
+      </button>
+    } @else {
+      <button mat-menu-item [routerLink]="['/user']">
+        <mat-icon>account_circle</mat-icon>
+        <span>{{ username }}</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    }
+
+    <mat-divider></mat-divider>
+
+    <button mat-menu-item [routerLink]="['/oferta']">
+      <mat-icon>local_offer</mat-icon>
+      <span>Oferta</span>
+    </button>
+    <button mat-menu-item [routerLink]="['/cennik']">
+      <mat-icon>attach_money</mat-icon>
+      <span>Cennik</span>
+    </button>
+    <button mat-menu-item [routerLink]="['/FAQs']">
+      <mat-icon>help_outline</mat-icon>
+      <span>FAQs</span>
+    </button>
+    <button mat-menu-item [routerLink]="['/o-nas']">
+      <mat-icon>info</mat-icon>
+      <span>O nas</span>
+    </button>
+  </mat-menu>
 
 
 </mat-toolbar>

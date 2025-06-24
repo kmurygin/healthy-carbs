@@ -17,12 +17,20 @@
       <input matInput formControlName="email" />
     </mat-form-field>
 
-    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+    <button
+      mat-raised-button
+      class="small-button"
+      color="primary"
+      type="submit"
+      [disabled]="form.invalid">
       Update Info
     </button>
 
-    <mat-error *ngIf="errorMessage">
-      {{ errorMessage }}
-    </mat-error>
+
+    @if(errorMessage) {
+      <mat-error>
+        {{ errorMessage }}
+      </mat-error>
+    }
   </form>
 </div>

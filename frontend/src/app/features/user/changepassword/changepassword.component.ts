@@ -4,7 +4,6 @@ import {UserService} from "../../../core/services/user.service";
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
-import {NgIf} from '@angular/common';
 
 @Component({
     selector: 'app-changepassword',
@@ -13,8 +12,7 @@ import {NgIf} from '@angular/common';
         ReactiveFormsModule,
         MatFormFieldModule,
         MatInputModule,
-        MatButtonModule,
-        NgIf
+        MatButtonModule
     ],
     templateUrl: './changepassword.component.html',
     styleUrl: './changepassword.component.scss'

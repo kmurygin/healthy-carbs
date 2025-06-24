@@ -1,13 +1,13 @@
 <mat-divider></mat-divider>
 
-<footer class="footer dark-footer">
+<mat-toolbar color="primary" class="footer-toolbar" role="contentinfo">
   <div class="footer-content">
-    <span>&copy; 2025 Healthy Carbs. All rights reserved.</span>
+    <span class="footer-text">&copy; 2025 Healthy Carbs. All rights reserved.</span>
 
     <div class="footer-links">
-      <a mat-button routerLink="/about">About</a>
-      <a mat-button routerLink="/contact">Contact</a>
-      <a mat-button routerLink="/privacy">Privacy</a>
+      <button mat-button [routerLink]="['/error']">O nas</button>
+      <button mat-button [routerLink]="['/error']">Kontatk</button>
+      <button mat-button [routerLink]="['/error']">Lorem ipsum</button>
     </div>
   </div>
-</footer>
+</mat-toolbar>
