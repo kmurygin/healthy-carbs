@@ -4,9 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.config.JwtService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
+import org.kmurygin.healthycarbs.exception.ResourceAlreadyExistsException;
+import org.kmurygin.healthycarbs.exception.UnauthorizedException;
 import org.kmurygin.healthycarbs.user.*;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +27,7 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
         User user = UserMapper.fromRegisterRequest(request, passwordEncoder);
 
-        try {
-            userService.saveUser(user);
-        } catch (IllegalArgumentException e) {
-            return AuthenticationResponse.builder().error(e.getMessage()).build();
-        }
+        userService.saveUser(user);
 
         emailService.sendMail(new EmailDetails(
                 user.getEmail(),
@@ -38,24 +38,25 @@ public class AuthenticationService {
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
+
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
-        var user = new User();
         try {
-            user = repository.findByUsername(request.getUsername())
-                    .orElseThrow();
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            throw new UnauthorizedException("Invalid username or password");
+        } catch (UsernameNotFoundException e) {
+            throw new UnauthorizedException("User not found with the provided username");
         }
-        catch (Exception e) {
-            return AuthenticationResponse.builder()
-                    .error(e.getMessage())
-                    .build();
-        }
-        var jwtToken = jwtService.generateToken(user);
+
+        User user = repository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
+
+        String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 }
