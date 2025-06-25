@@ -1,11 +1,14 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
+import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
+import org.kmurygin.healthycarbs.exception.BadRequestException;
 import org.kmurygin.healthycarbs.mealplan.ActivityLevel;
 import org.kmurygin.healthycarbs.mealplan.DietGoal;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.Gender;
 import org.kmurygin.healthycarbs.mealplan.dto.UserProfileCreateDTO;
 import org.kmurygin.healthycarbs.mealplan.dto.UserProfileDTO;
+import org.kmurygin.healthycarbs.mealplan.mapper.UserProfileMapper;
 import org.kmurygin.healthycarbs.mealplan.model.UserProfile;
 import org.kmurygin.healthycarbs.mealplan.repository.UserProfileRepository;
 import org.kmurygin.healthycarbs.user.User;
@@ -22,6 +25,7 @@ public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
     private final UserRepository userRepository;
+    private final UserProfileMapper userProfileMapper;
 
     Double PROTEIN_PERCENTAGE = 0.25;
     Double CARBS_PERCENTAGE = 0.5;
@@ -35,9 +39,10 @@ public class UserProfileService {
             ActivityLevel.SUPER_ACTIVE, 1.9
     );
 
-    public UserProfileService(UserProfileRepository userProfileRepository, UserRepository userRepository) {
+    public UserProfileService(UserProfileRepository userProfileRepository, UserRepository userRepository, UserProfileMapper userProfileMapper) {
         this.userProfileRepository = userProfileRepository;
         this.userRepository = userRepository;
+        this.userProfileMapper = userProfileMapper;
     }
 
     public UserProfileDTO calculateUserProfile(UserProfileCreateDTO userProfileCreateDTO) {
@@ -51,7 +56,7 @@ public class UserProfileService {
 
         User user = userRepository
                 .findByUsername(userProfileCreateDTO.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", userProfileCreateDTO.getUsername()));
 
         Double totalCalories = calculateCaloriesForGoal(
                 calculateTDEE(
@@ -88,56 +93,22 @@ public class UserProfileService {
 
     public UserProfileDTO save(UserProfileDTO userProfileDTO) {
         User user = userRepository.findById(userProfileDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User with id " + userProfileDTO.getUserId() + " not found."));
-        UserProfile userProfileSaved = userProfileRepository.save(toEntity(userProfileDTO, user));
-        return toDTO(userProfileSaved);
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userProfileDTO.getUserId()));
+        UserProfile userProfileSaved = userProfileRepository.save(userProfileMapper.toEntity(userProfileDTO, user));
+        return userProfileMapper.toDTO(userProfileSaved);
     }
 
     public List<UserProfileDTO> findAll() {
         return userProfileRepository.findAll()
                 .stream()
-                .map(this::toDTO)
+                .map(userProfileMapper::toDTO)
                 .toList();
     }
 
     public UserProfileDTO findById(Long id) {
         return userProfileRepository.findById(id)
-                .map(this::toDTO)
-                .orElseThrow(() -> new RuntimeException("UserProfile with id " + id + " not found."));
-    }
-
-    private UserProfileDTO toDTO(UserProfile userProfile) {
-        return UserProfileDTO.builder()
-                .id(userProfile.getId())
-                .userId(userProfile.getUserId().getId())
-                .weight(userProfile.getWeight())
-                .height(userProfile.getHeight())
-                .age(userProfile.getAge())
-                .gender(userProfile.getGender())
-                .dietType(userProfile.getDietType())
-                .activityLevel(userProfile.getActivityLevel())
-                .caloriesPerDay(userProfile.getCaloriesPerDay())
-                .carbsPerDay(userProfile.getCarbsPerDay())
-                .proteinPerDay(userProfile.getProteinPerDay())
-                .fatPerDay(userProfile.getFatPerDay())
-                .build();
-    }
-
-    private UserProfile toEntity(UserProfileDTO dto, User user) {
-        return UserProfile.builder()
-                .id(dto.getId())
-                .userId(user)
-                .weight(dto.getWeight())
-                .height(dto.getHeight())
-                .age(dto.getAge())
-                .gender(dto.getGender())
-                .dietType(dto.getDietType())
-                .activityLevel(dto.getActivityLevel())
-                .caloriesPerDay(dto.getCaloriesPerDay())
-                .carbsPerDay(dto.getCarbsPerDay())
-                .proteinPerDay(dto.getProteinPerDay())
-                .fatPerDay(dto.getFatPerDay())
-                .build();
+                .map(userProfileMapper::toDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("UserProfile", "id", id));
     }
 
     private Double calclateBMR(Double weight, Double height, Integer age, Gender gender) {
@@ -160,7 +131,7 @@ public class UserProfileService {
     }
 
     private Double round(Double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
+        if (places < 0) throw new BadRequestException("Decimal places cannot be negative");
         BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
