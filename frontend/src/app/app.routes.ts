@@ -7,8 +7,8 @@ import {guestGuard} from "./core/guards/guest.guard";
 import {ErrorComponent} from "./pages/error/error.component";
 import {RecipeComponent} from "./features/recipe/recipe.component";
 import {UserComponent} from "./features/user/user/user.component";
-import {UserDetailComponent} from "./features/user/userdetail/user-detail.component";
-import {ChangepasswordComponent} from "./features/user/changepassword/changepassword.component";
+import {UserDetailComponent} from "./features/user/user-detail/user-detail.component";
+import {ChangePasswordComponent} from "./features/user/change-password/change-password.component";
 import {MealplanFormComponent} from "./features/mealplan/mealplan-form/mealplan-form.component";
 import {IndexComponent} from "./pages/index/index.component";
 
@@ -30,7 +30,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'edit_user_details', pathMatch: 'full' },
       { path: 'edit_user_details', component: UserDetailComponent },
-      { path: 'change_password', component: ChangepasswordComponent },
+      { path: 'change_password', component: ChangePasswordComponent },
       { path: '**', component: ErrorComponent },
     ]
   },

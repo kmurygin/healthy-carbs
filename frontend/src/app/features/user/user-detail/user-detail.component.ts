@@ -77,7 +77,7 @@ export class UserDetailComponent implements OnInit {
         },
         error: (err) => {
           console.error(err);
-          this.errorMessage = 'Update failed.';
+          this.errorMessage = err;
         }
       });
     }

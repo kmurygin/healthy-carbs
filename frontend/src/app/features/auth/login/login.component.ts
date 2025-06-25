@@ -47,9 +47,10 @@ export class LoginComponent {
         },
         error: (error) => {
           this.isSubmitting = false;
-          if (error === 'Access denied') {
-            this.errorMessage = 'Wrong username/password';
-          } else {
+          if (error !== null) {
+            this.errorMessage = error.message || 'An error occurred. Please try again.';
+          }
+          else {
             this.errorMessage = 'An error occurred. Please try again.';
           }
         }
