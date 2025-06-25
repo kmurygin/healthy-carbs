@@ -1,8 +1,11 @@
 package org.kmurygin.healthycarbs.user;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.email.EmailDetails;
+import org.kmurygin.healthycarbs.email.EmailService;
+import org.kmurygin.healthycarbs.exception.ResourceAlreadyExistsException;
+import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UserDTO;
@@ -13,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -39,10 +42,10 @@ public class UserService {
     @Transactional
     public UserDTO saveUser(CreateUserRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new ResourceAlreadyExistsException("User", "username", request.getUsername());
         }
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new ResourceAlreadyExistsException("User", "email", request.getEmail());
         }
 
         User user = User.builder()
@@ -60,10 +63,10 @@ public class UserService {
     @Transactional
     public User saveUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new ResourceAlreadyExistsException("User", "username", user.getUsername());
         }
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new ResourceAlreadyExistsException("User", "email", user.getEmail());
         }
         return userRepository.save(user);
     }
@@ -80,14 +83,20 @@ public class UserService {
                     user.setLastname(request.getLastname());
 
                     String newEmail = request.getEmail().toLowerCase();
-                    if (!user.getEmail().equalsIgnoreCase(newEmail) &&
+                    if (!user.getEmail().equalsIgnoreCase(newEmail) ||
                             userRepository.findByEmail(newEmail).isPresent()) {
-                        throw new IllegalArgumentException("Email already exists");
+                        throw new ResourceAlreadyExistsException("User", "email", newEmail);
                     }
                     user.setEmail(newEmail);
+                    emailService.sendMail(new EmailDetails(
+                            user.getEmail(),
+                            String.format("Your email has been changed to this one, %s!", user.getUsername()),
+                            "HealthyCarbs change of email address"
+                    ));
+
                     return UserMapper.toDto(userRepository.save(user));
                 })
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
 
     @Transactional
@@ -96,7 +105,7 @@ public class UserService {
         String username = auth.getName();
 
         User user = this.getUserByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             return false;
