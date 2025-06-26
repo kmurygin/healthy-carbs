@@ -1,49 +1,47 @@
-services:
-  backend:
-    build: backend
-    container_name: backend
-    ports:
-      - 8080:8080
-    environment:
-      - POSTGRES_DB=healthy_carbs
-    networks:
-      - spring-postgres
-    depends_on:
-      - db
+version: '3.8'
 
-  db:
-    image: postgres
-    container_name: postgres_db
+services:
+  postgres:
+    image: postgres:15
+    container_name: healthycarbs-postgres
     restart: always
-    secrets:
-      - db-password
-    volumes:
-      - db-data:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - spring-postgres
     environment:
-      - POSTGRES_DB=healthy_carbs
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-    expose:
-      - 5432
+      POSTGRES_DB: healthy_carbs
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  mongodb:
+    image: mongo:7
+    container_name: healthycarbs-mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: mongopass
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+
+  backend:
+    container_name: healthycarbs-backend
+    build: ./backend
+    depends_on:
+      - postgres
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8080:8080"
 
   frontend:
-    build: frontend
-    container_name: frontend
+    container_name: healthycarbs-frontend
+    build: ./frontend
     ports:
-      - 4200:4200
-    networks:
-      - spring-postgres
-    depends_on:
-      - backend
+      - "4200:80"
 
 volumes:
-  db-data:
-
-secrets:
-  db-password:
-    file: db/password.txt
-
-networks:
-  spring-postgres:
+  pgdata:
+  mongodata:

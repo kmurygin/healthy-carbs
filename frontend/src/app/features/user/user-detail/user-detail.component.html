@@ -1,0 +1,36 @@
+<div class="light-form-wrapper">
+  <h2 class="text-center mb-4">Personal Information</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="light-form">
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="firstname" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Last Name</mat-label>
+      <input matInput formControlName="lastname" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" />
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      class="small-button"
+      color="primary"
+      type="submit"
+      [disabled]="form.invalid">
+      Update Info
+    </button>
+
+
+    @if(errorMessage) {
+      <mat-error>
+        {{ errorMessage }}
+      </mat-error>
+    }
+  </form>
+</div>

@@ -1,8 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiEndpoints, LocalStorage } from '../constants/constants';
-import { User } from '../../models/user.model';
-import { ApiResponse, LoginPayload, RegisterPayload } from '../../models/payloads';
+import { User } from '../models/user.model';
+import { ApiResponse, LoginPayload, RegisterPayload } from '../models/payloads';
 import { Router } from '@angular/router';
 import {map, Observable} from 'rxjs';
 import { jwtDecode } from "jwt-decode";
@@ -22,7 +22,7 @@ export class AuthService {
     const userFromToken = this.getUserFromToken();
     if (userFromToken) {
       this.isLoggedIn.set(true);
-      // this.user.set(userFromToken);
+      this.user.set(userFromToken.username);
     }
   }
 
@@ -37,7 +37,7 @@ export class AuthService {
           localStorage.setItem(LocalStorage.token, response.token);
           this.isLoggedIn.set(true);
           const userFromToken = this.getUserFromToken();
-          // this.user.set(userFromToken);
+          this.user.set(userFromToken?.username);
         }
         else if (response.error) {
           this.isLoggedIn.set(false);
@@ -82,5 +82,6 @@ export class AuthService {
     this.isLoggedIn.set(false);
     this.user.set(undefined);
     this.router.navigate(['login']);
+    window.location.reload();
   }
 }

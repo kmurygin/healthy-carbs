@@ -1,0 +1,31 @@
+.user-settings-wrapper {
+  padding: 2rem;
+  text-align: center;
+}
+
+.button-group {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.user-button {
+  min-width: 10rem;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+/* Optional hover override */
+.user-button:hover {
+  background-color: var(--button-nav-color);
+  color: white;
+}
+
+.selected-button {
+  background-color: var(--button-nav-color);
+  color: white;
+}

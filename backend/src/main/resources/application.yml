@@ -2,20 +2,21 @@ spring.config.import: optional:file:.env[.properties]
 
 spring:
   datasource:
-   url: ${DB_URL}
+   url: jdbc:postgresql://localhost:5432/healthy_carbs
    driver-class-name: org.postgresql.Driver
-   username: ${DB_USERNAME}
-   password: ${DB_PASSWORD}
+   username: postgres
+   password: postgres
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-      database: postgresql
-      database-platform: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+#      database: postgresql
+#      database-platform: org.hibernate.dialect.PostgreSQLDialect
     defer-datasource-initialization: true
 
   sql:
@@ -33,3 +34,8 @@ spring:
           auth: true
           starttls:
             enable: true
+
+management:
+  health:
+    mail:
+      enabled: false

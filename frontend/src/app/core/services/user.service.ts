@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {ApiResponse, ChangePasswordPayload} from "../../models/payloads";
-import {User} from "../../models/user.model";
+import {ApiResponse, ChangePasswordPayload} from "../models/payloads";
+import {User} from "../models/user.model";
 import {ApiEndpoints} from "../constants/constants";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";

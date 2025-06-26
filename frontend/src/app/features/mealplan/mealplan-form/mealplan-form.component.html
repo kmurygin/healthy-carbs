@@ -1,0 +1,94 @@
+<div class="container">
+  <main id="mealplan-form">
+    <h2>Create your user profile</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Age</mat-label>
+          <input matInput type="number" formControlName="age">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Gender</mat-label>
+          <mat-select formControlName="gender">
+            <mat-option value="male">Male</mat-option>
+            <mat-option value="female">Female</mat-option>
+            <mat-option value="other">Other</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Weight [kg]</mat-label>
+          <input matInput type="number" formControlName="weight">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Height [cm]</mat-label>
+          <input matInput type="number" formControlName="height">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Goal</mat-label>
+          <mat-select formControlName="goal">
+            @for (goal of goals; track goal) {
+              <mat-option [value]="goal.toLowerCase().replace(' ', '-')">
+                {{ goal }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Dietary preference</mat-label>
+          <mat-select formControlName="dietaryPreference">
+            @for (diet_preference of diets; track diet_preference) {
+              <mat-option [value]="diet_preference.toLowerCase().replace(' ', '-')">
+                {{ diet_preference }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Activity level</mat-label>
+          <mat-select formControlName="activityLevel">
+            @for (activityLevel of activityLevels; track activityLevel) {
+              <mat-option [value]="activityLevel.toLowerCase().replace(' ', '-')">
+                {{ activityLevel }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Allergies -->
+      <label class="allergy-label">Allergies</label>
+      <div class="allergy-list">
+        @for (allergy of allergies; track allergy) {
+          <mat-checkbox
+            [value]="allergy.toLowerCase().replace(' ', '-')"
+            (change)="
+              $event.checked
+                ? form.value.allergies.push($event.source.value)
+                : form.value.allergies.splice(form.value.allergies.indexOf($event.source.value), 1)
+            ">
+            {{ allergy }}
+          </mat-checkbox>
+        }
+      </div>
+
+      <button
+        mat-raised-button
+        color="primary"
+        id="select-button"
+        type="submit"
+        [disabled]="form.invalid"
+      >
+        Generate Meal Plan
+      </button>
+    </form>
+  </main>
+</div>

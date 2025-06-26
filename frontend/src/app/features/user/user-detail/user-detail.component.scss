@@ -1,0 +1,72 @@
+/* Apply to your top-level wrapper */
+.light-form-wrapper {
+  background-color: #f9f9f9;
+  color: #212121;
+  padding: 3rem 1rem;
+  //min-height: 50vh;
+  font-family: Roboto, sans-serif;
+}
+
+/* Form layout */
+.light-form {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field {
+  margin-bottom: 1.5rem;
+  border-radius: 9999px !important;
+}
+
+/* --- Fix Material Input label & text colors --- */
+::ng-deep .mat-form-field-label,
+::ng-deep .mat-form-field-label span {
+  color: #212121 !important;
+  opacity: 1 !important;
+}
+
+::ng-deep .mat-input-element {
+  color: #212121 !important;
+  caret-color: #212121;
+}
+
+::ng-deep input::placeholder {
+  color: #999 !important;
+}
+
+/* Border fix */
+::ng-deep .mat-form-field-outline {
+  color: #ccc !important;
+  border-color: #ccc !important;
+}
+
+/* Focus border */
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  border-color: #4f772d !important;
+}
+
+/* Submit button */
+button[mat-raised-button] {
+  background-color: #4f772d !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: 20px;
+  transition: background-color 0.3s ease;
+}
+
+button[mat-raised-button]:hover {
+  background-color: #3d5f1d !important;
+}
+
+/* Error text */
+mat-error {
+  color: #d32f2f;
+  margin-top: 1rem;
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: left;
+}

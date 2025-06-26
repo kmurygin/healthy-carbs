@@ -1,10 +1,24 @@
-INSERT INTO users (id, email, firstname, lastname, password, role, username) VALUES
-(nextval('users_seq'), 'kacpi@kacpi1.com', 'Kacper', 'Murygin',
-'$2a$10$zvTPCv0VtpnrGfXTmneSx.5.y5idinoYRYskH2G.PH1vR6ercq3ce',
-'USER', 'akcpi24'),
-(nextval('users_seq'), 'kacpi@kacpi2.com', 'Kacper', 'Murygin',
- '$2a$10$zvTPCv0VtpnrGfXTmneSx.5.y5idinoYRYskH2G.PH1vR6ercq3ce',
- 'USER', 'kacpi23'),
-(nextval('users_seq'), 'kacpi@kacpi3.com', 'Kacper', 'Murygin',
-    '$2a$10$zvTPCv0VtpnrGfXTmneSx.5.y5idinoYRYskH2G.PH1vR6ercq3ce',
-    'USER', 'kacpi22');
+CREATE OR REPLACE FUNCTION update_recipe_totals()
+    RETURNS TRIGGER AS '
+    BEGIN
+        UPDATE recipes
+        SET calories = COALESCE(sums.total_calories, 0),
+            carbs = COALESCE(sums.total_carbs, 0),
+            protein = COALESCE(sums.total_protein, 0),
+            fat = COALESCE(sums.total_fat, 0)
+        FROM (
+                 SELECT ri.recipe_id,
+                        SUM(i.caloriesperunit * ri.quantity) AS total_calories,
+                        SUM(i.carbsperunit * ri.quantity) AS total_carbs,
+                        SUM(i.proteinperunit * ri.quantity) AS total_protein,
+                        SUM(i.fatperunit * ri.quantity) AS total_fat
+                 FROM recipe_ingredients ri
+                          JOIN ingredients i ON i.id = ri.ingredient_id
+                 WHERE ri.recipe_id = COALESCE(NEW.recipe_id, OLD.recipe_id)
+                 GROUP BY ri.recipe_id
+             ) AS sums
+        WHERE recipes.id = sums.recipe_id;
+
+        RETURN NEW;
+    END;
+' LANGUAGE plpgsql;

@@ -1,5 +1,8 @@
 package org.kmurygin.healthycarbs.user;
 
+import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
+import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
+import org.kmurygin.healthycarbs.user.dto.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +32,18 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<User> getUserById(@PathVariable Integer id) {
-//        return userService.getUserById(id)
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.notFound().build());
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Integer id) {
+        return userService.getUserById(id)
+                .map(user -> {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("data", user);
+                    return ResponseEntity.ok(response);
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found")));
+    }
 
-    @GetMapping("getUserByUsername/{username}")
+    @GetMapping("username/{username}")
     public ResponseEntity<Map<String, Object>> getUserByUsername(@PathVariable String username) {
         return userService.getUserByUsername(username)
                 .map(user -> {
@@ -44,22 +51,19 @@ public class UserController {
                     response.put("data", user);  // Wrap user in the data key
                     return ResponseEntity.ok(response);
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found")));
     }
 
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody User user) {
-        try {
-            return new ResponseEntity<>(userService.saveUser(user), HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserRequest request) {
+        UserDTO createdUser = userService.saveUser(request);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
-        return ResponseEntity.ok(userService.updateUser(id, updatedUser));
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UpdateUserRequest request) {
+        return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
     @DeleteMapping("/{id}")

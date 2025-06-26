@@ -1,7 +1,16 @@
 package org.kmurygin.healthycarbs.user;
 
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.email.EmailDetails;
+import org.kmurygin.healthycarbs.email.EmailService;
+import org.kmurygin.healthycarbs.exception.ResourceAlreadyExistsException;
+import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
+import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
+import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
+import org.kmurygin.healthycarbs.user.dto.UserDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +23,9 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -28,12 +39,34 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    @Transactional
+    public UserDTO saveUser(CreateUserRequest request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new ResourceAlreadyExistsException("User", "username", request.getUsername());
+        }
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new ResourceAlreadyExistsException("User", "email", request.getEmail());
+        }
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .firstname(request.getFirstname())
+                .lastname(request.getLastname())
+                .email(request.getEmail().toLowerCase())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.valueOf(request.getRole().toUpperCase()))
+                .build();
+
+        return UserMapper.toDto(userRepository.save(user));
+    }
+
+    @Transactional
     public User saveUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new ResourceAlreadyExistsException("User", "username", user.getUsername());
         }
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new ResourceAlreadyExistsException("User", "email", user.getEmail());
         }
         return userRepository.save(user);
     }
@@ -42,33 +75,45 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User updateUser(Integer id, User updatedUser) {
+    @Transactional
+    public UserDTO updateUser(Integer id, UpdateUserRequest request) {
         return userRepository.findById(id)
                 .map(user -> {
-                    user.setFirstname(updatedUser.getFirstname());
-                    user.setLastname(updatedUser.getLastname());
+                    user.setFirstname(request.getFirstname());
+                    user.setLastname(request.getLastname());
 
-                    if (userRepository.findByEmail(updatedUser.getEmail()).isPresent()) {
-                        throw new IllegalArgumentException("Email already exists");
+                    String newEmail = request.getEmail().toLowerCase();
+                    if (!user.getEmail().equalsIgnoreCase(newEmail) ||
+                            userRepository.findByEmail(newEmail).isPresent()) {
+                        throw new ResourceAlreadyExistsException("User", "email", newEmail);
                     }
-                    user.setEmail(updatedUser.getEmail());
+                    user.setEmail(newEmail);
+                    emailService.sendMail(new EmailDetails(
+                            user.getEmail(),
+                            String.format("Your email has been changed to this one, %s!", user.getUsername()),
+                            "HealthyCarbs change of email address"
+                    ));
 
-                    return userRepository.save(user);
+                    return UserMapper.toDto(userRepository.save(user));
                 })
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
 
+    @Transactional
     public boolean changePassword(String oldPassword, String newPassword) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
 
-        Optional<User> user = this.getUserByUsername(username);
+        User user = this.getUserByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
-        if (!passwordEncoder.matches(oldPassword, user.get().getPassword())) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             return false;
         }
-        user.get().setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user.get());
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        logger.info("User {} changed password", username);
         return true;
     }
 }

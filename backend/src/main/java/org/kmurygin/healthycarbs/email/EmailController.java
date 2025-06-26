@@ -8,15 +8,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class EmailController {
 
-    @Autowired private EmailService emailService;
+    private final EmailService emailService;
+
+    @Autowired
+    public EmailController(EmailService emailService) {
+        this.emailService = emailService;
+    }
 
     @PostMapping("/sendMail")
     public String
     sendMail(@RequestBody EmailDetails details)
     {
-        String status
-                = emailService.sendMail(details);
+        emailService.sendMail(details);
 
-        return status;
+        return "";
     }
 }
