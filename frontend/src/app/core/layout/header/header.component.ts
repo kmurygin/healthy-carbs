@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import {MatDivider} from "@angular/material/divider";
 
 @Component({
-  selector: 'app-navbar',
+  selector: 'app-header',
   imports: [
     RouterModule,
     MatToolbarModule,
@@ -17,11 +17,11 @@ import {MatDivider} from "@angular/material/divider";
     MatMenuModule,
     MatDivider
   ],
-  templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss',
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.scss',
   encapsulation: ViewEncapsulation.Emulated
 })
-export class NavbarComponent implements OnInit {
+export class HeaderComponent implements OnInit {
   authService = inject(AuthService);
   router = inject(Router);
 
