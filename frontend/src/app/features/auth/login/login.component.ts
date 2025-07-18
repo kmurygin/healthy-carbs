@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -19,12 +19,13 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule
   ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
   form: FormGroup;
-  errorMessage: string = '';
-  isSubmitting = false;
+  errorMessage = signal('');
+  isSubmitting = signal(false);
 
   authService = inject(AuthService);
   router = inject(Router);
@@ -38,20 +39,19 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.form.valid) {
-      this.isSubmitting = true;
+      this.isSubmitting.set(true);
       this.authService.login(this.form.value).subscribe({
-        next: (response) => {
-          this.isSubmitting = false;
+        next: (response: any) => {
+          this.isSubmitting.set(false);
           this.router.navigate(['']);
           window.location.reload();
         },
-        error: (error) => {
-          this.isSubmitting = false;
+        error: (error: any) => {
+          this.isSubmitting.set(false);
           if (error !== null) {
-            this.errorMessage = error.message || 'An error occurred. Please try again.';
-          }
-          else {
-            this.errorMessage = 'An error occurred. Please try again.';
+            this.errorMessage.set(error.message || 'An error occurred. Please try again.');
+          } else {
+            this.errorMessage.set('An error occurred. Please try again.');
           }
         }
       });

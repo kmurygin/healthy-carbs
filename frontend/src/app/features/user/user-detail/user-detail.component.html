@@ -4,17 +4,17 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="light-form">
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>First Name</mat-label>
-      <input matInput formControlName="firstname" />
+      <input matInput formControlName="firstname" placeholder="First Name" />
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Last Name</mat-label>
-      <input matInput formControlName="lastname" />
+      <input matInput formControlName="lastname" placeholder="Last Name" />
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Email</mat-label>
-      <input matInput formControlName="email" />
+      <input matInput formControlName="email" placeholder="Email" />
     </mat-form-field>
 
     <button
@@ -27,9 +27,9 @@
     </button>
 
 
-    @if(errorMessage) {
+    @if(errorMessage()) {
       <mat-error>
-        {{ errorMessage }}
+        {{ errorMessage() }}
       </mat-error>
     }
   </form>

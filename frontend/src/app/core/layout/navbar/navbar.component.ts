@@ -2,7 +2,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import {Component, OnInit, inject, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, inject, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import {MatDivider} from "@angular/material/divider";
@@ -19,14 +19,15 @@ import {MatDivider} from "@angular/material/divider";
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.Emulated,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NavbarComponent implements OnInit {
   authService = inject(AuthService);
   router = inject(Router);
 
   isLoggedIn = false;
-  username: string | null = null;
+  username = null;
 
   ngOnInit(): void {
     const user = this.authService.getUserFromToken();
