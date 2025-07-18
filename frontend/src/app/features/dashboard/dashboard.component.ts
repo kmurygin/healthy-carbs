@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NgOptimizedImage } from '@angular/common';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,17 +14,20 @@ import { NgxChartsModule, Color, ScaleType, LegendPosition } from '@swimlane/ngx
     MatCardModule,
     MatButtonModule,
     NgxChartsModule,
+    NgOptimizedImage,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:resize)': 'onResize()'
+  }
 })
 export class DashboardComponent {
 
   isSmallScreen = window.innerWidth < 768;
   view: [number, number] = this.calculateChartSize();
 
-  @HostListener('window:resize')
   onResize(): void {
     this.isSmallScreen = window.innerWidth < 768;
     this.view = this.calculateChartSize();
