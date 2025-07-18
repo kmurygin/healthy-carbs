@@ -1,15 +1,72 @@
-<div class="dashboard-grid">
-  @for (category of categories; track category) {
-    <mat-card class="dashboard-card">
-      <img mat-card-image [src]="category.image" alt="{{ category.name }}" />
+<div class="dashboard-container">
 
-      <mat-card-content>
-        <h3 class="card-title">{{ category.name }}</h3>
-      </mat-card-content>
+  <div class="charts-section">
+    <h2>Twoje statystyki</h2>
 
-      <mat-card-actions>
-        <button mat-raised-button color="primary" [routerLink]="['/', category.route]">Zobacz</button>
-      </mat-card-actions>
-    </mat-card>
-  }
+    <div class="charts-grid" [class.single-column]="isSmallScreen">
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Postęp wagi</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <ngx-charts-line-chart
+              [view]="view"
+              [scheme]="colorScheme"
+              [results]="weightData"
+              [gradient]="gradient"
+              [xAxis]="showXAxis"
+              [yAxis]="showYAxis"
+              [legend]="!isSmallScreen"
+              [legendPosition]="legendPosition"
+              [showXAxisLabel]="showXAxisLabel"
+              [showYAxisLabel]="showYAxisLabel"
+              [xAxisLabel]="xAxisLabel"
+              [yAxisLabel]="yAxisLabel"
+              [timeline]="timeline"
+              [autoScale]="true">
+            </ngx-charts-line-chart>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Makroskładniki</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <ngx-charts-pie-chart
+              [view]="view"
+              [scheme]="colorScheme"
+              [results]="caloriesData"
+              [gradient]="gradient"
+              [legend]="!isSmallScreen"
+              [legendPosition]="legendPosition"
+              [labels]="showLabels"
+              [doughnut]="isDoughnut">
+            </ngx-charts-pie-chart>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    @for (category of categories; track category) {
+      <mat-card class="dashboard-card">
+        <img mat-card-image [src]="category.image" alt="{{ category.name }}" />
+
+        <mat-card-content>
+          <h3 class="card-title">{{ category.name }}</h3>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-raised-button color="primary" [routerLink]="['/', category.route]">Zobacz</button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+
 </div>

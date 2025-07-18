@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 2rem;
-  padding: 2rem;
+  padding: 3rem;
   max-width: 90%;
   margin: 0 auto;
 }
@@ -31,17 +31,72 @@
 mat-card-actions {
   display: flex;
   justify-content: center;
-  padding-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
-mat-card-content {
-  text-align: center;
-  padding: 0 1rem;
+.charts-section {
+  padding: 2rem 3rem;
+  max-width: 90%;
+  margin: 0 auto;
+
+  h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
 }
 
-img[mat-card-image] {
-  height: 200px;
-  object-fit: cover;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+
+  &.single-column {
+    grid-template-columns: 1fr;
+  }
 }
+
+.chart-card {
+  padding: 1rem;
+  height: 100%;
+  flex-direction: column;
+}
+
+.chart-container {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ::ng-deep .ngx-charts {
+    display: flex !important;
+
+    .legend-container {
+      order: 2;
+      min-width: 120px;
+      margin-left: 16px;
+    }
+
+    .chart-legend {
+      background: transparent;
+    }
+  }
+}
+
+/* Responsive tweaks */
+@media (max-width: 1200px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .charts-section,
+  .dashboard-grid {
+    padding: 1.5rem;
+  }
+
+  .chart-card {
+    height: 400px;
+  }
+}
+
