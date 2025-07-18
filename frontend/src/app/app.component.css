@@ -1,16 +1,30 @@
 .example-button-row {
   display: flex;
   justify-content: flex-end;
-  align-items: center; /* Aligns items vertically centered */
-  flex-grow: 1; /* Makes the spacer take all the available space */
-  padding-right: 1em; /* Add some padding to the right */
+  align-items: center;
+  flex-grow: 1;
+  padding-right: 1em;
 }
 
 .example-spacer {
-  flex: 1 1 auto; /* Allows the previous span to take the remaining space */
-  margin-right: 1em; /* Optional: Adds some margin before the buttons */
+  flex: 1 1 auto;
+  margin-right: 1em;
 }
 
 .register-button {
   margin-right: 8px;
+}
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  /*flex: 1;*/
+  /*padding-top: 64px;*/
+  /*padding-top: 5em;*/
+  /*margin-left: 16px;*/
+  /*margin-right: 16px;*/
 }
