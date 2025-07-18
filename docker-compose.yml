@@ -14,17 +14,17 @@ services:
     ports:
       - "5432:5432"
 
-  mongodb:
-    image: mongo:7
-    container_name: healthycarbs-mongodb
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongoadmin
-      MONGO_INITDB_ROOT_PASSWORD: mongopass
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodata:/data/db
+  # mongodb:
+  #   image: mongo:7
+  #   container_name: healthycarbs-mongodb
+  #   restart: always
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: mongoadmin
+  #     MONGO_INITDB_ROOT_PASSWORD: mongopass
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodata:/data/db
 
   backend:
     container_name: healthycarbs-backend

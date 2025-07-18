@@ -8,6 +8,7 @@ import {NgClass} from "@angular/common";
 
 @Component({
     selector: 'app-user',
+    standalone: true,
   imports: [
     RouterLink,
     RouterOutlet,
@@ -27,8 +28,7 @@ export class UserComponent {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        const path = event.urlAfterRedirects.split('/user/')[1];
-        this.currentSubPath = path;
+        this.currentSubPath = event.urlAfterRedirects.split('/user/')[1];
       });
   }
 }
