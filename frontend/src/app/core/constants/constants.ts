@@ -1,4 +1,6 @@
-const apiUrl = "http://localhost:8080/api/v1";
+import { environment } from '../../../environments/environment';
+
+const apiUrl = environment.apiUrl;
 
 export const ApiEndpoints = {
   Auth: {
