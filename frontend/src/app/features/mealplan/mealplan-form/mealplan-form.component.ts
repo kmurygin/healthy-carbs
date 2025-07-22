@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import {FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
+import { MatStepperModule } from '@angular/material/stepper';
+import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 @Component({
   selector: 'app-mealplan-form',
@@ -17,25 +19,50 @@ import { MatButtonModule } from '@angular/material/button';
     MatSelectModule,
     MatCheckboxModule,
     MatButtonModule,
+    MatStepperModule,
+  ],
+  providers: [
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: {showError: true}
+    }
   ],
   templateUrl: './mealplan-form.component.html',
-  styleUrl: './mealplan-form.component.scss'
+  styleUrl: './mealplan-form.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MealplanFormComponent {
-  form: FormGroup;
+
+  basicInfoForm: FormGroup;
+  physicalMeasurementsForm: FormGroup;
+  dietaryInfoForm: FormGroup;
+  allergiesForm: FormGroup;
+
+  formData = signal({});
+
   allergies = [
     'Peanuts', 'Tree Nuts', 'Milk', 'Eggs', 'Wheat', 'Soy', 'Fish', 'Shellfish'
   ];
 
   constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
+
+    this.basicInfoForm = this.fb.group({
       age: ['', Validators.required],
+      gender: ['', Validators.required],
+    });
+
+    this.physicalMeasurementsForm = this.fb.group({
       weight: ['', Validators.required],
       height: ['', Validators.required],
+    });
+
+    this.dietaryInfoForm = this.fb.group({
       goal: ['', Validators.required],
-      gender: ['', Validators.required],
       dietaryPreference: ['', Validators.required],
       activityLevel: ['', Validators.required],
+    });
+
+    this.allergiesForm = this.fb.group({
       allergies: [[]]
     });
   }
@@ -60,6 +87,26 @@ export class MealplanFormComponent {
     ]
 
   onSubmit() {
-    console.log(this.form.value);
+
+    this.formData.set({
+      ...this.basicInfoForm.value,
+      ...this.physicalMeasurementsForm.value,
+      ...this.dietaryInfoForm.value,
+      ...this.allergiesForm.value
+    });
+    console.log(this.formData());
+  }
+
+  updateAllergies(event: { checked: boolean }, allergy: string) {
+    const allergies = this.allergiesForm.get('allergies')!.value || [];
+    if (event.checked) {
+      allergies.push(allergy.toLowerCase().replace(' ', '-'));
+    } else {
+      const index = allergies.indexOf(allergy.toLowerCase().replace(' ', '-'));
+      if (index >= 0) {
+        allergies.splice(index, 1);
+      }
+    }
+    this.allergiesForm.get('allergies')!.setValue(allergies);
   }
 }

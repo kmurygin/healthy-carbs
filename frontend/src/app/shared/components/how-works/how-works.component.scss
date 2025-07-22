@@ -1,0 +1,115 @@
+.how-it-works {
+  padding: 2em;
+}
+
+.custom-steps {
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.step-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--button-color, #31572C);
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+  border: 3px solid white;
+  margin: 0 auto;
+}
+
+.step-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0 12px;
+}
+
+.step-card:first-child {
+  margin-left: 0;
+}
+
+.step-card:last-child {
+  margin-right: 0;
+}
+
+.step-card mat-card-content {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-card img {
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.step-card h3 {
+  color: var(--button-color, #31572C);
+}
+
+/* Animation Classes */
+.animate__animated {
+  animation-duration: 0.5s;
+}
+
+.animate__fadeIn {
+  animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Step cards responsive layout */
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .steps-container {
+    flex-direction: row;
+  }
+
+  .steps-container .step-card {
+    flex: 1;
+    min-width: 0; /* Prevent flex items from overflowing */
+  }
+}
+
+.steps-container .step-card {
+  margin: 0 0 1rem 0;
+}
+
+@media (min-width: 768px) {
+  .steps-container .step-card {
+    margin: 0 0.5rem;
+  }
+
+  .steps-container .step-card:first-child {
+    margin-left: 0;
+  }
+
+  .steps-container .step-card:last-child {
+    margin-right: 0;
+  }
+}

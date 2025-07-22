@@ -14,7 +14,6 @@ import { NgxChartsModule, Color, ScaleType, LegendPosition } from '@swimlane/ngx
     MatCardModule,
     MatButtonModule,
     NgxChartsModule,
-    NgOptimizedImage,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],

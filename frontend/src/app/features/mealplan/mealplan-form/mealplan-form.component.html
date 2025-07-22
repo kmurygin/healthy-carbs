@@ -1,94 +1,165 @@
 <div class="container">
   <main id="mealplan-form">
     <h2>Create your user profile</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-stepper linear #stepper orientation="vertical">
 
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Age</mat-label>
-          <input matInput type="number" formControlName="age">
-        </mat-form-field>
+      <mat-step [stepControl]="basicInfoForm" label="Basic Information">
+        <form [formGroup]="basicInfoForm">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Age</mat-label>
+              <input matInput type="number" formControlName="age" required>
+              @if (basicInfoForm.controls['age'].invalid) {
+                <mat-error>Age is required</mat-error>
+              }
+            </mat-form-field>
 
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Gender</mat-label>
-          <mat-select formControlName="gender">
-            <mat-option value="male">Male</mat-option>
-            <mat-option value="female">Female</mat-option>
-            <mat-option value="other">Other</mat-option>
-          </mat-select>
-        </mat-form-field>
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Gender</mat-label>
+              <mat-select formControlName="gender" required>
+                <mat-option value="male">Male</mat-option>
+                <mat-option value="female">Female</mat-option>
+                <mat-option value="other">Other</mat-option>
+              </mat-select>
+              @if (basicInfoForm.controls['gender'].invalid) {
+                <mat-error>Gender is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
 
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Weight [kg]</mat-label>
-          <input matInput type="number" formControlName="weight">
-        </mat-form-field>
+          <div class="step-navigation">
+            <button
+              mat-raised-button
+              matStepperNext
+              type="button"
+              [disabled]="basicInfoForm.invalid">
+              Next
+            </button>
+          </div>
 
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Height [cm]</mat-label>
-          <input matInput type="number" formControlName="height">
-        </mat-form-field>
-      </div>
+        </form>
+      </mat-step>
 
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Goal</mat-label>
-          <mat-select formControlName="goal">
-            @for (goal of goals; track goal) {
-              <mat-option [value]="goal.toLowerCase().replace(' ', '-')">
-                {{ goal }}
-              </mat-option>
+      <mat-step [stepControl]="physicalMeasurementsForm" label="Physical Measurements">
+        <form [formGroup]="physicalMeasurementsForm">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Weight [kg]</mat-label>
+              <input matInput type="number" formControlName="weight" required>
+              @if (physicalMeasurementsForm.controls['weight'].hasError('required')) {
+                <mat-error>Weight is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Height [cm]</mat-label>
+              <input matInput type="number" formControlName="height" required>
+              @if (physicalMeasurementsForm.controls['height'].hasError('required')) {
+                <mat-error>Height is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="step-navigation">
+            <button
+              mat-raised-button
+              matStepperPrevious
+              type="button">Back</button>
+            <button
+              mat-raised-button
+              matStepperNext
+              type="button"
+              [disabled]="physicalMeasurementsForm.invalid">Next</button>
+          </div>
+
+        </form>
+      </mat-step>
+
+      <mat-step [stepControl]="dietaryInfoForm" label="Dietary Information">
+        <form [formGroup]="dietaryInfoForm">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Goal</mat-label>
+              <mat-select formControlName="goal" required>
+                @for (goal of goals; track goal) {
+                  <mat-option [value]="goal.toLowerCase().replace(' ', '-')">
+                    {{ goal }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (dietaryInfoForm.controls['goal'].hasError('required')) {
+                <mat-error>Goal is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Dietary preference</mat-label>
+              <mat-select formControlName="dietaryPreference" required>
+                @for (diet_preference of diets; track diet_preference) {
+                  <mat-option [value]="diet_preference.toLowerCase().replace(' ', '-')">
+                    {{ diet_preference }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (dietaryInfoForm.controls['dietaryPreference'].hasError('required')) {
+                <mat-error>Dietary preference is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Activity level</mat-label>
+              <mat-select formControlName="activityLevel" required>
+                @for (activityLevel of activityLevels; track activityLevel) {
+                  <mat-option [value]="activityLevel.toLowerCase().replace(' ', '-')">
+                    {{ activityLevel }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (dietaryInfoForm.controls['activityLevel'].hasError('required')) {
+                <mat-error>Activity level is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="step-navigation">
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button
+              mat-raised-button
+              matStepperNext
+              type="button"
+              [disabled]="dietaryInfoForm.invalid">
+              Next
+            </button>
+          </div>
+
+        </form>
+      </mat-step>
+
+      <mat-step [stepControl]="allergiesForm" label="Allergies">
+        <form [formGroup]="allergiesForm" (ngSubmit)="onSubmit()">
+          <label class="allergy-label">Select your allergies (if any)</label>
+          <div class="allergy-list">
+            @for (allergy of allergies; track allergy) {
+              <mat-checkbox
+                [value]="allergy.toLowerCase().replace(' ', '-')"
+                (change)="updateAllergies($event, allergy)">
+                {{ allergy }}
+              </mat-checkbox>
             }
-          </mat-select>
-        </mat-form-field>
+          </div>
 
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Dietary preference</mat-label>
-          <mat-select formControlName="dietaryPreference">
-            @for (diet_preference of diets; track diet_preference) {
-              <mat-option [value]="diet_preference.toLowerCase().replace(' ', '-')">
-                {{ diet_preference }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="form-field">
-          <mat-label>Activity level</mat-label>
-          <mat-select formControlName="activityLevel">
-            @for (activityLevel of activityLevels; track activityLevel) {
-              <mat-option [value]="activityLevel.toLowerCase().replace(' ', '-')">
-                {{ activityLevel }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <!-- Allergies -->
-      <label class="allergy-label">Allergies</label>
-      <div class="allergy-list">
-        @for (allergy of allergies; track allergy) {
-          <mat-checkbox
-            [value]="allergy.toLowerCase().replace(' ', '-')"
-            (change)="
-              $event.checked
-                ? form.value.allergies.push($event.source.value)
-                : form.value.allergies.splice(form.value.allergies.indexOf($event.source.value), 1)
-            ">
-            {{ allergy }}
-          </mat-checkbox>
-        }
-      </div>
-
-      <button
-        mat-raised-button
-        color="primary"
-        id="select-button"
-        type="submit"
-        [disabled]="form.invalid"
-      >
-        Generate Meal Plan
-      </button>
-    </form>
+          <div class="step-navigation">
+            <button mat-button matStepperPrevious type="button">Back</button>
+            <button
+              mat-raised-button
+              color="primary"
+              id="select-button"
+              type="submit">
+              Generate Meal Plan
+            </button>
+          </div>
+        </form>
+      </mat-step>
+    </mat-stepper>
   </main>
 </div>
