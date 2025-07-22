@@ -53,13 +53,6 @@ export const routes: Routes = [
       import('./pages/index/index.component').then((m) => m.IndexComponent),
   },
   {
-    path: 'prices',
-    canActivate: [guestGuard],
-    loadComponent: () =>
-      import('./pages/prices/prices.component').then((m) => m.PricesComponent),
-  },
-
-  {
     path: 'user',
     canActivate: [authGuard],
     loadChildren: () => import('./features/user/user.routes'),

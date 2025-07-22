@@ -56,7 +56,7 @@
   <div class="dashboard-grid">
     @for (category of categories; track category) {
       <mat-card class="dashboard-card">
-        <img mat-card-image [src]="category.image" alt="{{ category.name }}" />
+        <img ngOptimizedImage mat-card-image [src]="category.image" alt="{{ category.name }}" />
 
         <mat-card-content>
           <h3 class="card-title">{{ category.name }}</h3>

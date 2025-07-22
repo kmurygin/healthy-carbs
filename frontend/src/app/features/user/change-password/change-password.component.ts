@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, signal, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {UserService} from "../../../core/services/user.service";
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -15,13 +15,14 @@ import {MatButtonModule} from '@angular/material/button';
         MatButtonModule
     ],
     templateUrl: './change-password.component.html',
-    styleUrl: './change-password.component.scss'
+    styleUrl: './change-password.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChangePasswordComponent {
   form: FormGroup;
   userService: UserService = inject(UserService);
   fb: FormBuilder = inject(FormBuilder);
-  errorMessage: string | undefined = "";
+  errorMessage = signal('');
   constructor() {
     this.form = this.fb.group({
       oldPassword: new FormControl("", [Validators.required]),
@@ -36,15 +37,15 @@ export class ChangePasswordComponent {
         next: (response) => {
           // this.errorMessage = response.message;
           console.log(response);
-          this.errorMessage = response.message;
+          this.errorMessage.set(response.message || 'Password updated successfully.');
           this.form.reset();
       },
         error: (err) => {
           console.log(err);
           if (err === "Wrong old password") {
-            this.errorMessage = "Old password is incorrect";
+            this.errorMessage.set("Old password is incorrect");
           } else {
-            this.errorMessage = "An error occurred. Please try again.";
+            this.errorMessage.set("An error occurred. Please try again.");
           }
         }
 

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
@@ -8,7 +8,6 @@ import { NgxChartsModule, Color, ScaleType, LegendPosition } from '@swimlane/ngx
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     MatCardModule,
@@ -16,14 +15,17 @@ import { NgxChartsModule, Color, ScaleType, LegendPosition } from '@swimlane/ngx
     NgxChartsModule,
   ],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:resize)': 'onResize()'
+  }
 })
 export class DashboardComponent {
 
   isSmallScreen = window.innerWidth < 768;
   view: [number, number] = this.calculateChartSize();
 
-  @HostListener('window:resize')
   onResize(): void {
     this.isSmallScreen = window.innerWidth < 768;
     this.view = this.calculateChartSize();

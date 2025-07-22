@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -20,11 +20,12 @@ import { MatButtonModule } from '@angular/material/button';
   ],
   templateUrl: './user-detail.component.html',
   styleUrls: ['./user-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserDetailComponent implements OnInit {
   form!: FormGroup;
-  errorMessage: string = '';
-  user?: User;
+  errorMessage = signal('');
+  user = signal<User | undefined>(undefined);
 
   userService = inject(UserService);
   authService = inject(AuthService);
@@ -46,38 +47,38 @@ export class UserDetailComponent implements OnInit {
   getUserDetails(username: string): void {
     this.userService.getUserByUsername(username).subscribe({
       next: (response) => {
-        this.user = response.data;
-        if (this.user) {
+        this.user.set(response.data);
+        if (this.user()) {
           this.form.patchValue({
-            firstname: this.user.firstname,
-            lastname: this.user.lastname,
-            email: this.user.email
+            firstname: this.user()!.firstname,
+            lastname: this.user()!.lastname,
+            email: this.user()!.email
           });
         }
       },
       error: (err) => {
         console.error(err);
-        this.errorMessage = 'Failed to fetch user data';
+        this.errorMessage.set('Failed to fetch user data');
       }
     });
   }
 
   onSubmit(): void {
-    if (this.form.valid && this.user) {
+    if (this.form.valid && this.user()) {
       const updatedUser: User = {
-        ...this.user,
+        ...this.user()!,
         firstname: this.form.value.firstname,
         lastname: this.form.value.lastname,
         email: this.form.value.email
       };
 
-      this.userService.updateUser(this.user.id, updatedUser).subscribe({
+      this.userService.updateUser(this.user()!.id, updatedUser).subscribe({
         next: (response) => {
-          this.errorMessage = response.message || 'Updated successfully!';
+          this.errorMessage.set(response.message || 'Updated successfully!');
         },
         error: (err) => {
           console.error(err);
-          this.errorMessage = err;
+          this.errorMessage.set(err);
         }
       });
     }

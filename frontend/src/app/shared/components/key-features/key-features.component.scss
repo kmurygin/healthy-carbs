@@ -1,0 +1,63 @@
+.key-features {
+  padding: 2em;
+}
+
+/* Fix for tab content scrollbar/zipper */
+::ng-deep .mat-mdc-tab-body-wrapper {
+  overflow: hidden !important;
+}
+
+::ng-deep .mat-mdc-tab-body-content {
+  overflow: hidden !important;
+}
+
+/* Animation Classes */
+.animate__animated {
+  animation-duration: 0.5s;
+}
+
+.animate__fadeIn {
+  animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card and content layout */
+.feature-card {
+  margin-bottom: 0;
+  box-shadow: none !important;
+}
+
+.feature-content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .feature-content-container {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .feature-text {
+    flex: 0 0 60%;
+    max-width: 60%;
+    padding-right: 1rem;
+  }
+
+  .feature-image {
+    flex: 0 0 40%;
+    max-width: 40%;
+  }
+}
