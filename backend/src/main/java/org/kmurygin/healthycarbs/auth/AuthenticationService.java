@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.config.JwtService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
-import org.kmurygin.healthycarbs.exception.ResourceAlreadyExistsException;
 import org.kmurygin.healthycarbs.exception.UnauthorizedException;
 import org.kmurygin.healthycarbs.user.*;
 import org.springframework.security.authentication.AuthenticationManager;

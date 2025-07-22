@@ -1,11 +1,20 @@
 spring.config.import: optional:file:.env[.properties]
 
 spring:
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java,src/main/resources
+      exclude: static/**,public/**
+    livereload:
+      enabled: true
+      port: 35729
+
   datasource:
-   url: jdbc:postgresql://localhost:5432/healthy_carbs
+   url: ${DB_URL}
    driver-class-name: org.postgresql.Driver
-   username: postgres
-   password: postgres
+   username: ${DB_USERNAME}
+   password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
@@ -15,8 +24,6 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-#      database: postgresql
-#      database-platform: org.hibernate.dialect.PostgreSQLDialect
     defer-datasource-initialization: true
 
   sql:
@@ -34,6 +41,11 @@ spring:
           auth: true
           starttls:
             enable: true
+
+application:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY}
 
 management:
   health:
