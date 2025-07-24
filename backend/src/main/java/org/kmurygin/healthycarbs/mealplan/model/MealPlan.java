@@ -1,53 +1,36 @@
 package org.kmurygin.healthycarbs.mealplan.model;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.kmurygin.healthycarbs.user.User;
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
-@Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Data
 @Entity
-@Table(name= "meal_plans")
+@Table(name = "meal_plans")
 public class MealPlan {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne()
-    @JoinColumn(name = "user_id")
-    private User user;
+    @OneToMany(mappedBy = "mealPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<MealPlanRecipe> recipes = new ArrayList<>();
 
-    @ManyToOne()
-    @JoinColumn(name = "mondayPlan_id")
-    private DailyPlan mondayPlan;
+    private double totalCalories;
 
-    @ManyToOne()
-    @JoinColumn(name = "tuesdayPlan_id")
-    private DailyPlan tuesdayPlan;
+    private double fitness;
 
-    @ManyToOne()
-    @JoinColumn(name = "wednesdayPlan_id")
-    private DailyPlan wednesdayPlan;
-
-    @ManyToOne()
-    @JoinColumn(name = "thursdayPlan_id")
-    private DailyPlan thursdayPlan;
-
-    @ManyToOne()
-    @JoinColumn(name = "fridayPlan_id")
-    private DailyPlan fridayPlan;
-
-    @ManyToOne()
-    @JoinColumn(name = "saturdayPlan_id")
-    private DailyPlan saturdayPlan;
-
-    @ManyToOne()
-    @JoinColumn(name = "sundayPlan_id")
-    private DailyPlan sundayPlan;
+    public void addRecipe(Recipe recipe) {
+        MealPlanRecipe mealPlanRecipe = new MealPlanRecipe(null, this, recipe, recipe.getMealType());
+        recipes.add(mealPlanRecipe);
+    }
 
 }
