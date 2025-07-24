@@ -1,5 +1,7 @@
 package org.kmurygin.healthycarbs.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
@@ -7,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -15,128 +16,65 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ErrorResponse> handleBaseException(BaseException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(ex.getStatus().value())
-                .type(ex.getStatus().getReasonPhrase())
-                .message(ex.getMessage())
-                .path(request.getRequestURI())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, ex.getStatus());
-    }
-
     @ExceptionHandler(ResourceNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
-            ResourceNotFoundException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.NOT_FOUND.value())
-                .type(HttpStatus.NOT_FOUND.getReasonPhrase())
-                .message(ex.getMessage())
-                .path(request.getRequestURI())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponse> notFound(ResourceNotFoundException ex, HttpServletRequest req) {
+        return buildErrorResponse(ex.getMessage(), req, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(
-            ResourceAlreadyExistsException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.CONFLICT.value())
-                .type(HttpStatus.CONFLICT.getReasonPhrase())
-                .message(ex.getMessage())
-                .path(request.getRequestURI())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    public ResponseEntity<ErrorResponse> conflict(ResourceAlreadyExistsException ex, HttpServletRequest req) {
+        return buildErrorResponse(ex.getMessage(), req, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(
-            MethodArgumentNotValidException ex, HttpServletRequest request) {
-
-        // Extract field errors
-        Map<String, String> fieldErrors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .collect(Collectors.toMap(
-                    FieldError::getField,
-                    error -> error.getDefaultMessage() == null ? "Invalid value" : error.getDefaultMessage(),
-                    (existing, replacement) -> existing + "; " + replacement
-                ));
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .type(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message("Validation failed")
-                .path(request.getRequestURI())
-                .fieldErrors(fieldErrors)
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> validation(MethodArgumentNotValidException ex, HttpServletRequest req) {
+        Map<String,String> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
+                .collect(Collectors.toMap(FieldError::getField,
+                        e -> e.getDefaultMessage() == null ? "Invalid value" : e.getDefaultMessage(),
+                        (a,b) -> a + "; " + b));
+        return buildErrorResponse("Validation failed", req, HttpStatus.BAD_REQUEST, fieldErrors);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(
-            MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
-
-        String error = String.format("Parameter '%s' should be of type '%s'",
-                                     ex.getName(),
-                                     ex.getRequiredType().getSimpleName());
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .type(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message(error)
-                .path(request.getRequestURI())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> typeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
+        String msg = "Parameter '%s' should be of type '%s'"
+                .formatted(ex.getName(), ex.getRequiredType().getSimpleName());
+        return buildErrorResponse(msg, req, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
-            IllegalArgumentException ex, HttpServletRequest request) {
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .type(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message(ex.getMessage())
-                .path(request.getRequestURI())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({ ExpiredJwtException.class, SignatureException.class })
+    public ResponseEntity<ErrorResponse> jwt(RuntimeException ex, HttpServletRequest req) {
+        return buildErrorResponse("Invalid or expired JWT", req, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorResponse> handleAllUncaughtException(
-            Exception ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> unhandled(Exception ex, HttpServletRequest req) {
+        return buildErrorResponse("An unexpected error occurred", req, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
+    private ResponseEntity<ErrorResponse> buildErrorResponse(
+            String msg, HttpServletRequest req, HttpStatus status) {
+        return buildErrorResponse(msg, req, status, null);
+    }
+
+    private ResponseEntity<ErrorResponse> buildErrorResponse(
+            String msg, HttpServletRequest req, HttpStatus status,
+            Map<String,String> fieldErrors) {
+
+        ErrorResponse body = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .type(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("An unexpected error occurred")
-                .path(request.getRequestURI())
+                .status(status.value())
+                .type(status.getReasonPhrase())
+                .message(msg)
+                .path(req.getRequestURI())
+                .fieldErrors(fieldErrors)
                 .build();
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(status).body(body);
     }
 }
+
