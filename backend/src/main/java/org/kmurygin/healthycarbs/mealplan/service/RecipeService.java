@@ -14,9 +14,12 @@ import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
 import org.kmurygin.healthycarbs.mealplan.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
+import org.kmurygin.healthycarbs.mealplan.DietType;
+import org.kmurygin.healthycarbs.mealplan.MealType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class RecipeService {
@@ -39,22 +42,16 @@ public class RecipeService {
         this.recipeMapper = recipeMapper;
     }
 
-    public List<RecipeDTO> findAll() {
-        return recipeRepository.findAll()
-                .stream()
-                .map(recipeMapper::toDTO)
-                .toList();
+    public List<Recipe> findAll() {
+        return recipeRepository.findAll();
     }
 
-    public RecipeDTO findById(Long id) {
-        Recipe recipe = recipeRepository.findById(id).orElse(null);
-        return recipeMapper.toDTO(recipe);
+    public Recipe findById(Long id) {
+        return recipeRepository.findById(id).orElse(null);
     }
 
-    public RecipeDTO save(RecipeDTO recipeDTO) {
-        Recipe recipe = recipeMapper.toEntity(recipeDTO);
-        Recipe savedRecipe = recipeRepository.save(recipe);
-        return recipeMapper.toDTO(savedRecipe);
+    public Recipe save(Recipe recipe) {
+        return recipeRepository.save(recipe);
     }
 
     public void deleteById(Long id) {
@@ -100,5 +97,15 @@ public class RecipeService {
         return recipe.getIngredients().stream()
                 .map(recipeMapper::toDTO)
                 .toList();
+    }
+
+    public Recipe findRandom(MealType mealType, DietType dietType) {
+        List<Long> ids = recipeRepository.findIdsByMealTypeAndDietType(mealType, dietType);
+        if (ids.isEmpty()) {
+            return null;
+        }
+        Random random = new Random();
+        Long randomId = ids.get(random.nextInt(ids.size()));
+        return findById(randomId);
     }
 }

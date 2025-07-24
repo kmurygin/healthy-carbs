@@ -3,6 +3,8 @@ package org.kmurygin.healthycarbs.mealplan.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.kmurygin.healthycarbs.mealplan.DietType;
+import org.kmurygin.healthycarbs.mealplan.MealType;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ public class RecipeDTO {
     private Integer carbs;
     private Integer protein;
     private Integer fat;
+    private MealType mealType;
+    private DietType dietType;
     private List<RecipeIngredientDTO> ingredients;
     // private List<AllergenDTO> allergens;
 }

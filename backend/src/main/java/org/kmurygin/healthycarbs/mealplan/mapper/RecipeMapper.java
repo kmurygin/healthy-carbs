@@ -1,12 +1,9 @@
 package org.kmurygin.healthycarbs.mealplan.mapper;
 
-import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
-import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
-import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -16,10 +13,7 @@ import java.util.stream.Collectors;
 @Component
 public class RecipeMapper {
 
-    private final IngredientRepository ingredientRepository;
-
-    public RecipeMapper(IngredientRepository ingredientRepository) {
-        this.ingredientRepository = ingredientRepository;
+    public RecipeMapper() {
     }
 
     public RecipeDTO toDTO(Recipe recipe) {
@@ -38,6 +32,8 @@ public class RecipeMapper {
                 recipe.getCarbs(),
                 recipe.getProtein(),
                 recipe.getFat(),
+                recipe.getMealType(),
+                recipe.getDietType(),
                 ingredients
         );
     }
@@ -65,21 +61,9 @@ public class RecipeMapper {
         recipe.setCarbs(recipeDTO.getCarbs());
         recipe.setProtein(recipeDTO.getProtein());
         recipe.setFat(recipeDTO.getFat());
+        recipe.setMealType(recipeDTO.getMealType());
+        recipe.setDietType(recipeDTO.getDietType());
 
-        List<RecipeIngredient> recipeIngredients = new ArrayList<>();
-        if (recipeDTO.getIngredients() != null) {
-            for (RecipeIngredientDTO ingredientDTO : recipeDTO.getIngredients()) {
-                Ingredient ingredient = ingredientRepository.findById(ingredientDTO.getIngredientId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Ingredient", "id", ingredientDTO.getIngredientId()));
-
-                RecipeIngredient recipeIngredient = new RecipeIngredient();
-                recipeIngredient.setIngredient(ingredient);
-                recipeIngredient.setQuantity(ingredientDTO.getQuantity());
-                recipeIngredients.add(recipeIngredient);
-            }
-        }
-
-        recipe.setIngredients(recipeIngredients);
         return recipe;
     }
 }
