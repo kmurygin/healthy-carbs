@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.genetic_algorithm;
 
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.mealplan.config.GeneticAlgorithmConfig;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,19 +19,16 @@ public class GeneticAlgorithm {
     private final Crossover crossover;
     private final Selection selection;
 
-    private static final int POPULATION_SIZE = 20;
-    private static final int MAX_GENERATIONS = 1_000;
-    private static final double MUTATION_RATE = 0.2;
-    private static final double TARGET_FITNESS = 0.999;
+    private final GeneticAlgorithmConfig config;
 
     public Genome run(Supplier<Genome> genomeSupplier) {
         List<Genome> population = generateInitialPopulation(genomeSupplier);
         Genome bestGenome = null;
 
-        for (int generation = 0; generation < MAX_GENERATIONS; generation++) {
+        for (int generation = 0; generation < config.getMaxGenerations(); generation++) {
             evaluatePopulation(population);
             bestGenome = findBestGenome(population, bestGenome);
-            if (bestGenome.getFitness() >= TARGET_FITNESS) {
+            if (bestGenome.getFitness() >= config.getTargetFitness()) {
                 break;
             }
             population = generateNextGeneration(population);
@@ -40,18 +38,18 @@ public class GeneticAlgorithm {
     }
 
     private List<Genome> generateInitialPopulation(Supplier<Genome> supplier) {
-        return Stream.generate(supplier).limit(POPULATION_SIZE).toList();
+        return Stream.generate(supplier).limit(config.getPopulationSize()).toList();
     }
 
     private List<Genome> generateNextGeneration(List<Genome> currentPopulation) {
-        List<Genome> nextGeneration = new ArrayList<>(POPULATION_SIZE);
+        List<Genome> nextGeneration = new ArrayList<>(config.getPopulationSize());
 
-        while (nextGeneration.size() < POPULATION_SIZE) {
+        while (nextGeneration.size() < config.getPopulationSize()) {
             Genome genomeParent1 = selection.select(currentPopulation);
             Genome genomeParent2 = selection.select(currentPopulation);
             Genome genomeChild = crossover.crossover(genomeParent1, genomeParent2);
 
-            if (ThreadLocalRandom.current().nextDouble() < MUTATION_RATE) {
+            if (ThreadLocalRandom.current().nextDouble() < config.getMutationRate()) {
                 mutate.mutate(genomeChild);
             }
 
