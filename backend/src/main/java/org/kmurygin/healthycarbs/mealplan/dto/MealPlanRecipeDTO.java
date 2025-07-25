@@ -12,7 +12,6 @@ import org.kmurygin.healthycarbs.mealplan.MealType;
 @Data
 public class MealPlanRecipeDTO {
     private Long id;
-    private MealPlanDTO mealPlan;
     private RecipeDTO recipe;
     private MealType mealType;
 }

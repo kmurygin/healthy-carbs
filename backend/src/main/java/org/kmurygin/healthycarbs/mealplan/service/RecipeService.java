@@ -19,7 +19,7 @@ import org.kmurygin.healthycarbs.mealplan.MealType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class RecipeService {
@@ -104,8 +104,8 @@ public class RecipeService {
         if (ids.isEmpty()) {
             return null;
         }
-        Random random = new Random();
-        Long randomId = ids.get(random.nextInt(ids.size()));
+
+        Long randomId = ids.get(ThreadLocalRandom.current().nextInt(ids.size()));
         return findById(randomId);
     }
 }

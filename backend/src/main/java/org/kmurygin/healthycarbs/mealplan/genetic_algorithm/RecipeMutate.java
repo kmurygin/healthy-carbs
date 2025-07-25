@@ -21,7 +21,7 @@ public class RecipeMutate implements Mutate {
 
     @Override
     public void mutate(Genome plan) {
-        if (plan.genes.isEmpty()) {
+        if (plan.getGenes().isEmpty()) {
             return;
         }
 

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -18,7 +19,7 @@ public class GeneticAlgorithm {
     private final Selection selection;
 
     private static final int POPULATION_SIZE = 20;
-    private static final int MAX_GENERATIONS = 10_000;
+    private static final int MAX_GENERATIONS = 1_000;
     private static final double MUTATION_RATE = 0.2;
     private static final double TARGET_FITNESS = 0.999;
 
@@ -29,7 +30,7 @@ public class GeneticAlgorithm {
         for (int generation = 0; generation < MAX_GENERATIONS; generation++) {
             evaluatePopulation(population);
             bestGenome = findBestGenome(population, bestGenome);
-            if (bestGenome.fitness >= TARGET_FITNESS) {
+            if (bestGenome.getFitness() >= TARGET_FITNESS) {
                 break;
             }
             population = generateNextGeneration(population);
@@ -50,7 +51,7 @@ public class GeneticAlgorithm {
             Genome genomeParent2 = selection.select(currentPopulation);
             Genome genomeChild = crossover.crossover(genomeParent1, genomeParent2);
 
-            if (Math.random() < MUTATION_RATE) {
+            if (ThreadLocalRandom.current().nextDouble() < MUTATION_RATE) {
                 mutate.mutate(genomeChild);
             }
 
@@ -62,14 +63,14 @@ public class GeneticAlgorithm {
 
     private void evaluatePopulation(List<Genome> population) {
         for (Genome genome : population) {
-            genome.fitness = fitness.evaluate(genome);
+            genome.setFitness(fitness.evaluate(genome));
         }
     }
 
     private Genome findBestGenome(List<Genome> population, Genome currentBest) {
         Genome best = currentBest;
         for (Genome genome : population) {
-            if (best == null || genome.fitness > best.fitness) {
+            if (best == null || genome.getFitness() > best.getFitness()) {
                 best = new Genome(genome);
             }
         }

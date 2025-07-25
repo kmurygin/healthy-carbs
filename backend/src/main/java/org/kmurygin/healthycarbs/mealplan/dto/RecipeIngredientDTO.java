@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RecipeIngredientDTO {
     private Long id;
-    private RecipeDTO recipe;
     private IngredientDTO ingredient;
     private Double quantity;
 }

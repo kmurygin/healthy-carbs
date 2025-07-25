@@ -12,7 +12,7 @@ public class CalorieFitness implements Fitness {
 
     @Override
     public double evaluate(Genome plan) {
-        double totalCalories = plan.genes.stream()
+        double totalCalories = plan.getGenes().stream()
                 .mapToDouble(Recipe::getCalories)
                 .sum();
 
@@ -22,7 +22,7 @@ public class CalorieFitness implements Fitness {
         double ratio = deviation / CALORIE_TARGET;
         double fitness = Math.pow(1 - Math.min(ratio, 1), 2);
 
-        plan.totalCalories = totalCalories;
+        plan.setTotalCalories(totalCalories);
         return Math.max(fitness, 0.0);
     }
 }

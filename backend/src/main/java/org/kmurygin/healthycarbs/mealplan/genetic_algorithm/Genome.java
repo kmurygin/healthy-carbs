@@ -14,9 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Genome {
-    public final List<Recipe> genes = new ArrayList<>(3);
-    public double fitness;
-    public double totalCalories;
+    private List<Recipe> genes = new ArrayList<>(3);
+    private double fitness;
+    private double totalCalories;
 
     public Genome(Genome other) {
         this.genes.addAll(other.genes);

@@ -18,7 +18,7 @@ public class TournamentSelection implements Selection {
 
         Genome best = shuffled.getFirst();
         for (int i = 1; i < TOURNAMENT_SIZE && i < shuffled.size(); i++) {
-            if (shuffled.get(i).fitness > best.fitness) {
+            if (shuffled.get(i).getFitness() > best.getFitness()) {
                 best = shuffled.get(i);
             }
         }
