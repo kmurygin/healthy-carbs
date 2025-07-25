@@ -24,7 +24,15 @@ public class AuthenticationService {
     private final EmailService emailService;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        User user = UserMapper.fromRegisterRequest(request, passwordEncoder);
+//        User user = UserMapper.fromRegisterRequest(request, passwordEncoder);
+        User user = User.builder()
+                .firstname(request.getFirstname())
+                .lastname(request.getLastname())
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
+                .build();
 
         userService.saveUser(user);
 

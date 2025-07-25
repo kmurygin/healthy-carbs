@@ -25,16 +25,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
-
     public Optional<User> getUserById(Integer id) {
         return userRepository.findById(id);
     }
-
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -57,7 +56,7 @@ public class UserService {
                 .role(Role.valueOf(request.getRole().toUpperCase()))
                 .build();
 
-        return UserMapper.toDto(userRepository.save(user));
+        return userMapper.toDTO(userRepository.save(user));
     }
 
     @Transactional
@@ -94,7 +93,7 @@ public class UserService {
                             "HealthyCarbs change of email address"
                     ));
 
-                    return UserMapper.toDto(userRepository.save(user));
+                    return userMapper.toDTO(userRepository.save(user));
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
