@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.genetic_algorithm;
 
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.mealplan.config.GeneticAlgorithmConfig;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.springframework.stereotype.Component;
 

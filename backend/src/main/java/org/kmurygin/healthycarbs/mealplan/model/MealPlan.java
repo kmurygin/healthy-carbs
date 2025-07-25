@@ -26,8 +26,6 @@ public class MealPlan {
 
     private double totalCalories;
 
-    private double fitness;
-
     public void addRecipe(Recipe recipe) {
         MealPlanRecipe mealPlanRecipe = new MealPlanRecipe(null, this, recipe, recipe.getMealType());
         recipes.add(mealPlanRecipe);

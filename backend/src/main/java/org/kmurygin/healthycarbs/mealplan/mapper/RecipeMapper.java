@@ -3,7 +3,6 @@ package org.kmurygin.healthycarbs.mealplan.mapper;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {RecipeIngredientMapper.class})
 public interface RecipeMapper {

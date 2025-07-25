@@ -37,7 +37,11 @@ public class Recipe {
     private Integer carbs;
     private Integer protein;
     private Integer fat;
+
+    @Enumerated(EnumType.STRING)
     private DietType dietType;
+
+    @Enumerated(EnumType.STRING)
     private MealType mealType;
 
     public void addIngredient(RecipeIngredient ingredient)

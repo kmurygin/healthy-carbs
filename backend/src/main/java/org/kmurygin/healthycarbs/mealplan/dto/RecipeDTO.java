@@ -25,4 +25,3 @@ public class RecipeDTO {
     private MealType mealType;
     private DietType dietType;
 }
-
