@@ -14,8 +14,9 @@ import java.util.List;
 public class MealPlanDTO {
 
     private Long id;
-    private double totalCalories;
-    private double fitness;
 
     private List<MealPlanRecipeDTO> recipes;
+
+    private double totalCalories;
+    private double fitness;
 }

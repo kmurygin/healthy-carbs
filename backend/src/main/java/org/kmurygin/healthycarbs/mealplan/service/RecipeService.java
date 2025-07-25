@@ -2,6 +2,7 @@ package org.kmurygin.healthycarbs.mealplan.service;
 
 import jakarta.transaction.Transactional;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
+import org.kmurygin.healthycarbs.mealplan.mapper.RecipeIngredientMapper;
 import org.kmurygin.healthycarbs.mealplan.mapper.RecipeMapper;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
@@ -27,6 +28,7 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
+    private final RecipeIngredientMapper recipeIngredientMapper;
     private final RecipeMapper recipeMapper;
 
     private UserProfile userProfile;
@@ -34,11 +36,12 @@ public class RecipeService {
     public RecipeService(RecipeRepository recipeRepository,
                          IngredientRepository ingredientRepository,
                          RecipeIngredientRepository recipeIngredientRepository,
-                         UserProfileRepository userProfileRepository,
+                         UserProfileRepository userProfileRepository, RecipeIngredientMapper recipeIngredientMapper,
                          RecipeMapper recipeMapper) {
         this.recipeRepository = recipeRepository;
         this.ingredientRepository = ingredientRepository;
         this.recipeIngredientRepository = recipeIngredientRepository;
+        this.recipeIngredientMapper = recipeIngredientMapper;
         this.recipeMapper = recipeMapper;
     }
 
@@ -95,7 +98,7 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findById(recipeId).orElse(null);
         if (recipe == null) return new ArrayList<>();
         return recipe.getIngredients().stream()
-                .map(recipeMapper::toDTO)
+                .map(recipeIngredientMapper::toDTO)
                 .toList();
     }
 

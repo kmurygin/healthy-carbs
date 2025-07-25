@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.kmurygin.healthycarbs.mealplan.ActivityLevel;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.Gender;
+import org.kmurygin.healthycarbs.user.dto.UserDTO;
 
 @Data
 @Builder
@@ -14,7 +15,8 @@ import org.kmurygin.healthycarbs.mealplan.Gender;
 @NoArgsConstructor
 public class UserProfileDTO {
     private Long id;
-    private Integer userId;
+    private UserDTO user;
+
     private Double weight;
     private Double height;
     private Integer age;

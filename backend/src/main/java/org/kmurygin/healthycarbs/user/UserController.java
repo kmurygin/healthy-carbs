@@ -54,7 +54,6 @@ public class UserController {
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found")));
     }
 
-
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserRequest request) {
         UserDTO createdUser = userService.saveUser(request);

@@ -19,9 +19,9 @@ public class RecipeController {
     private final RecipeService recipeService;
     private final RecipeMapper recipeMapper;
 
-    public RecipeController(RecipeService recipeService) {
+    public RecipeController(RecipeService recipeService, RecipeMapper recipeMapper) {
         this.recipeService = recipeService;
-        this.recipeMapper = new RecipeMapper();
+        this.recipeMapper = recipeMapper;
     }
 
     @GetMapping

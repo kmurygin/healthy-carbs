@@ -34,39 +34,33 @@ public class Recipe {
     private List<RecipeIngredient> ingredients = new ArrayList<>();
 
     private Integer calories;
-
     private Integer carbs;
-
     private Integer protein;
-
     private Integer fat;
+    private DietType dietType;
+    private MealType mealType;
 
-    public boolean addIngredient(RecipeIngredient ingredient)
+    public void addIngredient(RecipeIngredient ingredient)
     {
-        if (ingredient == null) return false;
+        if (ingredient == null) return;
         if (this.ingredients == null) this.ingredients = new ArrayList<>();
         this.ingredients.add(ingredient);
         ingredient.setRecipe(this);
-        return true;
     }
 
-    public boolean removeIngredient(RecipeIngredient ingredient)
+    public void removeIngredient(RecipeIngredient ingredient)
     {
-        if (this.ingredients == null || ingredient == null) return false;
+        if (this.ingredients == null || ingredient == null) return;
         this.ingredients.remove(ingredient);
         ingredient.setRecipe(null);
-        return true;
     }
 
-    @ManyToMany
-    @JoinTable(
-            name = "recipe_allergens",
-            joinColumns = @JoinColumn(name = "recipe_id"),
-            inverseJoinColumns = @JoinColumn(name = "allergen_id")
-    )
-    private List<Allergen> allergens;
+//    @ManyToMany
+//    @JoinTable(
+//            name = "recipe_allergens",
+//            joinColumns = @JoinColumn(name = "recipe_id"),
+//            inverseJoinColumns = @JoinColumn(name = "allergen_id")
+//    )
+//    private List<Allergen> allergens;
 
-    private DietType dietType;
-
-    private MealType mealType;
 }

@@ -46,56 +46,57 @@ public class UserProfileService {
     }
 
     public UserProfileDTO calculateUserProfile(UserProfileCreateDTO userProfileCreateDTO) {
-        Double weight = userProfileCreateDTO.getWeight();
-        Double height = userProfileCreateDTO.getHeight();
-        Integer age = userProfileCreateDTO.getAge();
-        Gender gender = userProfileCreateDTO.getGender();
-        ActivityLevel activityLevel = userProfileCreateDTO.getActivityLevel();
-        DietGoal dietGoal = userProfileCreateDTO.getDietGoal();
-        DietType dietType = userProfileCreateDTO.getDietType();
+//        Double weight = userProfileCreateDTO.getWeight();
+//        Double height = userProfileCreateDTO.getHeight();
+//        Integer age = userProfileCreateDTO.getAge();
+//        Gender gender = userProfileCreateDTO.getGender();
+//        ActivityLevel activityLevel = userProfileCreateDTO.getActivityLevel();
+//        DietGoal dietGoal = userProfileCreateDTO.getDietGoal();
+//        DietType dietType = userProfileCreateDTO.getDietType();
+//
+//        User user = userRepository
+//                .findByUsername(userProfileCreateDTO.getUsername())
+//                .orElseThrow(() -> new ResourceNotFoundException("User", "username", userProfileCreateDTO.getUsername()));
+//
+//        Double totalCalories = calculateCaloriesForGoal(
+//                calculateTDEE(
+//                        calclateBMR(
+//                                weight,
+//                                height,
+//                                age,
+//                                gender
+//                        ),
+//                        activityLevel),
+//                dietGoal);
+//
+//        Double protein = totalCalories * PROTEIN_PERCENTAGE;
+//        Double carbs = totalCalories * CARBS_PERCENTAGE;
+//        Double fat = totalCalories * FAT_PERCENTAGE;
+//
+//        UserProfileDTO userProfileDTO = new UserProfileDTO(
+//                null,
+//                user.getId(),
+//                weight,
+//                height,
+//                age,
+//                gender,
+//                dietType,
+//                activityLevel,
+//                round(totalCalories,2),
+//                round(carbs,2),
+//                round(protein,2),
+//                round(fat,2)
+//        );
 
-        User user = userRepository
-                .findByUsername(userProfileCreateDTO.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", userProfileCreateDTO.getUsername()));
-
-        Double totalCalories = calculateCaloriesForGoal(
-                calculateTDEE(
-                        calclateBMR(
-                                weight,
-                                height,
-                                age,
-                                gender
-                        ),
-                        activityLevel),
-                dietGoal);
-
-        Double protein = totalCalories * PROTEIN_PERCENTAGE;
-        Double carbs = totalCalories * CARBS_PERCENTAGE;
-        Double fat = totalCalories * FAT_PERCENTAGE;
-
-        UserProfileDTO userProfileDTO = new UserProfileDTO(
-                null,
-                user.getId(),
-                weight,
-                height,
-                age,
-                gender,
-                dietType,
-                activityLevel,
-                round(totalCalories,2),
-                round(carbs,2),
-                round(protein,2),
-                round(fat,2)
-        );
-
-        return save(userProfileDTO);
+        return save(new UserProfileDTO());
     }
 
     public UserProfileDTO save(UserProfileDTO userProfileDTO) {
-        User user = userRepository.findById(userProfileDTO.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userProfileDTO.getUserId()));
-        UserProfile userProfileSaved = userProfileRepository.save(userProfileMapper.toEntity(userProfileDTO, user));
-        return userProfileMapper.toDTO(userProfileSaved);
+//        User user = userRepository.findById(userProfileDTO.getUserId())
+//                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userProfileDTO.getUserId()));
+//        UserProfile userProfileSaved = userProfileRepository.save(userProfileMapper.toEntity(userProfileDTO, user));
+//        return userProfileMapper.toDTO(userProfileSaved);
+        return new UserProfileDTO();
     }
 
     public List<UserProfileDTO> findAll() {

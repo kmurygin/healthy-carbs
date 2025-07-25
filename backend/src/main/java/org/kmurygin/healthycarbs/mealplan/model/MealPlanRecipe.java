@@ -29,5 +29,5 @@ public class MealPlanRecipe {
     private Recipe recipe;
 
     @Enumerated(EnumType.STRING)
-    private MealType slot;
+    private MealType mealType;
 }
