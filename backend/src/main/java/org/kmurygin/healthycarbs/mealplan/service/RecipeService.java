@@ -7,7 +7,6 @@ import org.kmurygin.healthycarbs.mealplan.mapper.RecipeMapper;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
-import org.kmurygin.healthycarbs.mealplan.model.UserProfile;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeIngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
@@ -30,8 +29,6 @@ public class RecipeService {
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final RecipeIngredientMapper recipeIngredientMapper;
     private final RecipeMapper recipeMapper;
-
-    private UserProfile userProfile;
 
     public RecipeService(RecipeRepository recipeRepository,
                          IngredientRepository ingredientRepository,

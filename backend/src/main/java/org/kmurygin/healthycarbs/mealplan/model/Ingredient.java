@@ -24,10 +24,7 @@ public class Ingredient {
     private String unit; // eg. grams, milliliters
 
     private Integer caloriesPerUnit;
-
     private Integer carbsPerUnit;
-
     private Integer proteinPerUnit;
-
     private Integer fatPerUnit;
 }

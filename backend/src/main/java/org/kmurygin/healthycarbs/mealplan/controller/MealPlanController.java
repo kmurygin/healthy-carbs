@@ -20,7 +20,7 @@ public class MealPlanController {
 
     @GetMapping("")
     public MealPlanDTO generateMealPlan() {
-        MealPlan mealPlan = new MealPlan();
+        MealPlan mealPlan = mealPlanService.generateMealPlan();
         return mealPlanMapper.toDTO(mealPlan);
     }
 
