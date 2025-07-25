@@ -34,7 +34,7 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .build();
 
-        userService.saveUser(user);
+        userService.save(user);
 
         emailService.sendMail(new EmailDetails(
                 user.getEmail(),

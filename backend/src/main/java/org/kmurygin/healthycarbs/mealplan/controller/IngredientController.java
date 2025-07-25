@@ -1,45 +1,60 @@
 package org.kmurygin.healthycarbs.mealplan.controller;
 
+import lombok.AllArgsConstructor;
 import org.kmurygin.healthycarbs.mealplan.dto.IngredientDTO;
+import org.kmurygin.healthycarbs.mealplan.mapper.IngredientMapper;
+import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.service.IngredientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/v1/ingredients")
 public class IngredientController {
 
     private final IngredientService ingredientService;
+    private final IngredientMapper ingredientMapper;
 
-    public IngredientController(IngredientService ingredientService) {
-        this.ingredientService = ingredientService;
-    }
 
     @GetMapping
     public List<IngredientDTO> getAll() {
-        return ingredientService.findAll();
+        List<Ingredient> ingredients =  ingredientService.findAll();
+        return ingredients.stream()
+                .map(ingredientMapper::toDTO)
+                .toList();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<IngredientDTO> getById(@PathVariable Long id) {
-        IngredientDTO ingredient = ingredientService.findById(id);
-        return ResponseEntity.ok(ingredient);
+        Ingredient ingredient = ingredientService.findById(id);
+        return ResponseEntity.ok(
+                ingredientMapper.toDTO(ingredient)
+        );
     }
 
     @PostMapping
     public ResponseEntity<IngredientDTO>create(@RequestBody IngredientDTO ingredientDTO) {
-        IngredientDTO ingredient = ingredientService.save(ingredientDTO);
-        return ResponseEntity.ok(ingredient);
+        Ingredient ingredient = ingredientService.save(
+                ingredientMapper.toEntity(ingredientDTO)
+        );
+        return ResponseEntity.ok(
+                ingredientMapper.toDTO(ingredient)
+        );
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<IngredientDTO> update(@PathVariable Long id, @RequestBody IngredientDTO ingredientDTO) {
         ingredientDTO.setId(id);
-        IngredientDTO ingredient = ingredientService.save(ingredientDTO);
-        return ResponseEntity.ok(ingredient);
+        Ingredient ingredient = ingredientService.save(
+                ingredientMapper.toEntity(ingredientDTO)
+        );
+        return ResponseEntity.ok(
+                ingredientMapper.toDTO(ingredient)
+        );
     }
 
     @DeleteMapping("/{id}")

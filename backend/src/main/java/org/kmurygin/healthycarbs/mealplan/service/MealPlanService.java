@@ -6,6 +6,7 @@ import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.GeneticAlgorithm;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.Genome;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
+import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRepository;
 import org.springframework.stereotype.Service;
 
 
@@ -14,10 +15,16 @@ import org.springframework.stereotype.Service;
 public class MealPlanService {
     private final GeneticAlgorithm geneticAlgorithm;
     private final RecipeService recipeService;
+    private final MealPlanRepository mealPlanRepository;
+
+    public MealPlan save(MealPlan mealPlan) {
+        return mealPlanRepository.save(mealPlan);
+    }
 
     public MealPlan generateMealPlan() {
         Genome best = geneticAlgorithm.run(this::randomCandidate);
-        return toMealPlan(best);
+        MealPlan mealPlan = toMealPlan(best);
+        return save(mealPlan);
     }
 
     private Genome randomCandidate() {

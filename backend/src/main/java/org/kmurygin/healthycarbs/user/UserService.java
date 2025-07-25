@@ -8,7 +8,6 @@ import org.kmurygin.healthycarbs.exception.ResourceAlreadyExistsException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
-import org.kmurygin.healthycarbs.user.dto.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -39,7 +38,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO saveUser(CreateUserRequest request) {
+    public User save(CreateUserRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new ResourceAlreadyExistsException("User", "username", request.getUsername());
         }
@@ -56,11 +55,11 @@ public class UserService {
                 .role(Role.valueOf(request.getRole().toUpperCase()))
                 .build();
 
-        return userMapper.toDTO(userRepository.save(user));
+        return userRepository.save(user);
     }
 
     @Transactional
-    public User saveUser(User user) {
+    public User save(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new ResourceAlreadyExistsException("User", "username", user.getUsername());
         }
@@ -75,7 +74,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO updateUser(Integer id, UpdateUserRequest request) {
+    public User update(Integer id, UpdateUserRequest request) {
         return userRepository.findById(id)
                 .map(user -> {
                     user.setFirstname(request.getFirstname());
@@ -93,7 +92,7 @@ public class UserService {
                             "HealthyCarbs change of email address"
                     ));
 
-                    return userMapper.toDTO(userRepository.save(user));
+                    return userRepository.save(user);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
