@@ -1,10 +1,14 @@
 package org.kmurygin.healthycarbs.mealplan.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.kmurygin.healthycarbs.mealplan.dto.IngredientDTO;
 import org.kmurygin.healthycarbs.mealplan.mapper.IngredientMapper;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.service.IngredientService;
+import org.kmurygin.healthycarbs.util.ApiResponse;
+import org.kmurygin.healthycarbs.util.ApiResponses;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,44 +25,40 @@ public class IngredientController {
 
 
     @GetMapping
-    public List<IngredientDTO> getAll() {
-        List<Ingredient> ingredients = ingredientService.findAll();
-        return ingredients.stream()
+    public ResponseEntity<ApiResponse<List<IngredientDTO>>> getAll() {
+        List<IngredientDTO> ingredients = ingredientService.findAll().stream()
                 .map(ingredientMapper::toDTO)
                 .toList();
+        return ApiResponses.success(ingredients);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<IngredientDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<IngredientDTO>> getById(@PathVariable Long id) {
         Ingredient ingredient = ingredientService.findById(id);
-        return ResponseEntity.ok(
-                ingredientMapper.toDTO(ingredient)
-        );
+        return ApiResponses.success(ingredientMapper.toDTO(ingredient));
     }
 
     @PostMapping
-    public ResponseEntity<IngredientDTO> create(@RequestBody IngredientDTO ingredientDTO) {
+    public ResponseEntity<ApiResponse<IngredientDTO>> create(@Valid @RequestBody IngredientDTO ingredientDTO) {
         Ingredient ingredient = ingredientService.save(
                 ingredientMapper.toEntity(ingredientDTO)
         );
-        return ResponseEntity.ok(
-                ingredientMapper.toDTO(ingredient)
-        );
+        return ApiResponses.success(HttpStatus.CREATED,
+                ingredientMapper.toDTO(ingredient), "Ingredient created successfully");
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<IngredientDTO> update(@PathVariable Long id, @RequestBody IngredientDTO ingredientDTO) {
+    public ResponseEntity<ApiResponse<IngredientDTO>> update(@PathVariable Long id, @RequestBody IngredientDTO ingredientDTO) {
         ingredientDTO.setId(id);
         Ingredient ingredient = ingredientService.save(
                 ingredientMapper.toEntity(ingredientDTO)
         );
-        return ResponseEntity.ok(
-                ingredientMapper.toDTO(ingredient)
-        );
+        return ApiResponses.success(ingredientMapper.toDTO(ingredient));
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         ingredientService.deleteById(id);
+        return ApiResponses.success(HttpStatus.NO_CONTENT, null, "Ingredient deleted successfully");
     }
 }

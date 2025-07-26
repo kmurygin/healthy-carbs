@@ -30,7 +30,7 @@ public class MealPlanService {
     private Genome randomCandidate() {
         Genome genome = new Genome();
         for (MealType mealType : MealType.values()) {
-            genome.getGenes().add(recipeService.findRandom(mealType, DietType.VEGAN));
+            genome.getGenes().add(recipeService.findRandom(mealType, DietType.STANDARD));
         }
         return genome;
     }

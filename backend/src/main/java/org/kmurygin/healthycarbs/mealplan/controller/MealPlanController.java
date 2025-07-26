@@ -4,6 +4,10 @@ import org.kmurygin.healthycarbs.mealplan.dto.MealPlanDTO;
 import org.kmurygin.healthycarbs.mealplan.mapper.MealPlanMapper;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.service.MealPlanService;
+import org.kmurygin.healthycarbs.util.ApiResponse;
+import org.kmurygin.healthycarbs.util.ApiResponses;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +26,10 @@ public class MealPlanController {
     }
 
     @GetMapping("")
-    public MealPlanDTO generateMealPlan() {
+    public ResponseEntity<ApiResponse<MealPlanDTO>> generateMealPlan() {
         MealPlan mealPlan = mealPlanService.generateMealPlan();
-        return mealPlanMapper.toDTO(mealPlan);
+        MealPlanDTO dto = mealPlanMapper.toDTO(mealPlan);
+        return ApiResponses.success(HttpStatus.CREATED, dto, "Meal plan generated successfully");
     }
 
 }
