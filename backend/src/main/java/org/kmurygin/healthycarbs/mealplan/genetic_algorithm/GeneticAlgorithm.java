@@ -60,9 +60,8 @@ public class GeneticAlgorithm {
     }
 
     private void evaluatePopulation(List<Genome> population) {
-        for (Genome genome : population) {
-            genome.setFitness(fitness.evaluate(genome));
-        }
+        population.parallelStream().
+                forEach(genome -> genome.setFitness(fitness.evaluate(genome)));
     }
 
     private Genome findBestGenome(List<Genome> population, Genome currentBest) {
