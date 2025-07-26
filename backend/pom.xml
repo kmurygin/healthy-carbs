@@ -27,6 +27,9 @@
         <lombok.version>1.18.38</lombok.version>
         <postgres.version>42.7.3</postgres.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <liquibase.version>4.33.0</liquibase.version>
+        <junit.jupiter.version>5.10.2</junit.jupiter.version>
+
     </properties>
 
     <dependencyManagement>
@@ -162,6 +165,20 @@
             <artifactId>mapstruct</artifactId>
             <version>${mapstruct.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -224,6 +241,28 @@
                         <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>4.27.0</version>
+                <configuration>
+                    <changeLogFile>src/main/resources/db/changelog/db.changelog-master.yaml</changeLogFile>
+                    <url>${env.DB_URL}</url>
+                    <username>${env.DB_USERNAME}</username>
+                    <password>${env.DB_PASSWORD}</password>
+                    <driver>org.postgresql.Driver</driver>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>update-db</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update</goal>
                         </goals>
                     </execution>
                 </executions>

@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002
+      author: kmurygin
+      changes:
+        - sqlFile:
+            path: ../sql/indexes.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
