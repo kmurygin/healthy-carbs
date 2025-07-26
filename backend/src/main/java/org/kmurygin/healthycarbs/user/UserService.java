@@ -22,11 +22,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public List<User> getAllUsers() {
         return userRepository.findAll();

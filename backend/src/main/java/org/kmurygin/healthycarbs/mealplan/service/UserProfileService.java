@@ -23,11 +23,6 @@ public class UserProfileService {
     private final UserProfileRepository userProfileRepository;
     private final UserRepository userRepository;
     private final UserProfileMapper userProfileMapper;
-
-    Double PROTEIN_PERCENTAGE = 0.25;
-    Double CARBS_PERCENTAGE = 0.5;
-    Double FAT_PERCENTAGE = 0.25;
-
     private final Map<ActivityLevel, Double> ActivityFactior = Map.of(
             ActivityLevel.SEDENTARY, 1.2,
             ActivityLevel.LIGHTLY_ACTIVE, 1.375,
@@ -35,6 +30,9 @@ public class UserProfileService {
             ActivityLevel.VERY_ACTIVE, 1.725,
             ActivityLevel.SUPER_ACTIVE, 1.9
     );
+    Double PROTEIN_PERCENTAGE = 0.25;
+    Double CARBS_PERCENTAGE = 0.5;
+    Double FAT_PERCENTAGE = 0.25;
 
     public UserProfileService(UserProfileRepository userProfileRepository, UserRepository userRepository, UserProfileMapper userProfileMapper) {
         this.userProfileRepository = userProfileRepository;
