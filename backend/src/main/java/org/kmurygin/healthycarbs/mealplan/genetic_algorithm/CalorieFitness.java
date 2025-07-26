@@ -1,7 +1,6 @@
 package org.kmurygin.healthycarbs.mealplan.genetic_algorithm;
 
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.mealplan.config.GeneticAlgorithmConfig;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.springframework.stereotype.Component;
 
@@ -13,9 +12,7 @@ public class CalorieFitness implements Fitness {
 
     @Override
     public double evaluate(Genome plan) {
-        double totalCalories = plan.getGenes().stream()
-                .mapToDouble(Recipe::getCalories)
-                .sum();
+        double totalCalories = plan.getGenes().stream().mapToDouble(Recipe::getCalories).sum();
 
         if (totalCalories == 0) return 0;
 

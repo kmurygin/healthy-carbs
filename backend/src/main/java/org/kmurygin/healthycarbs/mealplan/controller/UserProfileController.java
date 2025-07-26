@@ -3,7 +3,6 @@ package org.kmurygin.healthycarbs.mealplan.controller;
 
 import org.kmurygin.healthycarbs.mealplan.dto.UserProfileCreateDTO;
 import org.kmurygin.healthycarbs.mealplan.dto.UserProfileDTO;
-import org.kmurygin.healthycarbs.mealplan.model.UserProfileRequest;
 import org.kmurygin.healthycarbs.mealplan.service.UserProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

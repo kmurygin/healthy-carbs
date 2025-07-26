@@ -75,7 +75,7 @@ public class RecipeController {
 
     @GetMapping("/random")
     public RecipeDTO getRandomRecipe(@RequestParam String mealType, @RequestParam String dietType) {
-        Recipe recipe =  recipeService.findRandom(
+        Recipe recipe = recipeService.findRandom(
                 MealType.valueOf(mealType.toUpperCase()),
                 DietType.valueOf(dietType.toUpperCase()));
         return recipeMapper.toDTO(recipe);

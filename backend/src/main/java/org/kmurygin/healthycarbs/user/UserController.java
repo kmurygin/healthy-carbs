@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request ) {
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
         boolean success = userService.changePassword(request.getOldPassword(), request.getNewPassword());
         Map<String, String> responseBody = new HashMap<>();
         if (success) {

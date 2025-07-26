@@ -1,17 +1,14 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
-import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.exception.BadRequestException;
+import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.ActivityLevel;
 import org.kmurygin.healthycarbs.mealplan.DietGoal;
-import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.Gender;
 import org.kmurygin.healthycarbs.mealplan.dto.UserProfileCreateDTO;
 import org.kmurygin.healthycarbs.mealplan.dto.UserProfileDTO;
 import org.kmurygin.healthycarbs.mealplan.mapper.UserProfileMapper;
-import org.kmurygin.healthycarbs.mealplan.model.UserProfile;
 import org.kmurygin.healthycarbs.mealplan.repository.UserProfileRepository;
-import org.kmurygin.healthycarbs.user.User;
 import org.kmurygin.healthycarbs.user.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +28,7 @@ public class UserProfileService {
     Double CARBS_PERCENTAGE = 0.5;
     Double FAT_PERCENTAGE = 0.25;
 
-    private Map<ActivityLevel, Double> ActivityFactior = Map.of(
+    private final Map<ActivityLevel, Double> ActivityFactior = Map.of(
             ActivityLevel.SEDENTARY, 1.2,
             ActivityLevel.LIGHTLY_ACTIVE, 1.375,
             ActivityLevel.MODERATELY_ACTIVE, 1.55,

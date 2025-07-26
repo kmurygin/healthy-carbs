@@ -22,7 +22,7 @@ public class IngredientController {
 
     @GetMapping
     public List<IngredientDTO> getAll() {
-        List<Ingredient> ingredients =  ingredientService.findAll();
+        List<Ingredient> ingredients = ingredientService.findAll();
         return ingredients.stream()
                 .map(ingredientMapper::toDTO)
                 .toList();
@@ -37,7 +37,7 @@ public class IngredientController {
     }
 
     @PostMapping
-    public ResponseEntity<IngredientDTO>create(@RequestBody IngredientDTO ingredientDTO) {
+    public ResponseEntity<IngredientDTO> create(@RequestBody IngredientDTO ingredientDTO) {
         Ingredient ingredient = ingredientService.save(
                 ingredientMapper.toEntity(ingredientDTO)
         );

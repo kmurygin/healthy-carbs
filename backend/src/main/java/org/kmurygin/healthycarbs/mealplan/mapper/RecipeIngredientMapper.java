@@ -7,5 +7,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface RecipeIngredientMapper {
     RecipeIngredientDTO toDTO(RecipeIngredient entity);
+
     RecipeIngredient toEntity(RecipeIngredientDTO dto);
 }

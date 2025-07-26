@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -25,14 +26,16 @@ public class UserService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
     public Optional<User> getUserById(Integer id) {
         return userRepository.findById(id);
     }
+
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -81,7 +84,7 @@ public class UserService {
                     user.setLastname(request.getLastname());
 
                     String newEmail = request.getEmail().toLowerCase();
-                    if (!user.getEmail().equalsIgnoreCase(newEmail) ||
+                    if (!user.getEmail().equalsIgnoreCase(newEmail) &&
                             userRepository.findByEmail(newEmail).isPresent()) {
                         throw new ResourceAlreadyExistsException("User", "email", newEmail);
                     }

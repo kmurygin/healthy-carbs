@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.genetic_algorithm;
 
 import org.springframework.stereotype.Component;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 @Component

@@ -44,16 +44,14 @@ public class Recipe {
     @Enumerated(EnumType.STRING)
     private MealType mealType;
 
-    public void addIngredient(RecipeIngredient ingredient)
-    {
+    public void addIngredient(RecipeIngredient ingredient) {
         if (ingredient == null) return;
         if (this.ingredients == null) this.ingredients = new ArrayList<>();
         this.ingredients.add(ingredient);
         ingredient.setRecipe(this);
     }
 
-    public void removeIngredient(RecipeIngredient ingredient)
-    {
+    public void removeIngredient(RecipeIngredient ingredient) {
         if (this.ingredients == null || ingredient == null) return;
         this.ingredients.remove(ingredient);
         ingredient.setRecipe(null);

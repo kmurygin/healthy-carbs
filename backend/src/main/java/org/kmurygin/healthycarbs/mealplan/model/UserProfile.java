@@ -15,7 +15,7 @@ import org.kmurygin.healthycarbs.user.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name= "user_profiles")
+@Table(name = "user_profiles")
 public class UserProfile {
 
     @Id

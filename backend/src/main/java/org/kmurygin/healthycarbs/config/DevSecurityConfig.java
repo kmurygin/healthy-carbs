@@ -16,10 +16,10 @@ public class DevSecurityConfig {
     @Bean
     public SecurityFilterChain devSecurity(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(authorizeRequests ->
-                    authorizeRequests.anyRequest().permitAll()
-            );
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests.anyRequest().permitAll()
+                );
         return http.build();
     }
 }

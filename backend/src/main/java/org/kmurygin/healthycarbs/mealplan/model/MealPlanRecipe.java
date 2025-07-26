@@ -1,12 +1,11 @@
 package org.kmurygin.healthycarbs.mealplan.model;
 
-import org.kmurygin.healthycarbs.mealplan.MealType;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.kmurygin.healthycarbs.mealplan.MealType;
 
 @AllArgsConstructor
 @NoArgsConstructor

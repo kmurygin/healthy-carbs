@@ -2,6 +2,10 @@ package org.kmurygin.healthycarbs.mealplan.service;
 
 import jakarta.transaction.Transactional;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
+import org.kmurygin.healthycarbs.mealplan.DietType;
+import org.kmurygin.healthycarbs.mealplan.MealType;
+import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
+import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
 import org.kmurygin.healthycarbs.mealplan.mapper.RecipeIngredientMapper;
 import org.kmurygin.healthycarbs.mealplan.mapper.RecipeMapper;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
@@ -10,12 +14,8 @@ import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeIngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
-import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
-import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
 import org.kmurygin.healthycarbs.mealplan.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
-import org.kmurygin.healthycarbs.mealplan.DietType;
-import org.kmurygin.healthycarbs.mealplan.MealType;
 
 import java.util.ArrayList;
 import java.util.List;

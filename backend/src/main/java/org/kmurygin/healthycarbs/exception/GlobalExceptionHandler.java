@@ -3,7 +3,6 @@ package org.kmurygin.healthycarbs.exception;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -32,21 +31,22 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> validation(MethodArgumentNotValidException ex, HttpServletRequest req) {
-        Map<String,String> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
+        Map<String, String> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField,
                         e -> e.getDefaultMessage() == null ? "Invalid value" : e.getDefaultMessage(),
-                        (a,b) -> a + "; " + b));
+                        (a, b) -> a + "; " + b));
         return buildErrorResponse("Validation failed", req, HttpStatus.BAD_REQUEST, fieldErrors);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> typeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
+        assert ex.getRequiredType() != null;
         String msg = "Parameter '%s' should be of type '%s'"
                 .formatted(ex.getName(), ex.getRequiredType().getSimpleName());
         return buildErrorResponse(msg, req, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ ExpiredJwtException.class, SignatureException.class })
+    @ExceptionHandler({ExpiredJwtException.class, SignatureException.class})
     public ResponseEntity<ErrorResponse> jwt(RuntimeException ex, HttpServletRequest req) {
         return buildErrorResponse("Invalid or expired JWT", req, HttpStatus.UNAUTHORIZED);
     }
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(
             String msg, HttpServletRequest req, HttpStatus status,
-            Map<String,String> fieldErrors) {
+            Map<String, String> fieldErrors) {
 
         ErrorResponse body = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
