@@ -18,4 +18,7 @@ public class MealPlanDTO {
     private List<MealPlanRecipeDTO> recipes;
 
     private double totalCalories;
+    private double totalCarbs;
+    private double totalProtein;
+    private double totalFat;
 }

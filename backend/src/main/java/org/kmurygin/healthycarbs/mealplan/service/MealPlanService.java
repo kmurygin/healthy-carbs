@@ -38,6 +38,9 @@ public class MealPlanService {
     private MealPlan toMealPlan(Genome genome) {
         MealPlan plan = new MealPlan();
         plan.setTotalCalories(genome.getTotalCalories());
+        plan.setTotalCarbs(genome.getTotalCarbs());
+        plan.setTotalProtein(genome.getTotalProtein());
+        plan.setTotalFat(genome.getTotalFat());
         genome.getGenes().forEach(plan::addRecipe);
         return plan;
     }

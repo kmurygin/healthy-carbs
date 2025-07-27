@@ -26,6 +26,9 @@ public class MealPlan {
     private List<MealPlanRecipe> recipes = new ArrayList<>();
 
     private double totalCalories;
+    private double totalCarbs;
+    private double totalProtein;
+    private double totalFat;
 
     public void addRecipe(Recipe recipe) {
         MealPlanRecipe mealPlanRecipe = new MealPlanRecipe(null, this, recipe, recipe.getMealType());
