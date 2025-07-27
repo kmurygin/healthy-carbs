@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.kmurygin.healthycarbs.mealplan.ActivityLevel;
 import org.kmurygin.healthycarbs.mealplan.DietType;
-import org.kmurygin.healthycarbs.mealplan.Gender;
 import org.kmurygin.healthycarbs.user.User;
 
 @Data
@@ -15,8 +14,8 @@ import org.kmurygin.healthycarbs.user.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user_profiles")
-public class UserProfile {
+@Table(name = "dietary_profile")
+public class DietaryProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +28,13 @@ public class UserProfile {
     private Double weight; //kg
     private Double height; //cm
     private Integer age; //years
-    private Gender gender;
+
+    @Enumerated(EnumType.STRING)
     private DietType dietType;
+
+    @Enumerated(EnumType.STRING)
     private ActivityLevel activityLevel;
+
     private Double caloriesPerDay;
     private Double carbsPerDay;
     private Double proteinPerDay;

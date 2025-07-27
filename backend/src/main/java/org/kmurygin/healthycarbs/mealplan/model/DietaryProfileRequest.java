@@ -13,7 +13,7 @@ import org.kmurygin.healthycarbs.mealplan.Gender;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserProfileRequest {
+public class DietaryProfileRequest {
 
     private Double weight;
     private Double height;

@@ -11,10 +11,10 @@ import org.kmurygin.healthycarbs.mealplan.mapper.RecipeMapper;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
+import org.kmurygin.healthycarbs.mealplan.repository.DietaryProfileRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeIngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
-import org.kmurygin.healthycarbs.mealplan.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class RecipeService {
     public RecipeService(RecipeRepository recipeRepository,
                          IngredientRepository ingredientRepository,
                          RecipeIngredientRepository recipeIngredientRepository,
-                         UserProfileRepository userProfileRepository, RecipeIngredientMapper recipeIngredientMapper,
+                         DietaryProfileRepository dietaryProfileRepository, RecipeIngredientMapper recipeIngredientMapper,
                          RecipeMapper recipeMapper) {
         this.recipeRepository = recipeRepository;
         this.ingredientRepository = ingredientRepository;
