@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007
+      author: kmurygin
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: user_profiles
+      changes:
+        - dropTable:
+            tableName: user_profiles
+            cascadeConstraints: true
+      rollback:
+        - createTable:
+            tableName: user_profiles
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false

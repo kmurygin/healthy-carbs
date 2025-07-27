@@ -3,6 +3,13 @@ databaseChangeLog:
       id: 004
       author: kmurygin
 
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            columnExists:
+              tableName: meal_plans
+              columnName: total_carbs
+
       changes:
         - addColumn:
             tableName: meal_plans
