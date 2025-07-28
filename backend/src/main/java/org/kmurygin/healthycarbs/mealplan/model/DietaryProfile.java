@@ -35,8 +35,8 @@ public class DietaryProfile {
     @Enumerated(EnumType.STRING)
     private ActivityLevel activityLevel;
 
-    private Double caloriesPerDay;
-    private Double carbsPerDay;
-    private Double proteinPerDay;
-    private Double fatPerDay;
+    private Double calorieTarget;
+    private Double carbsTarget;
+    private Double proteinTarget;
+    private Double fatTarget;
 }
