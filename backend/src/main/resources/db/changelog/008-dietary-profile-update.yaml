@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008
+      author: kmurygin
+      changes:
+        - modifyDataType:
+            columnName: calories_per_day
+            newDataType: DOUBLE PRECISION
+            tableName: dietary_profile
+        - modifyDataType:
+            columnName: carbs_per_day
+            newDataType: DOUBLE PRECISION
+            tableName: dietary_profile
+        - modifyDataType:
+            columnName: protein_per_day
+            newDataType: DOUBLE PRECISION
+            tableName: dietary_profile
+        - modifyDataType:
+            columnName: fat_per_day
+            newDataType: DOUBLE PRECISION
+            tableName: dietary_profile
+        - modifyDataType:
+            columnName: weight
+            newDataType: DOUBLE PRECISION
+            tableName: dietary_profile
+        - modifyDataType:
+            columnName: height
+            newDataType: DOUBLE PRECISION
+            tableName: dietary_profile
+        - modifyDataType:
+            columnName: protein_per_day
+            newDataType: DOUBLE PRECISION
+            tableName: dietary_profile
+        - renameColumn:
+            tableName: dietary_profile
+            oldColumnName: calories_per_day
+            newColumnName: calorie_target
+            columnDataType: DOUBLE PRECISION
+        - renameColumn:
+            tableName: dietary_profile
+            oldColumnName: carbs_per_day
+            newColumnName: carbs_target
+            columnDataType: DOUBLE PRECISION
+        - renameColumn:
+            tableName: dietary_profile
+            oldColumnName: protein_per_day
+            newColumnName: protein_target
+            columnDataType: DOUBLE PRECISION
+        - renameColumn:
+            tableName: dietary_profile
+            oldColumnName: fat_per_day
+            newColumnName: fat_target
+            columnDataType: DOUBLE PRECISION

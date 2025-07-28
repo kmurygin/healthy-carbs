@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009
+      author: kmurygin
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            columnExists:
+              tableName: meal_plans
+              columnName: user_id
+
+      changes:
+        - addColumn:
+            tableName: meal_plans
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT

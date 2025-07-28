@@ -20,3 +20,9 @@ databaseChangeLog:
   - include:
       file: 007-remove-user_profiles.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 008-dietary-profile-update.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 009-add-user-to-mealplan.yaml
+      relativeToChangelogFile: true

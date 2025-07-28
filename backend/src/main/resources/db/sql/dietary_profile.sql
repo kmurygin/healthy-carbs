@@ -1,4 +1,4 @@
-CREATE TABLE dietary_profile
+CREATE TABLE IF NOT EXISTS dietary_profile
 (
     id               BIGSERIAL PRIMARY KEY,
     user_id          BIGINT NOT NULL,
@@ -19,4 +19,4 @@ CREATE TABLE dietary_profile
             ON DELETE CASCADE
 );
 
-CREATE INDEX idx_dietary_profile_user ON dietary_profile (user_id);
+CREATE INDEX IF NOT EXISTS idx_dietary_profile_user ON dietary_profile (user_id);
