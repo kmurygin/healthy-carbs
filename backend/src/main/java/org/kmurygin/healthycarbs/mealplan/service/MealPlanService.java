@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.auth.AuthenticationService;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
+import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.CalorieFitness;
+import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.Fitness;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.GeneticAlgorithm;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.Genome;
 import org.kmurygin.healthycarbs.mealplan.model.DietaryProfile;
@@ -29,15 +31,17 @@ public class MealPlanService {
     public MealPlan generateMealPlan() {
         User user = authenticationService.getCurrentUser();
         DietaryProfile dietaryProfile = dietaryProfileService.getByUserId(user.getId());
-        Genome best = geneticAlgorithm.run(this::randomCandidate, dietaryProfile);
+        Fitness fitness = new CalorieFitness(dietaryProfile);
+        DietType dietType = dietaryProfile.getDietType();
+        Genome best = geneticAlgorithm.run((() -> randomCandidate(dietType)), fitness, dietType);
         MealPlan mealPlan = toMealPlan(best, user);
         return save(mealPlan);
     }
 
-    private Genome randomCandidate() {
+    private Genome randomCandidate(DietType dietType) {
         Genome genome = new Genome();
         for (MealType mealType : MealType.values()) {
-            genome.getGenes().add(recipeService.findRandom(mealType, DietType.STANDARD));
+            genome.getGenes().add(recipeService.findRandom(mealType, dietType));
         }
         return genome;
     }
