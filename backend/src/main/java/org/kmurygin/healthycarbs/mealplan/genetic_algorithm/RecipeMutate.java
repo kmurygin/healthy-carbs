@@ -7,7 +7,6 @@ import org.kmurygin.healthycarbs.mealplan.config.GeneticAlgorithmConfig;
 import org.kmurygin.healthycarbs.mealplan.service.RecipeService;
 import org.springframework.stereotype.Component;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Component
@@ -16,15 +15,11 @@ public class RecipeMutate implements Mutate {
 
     private final GeneticAlgorithmConfig config;
     private final RecipeService recipeService;
-    private final Random random = new Random();
 
-    private final DietType dietType = DietType.VEGAN;
 
     @Override
-    public void mutate(Genome plan) {
-        if (plan.getGenes().isEmpty()) {
-            return;
-        }
+    public void mutate(Genome plan, DietType dietType) {
+        if (plan.getGenes().isEmpty()) return;
 
         for (int i = 0; i < plan.getGenes().size(); i++) {
             if (ThreadLocalRandom.current().nextDouble() < config.getMutationRate()) {

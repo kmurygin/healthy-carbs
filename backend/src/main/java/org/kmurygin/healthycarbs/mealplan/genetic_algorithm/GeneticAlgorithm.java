@@ -1,7 +1,9 @@
 package org.kmurygin.healthycarbs.mealplan.genetic_algorithm;
 
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.config.GeneticAlgorithmConfig;
+import org.kmurygin.healthycarbs.mealplan.model.DietaryProfile;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,14 +16,16 @@ import java.util.stream.Stream;
 @Component
 public class GeneticAlgorithm {
 
-    private final Fitness fitness;
-    private final Mutate mutate;
     private final Crossover crossover;
+    private final Mutate mutate;
     private final Selection selection;
-
     private final GeneticAlgorithmConfig config;
+    private CalorieFitness fitness;
+    private DietType dietType;
 
-    public Genome run(Supplier<Genome> genomeSupplier) {
+    public Genome run(Supplier<Genome> genomeSupplier, DietaryProfile dietaryProfile) {
+        fitness = new CalorieFitness(dietaryProfile);
+        dietType = dietaryProfile.getDietType();
         List<Genome> population = generateInitialPopulation(genomeSupplier);
         Genome bestGenome = null;
 
@@ -50,7 +54,7 @@ public class GeneticAlgorithm {
             Genome genomeChild = crossover.crossover(genomeParent1, genomeParent2);
 
             if (ThreadLocalRandom.current().nextDouble() < config.getMutationRate()) {
-                mutate.mutate(genomeChild);
+                mutate.mutate(genomeChild, dietType);
             }
 
             nextGeneration.add(genomeChild);

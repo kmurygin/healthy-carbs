@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.kmurygin.healthycarbs.user.dto.UserDTO;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ import java.util.List;
 public class MealPlanDTO {
 
     private Long id;
+
+    private UserDTO user;
 
     private List<MealPlanRecipeDTO> recipes;
 

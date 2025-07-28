@@ -1,26 +1,60 @@
 package org.kmurygin.healthycarbs.mealplan.genetic_algorithm;
 
-import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.mealplan.model.DietaryProfile;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
-import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
 public class CalorieFitness implements Fitness {
 
-    private static final double CALORIE_TARGET = 2800.0;
+    private final double calorieTarget;
+    private final double carbsTarget;
+    private final double proteinTarget;
+    private final double fatTarget;
+
+    public CalorieFitness(DietaryProfile profile) {
+        this.calorieTarget = profile.getCalorieTarget();
+        this.carbsTarget = profile.getCarbsTarget();
+        this.proteinTarget = profile.getProteinTarget();
+        this.fatTarget = profile.getFatTarget();
+    }
 
     @Override
     public double evaluate(Genome plan) {
-        double totalCalories = plan.getGenes().stream().mapToDouble(Recipe::getCalories).sum();
+        double totalCalories = 0.0;
+        double totalCarbs = 0.0;
+        double totalProtein = 0.0;
+        double totalFat = 0.0;
 
-        if (totalCalories == 0) return 0;
+        for (Recipe recipe : plan.getGenes()) {
+            if (recipe == null) continue;
 
-        double deviation = Math.abs(totalCalories - CALORIE_TARGET);
-        double ratio = deviation / CALORIE_TARGET;
-        double fitness = Math.pow(1 - Math.min(ratio, 1), 2);
+            totalCalories += recipe.getCalories();
+            totalCarbs += recipe.getCarbs();
+            totalProtein += recipe.getProtein();
+            totalFat += recipe.getFat();
+        }
 
         plan.setTotalCalories(totalCalories);
-        return Math.max(fitness, 0.0);
+        plan.setTotalCarbs(totalCarbs);
+        plan.setTotalProtein(totalProtein);
+        plan.setTotalFat(totalFat);
+
+        if (totalCalories == 0) return 0.0;
+
+        double fitness = (
+                score(totalCalories, calorieTarget) +
+                        score(totalCarbs, carbsTarget) +
+                        score(totalProtein, proteinTarget) +
+                        score(totalFat, fatTarget)
+        ) / 4.0;
+
+        plan.setFitness(fitness);
+        return fitness;
+    }
+
+    private double score(double actual, double target) {
+        if (target == 0) return 0.0;
+        double deviation = Math.abs(actual - target);
+        double ratio = deviation / target;
+        return Math.pow(1 - Math.min(ratio, 1.0), 2);
     }
 }
