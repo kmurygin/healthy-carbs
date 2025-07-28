@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.mealplan.genetic_algorithm;
+package org.kmurygin.healthycarbs.mealplan.genetic_algorithm.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

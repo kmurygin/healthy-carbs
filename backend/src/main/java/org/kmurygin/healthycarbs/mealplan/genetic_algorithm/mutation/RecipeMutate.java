@@ -1,9 +1,10 @@
-package org.kmurygin.healthycarbs.mealplan.genetic_algorithm;
+package org.kmurygin.healthycarbs.mealplan.genetic_algorithm.mutation;
 
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.config.GeneticAlgorithmConfig;
+import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.core.Genome;
 import org.kmurygin.healthycarbs.mealplan.service.RecipeService;
 import org.springframework.stereotype.Component;
 

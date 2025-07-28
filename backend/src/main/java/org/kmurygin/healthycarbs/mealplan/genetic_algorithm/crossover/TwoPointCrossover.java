@@ -1,5 +1,6 @@
-package org.kmurygin.healthycarbs.mealplan.genetic_algorithm;
+package org.kmurygin.healthycarbs.mealplan.genetic_algorithm.crossover;
 
+import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.core.Genome;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ThreadLocalRandom;

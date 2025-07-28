@@ -1,5 +1,6 @@
-package org.kmurygin.healthycarbs.mealplan.genetic_algorithm;
+package org.kmurygin.healthycarbs.mealplan.genetic_algorithm.fitness;
 
+import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.core.Genome;
 import org.kmurygin.healthycarbs.mealplan.model.DietaryProfile;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 

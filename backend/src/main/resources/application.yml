@@ -18,7 +18,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -47,7 +47,7 @@ application:
       secret-key: ${JWT_SECRET_KEY}
 
 genetic-algorithm:
-  population-size: 20
-  max-generations: 1000
-  mutation-rate: 0.2
+  population-size: 40
+  max-generations: 2000
+  mutation-rate: 0.4
   target-fitness: 0.999
