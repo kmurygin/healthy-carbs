@@ -49,5 +49,5 @@ application:
 genetic-algorithm:
   population-size: 40
   max-generations: 2000
-  mutation-rate: 0.4
+  mutation-rate: 0.8
   target-fitness: 0.999
