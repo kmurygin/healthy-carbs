@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001
+      author: kmurygin
+      changes:
+        - sqlFile:
+            path: ../sql/schema.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

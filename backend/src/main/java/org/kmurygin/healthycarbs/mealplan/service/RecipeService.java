@@ -2,21 +2,24 @@ package org.kmurygin.healthycarbs.mealplan.service;
 
 import jakarta.transaction.Transactional;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
+import org.kmurygin.healthycarbs.mealplan.DietType;
+import org.kmurygin.healthycarbs.mealplan.MealType;
+import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
+import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
+import org.kmurygin.healthycarbs.mealplan.mapper.RecipeIngredientMapper;
 import org.kmurygin.healthycarbs.mealplan.mapper.RecipeMapper;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
-import org.kmurygin.healthycarbs.mealplan.model.UserProfile;
+import org.kmurygin.healthycarbs.mealplan.repository.DietaryProfileRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeIngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
-import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
-import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
-import org.kmurygin.healthycarbs.mealplan.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class RecipeService {
@@ -24,37 +27,31 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
+    private final RecipeIngredientMapper recipeIngredientMapper;
     private final RecipeMapper recipeMapper;
-
-    private UserProfile userProfile;
 
     public RecipeService(RecipeRepository recipeRepository,
                          IngredientRepository ingredientRepository,
                          RecipeIngredientRepository recipeIngredientRepository,
-                         UserProfileRepository userProfileRepository,
+                         DietaryProfileRepository dietaryProfileRepository, RecipeIngredientMapper recipeIngredientMapper,
                          RecipeMapper recipeMapper) {
         this.recipeRepository = recipeRepository;
         this.ingredientRepository = ingredientRepository;
         this.recipeIngredientRepository = recipeIngredientRepository;
+        this.recipeIngredientMapper = recipeIngredientMapper;
         this.recipeMapper = recipeMapper;
     }
 
-    public List<RecipeDTO> findAll() {
-        return recipeRepository.findAll()
-                .stream()
-                .map(recipeMapper::toDTO)
-                .toList();
+    public List<Recipe> findAll() {
+        return recipeRepository.findAll();
     }
 
-    public RecipeDTO findById(Long id) {
-        Recipe recipe = recipeRepository.findById(id).orElse(null);
-        return recipeMapper.toDTO(recipe);
+    public Recipe findById(Long id) {
+        return recipeRepository.findById(id).orElse(null);
     }
 
-    public RecipeDTO save(RecipeDTO recipeDTO) {
-        Recipe recipe = recipeMapper.toEntity(recipeDTO);
-        Recipe savedRecipe = recipeRepository.save(recipe);
-        return recipeMapper.toDTO(savedRecipe);
+    public Recipe save(Recipe recipe) {
+        return recipeRepository.save(recipe);
     }
 
     public void deleteById(Long id) {
@@ -98,7 +95,17 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findById(recipeId).orElse(null);
         if (recipe == null) return new ArrayList<>();
         return recipe.getIngredients().stream()
-                .map(recipeMapper::toDTO)
+                .map(recipeIngredientMapper::toDTO)
                 .toList();
+    }
+
+    public Recipe findRandom(MealType mealType, DietType dietType) {
+        List<Long> ids = recipeRepository.findIdsByMealTypeAndDietType(mealType, dietType);
+        if (ids.isEmpty()) {
+            return null;
+        }
+
+        Long randomId = ids.get(ThreadLocalRandom.current().nextInt(ids.size()));
+        return findById(randomId);
     }
 }

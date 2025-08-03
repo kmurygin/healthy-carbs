@@ -1,14 +1,18 @@
 package org.kmurygin.healthycarbs.mealplan.repository;
 
+import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
-//    @Query(value = "SELECT r FROM recipes WHERE r.mealType == _mealType ORDER BY random() LIMIT 1", nativeQuery = true)
-//    Recipe findRandomRecipe(MealType _mealType);
+    @Query("SELECT r.id FROM Recipe r WHERE r.mealType = :mealType AND r.dietType = :dietType")
+    List<Long> findIdsByMealTypeAndDietType(@Param("mealType") MealType mealType, @Param("dietType") DietType dietType);
 }

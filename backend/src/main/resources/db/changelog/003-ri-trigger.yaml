@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003
+      author: kmurygin
+      changes:
+        - sqlFile:
+            path: ../sql/ri-trigger.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

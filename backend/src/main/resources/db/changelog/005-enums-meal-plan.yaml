@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005
+      author: kmurygin
+      changes:
+        - sqlFile:
+            path: ../sql/enums.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

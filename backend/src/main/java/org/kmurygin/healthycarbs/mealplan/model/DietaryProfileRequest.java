@@ -1,4 +1,5 @@
 package org.kmurygin.healthycarbs.mealplan.model;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import org.kmurygin.healthycarbs.mealplan.Gender;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserProfileRequest {
+public class DietaryProfileRequest {
 
     private Double weight;
     private Double height;

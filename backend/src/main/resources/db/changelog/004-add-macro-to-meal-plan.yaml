@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004
+      author: kmurygin
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            columnExists:
+              tableName: meal_plans
+              columnName: total_carbs
+
+      changes:
+        - addColumn:
+            tableName: meal_plans
+            columns:
+              - column:
+                  name: total_carbs
+                  type: double precision
+              - column:
+                  name: total_protein
+                  type: double precision
+              - column:
+                  name: total_fat
+                  type: double precision
+
+      rollback:
+        - dropColumn:
+            tableName: meal_plans
+            columnName: total_carbs
+        - dropColumn:
+            tableName: meal_plans
+            columnName: total_protein
+        - dropColumn:
+            tableName: meal_plans
+            columnName: total_fat

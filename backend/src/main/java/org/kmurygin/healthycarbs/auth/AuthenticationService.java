@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.config.JwtService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
-import org.kmurygin.healthycarbs.exception.ResourceAlreadyExistsException;
 import org.kmurygin.healthycarbs.exception.UnauthorizedException;
-import org.kmurygin.healthycarbs.user.*;
+import org.kmurygin.healthycarbs.user.Role;
+import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.UserRepository;
+import org.kmurygin.healthycarbs.user.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,10 +28,26 @@ public class AuthenticationService {
     private final UserService userService;
     private final EmailService emailService;
 
-    public AuthenticationResponse register(RegisterRequest request) {
-        User user = UserMapper.fromRegisterRequest(request, passwordEncoder);
+    public User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof User user) {
+            return user;
+        }
+        return null;
+    }
 
-        userService.saveUser(user);
+    public AuthenticationResponse register(RegisterRequest request) {
+//        User user = UserMapper.fromRegisterRequest(request, passwordEncoder);
+        User user = User.builder()
+                .firstname(request.getFirstname())
+                .lastname(request.getLastname())
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
+                .build();
+
+        userService.save(user);
 
         emailService.sendMail(new EmailDetails(
                 user.getEmail(),

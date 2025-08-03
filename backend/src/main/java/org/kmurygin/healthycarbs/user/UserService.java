@@ -8,13 +8,13 @@ import org.kmurygin.healthycarbs.exception.ResourceAlreadyExistsException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
-import org.kmurygin.healthycarbs.user.dto.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -22,10 +22,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -40,7 +40,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO saveUser(CreateUserRequest request) {
+    public User save(CreateUserRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new ResourceAlreadyExistsException("User", "username", request.getUsername());
         }
@@ -57,11 +57,11 @@ public class UserService {
                 .role(Role.valueOf(request.getRole().toUpperCase()))
                 .build();
 
-        return UserMapper.toDto(userRepository.save(user));
+        return userRepository.save(user);
     }
 
     @Transactional
-    public User saveUser(User user) {
+    public User save(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new ResourceAlreadyExistsException("User", "username", user.getUsername());
         }
@@ -76,14 +76,14 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO updateUser(Integer id, UpdateUserRequest request) {
+    public User update(Integer id, UpdateUserRequest request) {
         return userRepository.findById(id)
                 .map(user -> {
                     user.setFirstname(request.getFirstname());
                     user.setLastname(request.getLastname());
 
                     String newEmail = request.getEmail().toLowerCase();
-                    if (!user.getEmail().equalsIgnoreCase(newEmail) ||
+                    if (!user.getEmail().equalsIgnoreCase(newEmail) &&
                             userRepository.findByEmail(newEmail).isPresent()) {
                         throw new ResourceAlreadyExistsException("User", "email", newEmail);
                     }
@@ -94,7 +94,7 @@ public class UserService {
                             "HealthyCarbs change of email address"
                     ));
 
-                    return UserMapper.toDto(userRepository.save(user));
+                    return userRepository.save(user);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }

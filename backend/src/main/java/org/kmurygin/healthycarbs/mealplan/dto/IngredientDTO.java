@@ -16,4 +16,3 @@ public class IngredientDTO {
     private Integer proteinPerUnit;
     private Integer fatPerUnit;
 }
-

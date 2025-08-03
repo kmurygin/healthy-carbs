@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006
+      author: kmurygin
+      changes:
+        - sqlFile:
+            path: ../sql/dietary_profile.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
