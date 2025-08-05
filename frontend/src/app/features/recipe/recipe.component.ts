@@ -1,12 +1,12 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Recipe} from "../../core/models/recipe.model";
 
 @Component({
-    selector: 'app-recipe',
-    imports: [],
-    templateUrl: './recipe.component.html',
-    styleUrl: './recipe.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-recipe',
+  imports: [],
+  templateUrl: './recipe.component.html',
+  styleUrl: './recipe.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecipeComponent {
   recipe = new Recipe(1, "jajecznica", ["jajka", "chleb", "jajka", "chleb", "jajka", "chleb", "jajka", "chleb", "jajka", "chleb"], "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean scelerisque ullamcorper venenatis. Etiam scelerisque turpis ac mi dapibus tempor. Nunc ullamcorper tincidunt scelerisque. Vestibulum congue ex eget ligula aliquet ornare. Etiam commodo ligula eget urna sagittis, quis egestas justo consequat. Proin efficitur sem a tellus congue volutpat. In a tortor mattis, aliquam quam ut, accumsan diam.\n" +

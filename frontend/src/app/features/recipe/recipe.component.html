@@ -2,10 +2,9 @@
   <h3> {{ recipe.name }} </h3>
   Skladniki:
   <ul>
-  @for ( ingredient of recipe.ingredients; track ingredient)
-  {
-    <li>{{ ingredient }}</li>
-  }
+    @for (ingredient of recipe.ingredients; track ingredient) {
+      <li>{{ ingredient }}</li>
+    }
   </ul>
   Wykonanie:
   <br>

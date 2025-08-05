@@ -1,11 +1,11 @@
 <div class="light-form-wrapper">
   <h2 class="text-center mb-4">Create Your Account</h2>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="light-form">
+  <form (ngSubmit)="onSubmit()" [formGroup]="form" class="light-form">
     <!-- First Name -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>First Name</mat-label>
-      <input matInput formControlName="firstname" autocomplete="given-name" />
+      <input autocomplete="given-name" formControlName="firstname" matInput/>
       @if (form.get('firstname')?.hasError('required')) {
         <mat-error>First name is required</mat-error>
       }
@@ -14,7 +14,7 @@
     <!-- Last Name -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Last Name</mat-label>
-      <input matInput formControlName="lastname" autocomplete="family-name" />
+      <input autocomplete="family-name" formControlName="lastname" matInput/>
       @if (form.get('lastname')?.hasError('required')) {
         <mat-error>Last name is required</mat-error>
       }
@@ -23,7 +23,7 @@
     <!-- Username -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Username</mat-label>
-      <input matInput formControlName="username" autocomplete="username" />
+      <input autocomplete="username" formControlName="username" matInput/>
       @if (form.get('username')?.hasError('required')) {
         <mat-error>Username is required</mat-error>
       }
@@ -32,7 +32,7 @@
     <!-- Email -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Email</mat-label>
-      <input matInput type="email" formControlName="email" autocomplete="email" />
+      <input autocomplete="email" formControlName="email" matInput type="email"/>
       @if (form.get('email')?.hasError('email')) {
         <mat-error>Invalid email format</mat-error>
       }
@@ -44,7 +44,7 @@
     <!-- Password -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" autocomplete="new-password" />
+      <input autocomplete="new-password" formControlName="password" matInput type="password"/>
       @if (form.get('password')?.hasError('required')) {
         <mat-error>Password is required</mat-error>
       }
@@ -52,11 +52,11 @@
 
     <!-- Submit Button -->
     <button
-      mat-raised-button
-      color="primary"
-      type="submit"
-      class="small-button"
       [disabled]="form.invalid || isSubmitting"
+      class="small-button"
+      color="primary"
+      mat-raised-button
+      type="submit"
     >
       {{ isSubmitting ? 'Registering...' : 'Register' }}
     </button>

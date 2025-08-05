@@ -1,14 +1,14 @@
 <div class="container">
   <main id="mealplan-form">
     <h2>Create your user profile</h2>
-    <mat-stepper linear #stepper orientation="vertical">
+    <mat-stepper #stepper linear orientation="vertical">
 
       <mat-step [stepControl]="basicInfoForm" label="Basic Information">
         <form [formGroup]="basicInfoForm">
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Age</mat-label>
-              <input matInput type="number" formControlName="age" required>
+              <input formControlName="age" matInput required type="number">
               @if (basicInfoForm.controls['age'].invalid) {
                 <mat-error>Age is required</mat-error>
               }
@@ -29,10 +29,10 @@
 
           <div class="step-navigation">
             <button
+              [disabled]="basicInfoForm.invalid"
               mat-raised-button
               matStepperNext
-              type="button"
-              [disabled]="basicInfoForm.invalid">
+              type="button">
               Next
             </button>
           </div>
@@ -45,7 +45,7 @@
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Weight [kg]</mat-label>
-              <input matInput type="number" formControlName="weight" required>
+              <input formControlName="weight" matInput required type="number">
               @if (physicalMeasurementsForm.controls['weight'].hasError('required')) {
                 <mat-error>Weight is required</mat-error>
               }
@@ -53,7 +53,7 @@
 
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Height [cm]</mat-label>
-              <input matInput type="number" formControlName="height" required>
+              <input formControlName="height" matInput required type="number">
               @if (physicalMeasurementsForm.controls['height'].hasError('required')) {
                 <mat-error>Height is required</mat-error>
               }
@@ -64,12 +64,14 @@
             <button
               mat-raised-button
               matStepperPrevious
-              type="button">Back</button>
+              type="button">Back
+            </button>
             <button
+              [disabled]="physicalMeasurementsForm.invalid"
               mat-raised-button
               matStepperNext
-              type="button"
-              [disabled]="physicalMeasurementsForm.invalid">Next</button>
+              type="button">Next
+            </button>
           </div>
 
         </form>
@@ -124,10 +126,10 @@
           <div class="step-navigation">
             <button mat-button matStepperPrevious type="button">Back</button>
             <button
+              [disabled]="dietaryInfoForm.invalid"
               mat-raised-button
               matStepperNext
-              type="button"
-              [disabled]="dietaryInfoForm.invalid">
+              type="button">
               Next
             </button>
           </div>
@@ -136,7 +138,7 @@
       </mat-step>
 
       <mat-step [stepControl]="allergiesForm" label="Allergies">
-        <form [formGroup]="allergiesForm" (ngSubmit)="onSubmit()">
+        <form (ngSubmit)="onSubmit()" [formGroup]="allergiesForm">
           <label class="allergy-label">Select your allergies (if any)</label>
           <div class="allergy-list">
             @for (allergy of allergies; track allergy) {
@@ -151,9 +153,9 @@
           <div class="step-navigation">
             <button mat-button matStepperPrevious type="button">Back</button>
             <button
-              mat-raised-button
               color="primary"
               id="select-button"
+              mat-raised-button
               type="submit">
               Generate Meal Plan
             </button>

@@ -1,10 +1,10 @@
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import {Component, OnInit, inject, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatMenuModule} from '@angular/material/menu';
+import {ChangeDetectionStrategy, Component, inject, OnInit, ViewEncapsulation} from '@angular/core';
+import {Router, RouterModule} from '@angular/router';
+import {AuthService} from '../../services/auth.service';
 import {MatDivider} from "@angular/material/divider";
 
 @Component({

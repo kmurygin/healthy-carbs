@@ -1,14 +1,14 @@
 <div class="light-form-wrapper">
   <h2 class="text-center mb-4">Please sign in</h2>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="light-form">
+  <form (ngSubmit)="onSubmit()" [formGroup]="form" class="light-form">
     <!-- Recommended by browser for accessibility -->
-    <input type="text" autocomplete="username" hidden />
+    <input autocomplete="username" hidden type="text"/>
 
     <!-- Username -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Username</mat-label>
-      <input matInput formControlName="username" autocomplete="username" placeholder="Username" />
+      <input autocomplete="username" formControlName="username" matInput placeholder="Username"/>
       @if (form.get('username')?.hasError('required')) {
         <mat-error>Username is required</mat-error>
       }
@@ -17,7 +17,8 @@
     <!-- Password -->
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" autocomplete="current-password" placeholder="Password" />
+      <input autocomplete="current-password" formControlName="password" matInput placeholder="Password"
+             type="password"/>
       @if (form.get('password')?.hasError('required')) {
         <mat-error>Password is required</mat-error>
       }
@@ -25,11 +26,11 @@
 
     <!-- Submit Button -->
     <button
-      mat-raised-button
-      color="primary"
-      type="submit"
+      [disabled]="form.invalid || isSubmitting()"
       class="small-button"
-      [disabled]="form.invalid || isSubmitting()">
+      color="primary"
+      mat-raised-button
+      type="submit">
       {{ isSubmitting() ? 'Signing in...' : 'Sign in' }}
     </button>
 

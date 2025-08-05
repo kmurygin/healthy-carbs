@@ -1,11 +1,11 @@
-import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ApiEndpoints, LocalStorage } from '../constants/constants';
-import { User } from '../models/user.model';
-import { ApiResponse, LoginPayload, RegisterPayload } from '../models/payloads';
-import { Router } from '@angular/router';
-import {map, Observable} from 'rxjs';
-import { jwtDecode } from "jwt-decode";
+import {Injectable, signal} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {ApiEndpoints, LocalStorage} from '../constants/constants';
+import {User} from '../models/user.model';
+import {ApiResponse, LoginPayload, RegisterPayload} from '../models/payloads';
+import {Router} from '@angular/router';
+import {map} from 'rxjs';
+import {jwtDecode} from "jwt-decode";
 
 @Injectable({
   providedIn: 'root'
@@ -16,14 +16,6 @@ export class AuthService {
 
   constructor(private httpClient: HttpClient, private router: Router) {
     this.checkTokenOnInit();
-  }
-
-  private checkTokenOnInit() {
-    const userFromToken = this.getUserFromToken();
-    if (userFromToken) {
-      this.isLoggedIn.set(true);
-      this.user.set(userFromToken.username);
-    }
   }
 
   register(registerPayload: RegisterPayload) {
@@ -38,8 +30,7 @@ export class AuthService {
           this.isLoggedIn.set(true);
           const userFromToken = this.getUserFromToken();
           this.user.set(userFromToken?.username);
-        }
-        else if (response.error) {
+        } else if (response.error) {
           this.isLoggedIn.set(false);
           console.log(response.error);
         }
@@ -83,5 +74,13 @@ export class AuthService {
     this.user.set(undefined);
     this.router.navigate(['login']);
     window.location.reload();
+  }
+
+  private checkTokenOnInit() {
+    const userFromToken = this.getUserFromToken();
+    if (userFromToken) {
+      this.isLoggedIn.set(true);
+      this.user.set(userFromToken.username);
+    }
   }
 }

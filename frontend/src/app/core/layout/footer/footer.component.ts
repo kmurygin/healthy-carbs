@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import {Component} from '@angular/core';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
 import {MatToolbar} from "@angular/material/toolbar";
 import {RouterLink} from "@angular/router";
 
@@ -18,4 +18,5 @@ import {RouterLink} from "@angular/router";
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss'
 })
-export class FooterComponent {}
+export class FooterComponent {
+}

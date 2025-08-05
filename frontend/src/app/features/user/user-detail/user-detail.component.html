@@ -1,33 +1,33 @@
 <div class="light-form-wrapper">
   <h2 class="text-center mb-4">Personal Information</h2>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="light-form">
+  <form (ngSubmit)="onSubmit()" [formGroup]="form" class="light-form">
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>First Name</mat-label>
-      <input matInput formControlName="firstname" placeholder="First Name" />
+      <input formControlName="firstname" matInput placeholder="First Name"/>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Last Name</mat-label>
-      <input matInput formControlName="lastname" placeholder="Last Name" />
+      <input formControlName="lastname" matInput placeholder="Last Name"/>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="form-field">
       <mat-label>Email</mat-label>
-      <input matInput formControlName="email" placeholder="Email" />
+      <input formControlName="email" matInput placeholder="Email"/>
     </mat-form-field>
 
     <button
-      mat-raised-button
+      [disabled]="form.invalid"
       class="small-button"
       color="primary"
-      type="submit"
-      [disabled]="form.invalid">
+      mat-raised-button
+      type="submit">
       Update Info
     </button>
 
 
-    @if(errorMessage()) {
+    @if (errorMessage()) {
       <mat-error>
         {{ errorMessage() }}
       </mat-error>

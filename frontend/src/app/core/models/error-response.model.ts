@@ -1,4 +1,5 @@
 export interface ErrorResponse {
+  traceId: string;
   timestamp: string;
   status: number;
   type: string;

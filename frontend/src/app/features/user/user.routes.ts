@@ -1,7 +1,7 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
 export default [
-  { path: '', redirectTo: 'edit_user_details', pathMatch: 'full' },
+  {path: '', redirectTo: 'edit_user_details', pathMatch: 'full'},
   {
     path: 'edit_user_details',
     loadComponent: () =>
@@ -14,7 +14,7 @@ export default [
     loadComponent: () =>
       import(
         './change-password/change-password.component'
-      ).then((m) => m.ChangePasswordComponent),
+        ).then((m) => m.ChangePasswordComponent),
   },
   {
     path: '**',

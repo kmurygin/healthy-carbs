@@ -1,10 +1,10 @@
-import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
-import { guestGuard } from './core/guards/guest.guard';
+import {Routes} from '@angular/router';
+import {authGuard} from './core/guards/auth.guard';
+import {guestGuard} from './core/guards/guest.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'user', redirectTo: 'user/edit_user_details', pathMatch: 'full' },
+  {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
+  {path: 'user', redirectTo: 'user/edit_user_details', pathMatch: 'full'},
 
   {
     path: 'dashboard',

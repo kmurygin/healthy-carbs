@@ -3,7 +3,7 @@
   <div class="charts-section">
     <h2>Twoje statystyki</h2>
 
-    <div class="charts-grid" [class.single-column]="isSmallScreen">
+    <div [class.single-column]="isSmallScreen" class="charts-grid">
 
       <mat-card class="chart-card">
         <mat-card-header>
@@ -12,20 +12,20 @@
         <mat-card-content>
           <div class="chart-container">
             <ngx-charts-line-chart
-              [view]="view"
-              [scheme]="colorScheme"
-              [results]="weightData"
+              [autoScale]="true"
               [gradient]="gradient"
-              [xAxis]="showXAxis"
-              [yAxis]="showYAxis"
-              [legend]="!isSmallScreen"
               [legendPosition]="legendPosition"
+              [legend]="!isSmallScreen"
+              [results]="weightData"
+              [scheme]="colorScheme"
               [showXAxisLabel]="showXAxisLabel"
               [showYAxisLabel]="showYAxisLabel"
-              [xAxisLabel]="xAxisLabel"
-              [yAxisLabel]="yAxisLabel"
               [timeline]="timeline"
-              [autoScale]="true">
+              [view]="view"
+              [xAxisLabel]="xAxisLabel"
+              [xAxis]="showXAxis"
+              [yAxisLabel]="yAxisLabel"
+              [yAxis]="showYAxis">
             </ngx-charts-line-chart>
           </div>
         </mat-card-content>
@@ -38,14 +38,14 @@
         <mat-card-content>
           <div class="chart-container">
             <ngx-charts-pie-chart
-              [view]="view"
-              [scheme]="colorScheme"
-              [results]="caloriesData"
+              [doughnut]="isDoughnut"
               [gradient]="gradient"
-              [legend]="!isSmallScreen"
-              [legendPosition]="legendPosition"
               [labels]="showLabels"
-              [doughnut]="isDoughnut">
+              [legendPosition]="legendPosition"
+              [legend]="!isSmallScreen"
+              [results]="caloriesData"
+              [scheme]="colorScheme"
+              [view]="view">
             </ngx-charts-pie-chart>
           </div>
         </mat-card-content>
@@ -56,7 +56,7 @@
   <div class="dashboard-grid">
     @for (category of categories; track category) {
       <mat-card class="dashboard-card">
-        <img ngOptimizedImage mat-card-image [src]="category.image" alt="{{ category.name }}" />
+        <img ngOptimizedImage mat-card-image [src]="category.image" alt="{{ category.name }}"/>
 
         <mat-card-content>
           <h3 class="card-title">{{ category.name }}</h3>
