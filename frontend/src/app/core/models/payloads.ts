@@ -23,14 +23,16 @@ export interface ApiResponse<T> {
   status?: boolean,
   message?: string,
   error?: string,
-  token?: string,
   data?: T,
-  user?: string,
 }
 
 export interface ChangePasswordPayload {
   oldPassword: string,
   newPassword: string,
+}
+
+export interface AuthenticationResponse {
+  token: string,
 }
 
 enum DietGoal {
