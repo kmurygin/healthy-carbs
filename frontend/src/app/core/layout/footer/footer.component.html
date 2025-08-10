@@ -1,13 +1,39 @@
-<mat-divider></mat-divider>
+<footer class="bg-white">
+  <div class="mx-auto border-gray-200 px-4 py-16 sm:px-6 lg:px-8">
 
-<mat-toolbar class="footer-toolbar" color="primary" role="contentinfo">
-  <div class="footer-content">
-    <span class="footer-text">&copy; 2025 Healthy Carbs. All rights reserved.</span>
+    <nav
+      class="flex flex-wrap items-center
+          justify-center gap-x-10 gap-y-4
+          text-base font-medium text-gray-700"
+    >
+      <a class="hover:text-emerald-900" routerLink="/about-us">About us</a>
+      <a class="hover:text-emerald-900" routerLink="/Contact">Contact</a>
+      <a class="hover:text-emerald-900" routerLink="/Career">Career</a>
+      <a class="hover:text-emerald-900" routerLink="/Career">Lorem</a>
+      <a class="hover:text-emerald-900" routerLink="/Career">Ipsum</a>
+    </nav>
 
-    <div class="footer-links">
-      <button [routerLink]="['/error']" mat-button>O nas</button>
-      <button [routerLink]="['/error']" mat-button>Kontatk</button>
-      <button [routerLink]="['/error']" mat-button>Lorem ipsum</button>
+    <div class="mt-10 flex justify-center gap-8 text-gray-500">
+      <a aria-label="Facebook" class="text-2xl hover:text-emerald-900" href="#">
+        <i class="fa-brands fa-facebook-f"></i>
+      </a>
+      <a aria-label="Instagram" class="text-2xl hover:text-emerald-900" href="#">
+        <i class="fa-brands fa-instagram"></i>
+      </a>
+      <a aria-label="X" class="text-2xl hover:text-emerald-900" href="#">
+        <i class="fa-brands fa-x-twitter"></i>
+      </a>
+      <a aria-label="TikTok" class="text-2xl hover:text-emerald-900" href="#">
+        <i class="fa-brands fa-tiktok"></i>
+      </a>
+      <a aria-label="YouTube" class="text-2xl hover:text-emerald-900" href="#">
+        <i class="fa-brands fa-youtube"></i>
+      </a>
     </div>
+
+    <p class="mt-10 text-center text-sm text-gray-500">
+      &copy; 2025 Healthy Carbs. All rights reserved.
+    </p>
+
   </div>
-</mat-toolbar>
+</footer>
