@@ -4,11 +4,10 @@ import {guestGuard} from './core/guards/guest.guard';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
-  {path: 'user', redirectTo: 'user/edit_user_details', pathMatch: 'full'},
 
   {
     path: 'dashboard',
-    canActivate: [authGuard],
+    canMatch: [authGuard],
     loadComponent: () =>
       import('./features/dashboard/dashboard.component').then(
         (m) => m.DashboardComponent
@@ -16,7 +15,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    canActivate: [guestGuard],
+    canMatch: [guestGuard],
     loadComponent: () =>
       import('./features/auth/login/login.component').then(
         (m) => m.LoginComponent
@@ -24,7 +23,7 @@ export const routes: Routes = [
   },
   {
     path: 'register',
-    canActivate: [guestGuard],
+    canMatch: [guestGuard],
     loadComponent: () =>
       import('./features/auth/register/register.component').then(
         (m) => m.RegisterComponent
@@ -32,7 +31,7 @@ export const routes: Routes = [
   },
   {
     path: 'recipe',
-    canActivate: [authGuard],
+    canMatch: [authGuard],
     loadComponent: () =>
       import('./features/recipe/recipe.component').then(
         (m) => m.RecipeComponent
@@ -40,7 +39,7 @@ export const routes: Routes = [
   },
   {
     path: 'mealplan-form',
-    canActivate: [authGuard],
+    canMatch: [authGuard],
     loadComponent: () =>
       import('./features/mealplan/mealplan-form/mealplan-form.component').then(
         (m) => m.MealplanFormComponent
@@ -48,16 +47,21 @@ export const routes: Routes = [
   },
   {
     path: 'index',
-    canActivate: [guestGuard],
+    canMatch: [guestGuard],
     loadComponent: () =>
       import('./pages/index/index.component').then((m) => m.IndexComponent),
   },
   {
     path: 'user',
-    canActivate: [authGuard],
-    loadChildren: () => import('./features/user/user.routes'),
+    canMatch: [authGuard],
+    loadChildren: () => import('./features/user/user.routes')
+      .then(m => m.USER_ROUTES)
   },
-
+  {
+    path: 'error/404',
+    loadComponent: () =>
+      import('./pages/error/error.component').then((m) => m.ErrorComponent),
+  },
   {
     path: '**',
     loadComponent: () =>

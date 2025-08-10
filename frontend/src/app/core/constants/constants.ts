@@ -18,6 +18,8 @@ export const ApiEndpoints = {
     userprofile: `${apiUrl}/meal-plan/userprofile`,
     mealplan: `${apiUrl}/meal-plan`,
   }
+
+
 };
 
 export const LocalStorage = {
