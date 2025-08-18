@@ -33,6 +33,7 @@
     "@angular/build": "^20.0.3",
     "@angular/cli": "^20.0.3",
     "@angular/compiler-cli": "^20.0.4",
+    "@angular/language-service": "^20.1.6",
     "@angular/localize": "^20.0.4",
     "@tailwindcss/cli": "^4.1.11",
     "@tailwindcss/postcss": "^4.1.11",
