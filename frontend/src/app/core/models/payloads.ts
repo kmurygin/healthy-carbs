@@ -1,29 +1,9 @@
-export interface LoginPayload {
-  username: string,
-  password: string
-}
-
-export interface RegisterPayload {
-  firstname: string,
-  lastname: string,
-  username: string,
-  email: string,
-  password: string,
-}
-
 export interface UserProfilePayload {
   weight: number,
   height: number,
   dietGoal: DietGoal,
   dietType: DietType,
   gender: Gender
-}
-
-export interface ApiResponse<T> {
-  status?: boolean,
-  message?: string,
-  error?: string,
-  data?: T,
 }
 
 export interface ChangePasswordPayload {
