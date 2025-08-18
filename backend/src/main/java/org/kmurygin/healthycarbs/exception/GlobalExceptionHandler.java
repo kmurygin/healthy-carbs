@@ -15,6 +15,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -44,9 +45,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> typeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
-        assert ex.getRequiredType() != null;
-        String msg = "Parameter '%s' should be of type '%s'"
-                .formatted(ex.getName(), ex.getRequiredType().getSimpleName());
+        String requiredType = ex.getRequiredType() != null
+                ? ex.getRequiredType().getSimpleName()
+                : "unknown";
+        String msg = "Parameter '%s' should be of type '%s'".formatted(ex.getName(), requiredType);
         return buildErrorResponse(msg, req, HttpStatus.BAD_REQUEST);
     }
 
@@ -55,10 +57,24 @@ public class GlobalExceptionHandler {
         return buildErrorResponse("Invalid or expired JWT", req, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(InvalidOldPasswordException.class)
+    public ResponseEntity<ErrorResponse> invalidOldPassword(InvalidOldPasswordException ex, HttpServletRequest req) {
+        return buildErrorResponse("Invalid old password", req, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> unauthorized(UnauthorizedException ex, HttpServletRequest req) {
+        return buildErrorResponse(ex.getMessage(), req, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> unhandled(Exception ex, HttpServletRequest req) {
         logger.error("Unhandled exception at {}: {}", req.getRequestURI(), ex.getMessage(), ex);
         return buildErrorResponse("An unexpected error occurred", req, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private String generateTraceId() {
+        return UUID.randomUUID().toString();
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(
@@ -71,6 +87,7 @@ public class GlobalExceptionHandler {
             Map<String, String> fieldErrors) {
 
         ErrorResponse body = ErrorResponse.builder()
+                .traceId(generateTraceId())
                 .timestamp(LocalDateTime.now())
                 .status(status.value())
                 .type(status.getReasonPhrase())

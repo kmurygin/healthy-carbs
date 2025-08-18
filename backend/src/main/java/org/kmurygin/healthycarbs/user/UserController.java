@@ -17,8 +17,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/user")
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -41,7 +40,7 @@ public class UserController {
                 .orElse(ApiResponses.failure(HttpStatus.NOT_FOUND, "User not found"));
     }
 
-    @GetMapping("username/{username}")
+    @GetMapping("/username/{username}")
     public ResponseEntity<ApiResponse<UserDTO>> getUserByUsername(@PathVariable String username) {
         return userService.getUserByUsername(username)
                 .map(user -> ApiResponses.success(userMapper.toDTO(user)))
@@ -69,12 +68,7 @@ public class UserController {
 
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
-        boolean success = userService.changePassword(request.getOldPassword(), request.getNewPassword());
-        if (success) {
-            logger.info("Success!");
-            return ApiResponses.success(HttpStatus.OK, null, "Password has been changed successfully");
-        }
-        logger.info("NOT Success!");
-        return ApiResponses.failure(HttpStatus.BAD_REQUEST, "Old password is incorrect");
+        userService.changePassword(request.getOldPassword(), request.getNewPassword());
+        return ApiResponses.success(HttpStatus.OK, null, "Password has been changed successfully");
     }
 }
