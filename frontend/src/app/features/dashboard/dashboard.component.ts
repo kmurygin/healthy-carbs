@@ -1,8 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
-
-import {MatCardModule} from '@angular/material/card';
-import {MatButtonModule} from '@angular/material/button';
 import {Color, LegendPosition, NgxChartsModule, ScaleType} from '@swimlane/ngx-charts';
 
 @Component({
@@ -10,21 +7,15 @@ import {Color, LegendPosition, NgxChartsModule, ScaleType} from '@swimlane/ngx-c
   standalone: true,
   imports: [
     RouterLink,
-    MatCardModule,
-    MatButtonModule,
     NgxChartsModule,
   ],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
+  styleUrls: ['./dashboard.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    '(window:resize)': 'onResize()'
-  }
 })
 export class DashboardComponent {
 
   isSmallScreen = window.innerWidth < 768;
-  view: [number, number] = this.calculateChartSize();
   categories = [
     {
       name: 'Plan żywieniowy',
@@ -81,12 +72,12 @@ export class DashboardComponent {
     {
       name: 'Waga',
       series: [
-        {name: '15 Maj', value: 85.2},
+        {name: '15 Maj', value: 100.2},
         {name: '20 Maj', value: 84.5},
         {name: '25 Maj', value: 84.0},
         {name: '31 Maj', value: 83.6},
         {name: '5 Cze', value: 83.0},
-        {name: '10 Cze', value: 82.5}, // typo fixed (was 70)
+        {name: '10 Cze', value: 82.5},
         {name: '15 Cze', value: 81.9},
         {name: '20 Cze', value: 80.8},
         {name: '25 Cze', value: 79.9},
@@ -120,15 +111,6 @@ export class DashboardComponent {
   isDoughnut = false;
   legendPosition: LegendPosition = LegendPosition.Right;
 
-  onResize(): void {
-    this.isSmallScreen = window.innerWidth < 768;
-    this.view = this.calculateChartSize();
-  }
-
   trackCategory = (_: number, cat: { route: string }) => cat.route;
 
-  private calculateChartSize(): [number, number] {
-    const width = Math.min(window.innerWidth * 0.9, 600);
-    return [width, width * 0.5];
-  }
 }
