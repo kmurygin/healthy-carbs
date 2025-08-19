@@ -1,0 +1,52 @@
+version: "1.0"
+
+profile:
+  name: qodana.recommended
+
+linter: jetbrains/qodana-js:2025.2
+
+include:
+  - name: AngularInsecureBindingToEvent
+  - name: AngularUndefinedBinding
+  - name: AngularUnresolvedTag
+  - name: Eslint
+  - name: HtmlRequiredAltAttribute
+  - name: HtmlUnknownAttribute
+  - name: HtmlUnknownTag
+  - name: HtmlUnknownTarget
+  - name: JSEvalUsage
+  - name: JSComparisonWithNaN
+  - name: JSConstantReassignment
+  - name: JSDetectObjectInjection
+  - name: JSIgnoredPromiseFromCall
+  - name: JSInconsistentEqualsUsage
+  - name: JSJQueryHtmlStringConcatenation
+  - name: JSPrimitiveTypeWrapperUsage
+  - name: JSUnreachableSwitchBranches
+  - name: JSUnresolvedFunction
+  - name: JSUnresolvedVariable
+  - name: JSUnusedLocalSymbols
+  - name: JSValidateTypes
+  - name: PackageJsonDependencyVersionMismatch
+  - name: PackageJsonDuplicateDependency
+  - name: PackageJsonMissingName
+  - name: PackageJsonMissingVersion
+  - name: PackageJsonUnusedDependency
+  - name: TypeScriptUnresolvedFunction
+  - name: TypeScriptUnresolvedReference
+  - name: TypeScriptUnresolvedVariable
+  - name: TypeScriptValidateTypes
+  - name: YAMLDuplicatedKeys
+  - name: YAMLInconsistentAlias
+  - name: YAMLRecursiveAlias
+  - name: YAMLUnusedAnchor
+
+bootstrap: |
+  corepack enable || true
+  pnpm -v >/dev/null 2>&1 && pnpm install --frozen-lockfile || (npm ci || npm i)
+
+failureConditions:
+  severityThresholds:
+    any: 10
+    critical: 1
+    high: 5
