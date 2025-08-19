@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {NavigationEnd, Router, RouterLink, RouterOutlet} from "@angular/router";
 import {filter} from 'rxjs/operators';
 import {NgClass} from "@angular/common";
@@ -17,9 +17,11 @@ import {NgClass} from "@angular/common";
 })
 export class UserComponent {
 
-  currentSubPath: string = '';
+  currentSubPath = '';
 
-  constructor(private router: Router) {
+  private router = inject(Router);
+
+  constructor() {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {

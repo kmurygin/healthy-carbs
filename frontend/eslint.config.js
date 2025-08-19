@@ -39,27 +39,27 @@ module.exports = tseslint.config(
     rules: {
       "@angular-eslint/component-selector": [
         "error",
-        { type: "element", prefix: "app", style: "kebab-case" },
+        {type: "element", prefix: "app", style: "kebab-case"},
       ],
       "@angular-eslint/directive-selector": [
         "error",
-        { type: "attribute", prefix: "app", style: "camelCase" },
+        {type: "attribute", prefix: "app", style: "camelCase"},
       ],
 
       "@typescript-eslint/await-thenable": "error",
       "@typescript-eslint/consistent-type-assertions": [
         "error",
-        { assertionStyle: "as", objectLiteralTypeAssertions: "never" },
+        {assertionStyle: "as", objectLiteralTypeAssertions: "never"},
       ],
       "@typescript-eslint/consistent-type-imports": [
         "error",
-        { prefer: "type-imports" },
+        {prefer: "type-imports"},
       ],
       "@typescript-eslint/no-base-to-string": "error",
-      "@typescript-eslint/no-floating-promises": ["error", { ignoreVoid: true }],
+      "@typescript-eslint/no-floating-promises": ["error", {ignoreVoid: true}],
       "@typescript-eslint/no-misused-promises": [
         "error",
-        { checksVoidReturn: { attributes: false } },
+        {checksVoidReturn: {attributes: false}},
       ],
       "@typescript-eslint/no-unsafe-argument": "error",
       "@typescript-eslint/no-unsafe-assignment": "error",
@@ -68,15 +68,15 @@ module.exports = tseslint.config(
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
       "@typescript-eslint/restrict-template-expressions": [
         "error",
-        { allowNumber: true, allowBoolean: true },
+        {allowNumber: true, allowBoolean: true},
       ],
-      "@typescript-eslint/unbound-method": ["error", { ignoreStatic: true }],
+      "@typescript-eslint/unbound-method": ["error", {ignoreStatic: true}],
 
       "default-case-last": "error",
       "eqeqeq": ["error", "smart"],
       "no-duplicate-case": "error",
       "no-fallthrough": "error",
-      "no-implicit-coercion": ["error", { allow: ["!!"] }],
+      "no-implicit-coercion": ["error", {allow: ["!!"]}],
       "no-implied-eval": "error",
       "no-new-func": "error",
       "no-throw-literal": "error",

@@ -1,15 +1,21 @@
-import {HttpErrorResponse, HttpInterceptorFn, HttpStatusCode} from '@angular/common/http';
+import type {HttpErrorResponse, HttpInterceptorFn} from '@angular/common/http';
+import {HttpStatusCode} from '@angular/common/http';
 import {inject} from '@angular/core';
-import {catchError, Observable, retry, throwError} from 'rxjs';
+import type {Observable} from 'rxjs';
+import {catchError, retry, throwError} from 'rxjs';
 import {AuthService} from '../services/auth.service';
 import {Router} from '@angular/router';
-import {ErrorResponse} from '../models/error-response.model';
+import type {ErrorResponse} from '../models/error-response.model';
 import {environment} from '../../../environments/environment';
 
 function isApiCall(url: string): boolean {
   const requestUrl = new URL(url, window.location.origin);
   const apiUrl = new URL(environment.apiUrl, window.location.origin);
   return requestUrl.origin === apiUrl.origin && requestUrl.pathname.startsWith(apiUrl.pathname);
+}
+
+function toHttpStatusCode(n: number) {
+  return HttpStatusCode[n as HttpStatusCode] !== undefined ? (n as HttpStatusCode) : null;
 }
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
@@ -49,7 +55,7 @@ const handleError = (
   let errorMessage = 'An unknown error occurred';
 
   if (errorResponse) {
-    errorMessage = errorResponse.message || errorMessage;
+    errorMessage = errorResponse.message ?? errorMessage;
 
     if (errorResponse.fieldErrors && Object.keys(errorResponse.fieldErrors).length > 0) {
       const fields = Object.entries(errorResponse.fieldErrors)
@@ -67,7 +73,7 @@ const handleError = (
     }
   }
 
-  switch (error.status) {
+  switch (toHttpStatusCode(error.status)) {
     case HttpStatusCode.Unauthorized:
       if (!error.url?.includes('/auth/authenticate')) {
         authService.logout();
@@ -79,7 +85,10 @@ const handleError = (
       break;
 
     case HttpStatusCode.NotFound:
-      router.navigate(['/error/404']);
+      router.navigate(['/error/404'])
+        .catch(err => {
+          console.error('Navigation failed', err);
+        });
       break;
 
     case HttpStatusCode.InternalServerError:
