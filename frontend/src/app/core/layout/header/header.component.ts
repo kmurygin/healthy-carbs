@@ -19,7 +19,7 @@ export class HeaderComponent {
   }
 
   get username(): string | null {
-    return this.authService.getUserFromToken();
+    return this.authService.user();
   }
 
   logout(): void {

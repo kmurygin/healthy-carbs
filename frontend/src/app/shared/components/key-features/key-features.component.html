@@ -1,47 +1,57 @@
-<div class="key-features py-16 bg-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center text-[#4f772d]">
+<div class="key-features bg-white py-16">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+    <h2 class="mb-8 text-center text-3xl font-bold text-emerald-700 md:text-4xl">
       Key Features
     </h2>
 
-    <div class="animate__animated animate__fadeIn h-auto bg-gray-50 rounded-lg shadow-sm">
-      <mat-tab-group animationDuration="300ms" class="feature-tabs h-auto" mat-align-tabs="center"
-                     mat-stretch-tabs="false">
+    <div class="rounded-lg bg-gray-50 shadow-sm animate-fadeIn">
 
-        @for (feature of features; track feature.label) {
-          <mat-tab>
-            <ng-template mat-tab-label>
-              <mat-icon class="mr-2">{{ feature.icon }}</mat-icon>
-              {{ feature.label }}
-            </ng-template>
-            <div class="p-6 h-auto">
-              <mat-card class="feature-card">
-                <mat-card-content class="feature-content-container">
-
-                  <div class="feature-image">
-                    <img ngOptimizedImage [src]="feature.imageUrl"
-                         [alt]="feature.imageAlt"
-                         [title]="feature.imageAlt"
-                         class="rounded-lg shadow-md w-full h-auto object-cover transition-transform duration-300 hover:scale-105"
-                         style="aspect-ratio: 16/9;">
-                  </div>
-
-                  <div class="feature-text">
-                    <h3 class="text-2xl font-medium mb-4 text-[#31572C]">{{ feature.title }}</h3>
-                    <ul class="list-disc pl-5 space-y-2 mb-4">
-                      @for (point of feature.bulletPoints; track point) {
-                        <li>{{ point }}</li>
-                      }
-                    </ul>
-                  </div>
-
-                </mat-card-content>
-              </mat-card>
-            </div>
-          </mat-tab>
+      <nav class="flex flex-wrap justify-center border-b border-gray-200">
+        @for (feature of features; track feature.label; let i = $index) {
+          <button
+            type="button"
+            (click)="selected = i"
+            class="flex items-center gap-2 px-4 py-3 font-medium transition
+                   border-b-2 -mb-px"
+            [class.text-emerald-700]="selected === i"
+            [class.border-emerald-700]="selected === i"
+            [class.text-gray-500]="selected !== i"
+            [class.border-transparent]="selected !== i"
+          >
+            <i [class]="feature.icon + ' text-base'"></i>
+            {{ feature.label }}
+          </button>
         }
+      </nav>
 
-      </mat-tab-group>
+      @if (features.length) {
+        <div class="p-6">
+          <div class="grid gap-8 md:grid-cols-2">
+            <img
+              ngOptimizedImage
+              [src]="features[selected].imageUrl"
+              [alt]="features[selected].imageAlt"
+              class="aspect-video w-full rounded-lg object-cover shadow-md
+                     transition-transform duration-300 hover:scale-105"
+            />
+
+            <div>
+              <h3 class="mb-4 text-2xl font-medium text-emerald-800">
+                {{ features[selected].title }}
+              </h3>
+
+              <ul class="space-y-2 list-disc pl-5">
+                @for (bulletPoint of features[selected].bulletPoints; track bulletPoint) {
+                  <li>{{ bulletPoint }}</li>
+                }
+              </ul>
+
+            </div>
+          </div>
+        </div>
+      }
+
     </div>
   </div>
 </div>
