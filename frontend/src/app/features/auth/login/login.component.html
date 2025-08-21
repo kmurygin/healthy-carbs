@@ -1,42 +1,71 @@
-<div class="light-form-wrapper">
-  <h2 class="text-center mb-4">Please sign in</h2>
+<div class="light-form-wrapper max-w-sm mx-auto mt-8 p-6 bg-white rounded-xl shadow-md">
+  <h2 class="text-center mb-6 text-2xl font-semibold">Please sign in</h2>
 
-  <form (ngSubmit)="onSubmit()" [formGroup]="form" class="light-form">
-    <!-- Recommended by browser for accessibility -->
+  <form (ngSubmit)="onSubmit()" [formGroup]="form" class="space-y-5">
+
     <input autocomplete="username" hidden type="text"/>
 
-    <!-- Username -->
-    <mat-form-field appearance="outline" class="form-field">
-      <mat-label>Username</mat-label>
-      <input autocomplete="username" formControlName="username" matInput placeholder="Username"/>
-      @if (form.get('username')?.hasError('required')) {
-        <mat-error>Username is required</mat-error>
-      }
-    </mat-form-field>
+    <div>
+      <label class="block mb-1 text-sm font-medium text-gray-700" for="username">
+        Username
+      </label>
 
-    <!-- Password -->
-    <mat-form-field appearance="outline" class="form-field">
-      <mat-label>Password</mat-label>
-      <input autocomplete="current-password" formControlName="password" matInput placeholder="Password"
-             type="password"/>
-      @if (form.get('password')?.hasError('required')) {
-        <mat-error>Password is required</mat-error>
-      }
-    </mat-form-field>
+      @let u = form.controls['username'];
+      <input
+        id="username"
+        formControlName="username"
+        placeholder="Username"
+        class="input"
+        type="text"
+        autocomplete="username"
+        [class.border-red-500]="u.invalid && (u.touched || u.dirty || submitted())"
+        [attr.aria-invalid]="u.invalid && (u.touched || u.dirty || submitted()) ? 'true' : null"
+      />
 
-    <!-- Submit Button -->
+      @if (u.invalid && (u.touched || u.dirty || submitted()) && u.hasError('required')) {
+        <p class="mt-1 text-xs text-red-600" id="username-error">Username is required</p>
+      }
+    </div>
+
+    <div>
+      <label class="block mb-1 text-sm font-medium text-gray-700" for="password">
+        Password
+      </label>
+
+      @let p = form.controls['password'];
+      <input
+        id="password"
+        formControlName="password"
+        placeholder="Password"
+        class="input"
+        type="password"
+        autocomplete="current-password"
+        [class.border-red-500]="p.invalid && (p.touched || p.dirty || submitted())"
+        [attr.aria-invalid]="p.invalid && (p.touched || p.dirty || submitted()) ? 'true' : null"
+      />
+
+      @if (p.invalid && (p.touched || p.dirty || submitted()) && p.hasError('required')) {
+        <p class="mt-1 text-xs text-red-600" id="password-error">Password is required</p>
+      }
+    </div>
+
     <button
       [disabled]="form.invalid || isSubmitting()"
-      class="small-button"
-      color="primary"
-      mat-raised-button
-      type="submit">
-      {{ isSubmitting() ? 'Signing in...' : 'Sign in' }}
+      class="w-full flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-white
+             text-sm font-medium transition hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none"
+      type="submit"
+    >
+      {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
     </button>
 
-    <!-- Global error -->
     @if (errorMessage()) {
-      <mat-error class="mt-2">{{ errorMessage() }}</mat-error>
+      <div class="mt-4 flex items-start gap-2 rounded-lg border border-red-300 bg-red-50 p-3 shadow-sm">
+
+        <span class="text-sm font-medium text-red-800">
+          {{ errorMessage() }}
+        </span>
+
+      </div>
     }
   </form>
 </div>
