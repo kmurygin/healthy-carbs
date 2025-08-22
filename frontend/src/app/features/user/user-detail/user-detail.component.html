@@ -1,36 +1,86 @@
-<div class="light-form-wrapper">
-  <h2 class="text-center mb-4">Personal Information</h2>
+<div class="max-w-md mx-auto rounded-lg bg-white p-8 shadow-sm">
+  <h2 class="mb-6 text-center text-2xl font-semibold text-emerald-700">
+    Personal Information
+  </h2>
 
-  <form (ngSubmit)="onSubmit()" [formGroup]="form" class="light-form">
-    <mat-form-field appearance="outline" class="form-field">
-      <mat-label>First Name</mat-label>
-      <input formControlName="firstname" matInput placeholder="First Name"/>
-    </mat-form-field>
+  <form (ngSubmit)="onSubmit()" [formGroup]="form" class="space-y-6">
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700" for="firstname">
+        First Name
+      </label>
+      <input
+        class="block w-full rounded-md border border-gray-300 p-2.5 text-sm
+               focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
+        formControlName="firstname"
+        id="firstname"
+        type="text"
+      />
+      @if (formControl.firstname.hasError('required') && formControl.firstname.touched) {
+        <p class="error">First name is required</p>
+      }
+    </div>
 
-    <mat-form-field appearance="outline" class="form-field">
-      <mat-label>Last Name</mat-label>
-      <input formControlName="lastname" matInput placeholder="Last Name"/>
-    </mat-form-field>
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700" for="lastname">
+        Last Name
+      </label>
+      <input
+        class="block w-full rounded-md border border-gray-300 p-2.5 text-sm
+               focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
+        formControlName="lastname"
+        id="lastname"
+        type="text"
+      />
+      @if (formControl.lastname.hasError('required') && formControl.lastname.touched) {
+        <p class="error">Last name is required</p>
+      }
+    </div>
 
-    <mat-form-field appearance="outline" class="form-field">
-      <mat-label>Email</mat-label>
-      <input formControlName="email" matInput placeholder="Email"/>
-    </mat-form-field>
+    <div>
+      <label class="mb-1 block text-sm font-medium text-gray-700" for="email">
+        Email</label>
+      <input
+        class="block w-full rounded-md border border-gray-300 p-2.5 text-sm
+               focus:border-emerald-600 focus:ring-2 focus:ring-emerald-200"
+        formControlName="email"
+        id="email"
+        type="email"
+      />
+      @if (formControl.email.hasError('required') && formControl.email.touched) {
+        <p class="error">Email is required</p>
+      }
+      @if (formControl.email.hasError('email') && formControl.email.touched) {
+        <p class="error">Enter a valid email address</p>
+      }
+    </div>
 
     <button
       [disabled]="form.invalid"
-      class="small-button"
-      color="primary"
-      mat-raised-button
-      type="submit">
-      Update Info
+      class="w-full flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-2
+           text-white text-sm font-medium transition hover:bg-emerald-700 disabled:opacity-50
+             disabled:pointer-events-none"
+      type="submit"
+    >
+      Update your personal information
     </button>
 
-
     @if (errorMessage()) {
-      <mat-error>
+      <p
+        class="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-center
+               text-sm font-medium text-red-800 shadow-sm"
+      >
         {{ errorMessage() }}
-      </mat-error>
+      </p>
     }
+
+    @if (infoMessage()) {
+      <p
+        class="rounded-md border border-green-300 bg-green-50 px-3 py-2 text-center
+               text-sm font-medium text-green-800 shadow-sm"
+      >
+        {{ infoMessage() }}
+      </p>
+    }
+
   </form>
 </div>
