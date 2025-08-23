@@ -18,7 +18,8 @@
 }
 
 html {
-  overflow-y: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 html, body {

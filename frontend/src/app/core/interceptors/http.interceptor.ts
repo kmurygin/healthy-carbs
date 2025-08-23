@@ -33,7 +33,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
 
     req = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${authService.getUserToken()}`
+        Authorization: `Bearer ${authService.jwtToken()}`
       }
     });
   }

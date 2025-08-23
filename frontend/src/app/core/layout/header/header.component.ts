@@ -1,6 +1,7 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {Router, RouterModule} from '@angular/router';
+import {ChangeDetectionStrategy, Component, inject, signal, Signal} from '@angular/core';
+import {NavigationEnd, Router, RouterModule} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
+import {filter} from "rxjs/operators";
 
 @Component({
   selector: 'app-header',
@@ -13,6 +14,11 @@ import {AuthService} from '../../services/auth.service';
 export class HeaderComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  readonly menuOpen = signal(false);
+
+  constructor() {
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => this.menuOpen.set(false));
+  }
 
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
@@ -28,5 +34,15 @@ export class HeaderComponent {
       .catch(err => {
         console.error('Navigation failed', err);
       });
+  }
+
+  openMenu(dlg: HTMLDialogElement): void {
+    if (!dlg.open) dlg.showModal();
+    this.menuOpen.set(true);
+  }
+
+  closeMenu(dlg: HTMLDialogElement): void {
+    if (dlg.open) dlg.close();
+    this.menuOpen.set(false);
   }
 }
