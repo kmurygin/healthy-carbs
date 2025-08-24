@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import type {FormControl, FormGroup} from '@angular/forms';
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {UserService} from '../../../core/services/user.service';
 
 type ChangePasswordForm = FormGroup<{
@@ -40,12 +41,12 @@ export class ChangePasswordComponent {
 
     this.userService.changePassword(this.form.getRawValue()).subscribe({
       next: (res) => {
-        this.infoMessage.set(res?.message || 'Password updated successfully.');
+        this.infoMessage.set(res?.message ?? 'Password updated successfully.');
         this.form.reset();
       },
       error: (err) => {
         const msg = err?.error?.message ?? err?.message ?? '';
-        this.errorMessage.set(msg || 'Failed to change password. Please try again.');
+        this.errorMessage.set(msg ?? 'Failed to change password. Please try again.');
       }
     });
   }

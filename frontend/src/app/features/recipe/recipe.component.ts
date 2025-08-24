@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {RecipeDto} from "../../core/models/dto/recipe.dto";
-import {IngredientDto} from "../../core/models/dto/ingredient.dto";
-import {RecipeIngredientDto} from "../../core/models/dto/recipe-ingredient.dto";
+import type {RecipeDto} from "../../core/models/dto/recipe.dto";
+import type {IngredientDto} from "../../core/models/dto/ingredient.dto";
+import type {RecipeIngredientDto} from "../../core/models/dto/recipe-ingredient.dto";
 
 @Component({
   selector: 'app-recipe',

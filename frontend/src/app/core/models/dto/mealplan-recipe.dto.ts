@@ -1,5 +1,5 @@
-import { RecipeDto } from './recipe.dto';
-import {MealPlanDto} from "./mealplan.dto";
+import type {RecipeDto} from './recipe.dto';
+import type {MealPlanDto} from "./mealplan.dto";
 
 export interface MealPlanRecipeDto {
   id: number;

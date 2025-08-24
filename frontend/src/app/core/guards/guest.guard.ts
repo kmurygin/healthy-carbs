@@ -1,4 +1,5 @@
-import {CanMatchFn, Router, UrlTree} from '@angular/router';
+import type {CanMatchFn, UrlTree} from '@angular/router';
+import {Router} from '@angular/router';
 import {inject} from "@angular/core";
 import {AuthService} from "../services/auth.service";
 

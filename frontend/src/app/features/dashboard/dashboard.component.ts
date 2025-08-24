@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {Color, LegendPosition, NgxChartsModule, ScaleType} from '@swimlane/ngx-charts';
+import type {Color} from '@swimlane/ngx-charts';
+import {LegendPosition, NgxChartsModule, ScaleType} from '@swimlane/ngx-charts';
 
 @Component({
   selector: 'app-dashboard',

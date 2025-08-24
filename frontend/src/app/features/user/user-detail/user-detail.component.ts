@@ -1,9 +1,11 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import type {OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import type {FormControl, FormGroup} from '@angular/forms';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {UserService} from '../../../core/services/user.service';
 import {AuthService} from '../../../core/services/auth.service';
-import {UserDto} from '../../../core/models/dto/user.dto';
+import type {UserDto} from '../../../core/models/dto/user.dto';
 
 type UserDetailForm = FormGroup<{
   firstname: FormControl<string>;
@@ -78,11 +80,11 @@ export class UserDetailComponent implements OnInit {
 
     this.userService.updateUser(this.user()!.id, updatedUser).subscribe({
       next: (res) => {
-        this.infoMessage.set(res?.message || 'Personal information updated successfully!');
+        this.infoMessage.set(res?.message ?? 'Personal information updated successfully!');
       },
       error: (err) => {
-        const msg = err?.error?.message || err?.message || '';
-        this.errorMessage.set(msg || 'Failed to update user details. Please try again.');
+        const msg: string = err?.error?.message ?? err?.message ?? '';
+        this.errorMessage.set(msg ?? 'Failed to update user details. Please try again.');
       }
     });
   }
