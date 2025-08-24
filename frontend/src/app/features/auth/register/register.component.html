@@ -21,7 +21,6 @@
   </section>
 
 
-
   <section
     class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-12"
   >
@@ -39,13 +38,13 @@
 
             @let fn = form.controls.firstname;
             <input
-              id="firstname"
-              formControlName="firstname"
-              class="input"
-              type="text"
-              autocomplete="firstname"
-              [class.border-red-500]="fn.invalid && (fn.touched || fn.dirty)"
               [attr.aria-invalid]="fn.invalid && (fn.touched || fn.dirty) ? 'true' : null"
+              [class.border-red-500]="fn.invalid && (fn.touched || fn.dirty)"
+              autocomplete="firstname"
+              class="input"
+              formControlName="firstname"
+              id="firstname"
+              type="text"
             />
             @if (fn.invalid && (fn.touched || fn.dirty) && fn.hasError('required')) {
               <p class="mt-1 text-xs text-red-600">First name is required</p>
@@ -57,13 +56,13 @@
 
             @let ln = form.controls.lastname;
             <input
-              id="lastname"
-              formControlName="lastname"
-              class="input"
-              type="text"
-              autocomplete="lastname"
-              [class.border-red-500]="ln.invalid && (ln.touched || ln.dirty)"
               [attr.aria-invalid]="ln.invalid && (ln.touched || ln.dirty) ? 'true' : null"
+              [class.border-red-500]="ln.invalid && (ln.touched || ln.dirty)"
+              autocomplete="lastname"
+              class="input"
+              formControlName="lastname"
+              id="lastname"
+              type="text"
             />
             @if (ln.invalid && (ln.touched || ln.dirty) && ln.hasError('required')) {
               <p class="mt-1 text-xs text-red-600">Last name is required</p>
@@ -76,13 +75,13 @@
 
           @let u = form.controls.username;
           <input
-            id="username"
-            formControlName="username"
-            class="input"
-            type="text"
-            autocomplete="username"
-            [class.border-red-500]="u.invalid && (u.touched || u.dirty)"
             [attr.aria-invalid]="u.invalid && (u.touched || u.dirty) ? 'true' : null"
+            [class.border-red-500]="u.invalid && (u.touched || u.dirty)"
+            autocomplete="username"
+            class="input"
+            formControlName="username"
+            id="username"
+            type="text"
           />
           @if (u.invalid && (u.touched || u.dirty) && u.hasError('required')) {
             <p class="mt-1 text-xs text-red-600">Username is required</p>
@@ -94,13 +93,13 @@
 
           @let e = form.controls.email;
           <input
-            id="email"
-            formControlName="email"
-            class="input"
-            type="email"
-            autocomplete="email"
-            [class.border-red-500]="e.invalid && (e.touched || e.dirty)"
             [attr.aria-invalid]="e.invalid && (e.touched || e.dirty) ? 'true' : null"
+            [class.border-red-500]="e.invalid && (e.touched || e.dirty)"
+            autocomplete="email"
+            class="input"
+            formControlName="email"
+            id="email"
+            type="email"
           />
           @if (e.invalid && (e.touched || e.dirty) && e.hasError('required')) {
             <p class="mt-1 text-xs text-red-600">Email is required</p>
@@ -115,13 +114,13 @@
 
           @let p = form.controls.password;
           <input
-            id="password"
-            formControlName="password"
-            class="input"
-            type="password"
-            autocomplete="current-password"
-            [class.border-red-500]="p.invalid && (p.touched || p.dirty)"
             [attr.aria-invalid]="p.invalid && (p.touched || p.dirty) ? 'true' : null"
+            [class.border-red-500]="p.invalid && (p.touched || p.dirty)"
+            autocomplete="current-password"
+            class="input"
+            formControlName="password"
+            id="password"
+            type="password"
           />
           @if (p.invalid && (p.touched || p.dirty) && p.hasError('required')) {
             <p class="mt-1 text-xs text-red-600">Password is required</p>

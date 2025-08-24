@@ -1,5 +1,5 @@
 <div class="light-form-wrapper max-w-sm mx-auto mt-24 p-4 bg-white rounded-xl border border-gray-400">
-<!--  <h2 class="text-center mb-6 text-2xl font-semibold">Please sign in</h2>-->
+  <!--  <h2 class="text-center mb-6 text-2xl font-semibold">Please sign in</h2>-->
 
   <form (ngSubmit)="onSubmit()" [formGroup]="form" class="space-y-5">
 
@@ -12,14 +12,14 @@
 
       @let u = form.controls['username'];
       <input
-        id="username"
-        formControlName="username"
-        placeholder="Username"
-        class="input"
-        type="text"
-        autocomplete="username"
-        [class.border-red-500]="u.invalid && (u.touched || u.dirty || submitted())"
         [attr.aria-invalid]="u.invalid && (u.touched || u.dirty || submitted()) ? 'true' : null"
+        [class.border-red-500]="u.invalid && (u.touched || u.dirty || submitted())"
+        autocomplete="username"
+        class="input"
+        formControlName="username"
+        id="username"
+        placeholder="Username"
+        type="text"
       />
 
       @if (u.invalid && (u.touched || u.dirty || submitted()) && u.hasError('required')) {
@@ -34,14 +34,14 @@
 
       @let p = form.controls['password'];
       <input
-        id="password"
-        formControlName="password"
-        placeholder="Password"
-        class="input"
-        type="password"
-        autocomplete="current-password"
-        [class.border-red-500]="p.invalid && (p.touched || p.dirty || submitted())"
         [attr.aria-invalid]="p.invalid && (p.touched || p.dirty || submitted()) ? 'true' : null"
+        [class.border-red-500]="p.invalid && (p.touched || p.dirty || submitted())"
+        autocomplete="current-password"
+        class="input"
+        formControlName="password"
+        id="password"
+        placeholder="Password"
+        type="password"
       />
 
       @if (p.invalid && (p.touched || p.dirty || submitted()) && p.hasError('required')) {

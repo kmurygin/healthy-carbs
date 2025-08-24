@@ -1,19 +1,11 @@
-export class DietaryProfileDto {
+export interface DietaryProfileDto {
   id: number;
   userId: number;
-  calories: number;
-  carbs: number;
-  protein: number;
-  fat: number;
+  calorieTarget: number;
+  carbsTarget: number;
+  proteinTarget: number;
+  fatTarget: number;
+  weight: number;
+  height: number;
   dietType: string;
-
-  constructor(id: number, userId: number, calories: number, carbs: number) {
-    this.id = id;
-    this.userId = userId;
-    this.calories = calories;
-    this.carbs = carbs;
-    this.protein = 0;
-    this.fat = 0;
-    this.dietType = '';
-  }
 }

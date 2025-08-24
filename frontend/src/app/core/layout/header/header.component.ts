@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, signal, Signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {NavigationEnd, Router, RouterModule} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import {filter} from "rxjs/operators";
@@ -12,9 +12,9 @@ import {filter} from "rxjs/operators";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
+  readonly menuOpen = signal(false);
   private authService = inject(AuthService);
   private router = inject(Router);
-  readonly menuOpen = signal(false);
 
   constructor() {
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => this.menuOpen.set(false));

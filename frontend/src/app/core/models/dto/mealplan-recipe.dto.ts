@@ -1,13 +1,8 @@
-import type {RecipeDto} from "./recipe.dto";
+import { RecipeDto } from './recipe.dto';
+import {MealPlanDto} from "./mealplan.dto";
 
-export class MealplanRecipeDto {
+export interface MealPlanRecipeDto {
   id: number;
+  mealPlan: MealPlanDto;
   recipe: RecipeDto;
-  mealType: string;
-
-  constructor(recipe: RecipeDto, mealType: string) {
-    this.id = 0;
-    this.recipe = recipe;
-    this.mealType = mealType;
-  }
 }

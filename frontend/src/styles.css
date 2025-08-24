@@ -20,6 +20,13 @@
 html {
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+  }
 }
 
 html, body {

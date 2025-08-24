@@ -28,20 +28,8 @@ export class AuthService {
 
   httpClient = inject(HttpClient);
   router = inject(Router);
-
-  readonly user = computed<string | null>(() => this.claims()?.sub ?? null);
   private readonly token = signal<string | null>(localStorage.getItem(LocalStorage.token));
-
   readonly jwtToken = this.token.asReadonly();
-
-  readonly isLoggedIn = computed<boolean>(() => {
-    const jwtClaims = this.claims();
-    console.log('jwtClaims: ', jwtClaims);
-    if (!jwtClaims?.exp) return false;
-    const now = Math.floor(Date.now() / 1000);
-    return now < jwtClaims.exp;
-  });
-
   readonly claims = computed<JwtClaims | null>(() => {
     const jwtToken = this.token();
     if (!jwtToken) return null;
@@ -51,6 +39,14 @@ export class AuthService {
       console.error('Failed to decode JWT token:', e);
       return null;
     }
+  });
+  readonly user = computed<string | null>(() => this.claims()?.sub ?? null);
+  readonly isLoggedIn = computed<boolean>(() => {
+    const jwtClaims = this.claims();
+    console.log('jwtClaims: ', jwtClaims);
+    if (!jwtClaims?.exp) return false;
+    const now = Math.floor(Date.now() / 1000);
+    return now < jwtClaims.exp;
   });
 
   constructor() {
@@ -74,7 +70,7 @@ export class AuthService {
     return this.httpClient.post<ApiResponse<AuthenticationResponse>>(ApiEndpoints.Auth.Login, payload).pipe(
       tap(res => {
         if (!(res.status && res.data?.token)) {
-          throw new Error(res.message  ?? 'Login failed');
+          throw new Error(res.message ?? 'Login failed');
         }
       }),
       map(res => {

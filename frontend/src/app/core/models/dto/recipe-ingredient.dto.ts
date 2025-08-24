@@ -1,13 +1,7 @@
-import type {IngredientDto} from "./ingredient.dto";
+import type {IngredientDto} from './ingredient.dto';
 
-export class RecipeIngredientDto {
-  id: number;
-  ingredient: IngredientDto;
-  quantity: number;
-
-  constructor(ingredient: IngredientDto, quantity: number) {
-    this.id = 0;
-    this.ingredient = ingredient;
-    this.quantity = quantity;
-  }
+export interface RecipeIngredientDto {
+  readonly id: number;
+  readonly ingredient: IngredientDto;
+  readonly quantity: number;
 }
