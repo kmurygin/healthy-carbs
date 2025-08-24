@@ -28,7 +28,7 @@ import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
     }
   ],
   templateUrl: './mealplan-form.component.html',
-  styleUrl: './mealplan-form.component.scss',
+  styleUrl: './mealplan-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MealplanFormComponent {
