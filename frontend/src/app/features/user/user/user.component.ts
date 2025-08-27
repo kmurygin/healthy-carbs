@@ -1,33 +1,40 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {Router, RouterLink, RouterOutlet, NavigationEnd} from "@angular/router";
-import {MatButtonModule} from '@angular/material/button';
-import {MatCard} from "@angular/material/card";
-import {MatIconModule} from "@angular/material/icon";
-import { filter } from 'rxjs/operators';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {NavigationEnd, Router, RouterLink, RouterOutlet} from "@angular/router";
+import {filter} from 'rxjs/operators';
+import {NgClass} from "@angular/common";
 
 @Component({
-    selector: 'app-user',
-    standalone: true,
+  selector: 'app-user',
+  standalone: true,
   imports: [
     RouterLink,
     RouterOutlet,
-    MatButtonModule,
-    MatCard,
-    MatIconModule
+    NgClass
   ],
-    templateUrl: './user.component.html',
-    styleUrl: './user.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './user.component.html',
+  styleUrl: './user.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserComponent {
 
-  currentSubPath: string = '';
+  currentSubPath = '';
 
-  constructor(private router: Router) {
+  private router = inject(Router);
+
+  constructor() {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.currentSubPath = event.urlAfterRedirects.split('/user/')[1];
       });
+  }
+
+  getButtonClasses(path: string) {
+    const active = this.currentSubPath === path;
+    return {
+      'flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium transition w-42 items-center justify-center': true,
+      'border-emerald-600 text-emerald-600 hover:bg-emerald-50': !active,
+      'bg-emerald-600 text-white shadow': active,
+    };
   }
 }

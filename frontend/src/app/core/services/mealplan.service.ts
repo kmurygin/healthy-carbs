@@ -1,6 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import { UserProfilePayload } from "../models/payloads";
+import type {UserProfilePayload} from "../models/payloads";
 import {ApiEndpoints} from "../constants/constants";
 
 @Injectable({

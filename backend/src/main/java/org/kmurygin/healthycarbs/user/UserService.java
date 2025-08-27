@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
+import org.kmurygin.healthycarbs.exception.InvalidOldPasswordException;
 import org.kmurygin.healthycarbs.exception.ResourceAlreadyExistsException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
@@ -100,7 +101,7 @@ public class UserService {
     }
 
     @Transactional
-    public boolean changePassword(String oldPassword, String newPassword) {
+    public void changePassword(String oldPassword, String newPassword) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
 
@@ -108,12 +109,11 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            return false;
+            throw new InvalidOldPasswordException("");
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         logger.info("User {} changed password", username);
-        return true;
     }
 }

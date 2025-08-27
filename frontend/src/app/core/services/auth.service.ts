@@ -1,87 +1,97 @@
-import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ApiEndpoints, LocalStorage } from '../constants/constants';
-import { User } from '../models/user.model';
-import { ApiResponse, LoginPayload, RegisterPayload } from '../models/payloads';
-import { Router } from '@angular/router';
-import {map, Observable} from 'rxjs';
-import { jwtDecode } from "jwt-decode";
+import {computed, effect, inject, Injectable, signal} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
+import {jwtDecode} from 'jwt-decode';
+import {ApiEndpoints, LocalStorage} from '../constants/constants';
+import type {UserDto} from '../models/dto/user.dto';
+import {map, tap} from 'rxjs';
+import type {RegisterPayload} from "../models/payloads/register.payload";
+import type {ApiResponse} from "../models/api-response.model";
+import type {LoginPayload} from "../models/payloads/login.payload";
+import type {AuthenticationResponse} from "../models/payloads";
 
-@Injectable({
-  providedIn: 'root'
-})
+// Claims:
+// sub - subject
+// iat - issued at
+// exp - expiration time
+interface JwtClaims {
+  sub?: string;
+  iat?: number;
+  exp?: number;
+
+  // Additional claims, eg. roles
+  [key: string]: unknown;
+}
+
+@Injectable({providedIn: 'root'})
 export class AuthService {
-  isLoggedIn = signal<boolean>(false);
-  user = signal<User | undefined>(undefined);
 
-  constructor(private httpClient: HttpClient, private router: Router) {
-    this.checkTokenOnInit();
-  }
-
-  private checkTokenOnInit() {
-    const userFromToken = this.getUserFromToken();
-    if (userFromToken) {
-      this.isLoggedIn.set(true);
-      this.user.set(userFromToken.username);
+  httpClient = inject(HttpClient);
+  router = inject(Router);
+  readonly user = computed<string | null>(() => this.claims()?.sub ?? null);
+  readonly isLoggedIn = computed<boolean>(() => {
+    const jwtClaims = this.claims();
+    console.log('jwtClaims: ', jwtClaims);
+    if (!jwtClaims?.exp) return false;
+    const now = Math.floor(Date.now() / 1000);
+    return now < jwtClaims.exp;
+  });
+  private readonly token = signal<string | null>(localStorage.getItem(LocalStorage.token));
+  readonly jwtToken = this.token.asReadonly();
+  readonly claims = computed<JwtClaims | null>(() => {
+    const jwtToken = this.token();
+    if (!jwtToken) return null;
+    try {
+      return jwtDecode<JwtClaims>(jwtToken);
+    } catch (e) {
+      console.error('Failed to decode JWT token:', e);
+      return null;
     }
+  });
+
+  constructor() {
+    effect(() => {
+      const jwtToken = this.token();
+      if (jwtToken) localStorage.setItem(LocalStorage.token, jwtToken);
+      else localStorage.removeItem(LocalStorage.token);
+    });
   }
 
-  register(registerPayload: RegisterPayload) {
-    return this.httpClient.post<ApiResponse<User>>(ApiEndpoints.Auth.Register, registerPayload);
+  register(payload: RegisterPayload) {
+    return this.httpClient.post<ApiResponse<UserDto>>(ApiEndpoints.Auth.Register, payload).pipe(
+      map(res => {
+        if (res.status && res.data) return res;
+        throw new Error(res.message ?? 'Registration failed');
+      }),
+    );
   }
 
-  login(loginPayload: LoginPayload) {
-    return this.httpClient.post<ApiResponse<User>>(ApiEndpoints.Auth.Login, loginPayload).pipe(
-      map((response) => {
-        if (response.token) {
-          localStorage.setItem(LocalStorage.token, response.token);
-          this.isLoggedIn.set(true);
-          const userFromToken = this.getUserFromToken();
-          this.user.set(userFromToken?.username);
+  login(payload: LoginPayload) {
+    return this.httpClient.post<ApiResponse<AuthenticationResponse>>(ApiEndpoints.Auth.Login, payload).pipe(
+      tap(res => {
+        if (!(res.status && res.data?.token)) {
+          throw new Error(res.message ?? 'Login failed');
         }
-        else if (response.error) {
-          this.isLoggedIn.set(false);
-          console.log(response.error);
-        }
-        return response;
-      })
+      }),
+      map(res => {
+        this.token.set(res.data!.token);
+        return res;
+      }),
     );
   }
 
   isTokenExpired(): boolean {
-    const token = this.getUserToken();
-    if (!token) {
-      return true;
-    }
-    const decodedToken: any = jwtDecode(token);
-    const currentTime = Math.floor(Date.now() / 1000);
-
-    console.log(decodedToken.exp < currentTime)
-
-    return decodedToken.exp < currentTime;
+    const jwtClaims = this.claims();
+    if (!jwtClaims?.exp) return true;
+    const now = Math.floor(Date.now() / 1000);
+    return jwtClaims.exp <= now;
   }
 
-  getUserToken() {
-    return localStorage.getItem(LocalStorage.token);
-  }
-
-  getUserFromToken() {
-    const token = this.getUserToken();
-    if (token && !this.isTokenExpired()) {
-      const decodedToken: any = jwtDecode(token);
-      return {
-        username: decodedToken.sub,
-      };
-    }
-    return null;
-  }
-
-  logout() {
-    localStorage.removeItem(LocalStorage.token);
-    console.log("dddd");
-    this.isLoggedIn.set(false);
-    this.user.set(undefined);
-    this.router.navigate(['login']);
-    window.location.reload();
+  logout(): void {
+    this.token.set(null);
+    this.router.navigate(['login'], {replaceUrl: true})
+      .catch(err => {
+        console.error('Navigation failed', err);
+      });
   }
 }

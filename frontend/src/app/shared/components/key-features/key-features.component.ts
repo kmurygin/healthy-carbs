@@ -1,9 +1,5 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTabsModule } from '@angular/material/tabs';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 interface Feature {
   label: string;
@@ -19,25 +15,21 @@ interface Feature {
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTabsModule,
   ],
   templateUrl: './key-features.component.html',
-  styleUrl: './key-features.component.scss'
+  styleUrl: './key-features.component.css'
 })
 export class KeyFeaturesComponent {
+  selected = 0;
   features: Feature[] = [
     {
       label: 'Personalized Meal Plans',
-      icon: 'restaurant_menu',
+      icon: 'fa-solid fa-utensils',
       title: 'Tailored to Your Needs',
       imageUrl: 'assets/images/food_1.jpg',
       imageAlt: 'Personalized Meal Plans',
       bulletPoints: [
         'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-        'Aliquam tincidunt mauris eu risus.',
         'Vestibulum auctor dapibus neque.',
         'Nunc dignissim risus id metus.',
         'Cras ornare tristique elit.',
@@ -46,7 +38,7 @@ export class KeyFeaturesComponent {
     },
     {
       label: 'Recipe Library',
-      icon: 'menu_book',
+      icon: 'fa-solid fa-book',
       title: 'Extensive Recipe Collection',
       imageUrl: 'assets/images/food_2.jpg',
       imageAlt: 'Recipe Library',
@@ -54,14 +46,13 @@ export class KeyFeaturesComponent {
         'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
         'Aliquam tincidunt mauris eu risus.',
         'Vestibulum auctor dapibus neque.',
-        'Nunc dignissim risus id metus.',
         'Cras ornare tristique elit.',
         'Vivamus vestibulum ntulla nec ante.'
       ]
     },
     {
       label: 'Progress Tracking',
-      icon: 'trending_up',
+      icon: 'fa-solid fa-chart-line',
       title: 'Monitor Your Success',
       imageUrl: 'assets/images/food_3.jpg',
       imageAlt: 'Progress Tracking',
@@ -71,7 +62,6 @@ export class KeyFeaturesComponent {
         'Vestibulum auctor dapibus neque.',
         'Nunc dignissim risus id metus.',
         'Cras ornare tristique elit.',
-        'Vivamus vestibulum ntulla nec ante.'
       ]
     }
   ];

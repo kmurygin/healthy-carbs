@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.model.DietaryProfile;
 import org.kmurygin.healthycarbs.mealplan.repository.DietaryProfileRepository;
 import org.kmurygin.healthycarbs.user.User;
@@ -20,12 +21,12 @@ public class DietaryProfileService {
 
     public DietaryProfile findById(Long id) {
         return dietaryProfileRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Dietary profile not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Dietary profile", "id", id));
     }
 
     public DietaryProfile getByUserId(Integer userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         return dietaryProfileRepository.findByUser(user);
     }
 

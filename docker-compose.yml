@@ -5,26 +5,12 @@ services:
     image: postgres:15
     container_name: healthycarbs-postgres
     restart: always
-    environment:
-      POSTGRES_DB: healthy_carbs
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypass
+    env_file:
+      - .env.prod
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-
-  # mongodb:
-  #   image: mongo:7
-  #   container_name: healthycarbs-mongodb
-  #   restart: always
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: mongoadmin
-  #     MONGO_INITDB_ROOT_PASSWORD: mongopass
-  #   ports:
-  #     - "27017:27017"
-  #   volumes:
-  #     - mongodata:/data/db
 
   backend:
     container_name: healthycarbs-backend
@@ -32,7 +18,7 @@ services:
     depends_on:
       - postgres
     env_file:
-      - ./backend/.env
+      - .env.prod
     ports:
       - "8080:8080"
 
@@ -44,4 +30,3 @@ services:
 
 volumes:
   pgdata:
-  mongodata:

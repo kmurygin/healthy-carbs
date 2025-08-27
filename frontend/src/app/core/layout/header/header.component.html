@@ -1,76 +1,185 @@
-<mat-toolbar color="primary" class="mat-elevation-z4 responsive-toolbar sticky top-0 z-50">
+<header class="sticky top-0 z-50 w-full bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70">
+  <nav
+    aria-label="Primary"
+    class="mx-auto flex max-w-7xl items-center justify-between p-4 sm:p-6 lg:px-8"
+  >
 
-  <span class="logo" [routerLink]="['/']">
-    <h2>Healthy Carbs</h2>
-  </span>
+    <a [routerLink]="['/']"
+       class="group inline-flex items-center gap-2
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded-md"
+    >
+      <h1
+        class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight
+             text-emerald-900 transition-colors duration-200 group-hover:text-gray-800"
+      >
+        Healthy <span class="text-emerald-600 group-hover:text-gray-800 ">Carbs</span>
+      </h1>
+      <span class="sr-only">Homepage</span>
+    </a>
 
-  <span class="spacer"></span>
+    <button
+      (click)="openMenu(mobileMenu)"
+      [attr.aria-expanded]="menuOpen() ? 'true' : 'false'"
+      aria-controls="mobile-menu"
+      class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 lg:hidden
+             focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+      type="button"
+    >
+      <svg aria-hidden="true" class="h-6 w-6" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </button>
 
-  <!-- Desktop navigation -->
-  <nav class="desktop-only nav-links">
-    <button mat-button='filled' [routerLink]="['/oferta']">Oferta</button>
-    <button mat-button [routerLink]="['/cennik']">Cennik</button>
-    <button mat-button [routerLink]="['/FAQs']">FAQs</button>
-    <button mat-button [routerLink]="['/o-nas']">O nas</button>
+    <div class="hidden lg:flex lg:items-center lg:gap-x-10">
+      <a
+        class="text-sm font-semibold text-gray-900 hover:text-emerald-800
+               focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+        routerLink="/features"
+      >
+        Features
+      </a>
+
+      <a
+        class="text-sm font-semibold text-gray-900 hover:text-emerald-800
+               focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+        routerLink="/blog"
+      >
+        Blog
+      </a>
+
+      <a
+        class="text-sm font-semibold text-gray-900 hover:text-emerald-800
+               focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+        routerLink="/pricing"
+      >
+        Pricing
+      </a>
+
+      <a
+        class="text-sm font-semibold text-gray-900 hover:text-emerald-800
+               focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+        routerLink="/about-us"
+      >
+        About us
+      </a>
+
+      @if (!isLoggedIn) {
+        <a routerLink="/login"
+           class="text-sm font-semibold text-gray-900 hover:text-emerald-800
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+        >
+          Sign in
+        </a>
+        <a routerLink="/register"
+           class="text-sm font-semibold text-emerald-800 hover:text-emerald-700
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+        >
+          Sign up
+        </a>
+      } @else {
+        <a routerLink="/user"
+           class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-800 hover:text-emerald-700
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+        >
+          <i class="fa-solid fa-circle-user fa-fw text-base" aria-hidden="true"></i>
+          <span>{{ username }}</span>
+        </a>
+        <button (click)="logout()"
+                class="text-sm font-semibold text-gray-900 hover:text-emerald-800
+                       focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+        >
+          Logout
+        </button>
+      }
+    </div>
+
   </nav>
 
-  <!-- Desktop auth buttons -->
-  <div class="auth-buttons desktop-only">
-    @if (!isLoggedIn) {
-      <button matButton="elevated" color="accent" [routerLink]="['/login']" class="login-btn">Login</button>
-      <button mat-stroked-button color="accent" [routerLink]="['/register']" class="register-btn">Sign-up</button>
-    } @else {
-      <button matButton="elevated" color="accent" [routerLink]="['/user']">{{ username }}</button>
-      <button matButton="outlined" (click)="logout()">Logout</button>
-    }
-  </div>
+  <dialog #mobileMenu class="backdrop:bg-black/20 lg:hidden" id="mobile-menu">
+    <div class="fixed inset-0 z-50 flex justify-end">
+      <div class="h-full w-full max-w-sm overflow-y-auto bg-white p-6 shadow-xl ring-1 ring-gray-900/10">
+        <div class="flex items-center justify-between">
+          <div aria-label="Healthy Carbs" class="-m-1.5 p-1.5" routerLink="/">
+          </div>
+          <button
+            (click)="closeMenu(mobileMenu)"
+            aria-label="Close menu"
+            class="-m-2.5 rounded-md p-2.5 text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+            type="button"
+          >
+            <i aria-hidden="true" class="fa-solid fa-xmark text-2xl"></i>
+          </button>
+        </div>
 
-  <!-- Mobile menu trigger -->
-  <button matIconButton [matMenuTriggerFor]="navMenu" class="mobile-only" aria-label="Menu">
-    <mat-icon>menu</mat-icon>
-  </button>
+        <nav class="mt-6 space-y-4">
+          @if (!isLoggedIn) {
+            <a routerLink="/login"
+               class="flex items-center gap-3 text-base font-semibold text-gray-900 hover:text-emerald-800"
+               (click)="closeMenu(mobileMenu)"
+            >
+              <i class="fa-solid fa-right-to-bracket fa-fw text-xl" aria-hidden="true"></i>
+              <span>Log in</span>
+            </a>
 
-  <!-- Mobile menu -->
-  <mat-menu #navMenu="matMenu">
-    @if (!isLoggedIn) {
-      <button mat-menu-item [routerLink]="['/login']">
-        <mat-icon>login</mat-icon>
-        <span>Login</span>
-      </button>
-      <button mat-menu-item [routerLink]="['/register']">
-        <mat-icon>person_add</mat-icon>
-        <span>Sign-up</span>
-      </button>
-    } @else {
-      <button mat-menu-item [routerLink]="['/user']">
-        <mat-icon>account_circle</mat-icon>
-        <span>{{ username }}</span>
-      </button>
-      <button mat-menu-item (click)="logout()">
-        <mat-icon>logout</mat-icon>
-        <span>Logout</span>
-      </button>
-    }
+            <a routerLink="/register"
+               class="flex items-center gap-3 text-base font-semibold text-gray-900 hover:text-emerald-800"
+               (click)="closeMenu(mobileMenu)"
+            >
+              <i class="fa-solid fa-user-plus fa-fw text-xl" aria-hidden="true"></i>
+              <span>Register</span>
+            </a>
+          } @else {
+            <a routerLink="/user"
+               class="flex items-center gap-3 text-base font-semibold text-gray-900 hover:text-emerald-800"
+               (click)="closeMenu(mobileMenu)"
+            >
+              <i class="fa-solid fa-circle-user fa-fw text-xl" aria-hidden="true"></i>
+              <span>{{ username }}</span>
+            </a>
+            <button (click)="logout()"
+                    class="flex w-full items-center gap-3 text-left text-base font-semibold text-gray-900 hover:text-emerald-800"
+            >
+              <i class="fa-solid fa-right-from-bracket fa-fw text-xl" aria-hidden="true"></i>
+              <span>Logout</span>
+            </button>
+          }
 
-    <mat-divider></mat-divider>
+          <hr class="my-6 border-gray-200"/>
 
-    <button mat-menu-item [routerLink]="['/oferta']">
-      <mat-icon>local_offer</mat-icon>
-      <span>Oferta</span>
-    </button>
-    <button mat-menu-item [routerLink]="['/cennik']">
-      <mat-icon>attach_money</mat-icon>
-      <span>Cennik</span>
-    </button>
-    <button mat-menu-item [routerLink]="['/FAQs']">
-      <mat-icon>help_outline</mat-icon>
-      <span>FAQs</span>
-    </button>
-    <button mat-menu-item [routerLink]="['/o-nas']">
-      <mat-icon>info</mat-icon>
-      <span>O nas</span>
-    </button>
-  </mat-menu>
+          <a (click)="closeMenu(mobileMenu)"
+             class="flex items-center gap-3 text-base font-semibold text-gray-900 hover:text-emerald-800"
+             routerLink="/features"
+          >
+            <i aria-hidden="true" class="fa-solid fa-layer-group fa-fw text-xl"></i>
+            <span>Features</span>
+          </a>
 
+          <a (click)="closeMenu(mobileMenu)"
+             class="flex items-center gap-3 text-base font-semibold text-gray-900 hover:text-emerald-800"
+             routerLink="/blog"
+          >
+            <i aria-hidden="true" class="fa-solid fa-blog fa-fw text-xl"></i>
+            <span>Blog</span>
+          </a>
 
-</mat-toolbar>
+          <a (click)="closeMenu(mobileMenu)"
+             class="flex items-center gap-3 text-base font-semibold text-gray-900 hover:text-emerald-800"
+             routerLink="/pricing"
+          >
+            <i aria-hidden="true" class="fa-solid fa-tags fa-fw text-xl"></i>
+            <span>Pricing</span>
+          </a>
+
+          <a (click)="closeMenu(mobileMenu)"
+             class="flex items-center gap-3 text-base font-semibold text-gray-900 hover:text-emerald-800"
+             routerLink="/about-us"
+          >
+            <i aria-hidden="true" class="fa-solid fa-circle-info fa-fw text-xl"></i>
+            <span>About us</span>
+          </a>
+
+        </nav>
+      </div>
+    </div>
+  </dialog>
+</header>

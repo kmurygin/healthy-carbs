@@ -1,12 +1,12 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
-import {FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatButtonModule } from '@angular/material/button';
-import { MatStepperModule } from '@angular/material/stepper';
-import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatButtonModule} from '@angular/material/button';
+import {MatStepperModule} from '@angular/material/stepper';
+import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
 
 @Component({
   selector: 'app-mealplan-form',
@@ -28,7 +28,7 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
     }
   ],
   templateUrl: './mealplan-form.component.html',
-  styleUrl: './mealplan-form.component.scss',
+  styleUrl: './mealplan-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MealplanFormComponent {
@@ -43,6 +43,22 @@ export class MealplanFormComponent {
   allergies = [
     'Peanuts', 'Tree Nuts', 'Milk', 'Eggs', 'Wheat', 'Soy', 'Fish', 'Shellfish'
   ];
+  activityLevels = [
+    "Sedentary",
+    "Active",
+    "Very active",
+  ];
+  diets = [
+    "Vegan",
+    "Vegetarian",
+    "No-fish",
+    "Standard"
+  ]
+  goals = [
+    "reduce",
+    "gain",
+    "maintenance"
+  ]
 
   constructor(private fb: FormBuilder) {
 
@@ -66,25 +82,6 @@ export class MealplanFormComponent {
       allergies: [[]]
     });
   }
-
-  activityLevels = [
-    "Sedentary",
-    "Active",
-    "Very active",
-  ];
-
-  diets = [
-    "Vegan",
-    "Vegetarian",
-    "No-fish",
-    "Standard"
-  ]
-
-  goals = [
-    "reduce",
-    "gain",
-    "maintenance"
-    ]
 
   onSubmit() {
 

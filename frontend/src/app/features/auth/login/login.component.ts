@@ -1,60 +1,64 @@
-import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import type {FormGroup} from '@angular/forms';
+import {FormBuilder, type FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
+import {AuthService} from '../../../core/services/auth.service';
+import type {LoginPayload} from "../../../core/models/payloads/login.payload";
 
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
+type LoginForm = FormGroup<{
+  username: FormControl<string>;
+  password: FormControl<string>;
+}>;
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule
   ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  styleUrls: ['./login.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
-  form: FormGroup;
   errorMessage = signal('');
   isSubmitting = signal(false);
+  submitted = signal(false);
 
-  authService = inject(AuthService);
-  router = inject(Router);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private formBuilder = inject(FormBuilder);
 
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required]
+  readonly form: LoginForm = this.formBuilder.group({
+    username: this.formBuilder.control<string>('', {validators: [Validators.required], nonNullable: true}),
+    password: this.formBuilder.control<string>('', {validators: [Validators.required], nonNullable: true}),
+  });
+
+  onSubmit(): void {
+    if (this.form.invalid) return;
+
+    this.isSubmitting.set(true);
+    this.submitted.set(true);
+    this.errorMessage.set('');
+
+    this.form.get('username')?.setErrors(null);
+    this.form.get('password')?.setErrors(null);
+
+    const loginPayload: LoginPayload = this.form.getRawValue();
+
+    this.authService.login(loginPayload).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.router.navigate([''])
+          .catch(err => {
+            console.error('Navigation failed', err);
+          });
+        window.location.reload();
+      },
+      error: (err: Error & { fieldErrors?: Record<string, string> }) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err.message || 'An unexpected error occurred.');
+      }
     });
-  }
-
-  onSubmit() {
-    if (this.form.valid) {
-      this.isSubmitting.set(true);
-      this.authService.login(this.form.value).subscribe({
-        next: (response: any) => {
-          this.isSubmitting.set(false);
-          this.router.navigate(['']);
-          window.location.reload();
-        },
-        error: (error: any) => {
-          this.isSubmitting.set(false);
-          if (error !== null) {
-            this.errorMessage.set(error.message || 'An error occurred. Please try again.');
-          } else {
-            this.errorMessage.set('An error occurred. Please try again.');
-          }
-        }
-      });
-    }
   }
 }

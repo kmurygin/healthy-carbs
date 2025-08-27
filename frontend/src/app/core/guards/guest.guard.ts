@@ -1,14 +1,15 @@
-import { CanActivateFn, Router } from '@angular/router';
-import { inject } from "@angular/core";
-import { AuthService } from "../services/auth.service";
+import type {CanMatchFn, UrlTree} from '@angular/router';
+import {Router} from '@angular/router';
+import {inject} from "@angular/core";
+import {AuthService} from "../services/auth.service";
 
-export const guestGuard: CanActivateFn = (route, state) => {
+export const guestGuard: CanMatchFn = (): boolean | UrlTree => {
 
   const authService = inject(AuthService);
-  const router  = inject(Router);
+  const router = inject(Router);
 
-  if(authService.isLoggedIn()){
-    router.navigate(['']);
+  if (authService.isLoggedIn()) {
+    return router.parseUrl('');
   }
 
   return true;

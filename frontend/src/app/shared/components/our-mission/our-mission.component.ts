@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-our-mission',
@@ -8,9 +8,7 @@ import { CommonModule } from '@angular/common';
     CommonModule,
   ],
   templateUrl: './our-mission.component.html',
-  styleUrl: './our-mission.component.scss'
+  styleUrl: './our-mission.component.css'
 })
 export class OurMissionComponent {
-
 }
-

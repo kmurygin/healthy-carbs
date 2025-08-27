@@ -1,47 +1,48 @@
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import {Component, OnInit, inject, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import {MatDivider} from "@angular/material/divider";
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {NavigationEnd, Router, RouterModule} from '@angular/router';
+import {AuthService} from '../../services/auth.service';
+import {filter} from "rxjs/operators";
 
 @Component({
   selector: 'app-header',
-  imports: [
-    RouterModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatDivider
-  ],
+  standalone: true,
+  imports: [RouterModule],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss',
-  encapsulation: ViewEncapsulation.Emulated,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './header.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent implements OnInit {
-  authService = inject(AuthService);
-  router = inject(Router);
+export class HeaderComponent {
+  readonly menuOpen = signal(false);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  isLoggedIn = false;
-  username = null;
+  constructor() {
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => this.menuOpen.set(false));
+  }
 
-  ngOnInit(): void {
-    const user = this.authService.getUserFromToken();
-    this.isLoggedIn = !!user;
-    this.username = user?.username || null;
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  get username(): string | null {
+    return this.authService.user();
   }
 
   logout(): void {
     this.authService.logout();
-    this.isLoggedIn = false;
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'])
+      .catch(err => {
+        console.error('Navigation failed', err);
+      });
   }
 
-  isActive(route: string): boolean {
-    return this.router.url === `/${route}`;
+  openMenu(dlg: HTMLDialogElement): void {
+    if (!dlg.open) dlg.showModal();
+    this.menuOpen.set(true);
+  }
+
+  closeMenu(dlg: HTMLDialogElement): void {
+    if (dlg.open) dlg.close();
+    this.menuOpen.set(false);
   }
 }

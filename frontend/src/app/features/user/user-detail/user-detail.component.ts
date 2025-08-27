@@ -1,58 +1,60 @@
-import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { UserService } from '../../../core/services/user.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { User } from '../../../core/models/user.model';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
+import type {OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import type {FormControl, FormGroup} from '@angular/forms';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {CommonModule} from '@angular/common';
+import {UserService} from '../../../core/services/user.service';
+import {AuthService} from '../../../core/services/auth.service';
+import type {UserDto} from '../../../core/models/dto/user.dto';
+
+type UserDetailForm = FormGroup<{
+  firstname: FormControl<string>;
+  lastname: FormControl<string>;
+  email: FormControl<string>;
+}>;
 
 @Component({
   selector: 'app-user-detail',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatCardModule,
-    MatButtonModule
-  ],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './user-detail.component.html',
-  styleUrls: ['./user-detail.component.scss'],
+  styleUrl: './user-detail.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserDetailComponent implements OnInit {
-  form!: FormGroup;
   errorMessage = signal('');
-  user = signal<User | undefined>(undefined);
+  infoMessage = signal('');
 
-  userService = inject(UserService);
-  authService = inject(AuthService);
-  fb = inject(FormBuilder);
+  user = signal<UserDto | undefined>(undefined);
+  private readonly formBuilder = inject(FormBuilder);
+  form: UserDetailForm = this.formBuilder.nonNullable.group({
+    firstname: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/u)]],
+    lastname: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/u)]],
+    email: ['', [Validators.required, Validators.email]]
+  });
+  private readonly userService = inject(UserService);
+  private readonly authService = inject(AuthService);
+
+  get formControl() {
+    return this.form.controls;
+  }
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      firstname: ['', Validators.required],
-      lastname: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]]
-    });
-
-    const tokenUser = this.authService.getUserFromToken();
-    if (tokenUser?.username) {
-      this.getUserDetails(tokenUser.username);
+    const tokenUser = this.authService.user();
+    if (tokenUser) {
+      this.getUserDetails(tokenUser);
     }
   }
 
   getUserDetails(username: string): void {
     this.userService.getUserByUsername(username).subscribe({
-      next: (response) => {
-        this.user.set(response.data);
-        if (this.user()) {
+      next: ({data}) => {
+        this.user.set(data);
+        if (data) {
           this.form.patchValue({
-            firstname: this.user()!.firstname,
-            lastname: this.user()!.lastname,
-            email: this.user()!.email
+            firstname: data.firstname,
+            lastname: data.lastname,
+            email: data.email
           });
         }
       },
@@ -64,23 +66,26 @@ export class UserDetailComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.valid && this.user()) {
-      const updatedUser: User = {
-        ...this.user()!,
-        firstname: this.form.value.firstname,
-        lastname: this.form.value.lastname,
-        email: this.form.value.email
-      };
-
-      this.userService.updateUser(this.user()!.id, updatedUser).subscribe({
-        next: (response) => {
-          this.errorMessage.set(response.message || 'Updated successfully!');
-        },
-        error: (err) => {
-          console.error(err);
-          this.errorMessage.set(err);
-        }
-      });
+    if (this.form.invalid || !this.user()) {
+      this.form.markAllAsTouched();
+      return;
     }
+    this.errorMessage.set('');
+    this.infoMessage.set('');
+
+    const updatedUser: UserDto = {
+      ...this.user()!,
+      ...this.form.getRawValue()
+    };
+
+    this.userService.updateUser(this.user()!.id, updatedUser).subscribe({
+      next: (res) => {
+        this.infoMessage.set(res?.message ?? 'Personal information updated successfully!');
+      },
+      error: (err) => {
+        const msg: string = err?.error?.message ?? err?.message ?? '';
+        this.errorMessage.set(msg ?? 'Failed to update user details. Please try again.');
+      }
+    });
   }
 }

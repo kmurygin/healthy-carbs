@@ -1,5 +1,6 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
+import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.mapper.IngredientMapper;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
@@ -21,7 +22,8 @@ public class IngredientService {
     }
 
     public Ingredient findById(Long id) {
-        return ingredientRepository.findById(id).orElse(null);
+        return ingredientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ingredient", "id", id));
     }
 
     public Ingredient save(Ingredient ingredient) {

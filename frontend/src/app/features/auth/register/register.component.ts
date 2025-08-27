@@ -1,12 +1,18 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import {Component, inject, signal} from '@angular/core';
+import type {FormControl, FormGroup} from '@angular/forms';
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Router, RouterLink} from '@angular/router';
+import {AuthService} from '../../../core/services/auth.service';
 
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
+import type {RegisterPayload} from "../../../core/models/payloads/register.payload";
+
+type RegisterForm = FormGroup<{
+  firstname: FormControl<string>;
+  lastname: FormControl<string>;
+  username: FormControl<string>;
+  email: FormControl<string>;
+  password: FormControl<string>;
+}>;
 
 @Component({
   selector: 'app-register',
@@ -14,53 +20,53 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule
+    RouterLink
   ],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
-  form: FormGroup;
-  errorMessage = '';
-  isSubmitting = false;
+  errorMessage = signal('');
+  isSubmitting = signal(false);
 
-  authService = inject(AuthService);
-  router = inject(Router);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private formBuilder = inject(FormBuilder);
 
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
-      firstname: ['', Validators.required],
-      lastname: ['', Validators.required],
-      username: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
-    });
-  }
 
-  get email() {
-    return this.form.get('email');
-  }
+  readonly form: RegisterForm = this.formBuilder.group({
+    firstname: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
+    lastname: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
+    username: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
+    email: this.formBuilder.control('', {validators: [Validators.required, Validators.email], nonNullable: true}),
+    password: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
+  });
 
   onSubmit(): void {
-    if (this.form.valid) {
-      this.isSubmitting = true;
-      this.authService.register(this.form.value).subscribe({
-        next: (response) => {
-          this.isSubmitting = false;
-          if (response.token) {
-            this.router.navigate(['login']);
-          } else if (response.error) {
-            this.errorMessage = response.error;
-          }
-        },
-        error: () => {
-          this.isSubmitting = false;
-          this.errorMessage = 'Something went wrong. Please try again.';
+    if (this.form.invalid) return;
+
+    this.isSubmitting.set(true);
+    this.errorMessage.set('');
+
+    const registerPayload: RegisterPayload = this.form.getRawValue();
+
+    this.authService.register(registerPayload).subscribe({
+      next: (response) => {
+        this.isSubmitting.set(false);
+
+        if (response.status) {
+          this.router.navigate(['login'])
+            .catch(err => {
+              console.error('Navigation failed', err);
+            });
+        } else {
+          this.errorMessage.set(response.message ?? 'Registration failed.');
         }
-      });
-    }
+      },
+      error: (err: Error) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err.message ?? 'Something went wrong. Please try again.');
+      }
+    });
   }
 }

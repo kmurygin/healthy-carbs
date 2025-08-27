@@ -47,7 +47,8 @@ public class RecipeService {
     }
 
     public Recipe findById(Long id) {
-        return recipeRepository.findById(id).orElse(null);
+        return recipeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
     }
 
     public Recipe save(Recipe recipe) {

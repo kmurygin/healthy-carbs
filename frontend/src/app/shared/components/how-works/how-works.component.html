@@ -1,34 +1,46 @@
-<div class="how-it-works py-16">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="how-it-works py-16 bg-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-    <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">
-      How does meal plan generator work?
+    <h2 class="mb-12 text-center text-emerald-700 text-3xl font-bold md:text-4xl">
+      How does our meal plan generation work?
     </h2>
 
-    <div class="steps-container">
-      @for (step of steps; track step) {
-        <mat-card class="step-card animate__animated animate__fadeIn transition-transform duration-300 hover:scale-105 hover:shadow-lg">
-          <mat-card-content>
-            <div class="flex flex-col h-full">
-              <div class="step-circle flex items-center justify-center mb-4 mx-auto">
-                {{$index + 1}}
-              </div>
-              <h3 class="text-2xl font-medium mb-3 text-center">{{step.label}}</h3>
-              <h4 class="text-xl font-medium mb-4 text-center">{{step.title}}</h4>
-              <div class="mb-4 flex-grow">
-                <img ngOptimizedImage [src]="step.imageUrl"
-                     [alt]="step.imageAlt"
-                     [title]="step.imageAlt"
-                     class="rounded-lg shadow-md w-full h-auto mb-4">
-                <p>
-                  {{step.description}}
-                </p>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      }
-    </div>
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+      @for (step of steps; track step; let i = $index) {
+        <div
+          class="animate-fadeIn rounded-lg bg-gray-50 p-6 shadow transition
+                 duration-300 hover:scale-105 hover:shadow-lg"
+        >
+          <div
+            class="mx-auto mb-4 flex h-12 w-12 items-center justify-center
+                   rounded-full bg-emerald-600 text-lg font-semibold text-white"
+          >
+            {{ i + 1 }}
+          </div>
 
+          <h3 class="mb-2 text-center text-2xl font-medium text-gray-800">
+            {{ step.label }}
+          </h3>
+
+          <h4 class="mb-4 text-center text-xl font-medium text-gray-700">
+            {{ step.title }}
+          </h4>
+
+          <img
+            ngOptimizedImage
+            [src]="step.imageUrl"
+            [alt]="step.imageAlt"
+            [title]="step.imageAlt"
+            class="mb-4 w-full h-40 rounded-lg object-cover shadow"
+          />
+
+          <p class="text-m text-gray-600">
+            {{ step.description }}
+          </p>
+
+        </div>
+      }
+
+    </div>
   </div>
 </div>

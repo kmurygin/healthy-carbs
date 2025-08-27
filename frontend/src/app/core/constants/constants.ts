@@ -1,4 +1,4 @@
-import { environment } from '../../../environments/environment';
+import {environment} from '../../../environments/environment';
 
 const apiUrl = environment.apiUrl;
 
@@ -9,15 +9,17 @@ export const ApiEndpoints = {
   },
 
   User: {
-    User: `${apiUrl}/users/`,
-    GetUserByUsername: `${apiUrl}/users/username/`,
-    ChangePassword: `${apiUrl}/users/change-password`,
+    User: `${apiUrl}/user/`,
+    GetUserByUsername: `${apiUrl}/user/username/`,
+    ChangePassword: `${apiUrl}/user/change-password`,
   },
 
   MealPlan: {
     userprofile: `${apiUrl}/meal-plan/userprofile`,
     mealplan: `${apiUrl}/meal-plan`,
   }
+
+
 };
 
 export const LocalStorage = {
