@@ -18,13 +18,16 @@
 }
 
 html {
-  overflow-y: auto;
-  overflow-x: hidden;
   scrollbar-gutter: stable;
 }
 
+body {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 @supports not (scrollbar-gutter: stable) {
-  html {
+  body {
     overflow-y: scroll;
   }
 }

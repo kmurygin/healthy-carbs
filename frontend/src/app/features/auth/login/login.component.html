@@ -59,13 +59,9 @@
     </button>
 
     @if (errorMessage()) {
-      <div class="mt-4 flex items-start gap-2 rounded-lg border border-red-300 bg-red-50 p-3 shadow-sm">
-
-        <span class="text-sm font-medium text-red-800">
-          {{ errorMessage() }}
-        </span>
-
-      </div>
+      <error-message
+        [message]="errorMessage()">
+      </error-message>
     }
   </form>
 </div>
