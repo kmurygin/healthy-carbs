@@ -49,3 +49,17 @@ genetic-algorithm:
   max-generations: 2000
   mutation-rate: 0.8
   target-fitness: 0.999
+
+payu:
+  base-url: ${PAYU_BASE_URL}
+  pos-id: ${PAYU_POS_ID}
+  client-id: ${PAYU_CLIENT_ID}
+  client-secret: ${PAYU_CLIENT_SECRET}
+  second-key: ${PAYU_SECOND_KEY}
+  continue-url: ${PAYU_CONTINUE_URL}
+  notify-url: ${PAYU_NOTIFY_URL}
+  currency: ${PAYU_CURRENCY}
+
+logging:
+  level:
+    io.netty.resolver.dns.DnsServerAddressStreamProviders: WARN

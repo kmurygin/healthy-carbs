@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010
+      author: kmurygin
+
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: payments
+
+      changes:
+        - createTable:
+            tableName: payments
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: local_order_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: status
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: payments
+            indexName: uk_payments_local_order_id
+            unique: true
+            columns:
+              - column:
+                  name: local_order_id
+
