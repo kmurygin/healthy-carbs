@@ -1,0 +1,41 @@
+<div class="container mx-auto px-4 py-4">
+  <h1 class="text-3xl font-bold mb-6 text-center">Choose Your Meal Plan</h1>
+
+  @if (loading()) {
+    <p class="text-center">Loading offers…</p>
+  } @else if (error()) {
+    <p class="text-center text-red-600" role="alert">{{ error() }}</p>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      @for (offer of offers(); track offer.id) {
+        <div class="rounded-2xl border shadow-sm p-6 flex flex-col">
+          <h2 class="text-xl font-semibold">{{ offer.title }}</h2>
+          <p class="text-gray-600 mt-1 mb-4">{{ offer.description }}</p>
+
+          <img
+            ngOptimizedImage
+            src="assets/images/kalendarz-1.jpg"
+            alt="name"
+            class="h-40 w-full object-cover"
+          />
+
+          <div class="text-4xl font-bold mb-2 mt-2 ">{{ offer.pricePln | number: '1.2-2' }} PLN</div>
+          <ul class="text-sm text-gray-700 list-disc list-inside mb-6 space-y-1">
+            @for (feature of offer.features; track feature) {
+              <li>{{ feature }}</li>
+            }
+          </ul>
+
+          <div class="mt-auto flex justify-end">
+            <app-payu-pay-button
+              [localOrderId]="offer.orderId"
+              [description]="offer.title + ' - ' + offer.description"
+              [totalAmount]="offer.pricePln * 100"
+              [products]="[offer.product]"
+            ></app-payu-pay-button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
