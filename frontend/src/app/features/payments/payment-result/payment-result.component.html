@@ -1,0 +1,25 @@
+<section class="mx-auto max-w-2xl p-6">
+  @if (status() === PaymentStatus.COMPLETED) {
+    <h1 class="text-2xl font-bold mb-4">Order nr {{ order()?.localOrderId }}</h1>
+    <p>Description: {{ order()?.description }}</p>
+    <p>Paid: {{ (order()?.totalAmount ?? 0) / 100}} {{ order()?.currency }}</p>
+
+    <success-message
+      message="Payment was succesful. Thanks for the purchase :)">\
+    </success-message>
+
+  } @else if (status() === PaymentStatus.REJECTED || status() === PaymentStatus.CANCELED) {
+    <error-message
+      message="Payment was rejected or failed. Please try again.">
+    </error-message>
+  } @else if (!hasOrderId()) {
+    <error-message
+      message="Missing order number. Please try again.">
+    </error-message>
+
+  } @else {
+    <info-message
+      message="Processing… Please wait.">
+    </info-message>
+  }
+</section>

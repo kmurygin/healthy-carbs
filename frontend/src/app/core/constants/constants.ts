@@ -17,8 +17,13 @@ export const ApiEndpoints = {
   MealPlan: {
     userprofile: `${apiUrl}/meal-plan/userprofile`,
     mealplan: `${apiUrl}/meal-plan`,
-  }
+  },
 
+  Payment: {
+    Create: `${apiUrl}/payments/payu/create`,
+    Status: `${apiUrl}/payments/payu/status/`,
+    Order: `${apiUrl}/payments/payu/order/`,
+  }
 
 };
 
