@@ -52,10 +52,24 @@ export const routes: Routes = [
       import('./pages/index/index.component').then((m) => m.IndexComponent),
   },
   {
+    path: 'offers',
+    canMatch: [authGuard],
+    loadComponent: () =>
+      import('./features/payments/offers/offers.component').then((m) => m.OffersComponent),
+  },
+  {
     path: 'user',
     canMatch: [authGuard],
     loadChildren: () => import('./features/user/user.routes')
       .then(m => m.USER_ROUTES)
+  },
+  {
+    path: 'payments',
+    canMatch: [authGuard],
+    loadChildren: () =>
+      import('./features/payments/payments.routes').then(
+        (m) => m.PAYMENT_ROUTES
+      ),
   },
   {
     path: 'error/404',

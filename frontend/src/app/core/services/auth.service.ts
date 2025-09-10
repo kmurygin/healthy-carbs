@@ -28,18 +28,11 @@ export class AuthService {
 
   httpClient = inject(HttpClient);
   router = inject(Router);
-  readonly user = computed<string | null>(() => this.claims()?.sub ?? null);
-  readonly isLoggedIn = computed<boolean>(() => {
-    const jwtClaims = this.claims();
-    console.log('jwtClaims: ', jwtClaims);
-    if (!jwtClaims?.exp) return false;
-    const now = Math.floor(Date.now() / 1000);
-    return now < jwtClaims.exp;
-  });
   private readonly token = signal<string | null>(localStorage.getItem(LocalStorage.token));
   readonly jwtToken = this.token.asReadonly();
   readonly claims = computed<JwtClaims | null>(() => {
     const jwtToken = this.token();
+    console.log('jwtToken: ', jwtToken);
     if (!jwtToken) return null;
     try {
       return jwtDecode<JwtClaims>(jwtToken);
@@ -47,6 +40,14 @@ export class AuthService {
       console.error('Failed to decode JWT token:', e);
       return null;
     }
+  });
+  readonly user = computed<string | null>(() => this.claims()?.sub ?? null);
+  readonly isLoggedIn = computed<boolean>(() => {
+    const jwtClaims = this.claims();
+    console.log('jwtClaims: ', jwtClaims);
+    if (!jwtClaims?.exp) return false;
+    const now = Math.floor(Date.now() / 1000);
+    return now < jwtClaims.exp;
   });
 
   constructor() {

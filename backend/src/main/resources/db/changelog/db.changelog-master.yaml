@@ -26,3 +26,9 @@ databaseChangeLog:
   - include:
       file: 009-add-user-to-mealplan.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 010-add-payments.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 011-create-orders-and-link-payments.yaml
+      relativeToChangelogFile: true

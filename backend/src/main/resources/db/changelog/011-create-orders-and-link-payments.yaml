@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011
+      author: kmurygin
+
+      preConditions:
+        - onFail: MARK_RAN
+
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: local_order_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: total_amount
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: VARCHAR(8)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addColumn:
+            tableName: payments
+            columns:
+              - column:
+                  name: order_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseTableName: payments
+            baseColumnNames: order_id
+            constraintName: fk_payments_orders
+            referencedTableName: orders
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addUniqueConstraint:
+            tableName: payments
+            columnNames: order_id
+            constraintName: uk_payments_order_id
+            deferrable: false
+            initiallyDeferred: false
+

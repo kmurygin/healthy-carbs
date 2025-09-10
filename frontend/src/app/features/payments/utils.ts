@@ -1,0 +1,64 @@
+import type {ActivatedRoute, ParamMap} from '@angular/router';
+
+export function resolveLocalOrderId(route: ActivatedRoute): string | null {
+  return (
+    getFromQueryParams(route) ??
+    getFromLocationSearch() ??
+    getFromHash() ??
+    getFromSessionStorage()
+  );
+}
+
+function getFromQueryParams(route: ActivatedRoute): string | null {
+  const paramMap: ParamMap = route.snapshot.queryParamMap;
+  return paramMap.get('localOrderId') ?? paramMap.get('extOrderId') ?? paramMap.get('orderId');
+}
+
+function getFromLocationSearch(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const searchParams = new URLSearchParams(window.location.search);
+    return searchParams.get('localOrderId') ?? searchParams.get('extOrderId') ?? searchParams.get('orderId');
+  } catch {
+    return null;
+  }
+}
+
+function getFromHash(): string | null {
+  if (typeof window === 'undefined') return null;
+  const hash = window.location.hash || '';
+  const qIndex = hash.indexOf('?');
+  if (qIndex === -1) return null;
+
+  try {
+    const searchParams = new URLSearchParams(hash.substring(qIndex));
+    return searchParams.get('localOrderId') ?? searchParams.get('extOrderId') ?? searchParams.get('orderId');
+  } catch {
+    return null;
+  }
+}
+
+function getFromSessionStorage(): string | null {
+  try {
+    return sessionStorage.getItem('lastLocalOrderId');
+  } catch {
+    return null;
+  }
+}
+
+export function saveLastLocalOrderId(localOrderId: string): void {
+  try {
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('lastLocalOrderId', localOrderId);
+    }
+  } catch {
+  }
+}
+
+
+export function safeRemoveLastLocalOrderId(): void {
+  try {
+    sessionStorage.removeItem('lastLocalOrderId');
+  } catch {
+  }
+}

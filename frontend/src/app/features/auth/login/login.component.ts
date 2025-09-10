@@ -4,6 +4,7 @@ import {FormBuilder, type FormControl, ReactiveFormsModule, Validators} from '@a
 import {Router} from '@angular/router';
 import {AuthService} from '../../../core/services/auth.service';
 import type {LoginPayload} from "../../../core/models/payloads/login.payload";
+import {ErrorMessageComponent} from "../../../shared/components/error-message/error-message.component";
 
 type LoginForm = FormGroup<{
   username: FormControl<string>;
@@ -15,6 +16,7 @@ type LoginForm = FormGroup<{
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    ErrorMessageComponent,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],

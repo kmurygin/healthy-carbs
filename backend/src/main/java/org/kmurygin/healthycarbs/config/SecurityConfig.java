@@ -3,7 +3,7 @@ package org.kmurygin.healthycarbs.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,7 +19,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@Profile("!dev")
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -39,6 +38,8 @@ public class SecurityConfig {
                                 .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/swagger-resources/**").permitAll()
                                 .requestMatchers("/swagger-ui.html").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/payments/payu/notify").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/payments/payu/continue").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->
