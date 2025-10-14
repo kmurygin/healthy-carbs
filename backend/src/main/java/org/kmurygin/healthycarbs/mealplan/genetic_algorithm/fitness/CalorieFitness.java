@@ -42,11 +42,12 @@ public class CalorieFitness implements Fitness {
         if (totalCalories == 0) return 0.0;
 
         double fitness = (
-                score(totalCalories, calorieTarget) +
-                        score(totalCarbs, carbsTarget) +
-                        score(totalProtein, proteinTarget) +
-                        score(totalFat, fatTarget)
-        ) / 4.0;
+                0.4 * score(totalCalories, calorieTarget) +
+                        0.2 * score(totalCarbs, carbsTarget) +
+                        0.2 * score(totalProtein, proteinTarget) +
+                        0.2 * score(totalFat, fatTarget)
+        );
+
 
         plan.setFitness(fitness);
         return fitness;

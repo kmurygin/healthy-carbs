@@ -3,9 +3,11 @@ package org.kmurygin.healthycarbs.mealplan.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 import org.kmurygin.healthycarbs.user.User;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +19,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+@ToString(exclude = {"user", "days"})
 public class MealPlan {
 
     @Id
@@ -28,25 +31,23 @@ public class MealPlan {
     @JsonBackReference
     private User user;
 
-    @OneToMany(mappedBy = "mealPlan",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "meal_plan_days_link",
+            joinColumns = @JoinColumn(name = "meal_plan_id"),
+            inverseJoinColumns = @JoinColumn(name = "meal_plan_day_id")
+    )
     @Builder.Default
-    private List<MealPlanRecipe> recipes = new ArrayList<>();
+    private List<MealPlanDay> days = new ArrayList<>();
 
     private Double totalCalories;
     private Double totalCarbs;
     private Double totalProtein;
     private Double totalFat;
 
-    public void addRecipe(Recipe recipe) {
-        MealPlanRecipe mealPlanRecipe = new MealPlanRecipe(null, this, recipe, recipe.getMealType());
-        recipes.add(mealPlanRecipe);
-    }
-
-    public void removeRecipe(Recipe recipe) {
-        recipes.removeIf(r -> r.getRecipe().equals(recipe));
-    }
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
 
     @Override
     public final boolean equals(Object o) {

@@ -1,42 +1,51 @@
 package org.kmurygin.healthycarbs.mealplan.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import org.kmurygin.healthycarbs.mealplan.MealType;
 
+import java.time.DayOfWeek;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+
 @Entity
-@Table(name = "meal_plan_recipes")
+@Table(name = "meal_plan_days")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MealPlanRecipe {
+@Builder(toBuilder = true)
+@ToString(exclude = {"recipes"})
+public class MealPlanDay {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meal_plan_day_id")
-    private MealPlanDay mealPlanDay;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipe_id")
-    private Recipe recipe;
-
     @Enumerated(EnumType.STRING)
-    private MealType mealType;
+    @Column(nullable = false)
+    private DayOfWeek dayOfWeek;
 
-    public MealPlanRecipe(MealPlanDay mealPlanDay, Recipe recipe, MealType mealType) {
-        this.mealPlanDay = mealPlanDay;
-        this.recipe = recipe;
-        this.mealType = mealType;
+    @OneToMany(mappedBy = "mealPlanDay",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    @Builder.Default
+    private List<MealPlanRecipe> recipes = new ArrayList<>();
+
+    private Double totalCalories;
+    private Double totalCarbs;
+    private Double totalProtein;
+    private Double totalFat;
+
+    public void addRecipe(Recipe recipe) {
+        MealPlanRecipe mealPlanRecipe = new MealPlanRecipe(this, recipe, recipe.getMealType());
+        recipes.add(mealPlanRecipe);
+    }
+
+    public void removeRecipe(Recipe recipe) {
+        recipes.removeIf(r -> r.getRecipe().equals(recipe));
     }
 
     @Override
@@ -46,7 +55,7 @@ public class MealPlanRecipe {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        MealPlanRecipe that = (MealPlanRecipe) o;
+        MealPlanDay that = (MealPlanDay) o;
         return getId() != null && Objects.equals(getId(), that.getId());
     }
 

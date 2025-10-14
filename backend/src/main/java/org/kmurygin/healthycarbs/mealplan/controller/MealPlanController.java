@@ -8,10 +8,9 @@ import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -25,11 +24,20 @@ public class MealPlanController {
         this.mealPlanMapper = mealPlanMapper;
     }
 
-    @GetMapping("")
+    @PostMapping("")
     public ResponseEntity<ApiResponse<MealPlanDTO>> generateMealPlan() {
         MealPlan mealPlan = mealPlanService.generateMealPlan();
         MealPlanDTO dto = mealPlanMapper.toDTO(mealPlan);
         return ApiResponses.success(HttpStatus.CREATED, dto, "Meal plan generated successfully");
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<ApiResponse<List<MealPlanDTO>>> findAllMealPlans() {
+        return ApiResponses.success(
+                mealPlanService.getMealPlansHistory().stream()
+                        .map(mealPlanMapper::toDTO)
+                        .toList()
+        );
     }
 
 }
