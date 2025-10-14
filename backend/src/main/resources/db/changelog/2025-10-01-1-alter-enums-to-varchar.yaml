@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: alter-enum-to-varchar
+      author: kmurygin
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE dietary_profile
+              ALTER COLUMN activity_level TYPE varchar(50) USING activity_level::text;
+        - sql:
+            sql: >
+              ALTER TABLE dietary_profile
+              ALTER COLUMN diet_type TYPE varchar(50) USING diet_type::text;
+      rollback:
+        - sql:
+            sql: >
+              ALTER TABLE dietary_profile
+              ALTER COLUMN activity_level TYPE activity_level USING activity_level::activity_level;
+        - sql:
+            sql: >
+              ALTER TABLE dietary_profile
+              ALTER COLUMN diet_type TYPE diet_type USING diet_type::diet_type;

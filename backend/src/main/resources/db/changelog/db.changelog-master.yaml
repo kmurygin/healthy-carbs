@@ -32,3 +32,24 @@ databaseChangeLog:
   - include:
       file: 011-create-orders-and-link-payments.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2025-09-21-add-timestam-to-mealplan.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-10-01-1-alter-enums-to-varchar.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-10-01-2-add-gender-to-dietaryprofile.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-10-01-3-add-dietgoal-to-dietaryprofile.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-10-01-4-add-unique-user-id.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-10-10-refactor-meal-plan.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-10-12-add-ingredient-category.yaml
+      relativeToChangelogFile: true

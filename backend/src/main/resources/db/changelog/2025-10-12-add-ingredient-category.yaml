@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-ingredient-category
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE ingredients
+              ADD COLUMN category VARCHAR(50)
+              NOT NULL DEFAULT 'OTHER';
