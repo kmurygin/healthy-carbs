@@ -15,9 +15,7 @@ public class RecipeDTO {
     private Long id;
     private String name;
     private String description;
-
     private List<RecipeIngredientDTO> ingredients;
-
     private Integer calories;
     private Integer carbs;
     private Integer protein;

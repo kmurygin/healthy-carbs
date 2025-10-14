@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.mealplan.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.kmurygin.healthycarbs.mealplan.IngredientCategory;
 
 @Data
 @AllArgsConstructor
@@ -15,4 +16,5 @@ public class IngredientDTO {
     private Integer carbsPerUnit;
     private Integer proteinPerUnit;
     private Integer fatPerUnit;
+    private IngredientCategory category;
 }

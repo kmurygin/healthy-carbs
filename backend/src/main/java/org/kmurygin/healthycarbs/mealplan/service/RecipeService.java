@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
@@ -11,16 +12,16 @@ import org.kmurygin.healthycarbs.mealplan.mapper.RecipeMapper;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
-import org.kmurygin.healthycarbs.mealplan.repository.DietaryProfileRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeIngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
+@RequiredArgsConstructor
 @Service
 public class RecipeService {
 
@@ -29,18 +30,6 @@ public class RecipeService {
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final RecipeIngredientMapper recipeIngredientMapper;
     private final RecipeMapper recipeMapper;
-
-    public RecipeService(RecipeRepository recipeRepository,
-                         IngredientRepository ingredientRepository,
-                         RecipeIngredientRepository recipeIngredientRepository,
-                         DietaryProfileRepository dietaryProfileRepository, RecipeIngredientMapper recipeIngredientMapper,
-                         RecipeMapper recipeMapper) {
-        this.recipeRepository = recipeRepository;
-        this.ingredientRepository = ingredientRepository;
-        this.recipeIngredientRepository = recipeIngredientRepository;
-        this.recipeIngredientMapper = recipeIngredientMapper;
-        this.recipeMapper = recipeMapper;
-    }
 
     public List<Recipe> findAll() {
         return recipeRepository.findAll();
@@ -100,13 +89,13 @@ public class RecipeService {
                 .toList();
     }
 
+    @Transactional()
     public Recipe findRandom(MealType mealType, DietType dietType) {
-        List<Long> ids = recipeRepository.findIdsByMealTypeAndDietType(mealType, dietType);
-        if (ids.isEmpty()) {
-            return null;
-        }
-
-        Long randomId = ids.get(ThreadLocalRandom.current().nextInt(ids.size()));
-        return findById(randomId);
+        return recipeRepository.findRandomWithIngredients(mealType, dietType, PageRequest.of(0, 1))
+                .getContent()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Recipe not found for mealType: " + mealType + " and dietType: " + dietType));
     }
 }

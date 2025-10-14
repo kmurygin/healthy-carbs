@@ -8,15 +8,14 @@ import org.kmurygin.healthycarbs.mealplan.ActivityLevel;
 import org.kmurygin.healthycarbs.mealplan.DietGoal;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.Gender;
-import org.kmurygin.healthycarbs.user.dto.UserDTO;
+
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DietaryProfileDTO {
-    private Long id;
-    private UserDTO user;
+public class DietaryProfilePayload {
     private Double weight;
     private Double height;
     private Integer age;
@@ -24,8 +23,5 @@ public class DietaryProfileDTO {
     private DietGoal dietGoal;
     private DietType dietType;
     private ActivityLevel activityLevel;
-    private Double calorieTarget;
-    private Double carbsTarget;
-    private Double proteinTarget;
-    private Double fatTarget;
+    private List<String> allergies;
 }
