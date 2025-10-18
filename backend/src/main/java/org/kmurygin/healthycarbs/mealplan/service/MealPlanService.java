@@ -1,7 +1,6 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.auth.AuthenticationService;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
@@ -14,6 +13,7 @@ import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlanDay;
 import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRepository;
 import org.kmurygin.healthycarbs.user.User;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-@RequiredArgsConstructor
 @Service
 public class MealPlanService {
     private final GeneticAlgorithm geneticAlgorithm;
@@ -32,6 +31,23 @@ public class MealPlanService {
     private final AuthenticationService authenticationService;
     private final ShoppingListService shoppingListService;
     private final Executor taskExecutor;
+
+    public MealPlanService(
+            GeneticAlgorithm geneticAlgorithm,
+            RecipeService recipeService,
+            DietaryProfileService dietaryProfileService,
+            MealPlanRepository mealPlanRepository,
+            AuthenticationService authenticationService,
+            ShoppingListService shoppingListService,
+            @Qualifier("applicationTaskExecutor") Executor taskExecutor) {
+        this.geneticAlgorithm = geneticAlgorithm;
+        this.recipeService = recipeService;
+        this.dietaryProfileService = dietaryProfileService;
+        this.mealPlanRepository = mealPlanRepository;
+        this.authenticationService = authenticationService;
+        this.shoppingListService = shoppingListService;
+        this.taskExecutor = taskExecutor;
+    }
 
     public MealPlan save(MealPlan mealPlan) {
         return mealPlanRepository.save(mealPlan);
