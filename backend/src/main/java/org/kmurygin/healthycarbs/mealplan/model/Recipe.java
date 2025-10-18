@@ -30,6 +30,9 @@ public class Recipe {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(columnDefinition = "TEXT")
+    private String instructions;
+
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     @Builder.Default
     @ToString.Exclude

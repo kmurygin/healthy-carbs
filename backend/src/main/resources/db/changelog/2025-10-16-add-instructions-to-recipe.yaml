@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-instructions-to-recipe
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE recipes
+              ADD COLUMN instructions TEXT
+              NOT NULL DEFAULT '';

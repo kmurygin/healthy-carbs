@@ -53,3 +53,9 @@ databaseChangeLog:
   - include:
       file: 2025-10-12-add-ingredient-category.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2025-10-16-add-instructions-to-recipe.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-10-17-add-shopping-list.yaml
+      relativeToChangelogFile: true
