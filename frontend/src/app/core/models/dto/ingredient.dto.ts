@@ -6,4 +6,5 @@ export interface IngredientDto {
   readonly carbsPerUnit: number;
   readonly proteinPerUnit: number;
   readonly fatPerUnit: number;
+  readonly category: string;
 }

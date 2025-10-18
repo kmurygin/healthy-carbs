@@ -4,6 +4,7 @@ export interface RecipeDto {
   readonly id: number;
   readonly name: string;
   readonly description: string;
+  readonly instructions: string;
   readonly ingredients: readonly RecipeIngredientDto[];
   readonly calories: number;
   readonly carbs: number;
