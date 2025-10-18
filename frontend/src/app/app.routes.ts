@@ -30,7 +30,7 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'recipe',
+    path: 'recipes/:id',
     canMatch: [authGuard],
     loadComponent: () =>
       import('./features/recipe/recipe.component').then(
@@ -46,6 +46,22 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'mealplan',
+    canMatch: [authGuard],
+    loadComponent: () =>
+      import('./features/mealplan/mealplan/mealplan.component').then(
+        (m) => m.MealPlanComponent
+      ),
+  },
+  {
+    path: 'mealplan-history',
+    canMatch: [authGuard],
+    loadComponent: () =>
+      import('./features/mealplan/mealplan-history/mealplan-history.component').then(
+        (m) => m.MealPlanHistoryComponent
+      ),
+  },
+  {
     path: 'index',
     canMatch: [guestGuard],
     loadComponent: () =>
@@ -56,6 +72,12 @@ export const routes: Routes = [
     canMatch: [authGuard],
     loadComponent: () =>
       import('./features/payments/offers/offers.component').then((m) => m.OffersComponent),
+  },
+  {
+    path: 'recipes',
+    canMatch: [authGuard],
+    loadComponent: () =>
+      import('./features/recipe-list/recipe-list.component').then((m) => m.RecipeListComponent),
   },
   {
     path: 'user',

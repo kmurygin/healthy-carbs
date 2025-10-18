@@ -1,4 +1,4 @@
-import {Product} from "./product";
+import type {Product} from "./product";
 
 export interface InitPaymentRequest {
   localOrderId: string;

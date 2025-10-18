@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, computed, inject, signal,} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
-import {RecipeService} from '../../core/services/recipe.service';
-import {RecipeDto} from '../../core/models/dto/recipe.dto';
+import {RecipeService} from '../../core/services/recipe/recipe.service';
+import type {RecipeDto} from '../../core/models/dto/recipe.dto';
 import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
@@ -19,6 +19,25 @@ export class RecipeListComponent {
   readonly page = signal(1);
   readonly pageSize = signal(6);
   readonly pageSizeOptions = [6, 9, 12];
+  readonly startIndex = computed(() => (this.page() - 1) * this.pageSize());
+  readonly dietTypes = signal(['BALANCED', 'VEGETARIAN', 'VEGAN', 'KETO']);
+  readonly mealTypes = signal(['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK']);
+  readonly total = computed(() => this.filtered().length);
+  readonly totalPages = computed(() =>
+    Math.max(1, Math.ceil(this.total() / this.pageSize()))
+  );
+  readonly endIndex = computed(() =>
+    Math.min(this.startIndex() + this.pageSize(), this.total())
+  );
+  readonly pageItems = computed(() => {
+    const start = (this.page() - 1) * this.pageSize();
+    return this.filtered().slice(start, start + this.pageSize());
+  });
+  private readonly recipeService = inject(RecipeService);
+  readonly recipes = toSignal(
+    this.recipeService.getAll(),
+    {initialValue: [] as readonly RecipeDto[]}
+  );
   readonly filtered = computed(() => {
     const recipes = this.recipes();
     const name = this.nameFilter().toLowerCase();
@@ -39,25 +58,6 @@ export class RecipeListComponent {
       return matchesName && matchesIngredient && matchesDiet && matchesMeal;
     });
   });
-  readonly total = computed(() => this.filtered().length);
-  readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.total() / this.pageSize()))
-  );
-  readonly pageItems = computed(() => {
-    const start = (this.page() - 1) * this.pageSize();
-    return this.filtered().slice(start, start + this.pageSize());
-  });
-  readonly startIndex = computed(() => (this.page() - 1) * this.pageSize());
-  readonly endIndex = computed(() =>
-    Math.min(this.startIndex() + this.pageSize(), this.total())
-  );
-  readonly dietTypes = signal(['BALANCED', 'VEGETARIAN', 'VEGAN', 'KETO']);
-  readonly mealTypes = signal(['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK']);
-  private readonly recipeService = inject(RecipeService);
-  readonly recipes = toSignal(
-    this.recipeService.getAll(),
-    {initialValue: [] as readonly RecipeDto[]}
-  );
 
   updateFilter(type: 'name' | 'ingredient' | 'diet' | 'meal', event: Event): void {
     const value = (event.target as HTMLInputElement | HTMLSelectElement).value;

@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type {ComponentFixture} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { InfoMessageComponent } from './info-message.component';
+import {InfoMessageComponent} from './info-message.component';
 
 describe('InfoMessageComponent', () => {
   let component: InfoMessageComponent;
@@ -10,7 +11,7 @@ describe('InfoMessageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [InfoMessageComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(InfoMessageComponent);
     component = fixture.componentInstance;

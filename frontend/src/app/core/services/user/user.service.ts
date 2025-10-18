@@ -1,9 +1,9 @@
 import {inject, Injectable} from '@angular/core';
-import type {ChangePasswordPayload} from "../models/payloads";
-import type {UserDto} from "../models/dto/user.dto";
-import {ApiEndpoints} from "../constants/constants";
+import type {ChangePasswordPayload} from "../../models/payloads";
+import type {UserDto} from "../../models/dto/user.dto";
+import {ApiEndpoints} from "../../constants/api-endpoints";
 import {HttpClient} from "@angular/common/http";
-import type {ApiResponse} from "../models/api-response.model";
+import type {ApiResponse} from "../../models/api-response.model";
 
 @Injectable({
   providedIn: 'root'

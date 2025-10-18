@@ -2,7 +2,7 @@ import {Component, inject, signal} from '@angular/core';
 import type {FormControl, FormGroup} from '@angular/forms';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
-import {AuthService} from '../../../core/services/auth.service';
+import {AuthService} from '../../../core/services/auth/auth.service';
 
 import type {RegisterPayload} from "../../../core/models/payloads/register.payload";
 

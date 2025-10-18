@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type {ComponentFixture} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { SuccessMessageComponent } from './success-message.component';
+import {SuccessMessageComponent} from './success-message.component';
 
 describe('SuccessMessageComponent', () => {
   let component: SuccessMessageComponent;
@@ -10,7 +11,7 @@ describe('SuccessMessageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [SuccessMessageComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(SuccessMessageComponent);
     component = fixture.componentInstance;

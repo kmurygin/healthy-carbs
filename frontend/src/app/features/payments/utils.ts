@@ -47,18 +47,12 @@ function getFromSessionStorage(): string | null {
 }
 
 export function saveLastLocalOrderId(localOrderId: string): void {
-  try {
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem('lastLocalOrderId', localOrderId);
-    }
-  } catch {
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.setItem('lastLocalOrderId', localOrderId);
   }
 }
 
 
 export function safeRemoveLastLocalOrderId(): void {
-  try {
-    sessionStorage.removeItem('lastLocalOrderId');
-  } catch {
-  }
+  sessionStorage.removeItem('lastLocalOrderId');
 }

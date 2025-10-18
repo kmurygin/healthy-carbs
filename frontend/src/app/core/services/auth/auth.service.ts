@@ -2,26 +2,15 @@ import {computed, effect, inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {jwtDecode} from 'jwt-decode';
-import {ApiEndpoints, LocalStorage} from '../constants/constants';
-import type {UserDto} from '../models/dto/user.dto';
+import {LocalStorage} from '../../constants/constants';
+import type {UserDto} from '../../models/dto/user.dto';
 import {map, tap} from 'rxjs';
-import type {RegisterPayload} from "../models/payloads/register.payload";
-import type {ApiResponse} from "../models/api-response.model";
-import type {LoginPayload} from "../models/payloads/login.payload";
-import type {AuthenticationResponse} from "../models/payloads";
-
-// Claims:
-// sub - subject
-// iat - issued at
-// exp - expiration time
-interface JwtClaims {
-  sub?: string;
-  iat?: number;
-  exp?: number;
-
-  // Additional claims, eg. roles
-  [key: string]: unknown;
-}
+import type {RegisterPayload} from "../../models/payloads/register.payload";
+import type {ApiResponse} from "../../models/api-response.model";
+import type {LoginPayload} from "../../models/payloads/login.payload";
+import type {AuthenticationResponse} from "../../models/payloads";
+import {ApiEndpoints} from "../../constants/api-endpoints";
+import type {JwtClaims} from "./jwtclaims";
 
 @Injectable({providedIn: 'root'})
 export class AuthService {

@@ -1,11 +1,12 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, signal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Subscription, switchMap, timer} from 'rxjs';
+import {switchMap, timer} from 'rxjs';
+import type {Subscription} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {PayuService} from '../../../core/services/payu.service';
+import {PayuService} from '../../../core/services/payu/payu.service';
 import {PaymentStatus} from '../dto/payment-status';
 import {resolveLocalOrderId, safeRemoveLastLocalOrderId} from '../utils';
-import {Order} from "../dto/order";
+import type {Order} from "../dto/order";
 import {ErrorMessageComponent} from "../../../shared/components/error-message/error-message.component";
 import {SuccessMessageComponent} from "../../../shared/components/success-message/success-message.component";
 import {InfoMessageComponent} from "../../../shared/components/info-message/info-message.component";
@@ -42,9 +43,7 @@ export class PaymentResultComponent {
 
       if (!id || terminal) return;
 
-      let sub: Subscription | undefined;
-
-      sub = timer(0, this.pollIntervalMs)
+      const sub: Subscription = timer(0, this.pollIntervalMs)
         .pipe(
           takeUntilDestroyed(this.destroyRef),
           switchMap(() => this.payuService.getOrderDetails(id))
@@ -62,18 +61,18 @@ export class PaymentResultComponent {
               console.log(this.order());
               console.log('status', this.status());
               safeRemoveLastLocalOrderId();
-              sub?.unsubscribe();
+              sub.unsubscribe();
             }
           },
           error: (err) => {
             console.error('Error polling for order status:', err);
             this.polls.update((v) => v + 1);
             this.status.set(PaymentStatus.REJECTED);
-            sub?.unsubscribe();
+            sub.unsubscribe();
           },
         });
 
-      onCleanup(() => sub?.unsubscribe());
+      onCleanup(() => sub.unsubscribe());
     });
   }
 }

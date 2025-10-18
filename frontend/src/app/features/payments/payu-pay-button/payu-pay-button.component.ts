@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, computed, inject, input, output, signal} from '@angular/core';
-import {PayuService} from '../../../core/services/payu.service';
+import {PayuService} from '../../../core/services/payu/payu.service';
 import type {InitPaymentRequest} from '../dto/init-payment-request';
 import {take} from 'rxjs';
 import {saveLastLocalOrderId} from "../utils";
-import {Product} from "../dto/product";
+import type {Product} from "../dto/product";
 
 @Component({
   selector: 'app-payu-pay-button',

@@ -13,10 +13,10 @@
           <p class="text-gray-600 mt-1 mb-4">{{ offer.description }}</p>
 
           <img
-            ngOptimizedImage
-            src="assets/images/kalendarz-1.jpg"
             alt="name"
             class="h-40 w-full object-cover"
+            ngOptimizedImage
+            src="assets/images/kalendarz-1.jpg"
           />
 
           <div class="text-4xl font-bold mb-2 mt-2 ">{{ offer.pricePln | number: '1.2-2' }} PLN</div>
@@ -28,10 +28,10 @@
 
           <div class="mt-auto flex justify-end">
             <app-payu-pay-button
-              [localOrderId]="offer.orderId"
               [description]="offer.title + ' - ' + offer.description"
-              [totalAmount]="offer.pricePln * 100"
+              [localOrderId]="offer.orderId"
               [products]="[offer.product]"
+              [totalAmount]="offer.pricePln * 100"
             ></app-payu-pay-button>
           </div>
         </div>

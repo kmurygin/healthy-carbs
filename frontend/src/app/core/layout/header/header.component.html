@@ -98,13 +98,18 @@
   <dialog
     #mobileMenu
     (click)="closeMenu(mobileMenu)"
+    (keydown.enter)="closeMenu(mobileMenu)"
+    (keydown.space)="closeMenu(mobileMenu)"
+    aria-label="Close menu by clicking outside"
     class="backdrop:bg-black/20 lg:hidden"
     id="mobile-menu"
+    role="button"
+    tabindex="0"
   >
     <div class="fixed inset-0 z-50 flex justify-end">
       <div
-        (click)="$event.stopPropagation()"
-        class="h-full w-full max-w-7/12 overflow-y-auto bg-white p-6 shadow-xl ring-1 ring-gray-900/10"
+        class="h-full w-full max-w-7/12 overflow-y-auto
+        bg-white p-6 shadow-xl ring-1 ring-gray-900/10"
       >
         <div class="flex justify-end">
           <button

@@ -1,9 +1,10 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {ApiResponse} from "../models/api-response.model";
-import {RecipeDto} from "../models/dto/recipe.dto";
-import {ApiEndpoints} from "../constants/constants";
-import {map, Observable} from "rxjs";
+import type {ApiResponse} from "../../models/api-response.model";
+import type {RecipeDto} from "../../models/dto/recipe.dto";
+import {ApiEndpoints} from "../../constants/api-endpoints";
+import type {Observable} from "rxjs";
+import {map} from "rxjs";
 
 @Injectable({
   providedIn: 'root'

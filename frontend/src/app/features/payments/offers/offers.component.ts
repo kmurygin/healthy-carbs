@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, signal,} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {PayuPayButtonComponent} from '../payu-pay-button/payu-pay-button.component';
-import {Offer} from "../dto/offer";
+import type {Offer} from "../dto/offer";
 
 @Component({
   selector: 'app-offers',

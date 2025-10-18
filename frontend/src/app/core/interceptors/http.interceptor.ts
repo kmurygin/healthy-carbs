@@ -2,8 +2,8 @@ import type {HttpErrorResponse, HttpInterceptorFn} from '@angular/common/http';
 import {HttpStatusCode} from '@angular/common/http';
 import {inject} from '@angular/core';
 import type {Observable} from 'rxjs';
-import {catchError, retry, throwError} from 'rxjs';
-import {AuthService} from '../services/auth.service';
+import {catchError, from, retry, switchMap, throwError} from 'rxjs';
+import {AuthService} from '../services/auth/auth.service';
 import {Router} from '@angular/router';
 import type {ErrorResponse} from '../models/error-response.model';
 import {environment} from '../../../environments/environment';
@@ -85,11 +85,9 @@ const handleError = (
       break;
 
     case HttpStatusCode.NotFound:
-      router.navigate(['/error/404'])
-        .catch(err => {
-          console.error('Navigation failed', err);
-        });
-      break;
+      return from(router.navigate(['/error/404'])).pipe(
+        switchMap(() => throwError(() => new Error(errorMessage)))
+      );
 
     case HttpStatusCode.InternalServerError:
       errorMessage ||= 'A server error occurred. Please try again later.';

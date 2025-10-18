@@ -1,7 +1,8 @@
-import {Component, input, InputSignal} from '@angular/core';
+import type {InputSignal} from '@angular/core';
+import {Component, input} from '@angular/core';
 
 @Component({
-  selector: 'error-message',
+  selector: 'app-error-message',
   imports: [],
   templateUrl: './error-message.component.html',
   styleUrl: './error-message.component.css'
