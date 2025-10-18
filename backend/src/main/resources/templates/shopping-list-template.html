@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Shopping List</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1f2937;
+            margin: 20px;
+        }
+
+        h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+            color: #374151;
+            text-transform: capitalize;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        li {
+            padding: 0.75rem 0.25rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .item-table td {
+            padding: 0;
+            vertical-align: middle;
+        }
+
+        .checkbox-cell {
+            width: 30px;
+        }
+
+        .name-cell {
+            width: 100%;
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        .quantity-cell {
+            width: auto;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4b5563;
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        .checkbox {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #9ca3af;
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Shopping List</h1>
+
+<div th:each="categoryEntry : ${shoppingListItems}">
+    <h2 th:text="${#strings.capitalizeWords(#strings.toLowerCase(categoryEntry.key.toString()).replace('_', ' '))}">
+    </h2>
+    <ul>
+        <li th:each="item : ${categoryEntry.value}">
+            <table class="item-table">
+                <tr>
+                    <td class="checkbox-cell">
+                        <span class="checkbox"></span>
+                    </td>
+                    <td class="name-cell" th:text="${item.ingredient.name}">
+                    </td>
+                    <td class="quantity-cell" th:if="${item.totalQuantity != null}"
+                        th:text="${#numbers.formatDecimal(item.totalQuantity, 1, 'COMMA', 2, 'POINT') + (item.ingredient.unit != null ? ' ' + item.ingredient.unit : '')}">
+                    </td>
+                </tr>
+            </table>
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>

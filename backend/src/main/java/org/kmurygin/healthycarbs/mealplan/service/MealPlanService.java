@@ -30,6 +30,7 @@ public class MealPlanService {
     private final DietaryProfileService dietaryProfileService;
     private final MealPlanRepository mealPlanRepository;
     private final AuthenticationService authenticationService;
+    private final ShoppingListService shoppingListService;
     private final Executor taskExecutor;
 
     public MealPlan save(MealPlan mealPlan) {
@@ -60,7 +61,9 @@ public class MealPlanService {
         mealPlan.setDays(transientMealPlanDays);
         updateWeeklyTotals(mealPlan);
 
-        return mealPlanRepository.save(mealPlan);
+        MealPlan saved = mealPlanRepository.save(mealPlan);
+        shoppingListService.createAndSaveShoppingList(saved);
+        return saved;
     }
 
     public List<MealPlan> getMealPlansHistory() {
