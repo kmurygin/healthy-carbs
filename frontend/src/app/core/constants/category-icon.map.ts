@@ -1,4 +1,4 @@
-import {IngredientCategory} from "../models/IngredientCategory";
+import {IngredientCategory} from "../models/enum/ingredient-category.enum";
 
 export const CategoryIconMap: Readonly<Record<IngredientCategory, string>> = {
   [IngredientCategory.VEGETABLES]: 'fa-carrot',

@@ -1,4 +1,4 @@
-import type {IngredientCategory} from "../IngredientCategory";
+import type {IngredientCategory} from "../enum/ingredient-category.enum";
 
 export interface ShoppingListItem {
   readonly name: string;
