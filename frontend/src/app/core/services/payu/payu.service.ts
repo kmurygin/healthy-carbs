@@ -6,6 +6,7 @@ import type {Order} from "../../../features/payments/dto/order";
 import type {ApiResponse} from "../../models/api-response.model";
 import {ApiEndpoints} from "../../constants/api-endpoints";
 import type {PaymentStatusResponse} from "../../../features/payments/dto/payment-status-response";
+import {map, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -13,16 +14,22 @@ import type {PaymentStatusResponse} from "../../../features/payments/dto/payment
 export class PayuService {
   private readonly httpClient = inject(HttpClient);
 
-  createPayment(payload: InitPaymentRequest) {
-    return this.httpClient.post<ApiResponse<InitPaymentResponse>>(ApiEndpoints.Payment.Create, payload);
+  createPayment(payload: InitPaymentRequest): Observable<InitPaymentResponse> {
+    return this.httpClient
+      .post<ApiResponse<InitPaymentResponse>>(ApiEndpoints.Payment.Create, payload)
+      .pipe(map(response => response.data!));
   }
 
   getStatus(localOrderId: string) {
-    return this.httpClient.get<ApiResponse<PaymentStatusResponse>>(ApiEndpoints.Payment.Status + localOrderId);
+    return this.httpClient
+      .get<ApiResponse<PaymentStatusResponse>>(ApiEndpoints.Payment.Status + localOrderId)
+      .pipe(map(response => response.data!));
   }
 
   getOrderDetails(localOrderId: string) {
-    return this.httpClient.get<ApiResponse<Order>>(ApiEndpoints.Payment.Order + localOrderId);
+    return this.httpClient
+      .get<ApiResponse<Order>>(ApiEndpoints.Payment.Order + localOrderId)
+      .pipe(map(response => response.data!));
   }
 
 }
