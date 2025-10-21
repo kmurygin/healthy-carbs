@@ -38,11 +38,11 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'mealplan-form',
+    path: 'dietary-profile-form',
     canMatch: [authGuard],
     loadComponent: () =>
-      import('./features/mealplan/mealplan-form/mealplan-form.component').then(
-        (m) => m.MealplanFormComponent
+      import('./features/mealplan/dietary-profile-form/dietary-profile-form.component').then(
+        (m) => m.DietaryProfileFormComponent
       ),
   },
   {

@@ -1,19 +1,19 @@
 import type {ComponentFixture} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing';
 
-import {MealplanFormComponent} from './mealplan-form.component';
+import {DietaryProfileFormComponent} from './dietary-profile-form.component';
 
 describe('MealplanFormComponent', () => {
-  let component: MealplanFormComponent;
-  let fixture: ComponentFixture<MealplanFormComponent>;
+  let component: DietaryProfileFormComponent;
+  let fixture: ComponentFixture<DietaryProfileFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MealplanFormComponent]
+      imports: [DietaryProfileFormComponent]
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(MealplanFormComponent);
+    fixture = TestBed.createComponent(DietaryProfileFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

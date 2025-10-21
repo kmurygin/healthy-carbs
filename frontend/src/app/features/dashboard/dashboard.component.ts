@@ -19,13 +19,13 @@ export class DashboardComponent {
   isSmallScreen = window.innerWidth < 768;
   categories = [
     {
-      name: 'Plan żywieniowy',
-      route: 'mealplan-form',
+      name: 'Meal plan',
+      route: 'mealplan',
       image: 'assets/images/6325254.jpg'
     },
     {
-      name: 'Kalendarz posiłków',
-      route: 'calendar',
+      name: 'Diet profile',
+      route: 'dietary-profile-form',
       image: 'assets/images/6325254.jpg'
     },
     {
@@ -39,8 +39,8 @@ export class DashboardComponent {
       image: 'assets/images/6325254.jpg'
     },
     {
-      name: 'Historia planów',
-      route: 'historia-planow',
+      name: 'Meal plans history',
+      route: 'mealplan-history',
       image: 'assets/images/6325254.jpg'
     },
     {
@@ -49,8 +49,8 @@ export class DashboardComponent {
       image: 'assets/images/6325254.jpg'
     },
     {
-      name: 'Baza przepisów',
-      route: 'przepisy',
+      name: 'Recipes',
+      route: 'recipes',
       image: 'assets/images/6325254.jpg'
     },
     {
