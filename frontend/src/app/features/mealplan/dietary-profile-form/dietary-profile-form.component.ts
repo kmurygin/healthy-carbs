@@ -30,9 +30,6 @@ import {ActivityLevelDescriptionMap} from "../../../core/constants/activity-leve
   },
 })
 export class DietaryProfileFormComponent {
-  private readonly formBuilder = inject(NonNullableFormBuilder);
-  private readonly profileService = inject(DietaryProfileService);
-
   readonly isLoading = signal(true);
   readonly profileExists = signal(false);
   readonly submitting = signal(false);
@@ -40,12 +37,12 @@ export class DietaryProfileFormComponent {
   readonly formError = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
   readonly selectedAllergies = signal<Set<Allergy>>(new Set());
-
   readonly goals = getFormOptionsFromEnum(DietGoal);
   readonly diets = getFormOptionsFromEnum(DietType);
   readonly activityLevels = getFormOptionsFromEnum(ActivityLevel);
   readonly allergies = Object.values(Allergy);
-
+  protected readonly ActivityLevelDescriptionMap = ActivityLevelDescriptionMap;
+  private readonly formBuilder = inject(NonNullableFormBuilder);
   readonly formGroup = this.formBuilder.group({
     age: this.formBuilder.control<number | null>(null, [
       Validators.required,
@@ -76,29 +73,12 @@ export class DietaryProfileFormComponent {
     ]),
     allergies: this.formBuilder.control<Allergy[]>([]),
   });
+  private readonly profileService = inject(DietaryProfileService);
 
   constructor() {
     this.loadProfile();
     effect(() => {
       this.formGroup.controls.allergies.setValue([...this.selectedAllergies()]);
-    });
-  }
-
-  private loadProfile(): void {
-    this.isLoading.set(true);
-    this.profileService.getProfile().subscribe({
-      next: (profile) => {
-        this.profileExists.set(profile !== null);
-        console.log(profile);
-      },
-      error: (err) => {
-        this.profileExists.set(false);
-        this.isLoading.set(false);
-        console.log(err)
-      },
-      complete: () => {
-        this.isLoading.set(false);
-      },
     });
   }
 
@@ -132,7 +112,7 @@ export class DietaryProfileFormComponent {
 
     try {
       this.submitting.set(true);
-      this.formGroup.disable({ emitEvent: false });
+      this.formGroup.disable({emitEvent: false});
 
       const formValue = this.formGroup.getRawValue();
 
@@ -155,7 +135,7 @@ export class DietaryProfileFormComponent {
       this.formError.set('Saving failed. Please try again later.');
       console.error(err);
     } finally {
-      this.formGroup.enable({ emitEvent: false });
+      this.formGroup.enable({emitEvent: false});
       this.submitting.set(false);
     }
   }
@@ -167,5 +147,21 @@ export class DietaryProfileFormComponent {
     this.formError.set(null);
   }
 
-  protected readonly ActivityLevelDescriptionMap = ActivityLevelDescriptionMap;
+  private loadProfile(): void {
+    this.isLoading.set(true);
+    this.profileService.getProfile().subscribe({
+      next: (profile) => {
+        this.profileExists.set(profile !== null);
+        console.log(profile);
+      },
+      error: (err) => {
+        this.profileExists.set(false);
+        this.isLoading.set(false);
+        console.log(err)
+      },
+      complete: () => {
+        this.isLoading.set(false);
+      },
+    });
+  }
 }
