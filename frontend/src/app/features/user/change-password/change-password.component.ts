@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import type {FormControl, FormGroup} from '@angular/forms';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {UserService} from '../../../core/services/user.service';
+import {UserService} from '../../../core/services/user/user.service';
 
 type ChangePasswordForm = FormGroup<{
   oldPassword: FormControl<string>;

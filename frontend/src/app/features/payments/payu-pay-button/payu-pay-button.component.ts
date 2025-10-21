@@ -46,7 +46,7 @@ export class PayuPayButtonComponent {
 
         try {
           if (typeof window !== 'undefined') {
-            window.location.assign(response?.data?.redirectUri ?? '');
+            window.location.assign(response?.redirectUri ?? '');
             return;
           }
         } catch (e) {

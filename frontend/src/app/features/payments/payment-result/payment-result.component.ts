@@ -39,8 +39,6 @@ export class PaymentResultComponent {
       const id = this.localOrderId();
       const terminal = this.isTerminal();
 
-      console.log('Local order ID:', id);
-
       if (!id || terminal) return;
 
       const sub: Subscription = timer(0, this.pollIntervalMs)
@@ -50,22 +48,18 @@ export class PaymentResultComponent {
         )
         .subscribe({
           next: (res) => {
-            console.log(res);
             this.polls.update((currentCount) => currentCount + 1);
-            const nextStatus = (res?.data?.paymentStatus ?? PaymentStatus.REJECTED) as PaymentStatus;
+            const nextStatus = (res?.paymentStatus ?? PaymentStatus.REJECTED) as PaymentStatus;
 
             if (nextStatus !== PaymentStatus.PENDING) {
               this.status.set(nextStatus);
-              this.order.set(res?.data ?? null);
-              console.log('data: ', res?.data);
-              console.log(this.order());
-              console.log('status', this.status());
+              this.order.set(res ?? null);
               safeRemoveLastLocalOrderId();
               sub.unsubscribe();
             }
           },
           error: (err) => {
-            console.error('Error polling for order status:', err);
+            console.error(err);
             this.polls.update((v) => v + 1);
             this.status.set(PaymentStatus.REJECTED);
             sub.unsubscribe();
