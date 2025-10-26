@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.mealplan.service;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
+import org.kmurygin.healthycarbs.mealplan.DietTypeUtil;
 import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
@@ -59,6 +61,10 @@ public class RecipeService {
         return recipeRepository.findAll(finalSpec, pageable);
     }
 
+    public List<Recipe> findAll() {
+        return recipeRepository.findAll();
+    }
+
     public Recipe findById(Long id) {
         return recipeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
@@ -73,19 +79,8 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
 
-        recipe.setName(updatedRecipe.getName());
-        recipe.setDescription(updatedRecipe.getDescription());
-        recipe.setInstructions(updatedRecipe.getInstructions());
-        recipe.setDietType(updatedRecipe.getDietType());
-        recipe.setMealType(updatedRecipe.getMealType());
-        recipe.setIngredients(updatedRecipe.getIngredients());
-        recipe.setCalories(updatedRecipe.getCalories());
-        recipe.setCarbs(updatedRecipe.getCarbs());
-        recipe.setProtein(updatedRecipe.getProtein());
-        recipe.setFat(updatedRecipe.getFat());
-
+        recipeMapper.updateFromEntity(updatedRecipe, recipe);
         return recipeRepository.save(recipe);
-
     }
 
     public void deleteById(Long id) {
@@ -131,10 +126,26 @@ public class RecipeService {
     }
 
     @Transactional(readOnly = true)
+    public Recipe findRandomForMealPlan(MealType mealType, DietType dietType) {
+        Set<DietType> compatibleDietTypes = DietTypeUtil.getCompatibleDietTypes(dietType);
+        List<Long> recipeIds = recipeRepository.findIdsByMealTypeAndDietTypes(mealType, compatibleDietTypes);
+        if (recipeIds.isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "Recipe not found for mealType: " + mealType + " and dietType: " + dietType
+            );
+        }
+        Long randomId = recipeIds.get(ThreadLocalRandom.current().nextInt(recipeIds.size()));
+        return recipeRepository.findByIdWithIngredients(randomId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", randomId));
+    }
+
+    @Transactional(readOnly = true)
     public Recipe findRandom(MealType mealType, DietType dietType) {
         List<Long> recipeIds = recipeRepository.findIdsByMealTypeAndDietType(mealType, dietType);
         if (recipeIds.isEmpty()) {
-            throw new ResourceNotFoundException("Recipe not found for mealType: " + mealType + " and dietType: " + dietType);
+            throw new ResourceNotFoundException(
+                    "Recipe not found for mealType: " + mealType + " and dietType: " + dietType
+            );
         }
         Long randomId = recipeIds.get(ThreadLocalRandom.current().nextInt(recipeIds.size()));
         return recipeRepository.findByIdWithIngredients(randomId)

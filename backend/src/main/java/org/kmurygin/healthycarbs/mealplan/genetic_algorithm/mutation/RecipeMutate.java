@@ -25,7 +25,7 @@ public class RecipeMutate implements Mutate {
         for (int i = 0; i < plan.getGenes().size(); i++) {
             if (ThreadLocalRandom.current().nextDouble() < config.getMutationRate()) {
                 MealType mealType = plan.getGenes().get(i).getMealType();
-                plan.getGenes().set(i, recipeService.findRandom(mealType, dietType));
+                plan.getGenes().set(i, recipeService.findRandomForMealPlan(mealType, dietType));
             }
         }
     }

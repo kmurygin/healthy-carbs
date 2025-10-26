@@ -20,10 +20,10 @@ CREATE TABLE IF NOT EXISTS ingredients
     id                BIGSERIAL PRIMARY KEY,
     name              VARCHAR(255) NOT NULL UNIQUE,
     unit              VARCHAR(50),
-    calories_per_unit INTEGER,
-    carbs_per_unit    INTEGER,
-    protein_per_unit  INTEGER,
-    fat_per_unit      INTEGER
+    calories_per_unit DOUBLE PRECISION,
+    carbs_per_unit    DOUBLE PRECISION,
+    protein_per_unit  DOUBLE PRECISION,
+    fat_per_unit      DOUBLE PRECISION
 );
 
 CREATE TABLE IF NOT EXISTS recipes
@@ -31,10 +31,10 @@ CREATE TABLE IF NOT EXISTS recipes
     id          BIGSERIAL PRIMARY KEY,
     name        VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
-    calories    INTEGER,
-    carbs       INTEGER,
-    protein     INTEGER,
-    fat         INTEGER,
+    calories    DOUBLE PRECISION,
+    carbs       DOUBLE PRECISION,
+    protein     DOUBLE PRECISION,
+    fat         DOUBLE PRECISION,
     diet_type   VARCHAR(50),
     meal_type   VARCHAR(50)
 );

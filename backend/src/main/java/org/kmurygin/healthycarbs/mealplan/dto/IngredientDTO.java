@@ -12,9 +12,9 @@ public class IngredientDTO {
     private Long id;
     private String name;
     private String unit;
-    private Integer caloriesPerUnit;
-    private Integer carbsPerUnit;
-    private Integer proteinPerUnit;
-    private Integer fatPerUnit;
+    private Double caloriesPerUnit;
+    private Double carbsPerUnit;
+    private Double proteinPerUnit;
+    private Double fatPerUnit;
     private IngredientCategory category;
 }

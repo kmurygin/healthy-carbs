@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, Long>, JpaSpecificationExecutor<Recipe> {
@@ -21,7 +22,30 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>, JpaSpecif
             WHERE r.mealType = :mealType
             AND r.dietType = :dietType
             """)
-    List<Long> findIdsByMealTypeAndDietType(MealType mealType, DietType dietType);
+    List<Long> findIdsByMealTypeAndDietType(
+            @Param("mealType") MealType mealType,
+            @Param("dietType") DietType dietType
+    );
+
+    @Query("""
+            SELECT r.id
+            FROM Recipe r
+            WHERE r.mealType = :mealType
+            """)
+    List<Long> findIdsByMealType(
+            @Param("mealTypes") MealType mealType
+    );
+
+    @Query("""
+            SELECT r.id
+            FROM Recipe r
+            WHERE r.mealType = :mealType
+            AND r.dietType IN :dietTypes
+            """)
+    List<Long> findIdsByMealTypeAndDietTypes(
+            @Param("mealType") MealType mealType,
+            @Param("dietTypes") Set<DietType> dietTypes
+    );
 
     @Query("""
             SELECT DISTINCT r

@@ -1,20 +1,22 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
-import jakarta.transaction.Transactional;
 import org.kmurygin.healthycarbs.auth.AuthenticationService;
 import org.kmurygin.healthycarbs.mealplan.DietType;
+import org.kmurygin.healthycarbs.mealplan.MealPlanGeneratedEvent;
 import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.core.GeneticAlgorithm;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.core.Genome;
-import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.fitness.CalorieFitness;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.fitness.Fitness;
+import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.fitness.FitnessFactory;
 import org.kmurygin.healthycarbs.mealplan.model.DietaryProfile;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlanDay;
 import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRepository;
 import org.kmurygin.healthycarbs.user.User;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.util.Arrays;
@@ -29,8 +31,9 @@ public class MealPlanService {
     private final DietaryProfileService dietaryProfileService;
     private final MealPlanRepository mealPlanRepository;
     private final AuthenticationService authenticationService;
-    private final ShoppingListService shoppingListService;
     private final Executor taskExecutor;
+    private final FitnessFactory fitnessFactory;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public MealPlanService(
             GeneticAlgorithm geneticAlgorithm,
@@ -38,15 +41,18 @@ public class MealPlanService {
             DietaryProfileService dietaryProfileService,
             MealPlanRepository mealPlanRepository,
             AuthenticationService authenticationService,
-            ShoppingListService shoppingListService,
-            @Qualifier("applicationTaskExecutor") Executor taskExecutor) {
+            @Qualifier("applicationTaskExecutor") Executor taskExecutor,
+            FitnessFactory fitnessFactory,
+            ApplicationEventPublisher applicationEventPublisher
+    ) {
         this.geneticAlgorithm = geneticAlgorithm;
         this.recipeService = recipeService;
         this.dietaryProfileService = dietaryProfileService;
         this.mealPlanRepository = mealPlanRepository;
         this.authenticationService = authenticationService;
-        this.shoppingListService = shoppingListService;
         this.taskExecutor = taskExecutor;
+        this.fitnessFactory = fitnessFactory;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     public MealPlan save(MealPlan mealPlan) {
@@ -57,7 +63,7 @@ public class MealPlanService {
     public MealPlan generateMealPlan() {
         User user = authenticationService.getCurrentUser();
         DietaryProfile dietaryProfile = dietaryProfileService.getByUserId(user.getId());
-        Fitness fitness = new CalorieFitness(dietaryProfile);
+        Fitness fitness = this.fitnessFactory.createCalorieFitness(dietaryProfile);
         DietType dietType = dietaryProfile.getDietType();
 
         List<CompletableFuture<MealPlanDay>> futures = Arrays.stream(DayOfWeek.values())
@@ -77,8 +83,13 @@ public class MealPlanService {
         mealPlan.setDays(transientMealPlanDays);
         updateWeeklyTotals(mealPlan);
 
+        return savePlanAndGenerateShoppingList(mealPlan);
+    }
+
+    @Transactional
+    protected MealPlan savePlanAndGenerateShoppingList(MealPlan mealPlan) {
         MealPlan saved = mealPlanRepository.save(mealPlan);
-        shoppingListService.createAndSaveShoppingList(saved);
+        applicationEventPublisher.publishEvent(new MealPlanGeneratedEvent(saved));
         return saved;
     }
 
@@ -90,7 +101,7 @@ public class MealPlanService {
     private Genome randomCandidate(DietType dietType) {
         Genome genome = new Genome();
         for (MealType mealType : MealType.values()) {
-            genome.getGenes().add(recipeService.findRandom(mealType, dietType));
+            genome.getGenes().add(recipeService.findRandomForMealPlan(mealType, dietType));
         }
         return genome;
     }

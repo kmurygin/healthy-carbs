@@ -26,10 +26,10 @@ public class Ingredient {
 
     private String unit; // eg. grams, milliliters
 
-    private Integer caloriesPerUnit;
-    private Integer carbsPerUnit;
-    private Integer proteinPerUnit;
-    private Integer fatPerUnit;
+    private Double caloriesPerUnit;
+    private Double carbsPerUnit;
+    private Double proteinPerUnit;
+    private Double fatPerUnit;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

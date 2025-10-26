@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Genome {
-    private List<Recipe> genes = new ArrayList<>(3);
+    private List<Recipe> genes = new ArrayList<>(4);
     private double fitness;
     private double totalCalories;
     private double totalCarbs;

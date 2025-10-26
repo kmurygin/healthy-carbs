@@ -17,10 +17,10 @@ public class RecipeDTO {
     private String description;
     private String instructions;
     private List<RecipeIngredientDTO> ingredients;
-    private Integer calories;
-    private Integer carbs;
-    private Integer protein;
-    private Integer fat;
+    private Double calories;
+    private Double carbs;
+    private Double protein;
+    private Double fat;
     private MealType mealType;
     private DietType dietType;
 }
