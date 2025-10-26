@@ -48,10 +48,15 @@ application:
       secret-key: ${JWT_SECRET_KEY}
 
 genetic-algorithm:
-  population-size: 40
-  max-generations: 30
-  mutation-rate: 0.8
-  target-fitness: 0.999
+  population-size: 150
+  max-generations: 1000
+  mutation-rate: 0.05
+  target-fitness: 0.98
+  elite-count: 10
+  calories-weight: 0.1
+  carbs-weight: 0.3
+  protein-weight: 0.3
+  fat-weight: 0.3
 
 payu:
   base-url: ${PAYU_BASE_URL}
