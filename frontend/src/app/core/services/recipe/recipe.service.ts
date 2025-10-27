@@ -3,7 +3,8 @@ import {HttpClient, HttpParams} from "@angular/common/http";
 import type {ApiResponse} from "../../models/api-response.model";
 import type {RecipeDto} from "../../models/dto/recipe.dto";
 import {ApiEndpoints} from "../../constants/api-endpoints";
-import {catchError, map, Observable, of} from "rxjs";
+import type {Observable} from "rxjs";
+import {catchError, map, of} from "rxjs";
 import type {Page} from "../../models/page.model";
 import type {RecipeSearchParams} from "../../models/recipe-search.params";
 
