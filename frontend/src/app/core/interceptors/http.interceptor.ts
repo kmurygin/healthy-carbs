@@ -51,7 +51,7 @@ const handleError = (
   authService: AuthService,
   router: Router
 ): Observable<never> => {
-  const errorResponse: ErrorResponse = error.error;
+  const errorResponse = error.error as ErrorResponse;
   let errorMessage = 'An unknown error occurred';
 
   if (errorResponse) {

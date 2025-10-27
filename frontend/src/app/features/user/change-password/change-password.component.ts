@@ -44,10 +44,13 @@ export class ChangePasswordComponent {
         this.infoMessage.set(res?.message ?? 'Password updated successfully.');
         this.form.reset();
       },
-      error: (err) => {
-        const msg = err?.error?.message ?? err?.message ?? '';
-        this.errorMessage.set(msg ?? 'Failed to change password. Please try again.');
-      }
+      error: (err: Error) => {
+        let msg = 'Failed to change password. Please try again.';
+        if (err.message.trim().length > 0) {
+          msg = err.message;
+        }
+        this.errorMessage.set(msg);
+      },
     });
   }
 }

@@ -82,10 +82,13 @@ export class UserDetailComponent implements OnInit {
       next: (res) => {
         this.infoMessage.set(res?.message ?? 'Personal information updated successfully!');
       },
-      error: (err) => {
-        const msg: string = err?.error?.message ?? err?.message ?? '';
-        this.errorMessage.set(msg ?? 'Failed to update user details. Please try again.');
-      }
+      error: (err: Error) => {
+        let msg = 'Failed to update user details. Please try again.';
+        if (err.message.trim().length > 0) {
+          msg = err.message;
+        }
+        this.errorMessage.set(msg);
+      },
     });
   }
 }
