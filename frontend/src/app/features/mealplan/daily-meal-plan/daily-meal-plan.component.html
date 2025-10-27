@@ -88,44 +88,56 @@
                 >
                   @if (recipeDetails().has(mealPlanRecipe.recipe.id)) {
                     @let details = recipeDetails().get(mealPlanRecipe.recipe.id);
-                    <div class="p-4 grid grid-cols-1 md:grid-cols-5 gap-8">
-                      <div class="md:col-span-2">
-                        <h5 class="font-semibold text-gray-900 flex items-center gap-2">
-                          <i class="fa-solid fa-carrot text-gray-400"></i>
-                          Ingredients
-                        </h5>
-                        <div class="mt-2">
-                          <ul class="space-y-1 text-base list-none pl-0 ml-0">
-                            @for (recipeIngredient of details!.ingredients; track recipeIngredient.id) {
-                              <li class="flex justify-between items-baseline gap-4 py-1 border-b border-gray-100">
-                                <span class="text-gray-800">
-                                  {{ recipeIngredient.ingredient.name }}
-                                </span>
-                                <span class="text-gray-600 text-right flex-shrink-0">
-                                  {{ recipeIngredient.quantity | number: '1.0-2' }}
-                                  @if (recipeIngredient.ingredient.unit) {
-                                    {{ recipeIngredient.ingredient.unit }}s
-                                  } @else {
-                                    items
-                                  }
-                                </span>
-                              </li>
-                            }
-                          </ul>
-                        </div>
+
+                    <div class="p-4">
+
+                      <div class="mb-4 flex flex-wrap gap-2">
+                        <span [class]="dietTagClasses(mealPlanRecipe.recipe.dietType)">
+                          <i class="fa-solid fa-leaf text-xs"></i>
+                          {{ mealPlanRecipe.recipe.dietType }}
+                        </span>
                       </div>
 
-                      @if (details?.instructions) {
-                        <div class="md:col-span-3">
+                      <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+
+                        <div class="md:col-span-2">
                           <h5 class="font-semibold text-gray-900 flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-gray-400"></i>
-                            Instructions
+                            <i class="fa-solid fa-carrot text-gray-400"></i>
+                            Ingredients
                           </h5>
-                          <p class="mt-2 text-base text-gray-700 whitespace-pre-line">
-                            {{ details?.instructions }}
-                          </p>
+                          <div class="mt-2">
+                            <ul class="space-y-1 text-base list-none pl-0 ml-0">
+                              @for (recipeIngredient of details!.ingredients; track recipeIngredient.id) {
+                                <li class="flex justify-between items-baseline gap-4 py-1 border-b border-gray-100">
+                                  <span class="text-gray-800">
+                                    {{ recipeIngredient.ingredient.name }}
+                                  </span>
+                                  <span class="text-gray-600 text-right flex-shrink-0">
+                                    {{ recipeIngredient.quantity | number: '1.0-2' }}
+                                    @if (recipeIngredient.ingredient.unit) {
+                                      {{ recipeIngredient.ingredient.unit }}s
+                                    } @else {
+                                      items
+                                    }
+                                  </span>
+                                </li>
+                              }
+                            </ul>
+                          </div>
                         </div>
-                      }
+
+                        @if (details?.instructions) {
+                          <div class="md:col-span-3">
+                            <h5 class="font-semibold text-gray-900 flex items-center gap-2">
+                              <i class="fa-solid fa-list-check text-gray-400"></i>
+                              Instructions
+                            </h5>
+                            <p class="mt-2 text-base text-gray-700 whitespace-pre-line">
+                              {{ details?.instructions }}
+                            </p>
+                          </div>
+                        }
+                      </div>
                     </div>
                   } @else {
                     <div class="p-4 text-center text-sm text-gray-500">

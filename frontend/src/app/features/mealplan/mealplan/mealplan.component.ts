@@ -14,10 +14,10 @@ import {ShoppingListService} from "../../../core/services/shopping-list/shopping
 import {ErrorMessageComponent} from "../../../shared/components/error-message/error-message.component";
 import {DietaryProfileService} from "../../../core/services/dietary-profile/dietary-profile.service";
 import {Router} from "@angular/router";
-import {DietaryProfileDto} from "../../../core/models/dto/dietaryprofile.dto";
-import {ShoppingList} from "../../../core/models/dto/shopping-list.dto";
-import {UpdateShoppingListItemPayload} from "../../../core/models/payloads/updateshoppinglistitem.payload";
-import {IngredientCategory} from "../../../core/models/enum/ingredient-category.enum";
+import type {DietaryProfileDto} from "../../../core/models/dto/dietaryprofile.dto";
+import type {ShoppingList} from "../../../core/models/dto/shopping-list.dto";
+import type {UpdateShoppingListItemPayload} from "../../../core/models/payloads/updateshoppinglistitem.payload";
+import type {IngredientCategory} from "../../../core/models/enum/ingredient-category.enum";
 
 type NutritionalInformation = Readonly<{ calories: number; carbs: number; protein: number; fat: number }>;
 
@@ -105,7 +105,6 @@ export class MealPlanComponent {
     this.expandedRecipeIds.set(new Set());
     this.recipeDetails.set(new Map());
     this.shoppingList.set(null);
-
     try {
       const res = await firstValueFrom(this.mealPlanService.generate());
       this.plan.set(res);
@@ -286,6 +285,8 @@ export class MealPlanComponent {
         await this.getMealPlan();
       }
     } catch (error) {
+      console.error('Failed to fetch meal plan data:', error);
+      this.errorMessage.set('Failed to fetch meal plan. Please try again.');
       await this.router.navigate(['/dietary-profile-form']);
     }
   }
