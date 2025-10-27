@@ -28,9 +28,10 @@
 
           <img
             [alt]="step.imageAlt"
-            [src]="step.imageUrl"
+            [ngSrc]="step.imageUrl"
             [title]="step.imageAlt"
             class="mb-4 w-full h-40 rounded-lg object-cover shadow"
+            fill
             ngOptimizedImage
           />
 

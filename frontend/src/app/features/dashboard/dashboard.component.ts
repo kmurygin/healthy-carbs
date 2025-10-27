@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import type {Color} from '@swimlane/ngx-charts';
 import {LegendPosition, NgxChartsModule, ScaleType} from '@swimlane/ngx-charts';
+import {NgOptimizedImage} from "@angular/common";
 
 @Component({
   selector: 'app-dashboard',
@@ -9,6 +10,7 @@ import {LegendPosition, NgxChartsModule, ScaleType} from '@swimlane/ngx-charts';
   imports: [
     RouterLink,
     NgxChartsModule,
+    NgOptimizedImage,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],

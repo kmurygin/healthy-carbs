@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 
 interface Feature {
   label: string;
@@ -15,6 +15,7 @@ interface Feature {
   standalone: true,
   imports: [
     CommonModule,
+    NgOptimizedImage,
   ],
   templateUrl: './key-features.component.html',
   styleUrl: './key-features.component.css'

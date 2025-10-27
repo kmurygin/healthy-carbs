@@ -5,6 +5,7 @@ import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../../core/services/auth/auth.service';
 
 import type {RegisterPayload} from "../../../core/models/payloads/register.payload";
+import {NgOptimizedImage} from "@angular/common";
 
 type RegisterForm = FormGroup<{
   firstname: FormControl<string>;
@@ -20,7 +21,8 @@ type RegisterForm = FormGroup<{
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    RouterLink
+    RouterLink,
+    NgOptimizedImage
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']

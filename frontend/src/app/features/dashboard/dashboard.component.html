@@ -61,9 +61,10 @@
 
           <img
             [alt]="category.name"
-            [src]="category.image"
+            [ngSrc]="category.image"
             class="h-40 w-full object-cover"
             ngOptimizedImage
+            fill
           />
 
           <div class="p-4">

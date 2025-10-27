@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 
 interface Step {
   label: string;
@@ -15,6 +15,7 @@ interface Step {
   standalone: true,
   imports: [
     CommonModule,
+    NgOptimizedImage,
   ],
   templateUrl: './how-works.component.html',
   styleUrl: './how-works.component.css'

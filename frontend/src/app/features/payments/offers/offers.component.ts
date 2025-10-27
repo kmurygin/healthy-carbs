@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component, computed, signal,} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {PayuPayButtonComponent} from '../payu-pay-button/payu-pay-button.component';
 import type {Offer} from "../dto/offer";
 
 @Component({
   selector: 'app-offers',
-  imports: [CommonModule, PayuPayButtonComponent],
+  imports: [CommonModule, PayuPayButtonComponent, NgOptimizedImage],
   templateUrl: './offers.component.html',
   styleUrls: ['./offers.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
