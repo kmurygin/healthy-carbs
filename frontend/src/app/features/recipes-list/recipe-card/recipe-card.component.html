@@ -1,0 +1,55 @@
+@let selectedRecipe = recipe();
+
+<li
+  class="group relative flex flex-col rounded-2xl border border-gray-200 bg-white
+  transition hover:shadow-md hover:bg-gray-50"
+>
+  <a
+    [routerLink]="['/recipes', selectedRecipe.id]"
+    class="flex flex-col flex-1 p-4 focus:outline-none focus-visible:ring-2
+    focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-2xl"
+  >
+    <div class="flex flex-col min-w-0">
+      <span class="font-semibold text-base text-gray-900 truncate">
+        {{ selectedRecipe.name }}
+      </span>
+      <span class="text-sm font-normal text-gray-600 line-clamp-2 mb-2">
+        {{ selectedRecipe.description }}
+      </span>
+    </div>
+
+    <div class="flex flex-wrap gap-2 mb-4">
+      <span [class]="dietTagClasses()">
+        <i [class]="dietIconClasses()"></i>
+        {{ selectedRecipe.dietType }}
+      </span>
+      <span [class]="mealTagClasses()">
+        <i class="fa-solid fa-plate-wheat text-xs"></i>
+        {{ selectedRecipe.mealType }}
+      </span>
+    </div>
+
+    <div class="mt-auto grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+      <div class="flex items-center gap-1.5">
+        <i class="fa-solid fa-fire w-3 text-center text-orange-500"></i>
+        <span class="text-gray-600">Calories:</span>
+        <span class="font-medium text-gray-900">{{ selectedRecipe.calories | number:'1.0-0' }}</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <i class="fa-solid fa-bread-slice w-3 text-center text-amber-600"></i>
+        <span class="text-gray-600">Carbs:</span>
+        <span class="font-medium text-gray-900">{{ selectedRecipe.carbs | number:'1.0-0' }} g</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <i class="fa-solid fa-drumstick-bite w-3 text-center text-red-500"></i>
+        <span class="text-gray-600">Protein:</span>
+        <span class="font-medium text-gray-900">{{ selectedRecipe.protein | number:'1.0-0' }} g</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <i class="fa-solid fa-bottle-droplet w-3 text-center text-yellow-600"></i>
+        <span class="text-gray-600">Fat:</span>
+        <span class="font-medium text-gray-900">{{ selectedRecipe.fat | number:'1.0-0' }} g</span>
+      </div>
+    </div>
+  </a>
+</li>

@@ -33,7 +33,7 @@ export const routes: Routes = [
     path: 'recipes/:id',
     canMatch: [authGuard],
     loadComponent: () =>
-      import('./features/recipe/recipe.component').then(
+      import('./features/recipes-list/recipe/recipe.component').then(
         (m) => m.RecipeComponent
       ),
   },
@@ -77,7 +77,7 @@ export const routes: Routes = [
     path: 'recipes',
     canMatch: [authGuard],
     loadComponent: () =>
-      import('./features/recipe-list/recipe-list.component').then((m) => m.RecipeListComponent),
+      import('./features/recipes-list/recipe-list/recipe-list.component').then((m) => m.RecipeListComponent),
   },
   {
     path: 'user',
