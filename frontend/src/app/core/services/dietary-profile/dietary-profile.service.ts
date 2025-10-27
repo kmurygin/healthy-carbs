@@ -3,8 +3,9 @@ import type {DietaryProfileDto} from "../../models/dto/dietaryprofile.dto";
 import type {ApiResponse} from "../../models/api-response.model";
 import {HttpClient} from "@angular/common/http";
 import {ApiEndpoints} from "../../constants/api-endpoints";
-import {DietaryProfilePayload} from "../../models/payloads/dietaryprofile.payload";
-import {map, Observable} from "rxjs";
+import type {DietaryProfilePayload} from "../../models/payloads/dietaryprofile.payload";
+import type {Observable} from "rxjs";
+import {map} from "rxjs";
 
 @Injectable({
   providedIn: 'root'

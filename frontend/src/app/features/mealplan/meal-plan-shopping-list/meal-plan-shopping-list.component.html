@@ -22,7 +22,8 @@
         >
           <summary
             (click)="$event.preventDefault(); toggleCategory(group[0])"
-            class="flex cursor-pointer list-none items-center justify-between p-3 hover:bg-gray-50"
+            [class.bg-emerald-600]="!openCategories().has(group[0])"
+            class="flex cursor-pointer list-none items-center justify-between p-3 hover:bg-emerald-700 bg-emerald-600"
           >
             <div class="flex items-center gap-3">
               <i

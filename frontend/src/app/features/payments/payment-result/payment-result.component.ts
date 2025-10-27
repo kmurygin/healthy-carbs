@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, signal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {switchMap, timer} from 'rxjs';
 import type {Subscription} from 'rxjs';
+import {switchMap, timer} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {PayuService} from '../../../core/services/payu/payu.service';
 import {PaymentStatus} from '../dto/payment-status';

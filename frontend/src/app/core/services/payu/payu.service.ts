@@ -6,7 +6,8 @@ import type {Order} from "../../../features/payments/dto/order";
 import type {ApiResponse} from "../../models/api-response.model";
 import {ApiEndpoints} from "../../constants/api-endpoints";
 import type {PaymentStatusResponse} from "../../../features/payments/dto/payment-status-response";
-import {map, Observable} from "rxjs";
+import type {Observable} from "rxjs";
+import {map} from "rxjs";
 
 @Injectable({
   providedIn: 'root'

@@ -94,7 +94,13 @@ export class DietaryProfileFormComponent {
   toggleAllergy(allergy: Allergy) {
     this.selectedAllergies.update((prev) => {
       const next = new Set(prev);
-      next.has(allergy) ? next.delete(allergy) : next.add(allergy);
+
+      if (next.has(allergy)) {
+        next.delete(allergy);
+      } else {
+        next.add(allergy);
+      }
+
       return next;
     });
     this.successMessage.set(null);
@@ -118,12 +124,12 @@ export class DietaryProfileFormComponent {
 
       const payload: DietaryProfilePayload = {
         age: formValue.age!,
-        gender: formValue.gender!,
+        gender: formValue.gender,
         weight: formValue.weight!,
         height: formValue.height!,
-        dietGoal: formValue.goal!,
-        dietType: formValue.dietaryPreference!,
-        activityLevel: formValue.activityLevel!,
+        dietGoal: formValue.goal,
+        dietType: formValue.dietaryPreference,
+        activityLevel: formValue.activityLevel,
         allergies: formValue.allergies,
       };
 

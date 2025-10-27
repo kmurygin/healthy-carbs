@@ -1,4 +1,6 @@
 import type {RecipeIngredientDto} from './recipe-ingredient.dto';
+import type {MealType} from "../enum/meal-type.enum";
+import type {DietType} from "../enum/diet-type.enum";
 
 export interface RecipeDto {
   readonly id: number;
@@ -10,6 +12,6 @@ export interface RecipeDto {
   readonly carbs: number;
   readonly protein: number;
   readonly fat: number;
-  readonly dietType: string;
-  readonly mealType: string;
+  readonly dietType: DietType;
+  readonly mealType: MealType;
 }

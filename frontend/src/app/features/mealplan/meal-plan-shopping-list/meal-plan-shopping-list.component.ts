@@ -11,7 +11,7 @@ type DisplayItem = Readonly<{
   name: string;
   unit: string;
   quantity: number;
-  category: string;
+  category: IngredientCategory;
   isBought: boolean;
 }>;
 
@@ -30,7 +30,7 @@ export class MealPlanShoppingListComponent {
   readonly openCategories = signal(new Set<string>());
   readonly items = computed(() => this.transformDtoToDisplayItems(this.shoppingList()));
   readonly groupedItems = computed(() => {
-    const itemsByCategory = new Map<string, DisplayItem[]>();
+    const itemsByCategory = new Map<IngredientCategory, DisplayItem[]>();
     for (const item of this.items()) {
       const category = item.category;
       const categoryItems = itemsByCategory.get(category) ?? [];
@@ -80,7 +80,7 @@ export class MealPlanShoppingListComponent {
     return value in IngredientCategory;
   }
 
-  iconFor(category: unknown): string {
+  iconFor(category: IngredientCategory): string {
     const key = String(category ?? '').toUpperCase().trim();
     if (this.isIngredientCategory(key)) {
       return CategoryIconMap[key];
@@ -92,7 +92,12 @@ export class MealPlanShoppingListComponent {
     if (!inputShoppingList) return [];
 
     const displayItems: DisplayItem[] = [];
-    for (const [category, categoryItems] of Object.entries(inputShoppingList.items)) {
+    const categories = Object.keys(inputShoppingList.items) as IngredientCategory[];
+
+    for (const category of categories) {
+
+      const categoryItems = inputShoppingList.items[category];
+
       for (const item of categoryItems) {
         const unit = item.unit || 'piece';
         displayItems.push({
