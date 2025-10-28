@@ -55,20 +55,18 @@ export class MealPlanComponent {
   });
   readonly dailyTotals = computed(() => {
     const day = this.selectedDay();
-    if (!day) return {calories: 0, carbs: 0, protein: 0, fat: 0};
     return {
-      calories: Math.round(day.totalCalories ?? 0),
-      carbs: Math.round(day.totalCarbs ?? 0),
-      protein: Math.round(day.totalProtein ?? 0),
-      fat: Math.round(day.totalFat ?? 0),
+      calories: Math.round(day.totalCalories),
+      carbs: Math.round(day.totalCarbs),
+      protein: Math.round(day.totalProtein),
+      fat: Math.round(day.totalFat),
     };
   });
   readonly recipeMacrosMap: Signal<ReadonlyMap<number, NutritionalInformation>> = computed(() => {
     const day = this.selectedDay();
     const macrosMap = new Map<number, NutritionalInformation>();
-    if (!day) return macrosMap;
 
-    for (const mealPlanRecipe of day.recipes ?? []) {
+    for (const mealPlanRecipe of day.recipes) {
       const recipe = mealPlanRecipe.recipe;
       macrosMap.set(recipe.id, this.getMacrosForRecipe(recipe));
     }
@@ -80,7 +78,7 @@ export class MealPlanComponent {
   private readonly shoppingListService = inject(ShoppingListService);
   private readonly dietaryProfileService = inject(DietaryProfileService);
   private readonly router = inject(Router);
-  private profile = signal<DietaryProfileDto | null>(null);
+  private readonly profile = signal<DietaryProfileDto | null>(null);
   readonly dailyTargets = computed(() => {
     const dietaryProfile = this.profile();
     return {
@@ -93,7 +91,7 @@ export class MealPlanComponent {
 
   constructor() {
     afterNextRender(() => {
-      this.fetchMealPlanData().catch(error => {
+      this.fetchMealPlanData().catch((error: unknown) => {
         console.error(error);
       });
     })

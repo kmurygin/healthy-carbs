@@ -17,7 +17,7 @@ export class DietaryProfileService {
     return this.httpClient
       .post<ApiResponse<DietaryProfileDto>>(ApiEndpoints.DietaryProfiles.DietaryProfiles, dietaryProfile)
       .pipe(
-        map(response => response?.data ?? null)
+        map(response => response.data ?? null)
       );
   }
 
@@ -25,7 +25,7 @@ export class DietaryProfileService {
     return this.httpClient
       .get<ApiResponse<DietaryProfileDto>>(ApiEndpoints.DietaryProfiles.DietaryProfiles)
       .pipe(
-        map(response => response?.data ?? null)
+        map(response => response.data ?? null)
       );
   }
 }

@@ -64,7 +64,9 @@ export class AuthService {
         }
       }),
       map(res => {
-        this.token.set(res.data!.token);
+        if (res.data !== undefined) {
+          this.token.set(res.data.token);
+        }
         return res;
       }),
     );
@@ -80,7 +82,7 @@ export class AuthService {
   logout(): void {
     this.token.set(null);
     this.router.navigate(['login'], {replaceUrl: true})
-      .catch(err => {
+      .catch((err: unknown) => {
         console.error('Navigation failed', err);
       });
   }

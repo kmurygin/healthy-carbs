@@ -3,8 +3,8 @@ import {CommonModule, TitleCasePipe} from '@angular/common';
 import type {MealPlanDayDto} from '../../../core/models/dto/mealplan-day.dto';
 import type {MealPlanRecipeDto} from '../../../core/models/dto/mealplan-recipe.dto';
 import {RouterModule} from '@angular/router';
-import {roundMacros} from "../mealplan.util";
 import type {Grouped, Macros} from "../mealplan.util";
+import {roundMacros} from "../mealplan.util";
 
 @Component({
   selector: 'app-mealplan-history-item',
@@ -36,7 +36,7 @@ export class MealPlanHistoryItemComponent {
     }
     return Array.from(recipesByMealType.entries())
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([mealType, items]) => ({ mealType, items }));
+      .map(([mealType, items]) => ({mealType, items}));
   });
 
   readonly recipeMacrosMap = computed(() => {

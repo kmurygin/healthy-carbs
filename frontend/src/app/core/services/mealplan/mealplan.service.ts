@@ -14,8 +14,13 @@ export class MealPlanService {
 
   generate(): Observable<MealPlanDto> {
     return this.httpClient
-      .post<ApiResponse<MealPlanDto>>(`${ApiEndpoints.MealPlan.mealplan}`, null)
-      .pipe(map(resp => resp.data!));
+      .post<ApiResponse<MealPlanDto>>(ApiEndpoints.MealPlan.mealplan, null)
+      .pipe(map(resp => {
+        if (!resp.data) {
+          throw new Error('Failed to generate meal plan');
+        }
+        return resp.data;
+      }));
   }
 
   getHistory(): Observable<MealPlanDto[]> {

@@ -18,19 +18,34 @@ export class PayuService {
   createPayment(payload: InitPaymentRequest): Observable<InitPaymentResponse> {
     return this.httpClient
       .post<ApiResponse<InitPaymentResponse>>(ApiEndpoints.Payment.Create, payload)
-      .pipe(map(response => response.data!));
+      .pipe(map(response => {
+        if (!response.data) {
+          throw new Error('Failed to create payment');
+        }
+        return response.data;
+      }));
   }
 
   getStatus(localOrderId: string) {
     return this.httpClient
       .get<ApiResponse<PaymentStatusResponse>>(ApiEndpoints.Payment.Status + localOrderId)
-      .pipe(map(response => response.data!));
+      .pipe(map(response => {
+        if (!response.data) {
+          throw new Error('Failed to get status');
+        }
+        return response.data;
+      }));
   }
 
   getOrderDetails(localOrderId: string) {
     return this.httpClient
       .get<ApiResponse<Order>>(ApiEndpoints.Payment.Order + localOrderId)
-      .pipe(map(response => response.data!));
+      .pipe(map(response => {
+        if (!response.data) {
+          throw new Error('Failed to get order details');
+        }
+        return response.data;
+      }));
   }
 
 }

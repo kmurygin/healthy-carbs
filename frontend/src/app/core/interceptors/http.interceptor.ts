@@ -15,7 +15,7 @@ function isApiCall(url: string): boolean {
 }
 
 function toHttpStatusCode(n: number) {
-  return HttpStatusCode[n as HttpStatusCode] !== undefined ? (n as HttpStatusCode) : null;
+  return HttpStatusCode[n] ? (n as HttpStatusCode) : null;
 }
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
@@ -40,8 +40,8 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     retry(2),
-    catchError((error: HttpErrorResponse) =>
-      handleError(error, authService, router)
+    catchError((error: unknown) =>
+      handleError(error as HttpErrorResponse, authService, router)
     )
   );
 };
@@ -54,23 +54,21 @@ const handleError = (
   const errorResponse = error.error as ErrorResponse;
   let errorMessage = 'An unknown error occurred';
 
-  if (errorResponse) {
-    errorMessage = errorResponse.message ?? errorMessage;
+  errorMessage = errorResponse.message ?? errorMessage;
 
-    if (errorResponse.fieldErrors && Object.keys(errorResponse.fieldErrors).length > 0) {
-      const fields = Object.entries(errorResponse.fieldErrors)
-        .map(([field, msg]) => `${field}: ${msg}`)
-        .join(', ');
-      errorMessage += ` | Field errors: ${fields}`;
-    }
+  if (errorResponse.fieldErrors && Object.keys(errorResponse.fieldErrors).length > 0) {
+    const fields = Object.entries(errorResponse.fieldErrors)
+      .map(([field, msg]) => `${field}: ${msg}`)
+      .join(', ');
+    errorMessage += ` | Field errors: ${fields}`;
+  }
 
-    if (errorResponse.details?.length) {
-      errorMessage += ` | Details: ${errorResponse.details.join(', ')}`;
-    }
+  if (errorResponse.details?.length) {
+    errorMessage += ` | Details: ${errorResponse.details.join(', ')}`;
+  }
 
-    if (errorResponse.traceId) {
-      console.warn(`[HTTP ERROR] Error traceId: ${errorResponse.traceId}`);
-    }
+  if (errorResponse.traceId) {
+    console.warn(`[HTTP ERROR] Error traceId: ${errorResponse.traceId}`);
   }
 
   switch (toHttpStatusCode(error.status)) {

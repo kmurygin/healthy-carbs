@@ -20,8 +20,8 @@ type ChangePasswordForm = FormGroup<{
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChangePasswordComponent {
-  errorMessage = signal('');
-  infoMessage = signal('');
+  readonly errorMessage = signal('');
+  readonly infoMessage = signal('');
   private readonly formBuilder = inject(FormBuilder);
 
   form: ChangePasswordForm = this.formBuilder.nonNullable.group({
@@ -41,12 +41,12 @@ export class ChangePasswordComponent {
 
     this.userService.changePassword(this.form.getRawValue()).subscribe({
       next: (res) => {
-        this.infoMessage.set(res?.message ?? 'Password updated successfully.');
+        this.infoMessage.set(res.message ?? 'Password updated successfully.');
         this.form.reset();
       },
-      error: (err: Error) => {
+      error: (err: unknown) => {
         let msg = 'Failed to change password. Please try again.';
-        if (err.message.trim().length > 0) {
+        if (err instanceof Error) {
           msg = err.message;
         }
         this.errorMessage.set(msg);

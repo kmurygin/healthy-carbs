@@ -1,12 +1,13 @@
 import type {InputSignal} from '@angular/core';
-import {Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 
 @Component({
   selector: 'app-error-message',
   imports: [],
   templateUrl: './error-message.component.html',
-  styleUrl: './error-message.component.css'
+  styleUrl: './error-message.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ErrorMessageComponent {
-  message: InputSignal<string> = input.required<string>();
+  readonly message: InputSignal<string> = input.required<string>();
 }

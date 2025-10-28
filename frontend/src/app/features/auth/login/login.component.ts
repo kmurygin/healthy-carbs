@@ -23,9 +23,9 @@ type LoginForm = FormGroup<{
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
-  errorMessage = signal('');
-  isSubmitting = signal(false);
-  submitted = signal(false);
+  readonly errorMessage = signal('');
+  readonly isSubmitting = signal(false);
+  readonly submitted = signal(false);
 
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -52,14 +52,18 @@ export class LoginComponent {
       next: () => {
         this.isSubmitting.set(false);
         this.router.navigate([''])
-          .catch(err => {
+          .catch((err: unknown) => {
             console.error('Navigation failed', err);
           });
         window.location.reload();
       },
-      error: (err: Error & { fieldErrors?: Record<string, string> }) => {
+      error: (err: unknown) => {
         this.isSubmitting.set(false);
-        this.errorMessage.set(err.message || 'An unexpected error occurred.');
+        let msg = 'An unexpected error occurred.';
+        if (err instanceof Error) {
+          msg = err.message || msg;
+        }
+        this.errorMessage.set(msg);
       }
     });
   }

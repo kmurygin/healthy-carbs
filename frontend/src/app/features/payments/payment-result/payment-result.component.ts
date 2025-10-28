@@ -4,7 +4,7 @@ import type {Subscription} from 'rxjs';
 import {switchMap, timer} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {PayuService} from '../../../core/services/payu/payu.service';
-import {PaymentStatus} from '../dto/payment-status';
+import {PaymentStatus} from '../dto/payment-status.enum';
 import {resolveLocalOrderId, safeRemoveLastLocalOrderId} from '../utils';
 import type {Order} from "../dto/order";
 import {ErrorMessageComponent} from "../../../shared/components/error-message/error-message.component";
@@ -22,14 +22,14 @@ import {InfoMessageComponent} from "../../../shared/components/info-message/info
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentResultComponent {
-  private readonly route = inject(ActivatedRoute);
-  readonly localOrderId = signal<string | null>(resolveLocalOrderId(this.route));
   readonly hasOrderId = computed(() => !!this.localOrderId());
   readonly status = signal<PaymentStatus>(this.hasOrderId() ? PaymentStatus.PENDING : PaymentStatus.REJECTED);
   readonly polls = signal(0);
   readonly order = signal<Order | null>(null);
   readonly isTerminal = computed(() => this.status() !== PaymentStatus.PENDING);
   protected readonly PaymentStatus = PaymentStatus;
+  private readonly route = inject(ActivatedRoute);
+  readonly localOrderId = signal<string | null>(resolveLocalOrderId(this.route));
   private readonly payuService = inject(PayuService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly pollIntervalMs = 1500;
@@ -49,16 +49,16 @@ export class PaymentResultComponent {
         .subscribe({
           next: (res) => {
             this.polls.update((currentCount) => currentCount + 1);
-            const nextStatus = (res?.paymentStatus ?? PaymentStatus.REJECTED) as PaymentStatus;
+            const nextStatus = res.paymentStatus;
 
             if (nextStatus !== PaymentStatus.PENDING) {
               this.status.set(nextStatus);
-              this.order.set(res ?? null);
+              this.order.set(res);
               safeRemoveLastLocalOrderId();
               sub.unsubscribe();
             }
           },
-          error: (err) => {
+          error: (err: unknown) => {
             console.error(err);
             this.polls.update((v) => v + 1);
             this.status.set(PaymentStatus.REJECTED);
@@ -66,7 +66,9 @@ export class PaymentResultComponent {
           },
         });
 
-      onCleanup(() => sub.unsubscribe());
+      onCleanup(() => {
+        sub.unsubscribe()
+      });
     });
   }
 }

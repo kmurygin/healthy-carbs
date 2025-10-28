@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 
 interface Feature {
@@ -12,13 +12,13 @@ interface Feature {
 
 @Component({
   selector: 'app-key-features',
-  standalone: true,
   imports: [
     CommonModule,
     NgOptimizedImage,
   ],
   templateUrl: './key-features.component.html',
-  styleUrl: './key-features.component.css'
+  styleUrl: './key-features.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class KeyFeaturesComponent {
   selected = 0;

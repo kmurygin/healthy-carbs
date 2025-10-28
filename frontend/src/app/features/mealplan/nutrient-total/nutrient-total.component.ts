@@ -11,12 +11,12 @@ import {DecimalPipe} from "@angular/common";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NutrientTotalComponent {
-  total = input.required<number>();
-  target = input.required<number>();
-  percent = input.required<number>();
-  progressBarPercent = input.required<number>();
-  unit = input.required<string>();
-  label = input.required<string>();
-  iconClasses = input.required<string>();
-  barColorClass = input.required<string>();
+  readonly total = input.required<number>();
+  readonly target = input.required<number>();
+  readonly percent = input.required<number>();
+  readonly progressBarPercent = input.required<number>();
+  readonly unit = input.required<string>();
+  readonly label = input.required<string>();
+  readonly iconClasses = input.required<string>();
+  readonly barColorClass = input.required<string>();
 }

@@ -16,12 +16,17 @@ export class ShoppingListService {
   getShoppingList(mealPlanId: number): Observable<ShoppingList> {
     return this.httpClient
       .get<ApiResponse<ShoppingList>>(ApiEndpoints.ShoppingList.Get(mealPlanId))
-      .pipe(map(response => response.data!));
+      .pipe(map(response => {
+        if (!response.data) {
+          throw new Error('Failed to get shopping list');
+        }
+        return response.data;
+      }));
   }
 
-  updateItemStatus(mealPlanId: number, payload: UpdateShoppingListItemPayload): Observable<void> {
+  updateItemStatus(mealPlanId: number, payload: UpdateShoppingListItemPayload): Observable<null> {
     return this.httpClient
-      .put<void>(ApiEndpoints.ShoppingList.UpdateItem(mealPlanId), payload);
+      .put<null>(ApiEndpoints.ShoppingList.UpdateItem(mealPlanId), payload);
   }
 
   downloadPdf(mealPlanId: number): Observable<Blob> {

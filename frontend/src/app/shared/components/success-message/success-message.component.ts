@@ -1,12 +1,13 @@
 import type {InputSignal} from '@angular/core';
-import {Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 
 @Component({
   selector: 'app-success-message',
   imports: [],
   templateUrl: './success-message.component.html',
-  styleUrl: './success-message.component.css'
+  styleUrl: './success-message.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SuccessMessageComponent {
-  message: InputSignal<string> = input.required<string>();
+  readonly message: InputSignal<string> = input.required<string>();
 }

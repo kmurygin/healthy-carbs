@@ -12,14 +12,22 @@ export class UserService {
   private httpClient = inject(HttpClient);
 
   getUserByUsername(username: string) {
-    return this.httpClient.get<ApiResponse<UserDto>>(ApiEndpoints.User.GetUserByUsername + username);
+    return this.httpClient.get<ApiResponse<UserDto>>(
+      ApiEndpoints.User.GetUserByUsername + username
+    );
   }
 
   updateUser(id: number, updatedUser: UserDto) {
-    return this.httpClient.put<ApiResponse<UserDto>>(ApiEndpoints.User.User + id, updatedUser);
+    return this.httpClient.put<ApiResponse<UserDto>>(
+      `${ApiEndpoints.User.User}${id}`,
+      updatedUser
+    );
   }
 
   changePassword(changePasswordPayload: ChangePasswordPayload) {
-    return this.httpClient.post<ApiResponse<UserDto>>(ApiEndpoints.User.ChangePassword, changePasswordPayload);
+    return this.httpClient.post<ApiResponse<UserDto>>(
+      ApiEndpoints.User.ChangePassword,
+      changePasswordPayload
+    );
   }
 }

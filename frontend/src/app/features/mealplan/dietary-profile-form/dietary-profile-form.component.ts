@@ -160,7 +160,7 @@ export class DietaryProfileFormComponent {
         this.profileExists.set(profile !== null);
         console.log(profile);
       },
-      error: (err) => {
+      error: (err: unknown) => {
         this.profileExists.set(false);
         this.isLoading.set(false);
         console.log(err)

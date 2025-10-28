@@ -77,7 +77,7 @@ export class RecipeListComponent {
           loading: false,
           error: null
         })),
-        catchError(err => {
+        catchError((err: unknown) => {
           console.error(err);
           return of({
             page: initialPage,

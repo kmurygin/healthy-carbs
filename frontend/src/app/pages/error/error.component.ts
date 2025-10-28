@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {NgOptimizedImage} from "@angular/common";
 
 @Component({
@@ -7,7 +7,8 @@ import {NgOptimizedImage} from "@angular/common";
     NgOptimizedImage
   ],
   templateUrl: './error.component.html',
-  styleUrl: './error.component.css'
+  styleUrl: './error.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ErrorComponent {
 

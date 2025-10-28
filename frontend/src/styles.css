@@ -1,41 +1,45 @@
 @import "tailwindcss";
 
-@import "@angular/material/prebuilt-themes/purple-green.css";
-
 :root {
-  --mat-primary-900: #1b5e20;
-  --mat-accent-400: #8bc34a;
-  --mat-warn-500: #f44336;
-
   --background-color: #fff;
   --font-family: Roboto, "Helvetica Neue", sans-serif;
-
-  --button-color: #31572c;
-  --button-nav-color: #4f772d;
-  --nav-bg-color: #132a13;
-
-  --outlined-shape: 4px;
 }
 
-html {
-  scrollbar-gutter: stable;
-}
-
-body {
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-@supports not (scrollbar-gutter: stable) {
-  body {
-    overflow-y: scroll;
+@layer base {
+  html {
+    scrollbar-gutter: stable;
   }
-}
 
-html, body {
-  font-family: var(--font-family);
-  background: var(--background-color);
-  color: #212121;
+  body {
+    @apply text-gray-900;
+    background: var(--background-color);
+    font-family: var(--font-family), sans-serif;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  @supports not (scrollbar-gutter: stable) {
+    body {
+      overflow-y: scroll;
+    }
+  }
+
+  details > summary {
+    list-style: none;
+  }
+
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details > summary:focus {
+    outline: none;
+  }
+
+  details > summary:focus-visible {
+    outline: 2px solid #10b981;
+    border-radius: 0.75rem;
+  }
 }
 
 @layer components {
@@ -53,8 +57,10 @@ html, body {
   }
 
   .btn-primary {
-    @apply rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow
-    transition enabled:hover:bg-emerald-700 disabled:opacity-40;
+    @apply inline-flex items-center justify-center rounded-full bg-emerald-600
+    px-4 py-2 text-sm font-semibold text-white shadow transition
+    enabled:hover:bg-emerald-700 enabled:active:translate-y-px
+    disabled:opacity-40 disabled:cursor-not-allowed;
   }
 
   .nav-link {
@@ -62,7 +68,7 @@ html, body {
   }
 
   .auth-link {
-    @apply rounded-full px-4 py-1.5 text-sm font-semibold
-    transition text-emerald-700;
+    @apply rounded-full px-4 py-1.5 text-sm font-semibold text-emerald-700 transition
+    hover:text-emerald-800;
   }
 }

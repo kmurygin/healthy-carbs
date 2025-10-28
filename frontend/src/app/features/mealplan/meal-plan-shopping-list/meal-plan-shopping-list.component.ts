@@ -81,7 +81,7 @@ export class MealPlanShoppingListComponent {
   }
 
   iconFor(category: IngredientCategory): string {
-    const key = String(category ?? '').toUpperCase().trim();
+    const key = category.toUpperCase().trim();
     if (this.isIngredientCategory(key)) {
       return CategoryIconMap[key];
     }

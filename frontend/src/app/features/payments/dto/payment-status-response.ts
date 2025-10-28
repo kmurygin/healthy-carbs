@@ -1,4 +1,4 @@
-import type {PaymentStatus} from "./payment-status";
+import type {PaymentStatus} from "./payment-status.enum";
 
 export interface PaymentStatusResponse {
   localOrderId: string;

@@ -49,7 +49,7 @@ export class RecipeComponent {
             loading: false,
             error: null
           })),
-          catchError((err) => {
+          catchError((err: unknown) => {
             console.error(err);
             return of({
               recipe: null,

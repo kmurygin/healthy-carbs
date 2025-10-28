@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 
 interface Step {
@@ -12,13 +12,13 @@ interface Step {
 
 @Component({
   selector: 'app-how-works',
-  standalone: true,
   imports: [
     CommonModule,
     NgOptimizedImage,
   ],
   templateUrl: './how-works.component.html',
-  styleUrl: './how-works.component.css'
+  styleUrl: './how-works.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HowWorksComponent {
   steps: Step[] = [

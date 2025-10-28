@@ -29,8 +29,8 @@ export class DailyMealPlanComponent {
     if (!plan) return [];
 
     const groups = new Map<string, MealPlanRecipeDto[]>();
-    for (const recipe of plan.recipes ?? []) {
-      const mealType = recipe.mealType ?? 'Meal';
+    for (const recipe of plan.recipes) {
+      const mealType = recipe.mealType;
       const list = groups.get(mealType) ?? [];
       list.push(recipe);
       groups.set(mealType, list);
