@@ -78,9 +78,9 @@
 
             <h3 th:text="${recipe.name}">Recipe Name</h3>
 
-            <p th:if="${recipe.description != null and !recipe.description.isBlank()}"
-               th:text="${recipe.description}"
-               class="recipe-description">
+            <p class="recipe-description"
+               th:if="${recipe.description != null and !recipe.description.isBlank()}"
+               th:text="${recipe.description}">
             </p>
 
             <h4>Ingredients:</h4>
@@ -92,7 +92,7 @@
 
             <div th:if="${recipe.instructions != null and !recipe.instructions.isBlank()}">
                 <h4>Instructions:</h4>
-                <p th:text="${recipe.instructions}" class="instructions">
+                <p class="instructions" th:text="${recipe.instructions}">
                 </p>
             </div>
         </div>
