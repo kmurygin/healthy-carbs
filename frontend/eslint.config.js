@@ -1,10 +1,17 @@
 // @ts-check
-const eslint = require("@eslint/js");
-const tseslint = require("typescript-eslint");
-const angular = require("angular-eslint");
-const promise = require("eslint-plugin-promise");
+import { defineConfig } from "eslint/config";
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+import angular from "angular-eslint";
+import promise from "eslint-plugin-promise";
+import rxjs from "@smarttools/eslint-plugin-rxjs";
 
-module.exports = tseslint.config(
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export default defineConfig(
   {
     ignores: [
       "eslint.config.js",
@@ -25,18 +32,22 @@ module.exports = tseslint.config(
     },
     plugins: {
       promise,
+      rxjs,
     },
     extends: [
       eslint.configs.recommended,
-
-      ...tseslint.configs.recommendedTypeChecked,
+      ...tseslint.configs.strictTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
-
       ...angular.configs.tsRecommended,
+      rxjs.configs.recommended,
     ],
     processor: angular.processInlineTemplates,
 
     rules: {
+      "@angular-eslint/prefer-standalone": "error",
+      "@angular-eslint/prefer-signals": "error",
+      "@angular-eslint/prefer-on-push-component-change-detection": "error",
+      "@angular-eslint/prefer-host-metadata-property": "error",
       "@angular-eslint/component-selector": [
         "error",
         {type: "element", prefix: "app", style: "kebab-case"},
@@ -61,10 +72,6 @@ module.exports = tseslint.config(
         "error",
         {checksVoidReturn: {attributes: false}},
       ],
-      "@typescript-eslint/no-unsafe-argument": "error",
-      "@typescript-eslint/no-unsafe-assignment": "error",
-      "@typescript-eslint/no-unsafe-call": "error",
-      "@typescript-eslint/no-unsafe-member-access": "error",
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
       "@typescript-eslint/restrict-template-expressions": [
         "error",
@@ -89,6 +96,10 @@ module.exports = tseslint.config(
       "promise/no-return-wrap": "error",
       "promise/valid-params": "error",
       "require-await": "error",
+
+      "rxjs/no-async-subscribe": "error",
+      "rxjs/no-nested-subscribe": "error",
+      "rxjs/no-redundant-notify": "error",
     },
   },
 
@@ -102,6 +113,7 @@ module.exports = tseslint.config(
       "@angular-eslint/template/eqeqeq": "error",
       "@angular-eslint/template/no-distracting-elements": "error",
       "@angular-eslint/template/no-negated-async": "error",
+      "@angular-eslint/template/prefer-control-flow": "error",
     },
   }
 );

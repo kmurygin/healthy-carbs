@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-dietgoal-to-dietaryprofile
+      author: kmurygin
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE dietary_profile
+              ADD COLUMN diet_goal VARCHAR(10) DEFAULT 'MAINTAIN';

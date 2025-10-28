@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {NavigationEnd, Router, RouterModule} from '@angular/router';
-import {AuthService} from '../../services/auth.service';
+import {AuthService} from '../../services/auth/auth.service';
 import {filter} from "rxjs/operators";
 
 @Component({
@@ -17,7 +17,9 @@ export class HeaderComponent {
   private router = inject(Router);
 
   constructor() {
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => this.menuOpen.set(false));
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
+      this.menuOpen.set(false)
+    });
   }
 
   get isLoggedIn(): boolean {
@@ -31,7 +33,7 @@ export class HeaderComponent {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login'])
-      .catch(err => {
+      .catch((err: unknown) => {
         console.error('Navigation failed', err);
       });
   }

@@ -1,19 +1,21 @@
 package org.kmurygin.healthycarbs.mealplan.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 import org.kmurygin.healthycarbs.mealplan.MealType;
 
 import java.util.Objects;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
 @Entity
 @Table(name = "meal_plan_recipes")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class MealPlanRecipe {
 
     @Id
@@ -21,17 +23,21 @@ public class MealPlanRecipe {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meal_plan_id", nullable = false)
-    @ToString.Exclude
-    private MealPlan mealPlan;
+    @JoinColumn(name = "meal_plan_day_id")
+    private MealPlanDay mealPlanDay;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipe_id", nullable = false)
-    @ToString.Exclude
+    @JoinColumn(name = "recipe_id")
     private Recipe recipe;
 
     @Enumerated(EnumType.STRING)
     private MealType mealType;
+
+    public MealPlanRecipe(MealPlanDay mealPlanDay, Recipe recipe, MealType mealType) {
+        this.mealPlanDay = mealPlanDay;
+        this.recipe = recipe;
+        this.mealType = mealType;
+    }
 
     @Override
     public final boolean equals(Object o) {

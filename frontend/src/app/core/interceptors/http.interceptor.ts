@@ -2,8 +2,8 @@ import type {HttpErrorResponse, HttpInterceptorFn} from '@angular/common/http';
 import {HttpStatusCode} from '@angular/common/http';
 import {inject} from '@angular/core';
 import type {Observable} from 'rxjs';
-import {catchError, retry, throwError} from 'rxjs';
-import {AuthService} from '../services/auth.service';
+import {catchError, from, retry, switchMap, throwError} from 'rxjs';
+import {AuthService} from '../services/auth/auth.service';
 import {Router} from '@angular/router';
 import type {ErrorResponse} from '../models/error-response.model';
 import {environment} from '../../../environments/environment';
@@ -15,7 +15,7 @@ function isApiCall(url: string): boolean {
 }
 
 function toHttpStatusCode(n: number) {
-  return HttpStatusCode[n as HttpStatusCode] !== undefined ? (n as HttpStatusCode) : null;
+  return HttpStatusCode[n] ? (n as HttpStatusCode) : null;
 }
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
@@ -40,8 +40,8 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     retry(2),
-    catchError((error: HttpErrorResponse) =>
-      handleError(error, authService, router)
+    catchError((error: unknown) =>
+      handleError(error as HttpErrorResponse, authService, router)
     )
   );
 };
@@ -51,26 +51,24 @@ const handleError = (
   authService: AuthService,
   router: Router
 ): Observable<never> => {
-  const errorResponse: ErrorResponse = error.error;
+  const errorResponse = error.error as ErrorResponse;
   let errorMessage = 'An unknown error occurred';
 
-  if (errorResponse) {
-    errorMessage = errorResponse.message ?? errorMessage;
+  errorMessage = errorResponse.message ?? errorMessage;
 
-    if (errorResponse.fieldErrors && Object.keys(errorResponse.fieldErrors).length > 0) {
-      const fields = Object.entries(errorResponse.fieldErrors)
-        .map(([field, msg]) => `${field}: ${msg}`)
-        .join(', ');
-      errorMessage += ` | Field errors: ${fields}`;
-    }
+  if (errorResponse.fieldErrors && Object.keys(errorResponse.fieldErrors).length > 0) {
+    const fields = Object.entries(errorResponse.fieldErrors)
+      .map(([field, msg]) => `${field}: ${msg}`)
+      .join(', ');
+    errorMessage += ` | Field errors: ${fields}`;
+  }
 
-    if (errorResponse.details?.length) {
-      errorMessage += ` | Details: ${errorResponse.details.join(', ')}`;
-    }
+  if (errorResponse.details?.length) {
+    errorMessage += ` | Details: ${errorResponse.details.join(', ')}`;
+  }
 
-    if (errorResponse.traceId) {
-      console.warn(`[HTTP ERROR] Error traceId: ${errorResponse.traceId}`);
-    }
+  if (errorResponse.traceId) {
+    console.warn(`[HTTP ERROR] Error traceId: ${errorResponse.traceId}`);
   }
 
   switch (toHttpStatusCode(error.status)) {
@@ -85,11 +83,9 @@ const handleError = (
       break;
 
     case HttpStatusCode.NotFound:
-      router.navigate(['/error/404'])
-        .catch(err => {
-          console.error('Navigation failed', err);
-        });
-      break;
+      return from(router.navigate(['/error/404'])).pipe(
+        switchMap(() => throwError(() => new Error(errorMessage)))
+      );
 
     case HttpStatusCode.InternalServerError:
       errorMessage ||= 'A server error occurred. Please try again later.';

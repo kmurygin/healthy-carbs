@@ -1,0 +1,154 @@
+<section class="mx-auto max-w-7xl px-4 py-2">
+  <form
+    (submit)="$event.preventDefault()"
+    class="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 bg-emerald-600 p-4 rounded-xl"
+    role="search"
+  >
+    <label class="flex flex-col">
+      <span class="text-sm font-medium mb-1 text-white flex items-center gap-1.5">
+        <i class="fa-solid fa-magnifying-glass w-3 text-center text-white"></i>
+        Search by name
+      </span>
+      <input
+        (input)="updateFilter(FilterType.NAME, $event)"
+        aria-label="Search recipes by name"
+        class="rounded-xl border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500
+        bg-white"
+        placeholder="e.g. pizza"
+        type="search"
+      />
+    </label>
+
+    <label class="flex flex-col">
+      <span class="text-sm font-medium mb-1 text-white flex items-center gap-1.5">
+        <i class="fa-solid fa-carrot w-3 text-center text-white"></i>
+        Search by ingredient
+      </span>
+      <input
+        (input)="updateFilter(FilterType.INGREDIENT, $event)"
+        aria-label="Search recipes by ingredient"
+        class="rounded-xl border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500
+        bg-white"
+        placeholder="e.g. tomato"
+        type="search"
+      />
+    </label>
+
+    <label class="flex flex-col">
+      <span class="text-sm font-medium mb-1 text-white flex items-center gap-1.5">
+        <i class="fa-solid fa-leaf w-3 text-center text-white"></i>
+        Diet type
+      </span>
+      <select
+        (change)="updateFilter(FilterType.DIET_TYPE, $event)"
+        class="rounded-xl border border-gray-300 px-3 py-2
+        focus:border-emerald-500 focus:ring-emerald-500 appearance-none bg-white
+        hover:cursor-pointer"
+      >
+        <option value="">All Diets</option>
+        @for (dietType of dietTypes(); track dietType) {
+          <option [value]="dietType">{{ formatEnum(dietType) }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="flex flex-col">
+      <span class="text-sm font-medium mb-1 text-white flex items-center gap-1.5">
+        <i class="fa-solid fa-bowl-food w-3 text-center text-white"></i>
+        Meal type
+      </span>
+      <select
+        (change)="updateFilter(FilterType.MEAL_TYPE, $event)"
+        class="rounded-xl border border-gray-300 px-3 py-2 focus:border-emerald-500
+        focus:ring-emerald-500 appearance-none bg-white hover:cursor-pointer"
+      >
+        <option value="">All Meals</option>
+        @for (mealType of mealTypes(); track mealType) {
+          <option [value]="mealType">{{ formatEnum(mealType) }}</option>
+        }
+      </select>
+    </label>
+  </form>
+
+  @if (isLoading()) {
+    <div class="flex flex-col items-center justify-center gap-2 p-12 text-gray-500">
+      <i class="fa-solid fa-spinner fa-spin text-2xl text-emerald-600"></i>
+      <p aria-live="polite" class="font-medium">Loading recipes…</p>
+    </div>
+  } @else if (totalRecipeCount() === 0) {
+    <div class="flex flex-col items-center justify-center gap-2 p-12 text-gray-500">
+      <i class="fa-solid fa-magnifying-glass-minus text-2xl"></i>
+      <p>No recipes match your filters.</p>
+    </div>
+  } @else {
+
+    <div class="mb-4 flex flex-row items-center justify-between gap-3">
+      <p class="text-sm text-gray-600">
+        Showing <span class="font-medium">{{ startIndex() + 1 }}</span>–<span
+        class="font-medium">{{ endIndex() }}</span> of
+        <span class="font-medium">{{ totalRecipeCount() }}</span> recipes
+      </p>
+
+      <label class="text-sm flex items-center gap-2">
+        <span class="font-medium text-gray-700">Recipes per page:</span>
+        <select
+          (change)="onPageSizeChange($event)"
+          class="rounded-lg border border-gray-300 bg-white px-2 py-1
+          focus:border-emerald-500 focus:ring-emerald-500 hover:cursor-pointer"
+        >
+          @for (pageSizeOption of pageSizeOptions; track pageSizeOption) {
+            <option
+              [selected]="pageSizeOption === pageSize()"
+              [value]="pageSizeOption"
+            >
+              {{ pageSizeOption }}
+            </option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <ul
+      aria-label="Recipe list"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+    >
+      @for (recipe of pageItems(); track recipe.id) {
+        <app-recipe-card [recipe]="recipe"/>
+      }
+    </ul>
+
+    <nav
+      aria-label="Pagination"
+      class="mt-8 flex items-center justify-center gap-4"
+    >
+      <button
+        (click)="prevPage()"
+        [disabled]="pageNumber() <= 1"
+        aria-label="Previous page"
+        class="flex items-center justify-center w-9 h-9 rounded-full border border-gray-300
+      bg-white text-sm font-medium text-gray-700 transition hover:bg-gray-50
+        disabled:cursor-not-allowed disabled:opacity-50 hover:cursor-pointer"
+      >
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <span class="text-sm text-gray-600">
+        Page
+        <span class="font-medium text-emerald-900">{{ pageNumber() }}</span>
+        of
+        <span class="font-medium text-emerald-900">{{ totalPages() }}</span>
+      </span>
+
+      <button
+        (click)="nextPage()"
+        [disabled]="pageNumber() >= totalPages()"
+        aria-label="Next page"
+        class="flex items-center justify-center w-9 h-9 rounded-full border border-gray-300
+        bg-white text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50
+        disabled:cursor-not-allowed disabled:opacity-50 hover:cursor-pointer"
+      >
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </nav>
+  }
+</section>

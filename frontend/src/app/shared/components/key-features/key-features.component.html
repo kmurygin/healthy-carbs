@@ -10,14 +10,14 @@
       <nav class="flex flex-wrap justify-center border-b border-gray-200">
         @for (feature of features; track feature.label; let i = $index) {
           <button
-            type="button"
             (click)="selected = i"
+            [class.border-emerald-700]="selected === i"
+            [class.border-transparent]="selected !== i"
+            [class.text-emerald-700]="selected === i"
+            [class.text-gray-500]="selected !== i"
             class="flex items-center gap-2 px-4 py-3 font-medium transition
                    border-b-2 -mb-px cursor-pointer"
-            [class.text-emerald-700]="selected === i"
-            [class.border-emerald-700]="selected === i"
-            [class.text-gray-500]="selected !== i"
-            [class.border-transparent]="selected !== i"
+            type="button"
           >
             <i [class]="feature.icon + ' text-base'"></i>
             {{ feature.label }}
@@ -29,11 +29,13 @@
         <div class="p-6">
           <div class="grid gap-8 md:grid-cols-2">
             <img
-              ngOptimizedImage
-              [src]="features[selected].imageUrl"
               [alt]="features[selected].imageAlt"
+              [ngSrc]="features[selected].imageUrl"
               class="aspect-video w-full rounded-lg object-cover shadow-md
                      transition-transform duration-300 hover:scale-105"
+              height="200"
+              ngOptimizedImage
+              width="400"
             />
 
             <div>

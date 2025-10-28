@@ -1,0 +1,101 @@
+<section aria-labelledby="shopping-hdr" class="bg-white w-full">
+  <h3 class="mb-4 text-xl font-bold text-gray-900 flex items-center gap-2" id="shopping-hdr">
+    <i class="fa-solid fa-cart-shopping text-emerald-600"></i>
+    Weekly shopping list
+  </h3>
+
+  @if (loading()) {
+    <div class="flex items-center gap-2 text-gray-500">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <span>Loading your shopping list...</span>
+    </div>
+  } @else if (error()) {
+    <p class="text-red-600">{{ error() }}</p>
+  } @else if (isEmpty()) {
+    <p class="text-gray-500">Your shopping list is empty.</p>
+  } @else {
+    <div class="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden divide-y divide-gray-200">
+      @for (group of groupedItems(); track group[0]) {
+        <details
+          [open]="openCategories().has(group[0])"
+          class="group"
+        >
+          <summary
+            (click)="$event.preventDefault(); toggleCategory(group[0])"
+            [class.bg-emerald-600]="!openCategories().has(group[0])"
+            class="flex cursor-pointer list-none items-center justify-between p-3 hover:bg-emerald-700 bg-emerald-600"
+          >
+            <div class="flex items-center gap-3">
+              <i
+                [class]="iconFor(group[0])"
+                aria-hidden="true"
+                class="fa-solid w-5 text-center"
+              >
+              </i>
+              <span class="font-medium text-gray-800">{{ formatEnum(group[0]) }}</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                {{ group[1].length }}
+              </span>
+              <i aria-hidden="true"
+                 class="fa-solid fa-chevron-down text-gray-500 transition-transform
+                 duration-200 group-open:rotate-180"
+              >
+              </i>
+            </div>
+          </summary>
+
+          <ul class="border-t border-gray-200 p-2 space-y-1">
+            @for (item of group[1]; track item.id) {
+              <li
+                (click)="toggleCheck(item)"
+                (keydown.enter)="toggleCheck(item)"
+
+                [class.opacity-50]="updatingItemId() === item.name"
+                [class.opacity-60]="item.isBought"
+                [class.pointer-events-none]="updatingItemId() === item.name"
+
+                class="flex items-center justify-between rounded-md p-2 hover:bg-emerald-50 cursor-pointer
+                transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                tabindex="0"
+              >
+
+                <div class="flex items-center min-w-0">
+                  <div
+                    [class.bg-emerald-600]="item.isBought"
+                    [class.border-emerald-600]="item.isBought"
+                    [class.border-gray-300]="!item.isBought"
+                    class="h-5 w-5 rounded-md border-2 mr-3 shrink-0 flex items-center justify-center"
+                  >
+                    @if (item.isBought) {
+                      <i class="fa-solid fa-check text-white text-xs"></i>
+                    }
+                  </div>
+
+                  <p
+                    [class.line-through]="item.isBought"
+                    [class.text-gray-500]="item.isBought"
+                    [class.text-gray-700]="!item.isBought"
+                    class="truncate font-medium"
+                  >
+                    {{ item.name }}
+                  </p>
+                </div>
+
+                <div
+                  [class.line-through]="item.isBought"
+                  [class.text-gray-500]="item.isBought"
+                  [class.text-gray-700]="!item.isBought"
+                  class="shrink-0 text-sm"
+                >
+                  {{ item.quantity | number }} {{ item.unit }}
+                </div>
+              </li>
+            }
+          </ul>
+        </details>
+      }
+    </div>
+  }
+</section>

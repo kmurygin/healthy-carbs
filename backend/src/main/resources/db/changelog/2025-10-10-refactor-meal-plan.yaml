@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: refactor-to-join-table
+      author: kmurygin
+      changes:
+        - sql:
+            sql: >
+              DELETE FROM meal_plan_recipes;
+              DELETE FROM meal_plans;
+
+        - sql:
+            sql: >
+              CREATE TABLE meal_plan_days (
+                  id BIGSERIAL PRIMARY KEY NOT NULL,
+                  day_of_week VARCHAR(255) NOT NULL,
+                  total_calories DOUBLE PRECISION,
+                  total_carbs DOUBLE PRECISION,
+                  total_protein DOUBLE PRECISION,
+                  total_fat DOUBLE PRECISION
+              );
+
+              ALTER TABLE meal_plan_recipes
+              DROP CONSTRAINT meal_plan_recipes_meal_plan_id_fkey;
+              
+              ALTER TABLE meal_plan_recipes
+              DROP COLUMN meal_plan_id;
+              
+              ALTER TABLE meal_plan_recipes
+              ADD COLUMN meal_plan_day_id BIGINT NOT NULL;
+              
+              ALTER TABLE meal_plan_recipes
+              ADD CONSTRAINT fk_mpr_to_mpd FOREIGN KEY (meal_plan_day_id)
+              REFERENCES meal_plan_days(id);
+
+        - sql:
+            sql: >
+              CREATE TABLE meal_plan_days_link (
+                  meal_plan_id BIGINT NOT NULL,
+                  meal_plan_day_id BIGINT NOT NULL,
+                  CONSTRAINT fk_link_to_meal_plan
+                  FOREIGN KEY (meal_plan_id)
+                  REFERENCES meal_plans(id),
+                  CONSTRAINT fk_link_to_meal_plan_day
+                  FOREIGN KEY (meal_plan_day_id)
+                  REFERENCES meal_plan_days(id)
+              );
+
+              ALTER TABLE meal_plan_days_link
+              ADD CONSTRAINT pk_meal_plan_days_link
+              PRIMARY KEY (meal_plan_id, meal_plan_day_id);

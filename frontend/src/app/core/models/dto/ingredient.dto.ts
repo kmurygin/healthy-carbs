@@ -1,3 +1,5 @@
+import type {IngredientCategory} from "../enum/ingredient-category.enum";
+
 export interface IngredientDto {
   readonly id: number;
   readonly name: string;
@@ -6,4 +8,5 @@ export interface IngredientDto {
   readonly carbsPerUnit: number;
   readonly proteinPerUnit: number;
   readonly fatPerUnit: number;
+  readonly category: IngredientCategory;
 }

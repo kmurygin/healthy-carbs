@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-gender-column
+      author: kmurygin
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE dietary_profile
+              ADD COLUMN gender VARCHAR(10) DEFAULT 'MALE';

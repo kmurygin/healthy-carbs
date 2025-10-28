@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.mealplan.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.kmurygin.healthycarbs.mealplan.IngredientCategory;
 
 import java.util.Objects;
 
@@ -25,10 +26,14 @@ public class Ingredient {
 
     private String unit; // eg. grams, milliliters
 
-    private Integer caloriesPerUnit;
-    private Integer carbsPerUnit;
-    private Integer proteinPerUnit;
-    private Integer fatPerUnit;
+    private Double caloriesPerUnit;
+    private Double carbsPerUnit;
+    private Double proteinPerUnit;
+    private Double fatPerUnit;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private IngredientCategory category = IngredientCategory.OTHER;
 
     @Override
     public final boolean equals(Object o) {

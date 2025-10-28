@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-meal-plans-timestamps
+      author: k.murygin
+
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE meal_plans
+              ADD COLUMN created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP;

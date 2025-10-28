@@ -11,6 +11,9 @@ import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.service.RecipeService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
+import org.kmurygin.healthycarbs.util.PaginatedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +22,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/v1/recipes")
 public class RecipeController {
 
@@ -27,11 +29,17 @@ public class RecipeController {
     private final RecipeMapper recipeMapper;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<RecipeDTO>>> getAll() {
-        List<RecipeDTO> recipes = recipeService.findAll().stream()
-                .map(recipeMapper::toDTO)
-                .toList();
-        return ApiResponses.success(recipes);
+    ResponseEntity<ApiResponse<PaginatedResponse<RecipeDTO>>> findAll(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String ingredient,
+            @RequestParam(required = false) DietType diet,
+            @RequestParam(required = false) MealType meal,
+            Pageable pageable
+    ) {
+        Page<Recipe> page = recipeService.findAll(name, ingredient, diet, meal, pageable);
+        Page<RecipeDTO> recipeDtoPage = page.map(recipeMapper::toDTO);
+        PaginatedResponse<RecipeDTO> paginatedResponse = this.toPaginatedResponse(recipeDtoPage);
+        return ApiResponses.success(paginatedResponse);
     }
 
     @GetMapping("/{id}")
@@ -41,50 +49,82 @@ public class RecipeController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<RecipeDTO>> create(@Valid @RequestBody RecipeDTO recipeDTO) {
-        Recipe recipe = recipeService.save(recipeMapper.toEntity(recipeDTO));
-        return ApiResponses.success(HttpStatus.CREATED, recipeMapper.toDTO(recipe), "Recipe created successfully");
+    public ResponseEntity<ApiResponse<RecipeDTO>> create(
+            @Valid @RequestBody RecipeDTO recipeDTO
+    ) {
+        Recipe recipe = recipeService.create(recipeMapper.toEntity(recipeDTO));
+        return ApiResponses.success(
+                HttpStatus.CREATED,
+                recipeMapper.toDTO(recipe),
+                "Recipe created successfully"
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<RecipeDTO>> update(@PathVariable Long id, @RequestBody RecipeDTO recipeDTO) {
+    public ResponseEntity<ApiResponse<RecipeDTO>> update(
+            @PathVariable Long id,
+            @RequestBody RecipeDTO recipeDTO
+    ) {
         recipeDTO.setId(id);
-        Recipe recipe = recipeService.save(recipeMapper.toEntity(recipeDTO));
+        Recipe recipe = recipeService.update(id, recipeMapper.toEntity(recipeDTO));
         return ApiResponses.success(recipeMapper.toDTO(recipe));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         recipeService.deleteById(id);
-        return ApiResponses.success(HttpStatus.NO_CONTENT, null, "Recipe deleted successfully");
+        return ApiResponses.success(
+                HttpStatus.NO_CONTENT,
+                null,
+                "Recipe deleted successfully"
+        );
     }
 
     @GetMapping("/{id}/ingredients")
-    public ResponseEntity<ApiResponse<List<RecipeIngredientDTO>>> findAllIngredients(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<List<RecipeIngredientDTO>>> findAllIngredients(
+            @PathVariable Long id
+    ) {
         return ApiResponses.success(recipeService.findAllIngredients(id));
     }
 
     @PostMapping("/{recipeId}/ingredients/{ingredientId}")
-    public ResponseEntity<ApiResponse<RecipeDTO>> addIngredient(@PathVariable Long recipeId,
-                                                                @PathVariable Long ingredientId,
-                                                                @RequestParam Double quantity) {
+    public ResponseEntity<ApiResponse<RecipeDTO>> addIngredient(
+            @PathVariable Long recipeId,
+            @PathVariable Long ingredientId,
+            @RequestParam Double quantity
+    ) {
         RecipeDTO updated = recipeService.addIngredient(recipeId, ingredientId, quantity);
         return ApiResponses.success(updated);
     }
 
     @DeleteMapping("/{recipeId}/ingredients/{ingredientId}")
-    public ResponseEntity<ApiResponse<RecipeDTO>> removeIngredient(@PathVariable Long recipeId,
-                                                                   @PathVariable Long ingredientId) {
+    public ResponseEntity<ApiResponse<RecipeDTO>> removeIngredient(
+            @PathVariable Long recipeId,
+            @PathVariable Long ingredientId
+    ) {
         RecipeDTO updated = recipeService.removeIngredient(recipeId, ingredientId);
         return ApiResponses.success(updated);
     }
 
     @GetMapping("/random")
-    public ResponseEntity<ApiResponse<RecipeDTO>> getRandomRecipe(@RequestParam String mealType,
-                                                                  @RequestParam String dietType) {
-        Recipe recipe = recipeService.findRandom(
-                MealType.valueOf(mealType.toUpperCase()),
-                DietType.valueOf(dietType.toUpperCase()));
+    public ResponseEntity<ApiResponse<RecipeDTO>> getRandom(
+            @RequestParam MealType mealType,
+            @RequestParam DietType dietType
+    ) {
+        Recipe recipe = recipeService.findRandom(mealType, dietType);
         return ApiResponses.success(recipeMapper.toDTO(recipe));
+    }
+
+    private PaginatedResponse<RecipeDTO> toPaginatedResponse(Page<RecipeDTO> recipeDtoPage) {
+        return new PaginatedResponse<>(
+                recipeDtoPage.getContent(),
+                recipeDtoPage.getTotalPages(),
+                recipeDtoPage.getTotalElements(),
+                recipeDtoPage.getSize(),
+                recipeDtoPage.getNumber(),
+                recipeDtoPage.isFirst(),
+                recipeDtoPage.isLast(),
+                recipeDtoPage.isEmpty()
+        );
     }
 }

@@ -22,21 +22,31 @@ profile:
 include:
   - name: SpringBootApplicationSetup
   - name: SpringBootApplicationProperties
-
   - name: SpringJavaInjectionPointsAutowiringInspection
   - name: SpringJavaStaticMembersAutowiringInspection
-
   - name: SpringDataRepositoryMethodParametersInspection
-
   - name: MoreThanOneIdInspection
   - name: JpaEntityListenerInspection
   - name: HibernateMappingDomInspection
-
   - name: LombokBuilderAllArgsInspection
+  - name: ConstantConditions
+  - name: NullableProblems
+  - name: UnusedDeclaration
+  - name: JpaNPlusOneProblemsInspection
+  - name: JpaQlInspection
+  - name: SpringTransactionalMethodCallsInspection
+  - name: VulnerableLibrariesLocal
+  - name: HardcodedPassword
+  - name: SpringWebSecurityConfigurationInspection
+  - name: InsecureCryptoUsage
+  - name: LogViolation
+  - name: ThymeleafVariablesResolveInspection
+  - name: ThymeleafMessagesResolveInspection
 
 plugins:
   - id: com.haulmont.jpabuddy
   - id: org.mapstruct.intelli
+  - id: CheckDependencyVulnerabilities
 
 failureConditions:
   severityThresholds:

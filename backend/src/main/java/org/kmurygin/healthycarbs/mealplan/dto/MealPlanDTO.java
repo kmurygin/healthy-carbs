@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.kmurygin.healthycarbs.user.dto.UserDTO;
 
+import java.time.Instant;
 import java.util.List;
 
 @AllArgsConstructor
@@ -13,15 +14,12 @@ import java.util.List;
 @Builder
 @Data
 public class MealPlanDTO {
-
     private Long id;
-
     private UserDTO user;
-
-    private List<MealPlanRecipeDTO> recipes;
-
+    private List<MealPlanDayDTO> days;
     private double totalCalories;
     private double totalCarbs;
     private double totalProtein;
     private double totalFat;
+    private Instant createdAt;
 }

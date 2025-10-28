@@ -11,3 +11,12 @@ spring:
   liquibase:
     enabled: true
     drop-first: true
+  mail:
+    host: localhost
+    port: 1234
+    username: test
+    password: test
+application:
+  security:
+    jwt:
+      secret-key: test

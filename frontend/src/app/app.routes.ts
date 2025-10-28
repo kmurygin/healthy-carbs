@@ -30,19 +30,35 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'recipe',
+    path: 'recipes/:id',
     canMatch: [authGuard],
     loadComponent: () =>
-      import('./features/recipe/recipe.component').then(
+      import('./features/recipes-list/recipe/recipe.component').then(
         (m) => m.RecipeComponent
       ),
   },
   {
-    path: 'mealplan-form',
+    path: 'dietary-profile-form',
     canMatch: [authGuard],
     loadComponent: () =>
-      import('./features/mealplan/mealplan-form/mealplan-form.component').then(
-        (m) => m.MealplanFormComponent
+      import('./features/mealplan/dietary-profile-form/dietary-profile-form.component').then(
+        (m) => m.DietaryProfileFormComponent
+      ),
+  },
+  {
+    path: 'mealplan',
+    canMatch: [authGuard],
+    loadComponent: () =>
+      import('./features/mealplan/mealplan/mealplan.component').then(
+        (m) => m.MealPlanComponent
+      ),
+  },
+  {
+    path: 'mealplan-history',
+    canMatch: [authGuard],
+    loadComponent: () =>
+      import('./features/mealplan/mealplan-history/mealplan-history.component').then(
+        (m) => m.MealPlanHistoryComponent
       ),
   },
   {
@@ -56,6 +72,12 @@ export const routes: Routes = [
     canMatch: [authGuard],
     loadComponent: () =>
       import('./features/payments/offers/offers.component').then((m) => m.OffersComponent),
+  },
+  {
+    path: 'recipes',
+    canMatch: [authGuard],
+    loadComponent: () =>
+      import('./features/recipes-list/recipe-list/recipe-list.component').then((m) => m.RecipeListComponent),
   },
   {
     path: 'user',

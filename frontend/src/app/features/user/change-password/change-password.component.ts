@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import type {FormControl, FormGroup} from '@angular/forms';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {UserService} from '../../../core/services/user.service';
+import {UserService} from '../../../core/services/user/user.service';
 
 type ChangePasswordForm = FormGroup<{
   oldPassword: FormControl<string>;
@@ -20,8 +20,8 @@ type ChangePasswordForm = FormGroup<{
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChangePasswordComponent {
-  errorMessage = signal('');
-  infoMessage = signal('');
+  readonly errorMessage = signal('');
+  readonly infoMessage = signal('');
   private readonly formBuilder = inject(FormBuilder);
 
   form: ChangePasswordForm = this.formBuilder.nonNullable.group({
@@ -41,13 +41,16 @@ export class ChangePasswordComponent {
 
     this.userService.changePassword(this.form.getRawValue()).subscribe({
       next: (res) => {
-        this.infoMessage.set(res?.message ?? 'Password updated successfully.');
+        this.infoMessage.set(res.message ?? 'Password updated successfully.');
         this.form.reset();
       },
-      error: (err) => {
-        const msg = err?.error?.message ?? err?.message ?? '';
-        this.errorMessage.set(msg ?? 'Failed to change password. Please try again.');
-      }
+      error: (err: unknown) => {
+        let msg = 'Failed to change password. Please try again.';
+        if (err instanceof Error) {
+          msg = err.message;
+        }
+        this.errorMessage.set(msg);
+      },
     });
   }
 }

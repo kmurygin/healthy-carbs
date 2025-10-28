@@ -5,7 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.kmurygin.healthycarbs.mealplan.ActivityLevel;
+import org.kmurygin.healthycarbs.mealplan.DietGoal;
 import org.kmurygin.healthycarbs.mealplan.DietType;
+import org.kmurygin.healthycarbs.mealplan.Gender;
 import org.kmurygin.healthycarbs.user.dto.UserDTO;
 
 @Data
@@ -15,14 +17,15 @@ import org.kmurygin.healthycarbs.user.dto.UserDTO;
 public class DietaryProfileDTO {
     private Long id;
     private UserDTO user;
-
     private Double weight;
     private Double height;
     private Integer age;
+    private Gender gender;
+    private DietGoal dietGoal;
     private DietType dietType;
     private ActivityLevel activityLevel;
-    private Double caloriesPerDay;
-    private Double carbsPerDay;
-    private Double proteinPerDay;
-    private Double fatPerDay;
+    private Double calorieTarget;
+    private Double carbsTarget;
+    private Double proteinTarget;
+    private Double fatTarget;
 }

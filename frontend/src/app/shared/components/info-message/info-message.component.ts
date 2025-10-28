@@ -1,11 +1,13 @@
-import {Component, input, InputSignal} from '@angular/core';
+import type {InputSignal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 
 @Component({
-  selector: 'info-message',
+  selector: 'app-info-message',
   imports: [],
   templateUrl: './info-message.component.html',
-  styleUrl: './info-message.component.css'
+  styleUrl: './info-message.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InfoMessageComponent {
-  message: InputSignal<string> = input.required<string>();
+  readonly message: InputSignal<string> = input.required<string>();
 }

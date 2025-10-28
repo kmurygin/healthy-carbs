@@ -2,6 +2,7 @@ package org.kmurygin.healthycarbs.mealplan.controller;
 
 import jakarta.validation.Valid;
 import org.kmurygin.healthycarbs.mealplan.dto.DietaryProfileDTO;
+import org.kmurygin.healthycarbs.mealplan.dto.DietaryProfilePayload;
 import org.kmurygin.healthycarbs.mealplan.mapper.DietaryProfileMapper;
 import org.kmurygin.healthycarbs.mealplan.model.DietaryProfile;
 import org.kmurygin.healthycarbs.mealplan.service.DietaryProfileService;
@@ -12,8 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping("/api/v1/user-profiles")
+@RequestMapping("/api/v1/dietary-profiles")
 public class DietaryProfileController {
 
     private final DietaryProfileService dietaryProfileService;
@@ -30,11 +30,18 @@ public class DietaryProfileController {
         return ApiResponses.success(dietaryProfileMapper.toDTO(dietaryProfile));
     }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<DietaryProfileDTO>> isCreated() {
+        DietaryProfile dietaryProfile = dietaryProfileService.isCreated();
+        if (dietaryProfile == null) {
+            return ApiResponses.success(HttpStatus.NO_CONTENT, null, "Dietary profile not created yet");
+        }
+        return ApiResponses.success(HttpStatus.OK, dietaryProfileMapper.toDTO(dietaryProfile), "Dietary profile exists");
+    }
+
     @PostMapping
-    public ResponseEntity<ApiResponse<DietaryProfileDTO>> save(@Valid @RequestBody DietaryProfileDTO dietaryProfileDTO) {
-        DietaryProfile dietaryProfile = dietaryProfileService.save(
-                dietaryProfileMapper.toEntity(dietaryProfileDTO)
-        );
+    public ResponseEntity<ApiResponse<DietaryProfileDTO>> save(@Valid @RequestBody DietaryProfilePayload payload) {
+        DietaryProfile dietaryProfile = dietaryProfileService.save(payload);
         return ApiResponses.success(HttpStatus.CREATED,
                 dietaryProfileMapper.toDTO(dietaryProfile), "Dietary profile saved successfully");
     }

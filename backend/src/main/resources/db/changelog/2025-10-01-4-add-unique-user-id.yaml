@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-unique-user-id
+      author: kmurygin
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE dietary_profile
+              ADD CONSTRAINT uq_dietary_profile_user_id UNIQUE (user_id);

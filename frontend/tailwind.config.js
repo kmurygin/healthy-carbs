@@ -1,11 +1,16 @@
-import withMT from "@material-tailwind/html/utils/withMT";
-
-module.exports = withMT({
+module.exports = {
   content: [
-    "./src/**/*.{html,ts}",
+    './src/**/*.{html,ts}'
   ],
   theme: {
-    extend: {},
+    container: { center: true, padding: '1rem' },
+    extend: {
+      fontFamily: {
+        sans: ['var(--font-family)'],
+      },
+    },
   },
-  plugins: [],
-});
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
+};

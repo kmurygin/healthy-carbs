@@ -1,21 +1,18 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
+import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
-import org.kmurygin.healthycarbs.mealplan.mapper.IngredientMapper;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class IngredientService {
 
     private final IngredientRepository ingredientRepository;
-
-    public IngredientService(IngredientRepository ingredientRepository, IngredientMapper ingredientMapper) {
-        this.ingredientRepository = ingredientRepository;
-    }
 
     public List<Ingredient> findAll() {
         return ingredientRepository.findAll();

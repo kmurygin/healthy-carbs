@@ -30,15 +30,18 @@ public class Recipe {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @Column(columnDefinition = "TEXT")
+    private String instructions;
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     @ToString.Exclude
     private List<RecipeIngredient> ingredients = new ArrayList<>();
 
-    private Integer calories;
-    private Integer carbs;
-    private Integer protein;
-    private Integer fat;
+    private Double calories;
+    private Double carbs;
+    private Double protein;
+    private Double fat;
 
     @Enumerated(EnumType.STRING)
     private DietType dietType;

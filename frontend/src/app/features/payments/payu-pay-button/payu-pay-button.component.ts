@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, computed, inject, input, output, signal} from '@angular/core';
-import {PayuService} from '../../../core/services/payu.service';
+import {PayuService} from '../../../core/services/payu/payu.service';
 import type {InitPaymentRequest} from '../dto/init-payment-request';
 import {take} from 'rxjs';
 import {saveLastLocalOrderId} from "../utils";
-import {Product} from "../dto/product";
+import type {Product} from "../dto/product";
 
 @Component({
   selector: 'app-payu-pay-button',
@@ -12,17 +12,17 @@ import {Product} from "../dto/product";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PayuPayButtonComponent {
-  localOrderId = input.required<string>();
-  description = input('Healthy Carbs plan');
-  totalAmount = input.required<number>();
+  readonly localOrderId = input.required<string>();
+  readonly description = input('Healthy Carbs plan');
+  readonly totalAmount = input.required<number>();
   readonly totalAmountInt = computed(() => {
     const amount = this.totalAmount();
     return Number.isFinite(amount) ? Math.max(0, Math.round(amount)) : 0;
   });
 
-  products = input.required<Product[]>();
+  readonly products = input.required<Product[]>();
 
-  started = output<void>();
+  started = output();
   readonly pending = signal(false);
   readonly error = signal<string | null>(null);
   readonly label = computed(() => (this.pending() ? 'Redirecting to PayU…' : 'Pay'));
@@ -46,7 +46,7 @@ export class PayuPayButtonComponent {
 
         try {
           if (typeof window !== 'undefined') {
-            window.location.assign(response?.data?.redirectUri ?? '');
+            window.location.assign(response.redirectUri);
             return;
           }
         } catch (e) {

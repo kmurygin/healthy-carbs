@@ -1,0 +1,16 @@
+export enum Allergy {
+  PEANUTS = 'Peanuts',
+  TREE_NUTS = 'Tree Nuts',
+  DAIRY = 'Dairy',
+  EGGS = 'Eggs',
+  SOY = 'Soy',
+  LACTOSE = 'Lactose',
+  FISH = 'Fish',
+  SHELLFISH = 'Shellfish',
+  GLUTEN = 'Gluten',
+  WHEAT = 'Wheat',
+  CORN = 'Corn',
+  STRAWBERRIES = 'Strawberries',
+  ALMONDS = 'Almonds',
+  OATS = 'Oats',
+}

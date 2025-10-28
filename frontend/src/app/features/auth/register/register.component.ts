@@ -1,10 +1,11 @@
-import {Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import type {FormControl, FormGroup} from '@angular/forms';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
-import {AuthService} from '../../../core/services/auth.service';
+import {AuthService} from '../../../core/services/auth/auth.service';
 
 import type {RegisterPayload} from "../../../core/models/payloads/register.payload";
+import {NgOptimizedImage} from "@angular/common";
 
 type RegisterForm = FormGroup<{
   firstname: FormControl<string>;
@@ -20,14 +21,16 @@ type RegisterForm = FormGroup<{
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    RouterLink
+    RouterLink,
+    NgOptimizedImage
   ],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterComponent {
-  errorMessage = signal('');
-  isSubmitting = signal(false);
+  readonly errorMessage = signal('');
+  readonly isSubmitting = signal(false);
 
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -56,16 +59,20 @@ export class RegisterComponent {
 
         if (response.status) {
           this.router.navigate(['login'])
-            .catch(err => {
+            .catch((err: unknown) => {
               console.error('Navigation failed', err);
             });
         } else {
           this.errorMessage.set(response.message ?? 'Registration failed.');
         }
       },
-      error: (err: Error) => {
+      error: (err: unknown) => {
         this.isSubmitting.set(false);
-        this.errorMessage.set(err.message ?? 'Something went wrong. Please try again.');
+        let msg = 'Something went wrong. Please try again.';
+        if (err instanceof Error) {
+          msg = err.message || msg;
+        }
+        this.errorMessage.set(msg);
       }
     });
   }

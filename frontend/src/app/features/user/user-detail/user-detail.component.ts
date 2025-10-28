@@ -3,8 +3,8 @@ import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core'
 import type {FormControl, FormGroup} from '@angular/forms';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {UserService} from '../../../core/services/user.service';
-import {AuthService} from '../../../core/services/auth.service';
+import {UserService} from '../../../core/services/user/user.service';
+import {AuthService} from '../../../core/services/auth/auth.service';
 import type {UserDto} from '../../../core/models/dto/user.dto';
 
 type UserDetailForm = FormGroup<{
@@ -22,10 +22,10 @@ type UserDetailForm = FormGroup<{
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserDetailComponent implements OnInit {
-  errorMessage = signal('');
-  infoMessage = signal('');
+  readonly errorMessage = signal('');
+  readonly infoMessage = signal('');
 
-  user = signal<UserDto | undefined>(undefined);
+  private readonly user = signal<UserDto | undefined>(undefined);
   private readonly formBuilder = inject(FormBuilder);
   form: UserDetailForm = this.formBuilder.nonNullable.group({
     firstname: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/u)]],
@@ -58,7 +58,7 @@ export class UserDetailComponent implements OnInit {
           });
         }
       },
-      error: (err) => {
+      error: (err: unknown) => {
         console.error(err);
         this.errorMessage.set('Failed to fetch user data');
       }
@@ -66,26 +66,32 @@ export class UserDetailComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid || !this.user()) {
+    const currentUser = this.user();
+
+    if (this.form.invalid || !currentUser) {
       this.form.markAllAsTouched();
       return;
     }
     this.errorMessage.set('');
     this.infoMessage.set('');
 
-    const updatedUser: UserDto = {
-      ...this.user()!,
-      ...this.form.getRawValue()
-    };
+    const updatedUser: UserDto = Object.assign(
+      {},
+      currentUser,
+      this.form.getRawValue()
+    );
 
-    this.userService.updateUser(this.user()!.id, updatedUser).subscribe({
+    this.userService.updateUser(currentUser.id, updatedUser).subscribe({
       next: (res) => {
-        this.infoMessage.set(res?.message ?? 'Personal information updated successfully!');
+        this.infoMessage.set(res.message ?? 'Personal information updated successfully!');
       },
-      error: (err) => {
-        const msg: string = err?.error?.message ?? err?.message ?? '';
-        this.errorMessage.set(msg ?? 'Failed to update user details. Please try again.');
-      }
+      error: (err: unknown) => {
+        let msg = 'Failed to update user details. Please try again.';
+        if (err instanceof Error) {
+          msg = err.message;
+        }
+        this.errorMessage.set(msg);
+      },
     });
   }
 }

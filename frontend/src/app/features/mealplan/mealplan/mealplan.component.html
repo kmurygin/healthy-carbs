@@ -1,0 +1,153 @@
+@if (!loading()) {
+  <section class="mx-auto max-w-11/12 md:max-w-11/12 lg:max-w-10/12 px-4 py-8">
+    <div class="text-left">
+      <h1
+        class="text-2xl font-bold tracking-tight text-gray-900 leading-tight
+      break-words"
+      >
+        Meal Plan for week {{ plan()?.createdAt | date:'longDate' }}
+      </h1>
+    </div>
+
+    <div
+      class="mb-3 mt-3 flex flex-col md:flex-row flex-wrap items-start md:items-center justify-start gap-3"
+    >
+
+      <div
+        class="flex flex-wrap items-center gap-3 justify-start md:ml-auto md:justify-end"
+      >
+        <!--      @if (!plan()) {-->
+        <button
+          (click)="onGenerate()"
+          [attr.aria-busy]="loading()"
+          [disabled]="loading()"
+          class="rounded-xl border px-4 py-2 font-medium shadow disabled:opacity-60
+          hover:bg-gray-50 transition-colors hover:cursor-pointer"
+          type="button"
+        >
+          {{ loading() ? 'Generating…' : 'Generate meal plan' }}
+        </button>
+        <!--      }-->
+
+        @if (plan(); as plan) {
+          <button
+            (click)="onDownloadShoppingList(plan.id)"
+            [attr.aria-busy]="downloadingShoppingListPdf()"
+            [disabled]="downloadingShoppingListPdf()"
+            aria-label="Download shopping list as PDF"
+            class="flex items-center gap-2 rounded-xl px-4 py-2 font-medium
+          shadow disabled:opacity-60 bg-emerald-600 text-white hover:bg-emerald-700
+          transition-colors hover:cursor-pointer"
+            type="button"
+          >
+            <i class="fa-solid fa-file-arrow-down"></i>
+            {{ downloadingShoppingListPdf() ? 'Downloading' : 'Shopping List' }}
+            @if (downloadingShoppingListPdf()) {
+              <i class="fa-solid fa-spinner fa-spin"></i>
+            }
+          </button>
+
+          <button
+            (click)="onDownloadMealPlanPdf(plan.id)"
+            [attr.aria-busy]="downloadingMealPlanPdf()"
+            [disabled]="downloadingMealPlanPdf()"
+            aria-label="Download meal plan as PDF"
+            class="flex items-center gap-2 rounded-xl px-4 py-2 font-medium
+          shadow disabled:opacity-60 bg-emerald-600 text-white hover:bg-emerald-700
+          transition-colors hover:cursor-pointer"
+            type="button"
+          >
+            <i class="fa-solid fa-file-arrow-down"></i>
+            {{ downloadingMealPlanPdf() ? 'Downloading' : 'Meal plan' }}
+            @if (downloadingMealPlanPdf()) {
+              <i class="fa-solid fa-spinner fa-spin"></i>
+            }
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (errorMessage()) {
+      <app-error-message [message]="errorMessage()!"></app-error-message>
+    }
+
+    @if (!plan() && !loading() && !errorMessage()) {
+      <p>
+        Click “Generate meal plan” to create your personalized plan.
+      </p>
+    }
+
+    @if (plan()) {
+      <nav
+        aria-label="Week days"
+        class="flex items-center gap-2 rounded-xl bg-gray-100 p-1.5"
+        role="tablist"
+      >
+        @for (day of days(); track day.dayOfWeek; let i = $index) {
+          <button
+            (click)="selectDay(i)"
+            [attr.aria-controls]="'day-panel-' + i"
+            [attr.aria-selected]="selectedDayIndex() === i"
+            [class.bg-emerald-600]="selectedDayIndex() === i"
+            [class.hover:bg-emerald-100]="selectedDayIndex() !== i"
+            [class.hover:text-gray-800]="selectedDayIndex() !== i"
+            [class.shadow-sm]="selectedDayIndex() === i"
+            [class.text-gray-600]="selectedDayIndex() !== i"
+            [class.text-white]="selectedDayIndex() === i"
+            [id]="'day-tab-' + i"
+            class="flex-1 whitespace-nowrap rounded-lg px-3 py-1.5
+          text-center text-sm font-medium transition-all hover:cursor-pointer"
+            role="tab"
+            type="button"
+          >
+          <span class="lg:hidden">
+            {{ day.dayOfWeek | titlecase | slice:0:2 }}
+          </span>
+
+            <span class="hidden lg:inline">
+            {{ day.dayOfWeek | titlecase }}
+          </span>
+          </button>
+        }
+      </nav>
+      <div
+        [attr.aria-labelledby]="'day-tab-' + selectedDayIndex()"
+        [id]="'day-panel-' + selectedDayIndex()"
+        class="mt-8 grid grid-cols-1 gap-6
+      lg:grid-cols-[2.6fr_1.0fr] xl:grid-cols-[2.8fr_1.0fr]"
+        role="tabpanel"
+        tabindex="0"
+      >
+        <div class="flex flex-col gap-8 self-start">
+          <app-daily-meal-plan-totals
+            [dailyTargets]="dailyTargets()"
+            [dailyTotals]="dailyTotals()"
+          />
+
+          <app-daily-meal-plan
+            (toggleRecipe)="onToggleRecipe($event)"
+            [dailyPlan]="selectedDay()"
+            [expandedRecipeIds]="expandedRecipeIds()"
+            [recipeDetails]="recipeDetails()"
+            [recipeMacrosMap]="recipeMacrosMap()"
+          />
+        </div>
+
+        <app-meal-plan-shopping-list
+          (toggleItem)="onToggleShoppingListItem($event)"
+          [error]="shoppingListError()"
+          [loading]="shoppingListLoading()"
+          [shoppingList]="shoppingList()"
+          [updatingItemId]="updatingShoppingListItemId()"
+          class="self-start"
+        />
+      </div>
+
+    }
+  </section>
+} @else {
+  <div class="text-3xl font-bold tracking-tight text-gray-900 leading-tight text-center p-16">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    Loading, please wait...
+  </div>
+}

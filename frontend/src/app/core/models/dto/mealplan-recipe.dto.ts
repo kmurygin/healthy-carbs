@@ -1,8 +1,8 @@
 import type {RecipeDto} from './recipe.dto';
-import type {MealPlanDto} from "./mealplan.dto";
+import type {MealType} from "../enum/meal-type.enum";
 
 export interface MealPlanRecipeDto {
-  id: number;
-  mealPlan: MealPlanDto;
-  recipe: RecipeDto;
+  readonly id: number;
+  readonly recipe: RecipeDto;
+  readonly mealType: MealType;
 }

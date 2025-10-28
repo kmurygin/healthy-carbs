@@ -16,7 +16,6 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/v1/ingredients")
 public class IngredientController {
 

@@ -3,8 +3,8 @@ package org.kmurygin.healthycarbs.payu.service;
 import lombok.AllArgsConstructor;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.payu.dto.PaymentStatusResponse;
-import org.kmurygin.healthycarbs.payu.model.Payment;
 import org.kmurygin.healthycarbs.payu.model.Order;
+import org.kmurygin.healthycarbs.payu.model.Payment;
 import org.kmurygin.healthycarbs.payu.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
 
