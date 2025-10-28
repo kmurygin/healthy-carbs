@@ -1,0 +1,122 @@
+<details
+  [open]="isExpanded()"
+  class="group rounded-xl border border-gray-200 bg-white shadow-sm"
+>
+  <summary
+    (click)="$event.preventDefault(); toggleExpanded()"
+    [class.rounded-b-xl]="!isExpanded()"
+    class="flex cursor-pointer list-none items-center justify-between p-4 hover:bg-gray-50
+           rounded-t-xl"
+  >
+    <div class="flex flex-col gap-2">
+      <h3 class="font-bold text-base text-emerald-800">{{ mealPlanDay().dayOfWeek | titlecase }}</h3>
+
+      @let totals = dayTotals();
+      <div class="flex flex-row flex-wrap gap-x-3 gap-y-1 text-sm text-gray-600">
+        <span class="inline-flex items-center gap-1.5 font-medium">
+          <i class="fa-solid fa-fire w-3 text-center text-orange-500" aria-hidden="true"></i>
+          {{ totals.calories }} kcal
+        </span>
+        <span class="inline-flex items-center gap-1.5 font-medium">
+          <i class="fa-solid fa-bread-slice w-3 text-center text-amber-600" aria-hidden="true"></i>
+          {{ totals.carbs }} g
+        </span>
+        <span class="inline-flex items-center gap-1.5 font-medium">
+          <i class="fa-solid fa-drumstick-bite w-3 text-center text-red-500" aria-hidden="true"></i>
+          {{ totals.protein }} g
+        </span>
+        <span class="inline-flex items-center gap-1.5 font-medium">
+          <i class="fa-solid fa-bottle-droplet w-3 text-center text-yellow-600" aria-hidden="true"></i>
+          {{ totals.fat }} g
+        </span>
+      </div>
+    </div>
+
+    <i
+      aria-hidden="true"
+      class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-200 group-open:rotate-180"
+    >
+    </i>
+  </summary>
+
+  @if (isExpanded()) {
+    <div class="border-t border-gray-200 p-4">
+      <div class="space-y-4">
+        @for (group of groupedByMealType(); track group.mealType) {
+          <section>
+            <h4 class="flex items-center gap-2 text-lg font-bold text-emerald-700 mb-2">
+              <span>{{ group.mealType | titlecase }}</span>
+            </h4>
+
+            <ul class="space-y-2">
+              @for (mealPlanRecipe of group.items; track mealPlanRecipe.id) {
+                <li class="p-3 rounded-lg border border-gray-200 bg-gray-50/50">
+                  <div class="flex items-start justify-between gap-3">
+
+                    <div class="flex flex-1 flex-col gap-3 min-w-0">
+                      <div class="flex flex-col min-w-0">
+                        <span class="font-semibold text-base text-gray-900 truncate">
+                          {{ mealPlanRecipe.recipe.name }}
+                        </span>
+                        @if (mealPlanRecipe.recipe.description) {
+                          <span class="text-sm font-normal text-gray-600 line-clamp-2">
+                            {{ mealPlanRecipe.recipe.description }}
+                          </span>
+                        }
+                      </div>
+
+                      @let recipeMacroData = recipeMacrosMap().get(mealPlanRecipe.id);
+                      @if (recipeMacroData) {
+                        <div class="flex flex-row flex-wrap gap-x-3 gap-y-1 text-sm">
+
+                          <span class="inline-flex items-baseline gap-1.5">
+                            <span class="text-gray-600">Calories:</span>
+                            <span class="font-semibold text-gray-900">
+                              {{ recipeMacroData.calories }} kcal
+                            </span>
+                          </span>
+
+                          <span class="inline-flex items-baseline gap-1.5">
+                            <span class="text-gray-600">Carbs:</span>
+                            <span class="font-semibold text-gray-900">
+                              {{ recipeMacroData.carbs }} g
+                            </span>
+                          </span>
+
+                          <span class="inline-flex items-baseline gap-1.5">
+                            <span class="text-gray-600">Protein:</span>
+                            <span class="font-semibold text-gray-900">
+                              {{ recipeMacroData.protein }} g
+                            </span>
+                          </span>
+
+                          <span class="inline-flex items-baseline gap-1.5">
+                            <span class="text-gray-600">Fat:</span>
+                            <span class="font-semibold text-gray-900">
+                              {{ recipeMacroData.fat }} g
+                            </span>
+                          </span>
+
+                        </div>
+                      }
+                    </div>
+
+                    <a
+                      [routerLink]="['/recipes', mealPlanRecipe.recipe.id]"
+                      aria-label="View recipe details for {{ mealPlanRecipe.recipe.name }}"
+                      class="flex-shrink-0 rounded-md p-2 text-gray-400 hover:bg-emerald-100 hover:text-emerald-700
+                             focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    >
+                      <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                    </a>
+
+                  </div>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+    </div>
+  }
+</details>

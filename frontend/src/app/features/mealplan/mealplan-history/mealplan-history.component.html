@@ -1,0 +1,134 @@
+<section class="mx-auto max-w-11/12 xl:max-w-8/12 px-4 py-8">
+  <!--  <h1 class="text-3xl font-bold mb-6 text-gray-900">-->
+  <!--    Meal Plan History-->
+  <!--  </h1>-->
+
+  @if (errorMessage()) {
+    <app-error-message [message]="errorMessage()!" role="alert"/>
+  }
+
+  @if (loading()) {
+    <div class="flex flex-col items-center justify-center gap-2 p-12 text-gray-500">
+      <i class="fa-solid fa-spinner fa-spin text-2xl text-emerald-600"></i>
+      <p aria-live="polite" class="font-medium">Loading meal plan history…</p>
+    </div>
+  } @else if (rows().length === 0 && !errorMessage()) {
+    <div class="flex flex-col items-center justify-center gap-2 p-12 text-gray-500">
+      <i class="fa-solid fa-circle-question text-2xl"></i>
+      <p>No meal plan history found.</p>
+    </div>
+  } @else {
+
+    <div class="md:hidden space-y-4">
+      @for (planRow of rows(); track planRow.id) {
+        @let isRowExpanded = expandedMealPlans().has(planRow.id);
+        <details
+          [open]="isRowExpanded"
+          class="group rounded-2xl border border-gray-200 bg-white shadow-sm"
+        >
+          <summary
+            (click)="$event.preventDefault(); toggleExpanded(planRow.id)"
+            [class.rounded-b-2xl]="!isRowExpanded"
+            class="flex cursor-pointer list-none items-center justify-between p-4 hover:bg-gray-50
+                   rounded-t-2xl"
+          >
+            <div class="flex flex-col gap-2">
+              <div>
+                <div class="font-semibold text-gray-900">{{ planRow.createdAt | date:'medium' }}</div>
+                <div class="text-sm text-gray-500">{{ planRow.daysCount }} days</div>
+              </div>
+
+              <div class="flex flex-row flex-wrap gap-x-3 gap-y-1 text-sm text-gray-600">
+                <span class="inline-flex items-center gap-1.5 font-medium">
+                  <i aria-hidden="true" class="fa-solid fa-fire w-3 text-center text-orange-500"></i>
+                  {{ planRow.total.calories }} kcal
+                </span>
+                <span class="inline-flex items-center gap-1.5 font-medium">
+                  <i aria-hidden="true" class="fa-solid fa-bread-slice w-3 text-center text-amber-600"></i>
+                  {{ planRow.total.carbs }} g
+                </span>
+                <span class="inline-flex items-center gap-1.5 font-medium">
+                  <i aria-hidden="true" class="fa-solid fa-drumstick-bite w-3 text-center text-red-500"></i>
+                  {{ planRow.total.protein }} g
+                </span>
+                <span class="inline-flex items-center gap-1.5 font-medium">
+                  <i aria-hidden="true" class="fa-solid fa-bottle-droplet w-3 text-center text-yellow-600"></i>
+                  {{ planRow.total.fat }} g
+                </span>
+              </div>
+            </div>
+
+            <i
+              aria-hidden="true"
+              class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-200 group-open:rotate-180"
+            >
+            </i>
+          </summary>
+
+          <div class="border-t border-gray-200 p-4 bg-gray-50/60">
+            <div class="flex flex-col gap-4">
+              @for (day of planRow.plan.days; track day.id) {
+                <app-mealplan-history-item [mealPlanDay]="day"/>
+              }
+            </div>
+          </div>
+        </details>
+      }
+    </div>
+
+    <div class="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm hidden md:block">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50 text-center text-gray-600">
+        <tr>
+          <th class="px-4 py-3 font-medium">#</th>
+          <th class="px-4 py-3 font-medium">Created At</th>
+          <th class="px-4 py-3 font-medium">Days</th>
+          <th class="px-4 py-3 font-medium">Average calories (kcal)</th>
+          <th class="px-4 py-3 font-medium">Average carbs (g)</th>
+          <th class="px-4 py-3 font-medium">Average protein (g)</th>
+          <th class="px-4 py-3 font-medium">Average fat (g)</th>
+          <th aria-label="Toggle details" class="px-4 py-3 font-medium w-12"></th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (planRow of rows(); track planRow.id) {
+            @let isRowExpanded = expandedMealPlans().has(planRow.id);
+            <tr
+              (click)="toggleExpanded(planRow.id)"
+              [attr.aria-expanded]="isRowExpanded"
+              class="border-t border-gray-200 cursor-pointer transition-colors hover:bg-gray-50 text-center"
+            >
+              <td class="px-4 py-3 font-medium text-gray-500">{{ planRow.idx + 1 }}</td>
+              <td class="px-4 py-3">{{ planRow.createdAt | date:'medium' }}</td>
+              <td class="px-4 py-3">{{ planRow.daysCount }}</td>
+              <td class="px-4 py-3">{{ planRow.total.calories }}</td>
+              <td class="px-4 py-3">{{ planRow.total.carbs }}</td>
+              <td class="px-4 py-3">{{ planRow.total.protein }}</td>
+              <td class="px-4 py-3">{{ planRow.total.fat }}</td>
+              <td class="px-4 py-3 text-center">
+                <i
+                  [class.rotate-180]="isRowExpanded"
+                  aria-hidden="true"
+                  class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-200"
+                >
+                </i>
+              </td>
+            </tr>
+
+            @if (isRowExpanded) {
+              <tr class="border-t bg-gray-50/60">
+                <td class="p-4" colspan="8">
+                  <div class="grid grid-cols-1 lg:grid-cols-1 gap-4">
+                    @for (day of planRow.plan.days; track day.id) {
+                      <app-mealplan-history-item [mealPlanDay]="day"/>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
