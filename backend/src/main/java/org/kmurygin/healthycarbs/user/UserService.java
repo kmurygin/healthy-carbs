@@ -45,7 +45,9 @@ public class UserService {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new ResourceAlreadyExistsException("User", "username", request.getUsername());
         }
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+
+        String email = request.getEmail().toLowerCase();
+        if (userRepository.findByEmail(email).isPresent()) {
             throw new ResourceAlreadyExistsException("User", "email", request.getEmail());
         }
 
