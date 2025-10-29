@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: user-columns-change-name
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE users
+              RENAME COLUMN firstname
+              TO first_name;
+              ALTER TABLE users
+              RENAME COLUMN lastname
+              TO last_name;

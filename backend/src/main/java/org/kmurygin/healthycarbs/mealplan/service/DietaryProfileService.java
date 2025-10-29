@@ -75,7 +75,7 @@ public class DietaryProfileService {
         return dietaryProfileRepository.findByUser(user);
     }
 
-    public DietaryProfile getByUserId(Integer userId) {
+    public DietaryProfile getByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         return dietaryProfileRepository.findByUser(user);

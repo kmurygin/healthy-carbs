@@ -59,3 +59,9 @@ databaseChangeLog:
   - include:
       file: 2025-10-17-add-shopping-list.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2025-10-29-user-columns-change-name.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-10-29-user-change-id-type.yaml
+      relativeToChangelogFile: true

@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: user-change-id-type
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE users
+              ALTER COLUMN id TYPE BIGINT;
