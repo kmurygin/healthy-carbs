@@ -72,15 +72,16 @@
             <h3 class="mb-4 text-lg font-medium text-gray-900">
               {{ category.name }}
             </h3>
-
-            <a
-              [routerLink]="['/', category.route]"
-              class="inline-flex items-center gap-2 rounded-full bg-emerald-600
-                     px-4 py-2 text-sm font-semibold text-white transition
-                     hover:bg-emerald-700"
-            >
-              Zobacz
-            </a>
+            <div class="text-right">
+              <a
+                [routerLink]="['/', category.route]"
+                class="inline-flex items-center gap-2 rounded-full bg-emerald-600
+                       px-4 py-2 text-sm font-semibold text-white transition
+                       hover:bg-emerald-700"
+              >
+                <fa-icon [icon]="faArrowRight"></fa-icon>
+              </a>
+            </div>
           </div>
         </div>
       }
