@@ -1,24 +1,28 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15
     container_name: healthycarbs-postgres
     restart: always
     env_file:
-      - .env.prod
+      - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   backend:
     container_name: healthycarbs-backend
     build: ./backend
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     env_file:
-      - .env.prod
+      - .env
     ports:
       - "8080:8080"
 
