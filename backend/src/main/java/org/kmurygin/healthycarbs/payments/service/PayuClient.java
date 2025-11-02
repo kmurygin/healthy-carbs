@@ -1,9 +1,9 @@
-package org.kmurygin.healthycarbs.payu.service;
+package org.kmurygin.healthycarbs.payments.service;
 
 import lombok.AllArgsConstructor;
 import org.kmurygin.healthycarbs.auth.AuthenticationService;
-import org.kmurygin.healthycarbs.payu.config.PayuProperties;
-import org.kmurygin.healthycarbs.payu.dto.*;
+import org.kmurygin.healthycarbs.payments.config.PayuProperties;
+import org.kmurygin.healthycarbs.payments.dto.*;
 import org.kmurygin.healthycarbs.user.User;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;

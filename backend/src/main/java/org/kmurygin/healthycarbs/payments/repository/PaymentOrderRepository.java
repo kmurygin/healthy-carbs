@@ -1,6 +1,6 @@
-package org.kmurygin.healthycarbs.payu.repository;
+package org.kmurygin.healthycarbs.payments.repository;
 
-import org.kmurygin.healthycarbs.payu.model.Order;
+import org.kmurygin.healthycarbs.payments.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

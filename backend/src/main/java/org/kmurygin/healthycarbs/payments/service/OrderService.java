@@ -1,11 +1,11 @@
-package org.kmurygin.healthycarbs.payu.service;
+package org.kmurygin.healthycarbs.payments.service;
 
 import lombok.AllArgsConstructor;
-import org.kmurygin.healthycarbs.payu.config.PayuProperties;
-import org.kmurygin.healthycarbs.payu.dto.InitPaymentRequest;
-import org.kmurygin.healthycarbs.payu.dto.OrderResponse;
-import org.kmurygin.healthycarbs.payu.model.Order;
-import org.kmurygin.healthycarbs.payu.repository.PaymentOrderRepository;
+import org.kmurygin.healthycarbs.payments.config.PayuProperties;
+import org.kmurygin.healthycarbs.payments.dto.InitPaymentRequest;
+import org.kmurygin.healthycarbs.payments.dto.OrderResponse;
+import org.kmurygin.healthycarbs.payments.model.Order;
+import org.kmurygin.healthycarbs.payments.repository.PaymentOrderRepository;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor

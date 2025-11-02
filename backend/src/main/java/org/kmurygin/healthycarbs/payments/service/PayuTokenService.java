@@ -1,8 +1,8 @@
-package org.kmurygin.healthycarbs.payu.service;
+package org.kmurygin.healthycarbs.payments.service;
 
 
-import org.kmurygin.healthycarbs.payu.config.PayuProperties;
-import org.kmurygin.healthycarbs.payu.dto.AccessTokenResponse;
+import org.kmurygin.healthycarbs.payments.config.PayuProperties;
+import org.kmurygin.healthycarbs.payments.dto.AccessTokenResponse;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;

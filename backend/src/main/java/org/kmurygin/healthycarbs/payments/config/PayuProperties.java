@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.payu.config;
+package org.kmurygin.healthycarbs.payments.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

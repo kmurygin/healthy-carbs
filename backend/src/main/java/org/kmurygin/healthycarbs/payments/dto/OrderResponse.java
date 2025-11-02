@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.payu.dto;
+package org.kmurygin.healthycarbs.payments.dto;
 
 import java.time.OffsetDateTime;
 

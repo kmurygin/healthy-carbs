@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.payu.model;
+package org.kmurygin.healthycarbs.payments.model;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,13 +1,13 @@
-package org.kmurygin.healthycarbs.payu.controller;
+package org.kmurygin.healthycarbs.payments.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.servlet.http.HttpServletRequest;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
-import org.kmurygin.healthycarbs.payu.dto.*;
-import org.kmurygin.healthycarbs.payu.model.Order;
-import org.kmurygin.healthycarbs.payu.service.OrderService;
-import org.kmurygin.healthycarbs.payu.service.PaymentService;
-import org.kmurygin.healthycarbs.payu.service.PayuClient;
+import org.kmurygin.healthycarbs.payments.dto.*;
+import org.kmurygin.healthycarbs.payments.model.Order;
+import org.kmurygin.healthycarbs.payments.service.OrderService;
+import org.kmurygin.healthycarbs.payments.service.PaymentService;
+import org.kmurygin.healthycarbs.payments.service.PayuClient;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.slf4j.Logger;
