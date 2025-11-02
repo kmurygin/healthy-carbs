@@ -1,10 +1,10 @@
-# Build stage
-FROM node:23-alpine as build
+FROM node:24-bullseye as build
 WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install --legacy-peer-deps
 COPY . .
-RUN npm install --legacy-peer-deps && npm run build --prod
+RUN npm run build -- --configuration production
 
-# Serve with nginx
 FROM nginx:alpine
 COPY --from=build /app/dist/healthy-carbs/browser /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
