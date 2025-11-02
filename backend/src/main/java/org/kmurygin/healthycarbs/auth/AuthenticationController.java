@@ -1,5 +1,6 @@
 package org.kmurygin.healthycarbs.auth;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,9 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<AuthenticationResponse>> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<AuthenticationResponse>> register(
+            @Valid @RequestBody RegisterRequest request
+    ) {
         AuthenticationResponse authResponse = service.register(request);
         ApiResponse<AuthenticationResponse> response = ApiResponse.<AuthenticationResponse>builder()
                 .status(true)
@@ -27,7 +30,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(
+            @Valid @RequestBody AuthenticationRequest request
+    ) {
         AuthenticationResponse authResponse = service.authenticate(request);
         ApiResponse<AuthenticationResponse> response = ApiResponse.<AuthenticationResponse>builder()
                 .status(true)
