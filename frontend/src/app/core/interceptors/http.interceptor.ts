@@ -57,10 +57,11 @@ const handleError = (
   errorMessage = errorResponse.message ?? errorMessage;
 
   if (errorResponse.fieldErrors && Object.keys(errorResponse.fieldErrors).length > 0) {
+    errorMessage = '';
     const fields = Object.entries(errorResponse.fieldErrors)
-      .map(([field, msg]) => `${field}: ${msg}`)
-      .join(', ');
-    errorMessage += ` | Field errors: ${fields}`;
+      .map(([field, msg]) => `${field}: \n ${msg}`)
+      .join('\n');
+    errorMessage += `${fields}`;
   }
 
   if (errorResponse.details?.length) {
