@@ -70,8 +70,8 @@ public class PayuClient {
         }
         return new Buyer(
                 user.getEmail(),
-                user.getFirstname(),
-                user.getLastname(),
+                user.getFirstName(),
+                user.getLastName(),
                 "en"
         );
     }

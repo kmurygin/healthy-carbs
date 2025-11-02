@@ -52,8 +52,8 @@ export class UserDetailComponent implements OnInit {
         this.user.set(data);
         if (data) {
           this.form.patchValue({
-            firstname: data.firstname,
-            lastname: data.lastname,
+            firstname: data.firstName,
+            lastname: data.lastName,
             email: data.email
           });
         }

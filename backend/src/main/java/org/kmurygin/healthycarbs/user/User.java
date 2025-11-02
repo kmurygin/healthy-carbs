@@ -1,6 +1,9 @@
 package org.kmurygin.healthycarbs.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,7 +16,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "password")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,17 +26,23 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(unique = true)
+    @NotNull
     private String username;
 
-    private String firstname;
+    @Column(name = "first_name")
+    private String firstName;
 
-    private String lastname;
+    @Column(name = "last_name")
+    private String lastName;
 
     @Column(unique = true)
+    @Email
     private String email;
+
+    @Size(min = 12, max = 100)
     private String password;
 
     @Enumerated(EnumType.STRING)

@@ -22,10 +22,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ShoppingListService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ShoppingListService.class);
     private final ShoppingListRepository shoppingListRepository;
     private final MealPlanRepository mealPlanRepository;
     private final AuthenticationService authenticationService;
-    private static final Logger logger = LoggerFactory.getLogger(ShoppingListService.class);
 
     @Transactional
     public ShoppingList getShoppingList(Long mealPlanId) {

@@ -4,16 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.kmurygin.healthycarbs.user.Role;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
-    private Integer id;
+    private Long id;
     private String username;
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
     private String email;
-    private String role;
+    private Role role;
 }

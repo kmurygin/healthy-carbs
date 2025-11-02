@@ -32,7 +32,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Integer id) {
+    public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
@@ -45,15 +45,17 @@ public class UserService {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new ResourceAlreadyExistsException("User", "username", request.getUsername());
         }
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+
+        String email = request.getEmail().toLowerCase();
+        if (userRepository.findByEmail(email).isPresent()) {
             throw new ResourceAlreadyExistsException("User", "email", request.getEmail());
         }
 
         User user = User.builder()
                 .username(request.getUsername())
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
-                .email(request.getEmail().toLowerCase())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(email)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.valueOf(request.getRole().toUpperCase()))
                 .build();
@@ -72,32 +74,52 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deleteUser(Integer id) {
+    public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
     @Transactional
-    public User update(Integer id, UpdateUserRequest request) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setFirstname(request.getFirstname());
-                    user.setLastname(request.getLastname());
-
-                    String newEmail = request.getEmail().toLowerCase();
-                    if (!user.getEmail().equalsIgnoreCase(newEmail) &&
-                            userRepository.findByEmail(newEmail).isPresent()) {
-                        throw new ResourceAlreadyExistsException("User", "email", newEmail);
-                    }
-                    user.setEmail(newEmail);
-                    emailService.sendMail(new EmailDetails(
-                            user.getEmail(),
-                            String.format("Your email has been changed to this one, %s!", user.getUsername()),
-                            "HealthyCarbs change of email address"
-                    ));
-
-                    return userRepository.save(user);
-                })
+    public User update(Long id, UpdateUserRequest request) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+
+        updateUserEmail(user, request.getEmail());
+
+        return userRepository.save(user);
+    }
+
+    private void updateUserEmail(User user, String mail) {
+        String newEmail = mail.toLowerCase();
+        String oldEmail = user.getEmail();
+
+        if (oldEmail.equalsIgnoreCase(newEmail)) {
+            user.setEmail(newEmail);
+            return;
+        }
+
+        if (userRepository.findByEmail(newEmail).isPresent()) {
+            throw new ResourceAlreadyExistsException("User", "email", newEmail);
+        }
+
+        user.setEmail(newEmail);
+        notifyEmailChange(user);
+    }
+
+    private void notifyEmailChange(User user) {
+        String subject = "Change of email address";
+        String body = String.format(
+                "Your email has been changed to this one, %s!", user.getUsername()
+        );
+
+        emailService.sendMail(new EmailDetails(
+                        user.getEmail(),
+                        body,
+                        subject
+                )
+        );
     }
 
     @Transactional

@@ -3,6 +3,8 @@ import {RouterLink} from '@angular/router';
 import type {Color} from '@swimlane/ngx-charts';
 import {LegendPosition, NgxChartsModule, ScaleType} from '@swimlane/ngx-charts';
 import {NgOptimizedImage} from "@angular/common";
+import {FaIconComponent} from "@fortawesome/angular-fontawesome";
+import {faArrowRight} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-dashboard',
@@ -11,6 +13,7 @@ import {NgOptimizedImage} from "@angular/common";
     RouterLink,
     NgxChartsModule,
     NgOptimizedImage,
+    FaIconComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
@@ -66,8 +69,8 @@ export class DashboardComponent {
       image: 'assets/images/6325254.jpg'
     },
     {
-      name: 'Zakup diety',
-      route: 'kup-diete',
+      name: 'Buy a diet plan',
+      route: 'offers',
       image: 'assets/images/6325254.jpg'
     }
   ];
@@ -116,4 +119,5 @@ export class DashboardComponent {
 
   trackCategory = (_: number, cat: { route: string }) => cat.route;
 
+  protected readonly faArrowRight = faArrowRight;
 }

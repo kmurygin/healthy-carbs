@@ -22,14 +22,14 @@ import {InfoMessageComponent} from "../../../shared/components/info-message/info
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentResultComponent {
+  private readonly route = inject(ActivatedRoute);
+  readonly localOrderId = signal<string | null>(resolveLocalOrderId(this.route));
   readonly hasOrderId = computed(() => !!this.localOrderId());
   readonly status = signal<PaymentStatus>(this.hasOrderId() ? PaymentStatus.PENDING : PaymentStatus.REJECTED);
   readonly polls = signal(0);
   readonly order = signal<Order | null>(null);
   readonly isTerminal = computed(() => this.status() !== PaymentStatus.PENDING);
   protected readonly PaymentStatus = PaymentStatus;
-  private readonly route = inject(ActivatedRoute);
-  readonly localOrderId = signal<string | null>(resolveLocalOrderId(this.route));
   private readonly payuService = inject(PayuService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly pollIntervalMs = 1500;

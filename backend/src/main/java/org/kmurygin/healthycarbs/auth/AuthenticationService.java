@@ -39,8 +39,8 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
 //        User user = UserMapper.fromRegisterRequest(request, passwordEncoder);
         User user = User.builder()
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
+                .firstName(request.getFirstname())
+                .lastName(request.getLastname())
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))

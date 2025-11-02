@@ -15,7 +15,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userService;
@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDTO>> getUserById(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<UserDTO>> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
                 .map(user -> ApiResponses.success(userMapper.toDTO(user)))
                 .orElse(ApiResponses.failure(HttpStatus.NOT_FOUND, "User not found"));
@@ -52,13 +52,13 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDTO>> updateUser(@PathVariable Integer id, @Valid @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<ApiResponse<UserDTO>> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
         UserDTO dto = userMapper.toDTO(userService.update(id, request));
         return ApiResponses.success(dto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ApiResponses.success(HttpStatus.NO_CONTENT, null, "User deleted");
     }

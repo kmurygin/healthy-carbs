@@ -9,9 +9,9 @@ export const ApiEndpoints = {
   },
 
   User: {
-    User: `${apiUrl}/user/`,
-    GetUserByUsername: `${apiUrl}/user/username/`,
-    ChangePassword: `${apiUrl}/user/change-password`,
+    User: `${apiUrl}/users/`,
+    GetUserByUsername: `${apiUrl}/users/username/`,
+    ChangePassword: `${apiUrl}/users/change-password`,
   },
 
   MealPlan: {
