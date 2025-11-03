@@ -12,6 +12,6 @@ public record CreateOrderRequest(
         String extOrderId,
         String totalAmount,
         Buyer buyer,
-        List<Product> products
+        List<ProductDTO> products
 ) {
 }

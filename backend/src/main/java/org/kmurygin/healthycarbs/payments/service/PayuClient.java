@@ -42,7 +42,7 @@ public class PayuClient {
 
     private CreateOrderRequest createOrderRequest(InitPaymentRequest init, String clientIp) {
         String ip = (clientIp == null || clientIp.isBlank()) ? "127.0.0.1" : clientIp;
-        List<Product> products = init.products();
+        List<ProductDTO> products = init.products();
 
         return new CreateOrderRequest(
                 props.continueUrl(),
