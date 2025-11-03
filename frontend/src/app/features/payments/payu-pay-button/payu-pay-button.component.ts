@@ -37,14 +37,14 @@ export class PayuPayButtonComponent {
       font-semibold shadow-md cursor-pointer
       text-white transition-all duration-200 ease-in-out
       disabled:opacity-60 disabled:cursor-not-allowed
-      bg-emerald-600 hover:bg-emerald-700 hover:scale-[1.02] active:scale-[0.98]
+      bg-emerald-600 active:scale-[0.98]
     `;
 
     if (this.isPending() || this.externallyDisabled()) {
       return baseClasses + ' opacity-60';
     }
 
-    return baseClasses;
+    return baseClasses + ' hover:scale-[1.02] hover:bg-emerald-700';
   });
 
   private readonly payuService = inject(PayuService);
