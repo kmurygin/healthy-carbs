@@ -1,13 +1,19 @@
 package org.kmurygin.healthycarbs.offers;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Set;
 
-public record OfferDTO(
-        Long id,
-        String title,
-        String description,
-        int price,
-        String currency,
-        Set<String> features
-) {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class OfferDTO {
+    private Long id;
+    private String title;
+    private String description;
+    private int price;
+    private String currency;
+    private Set<String> features;
 }
