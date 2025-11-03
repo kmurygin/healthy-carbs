@@ -61,7 +61,7 @@ const handleError = (
     const fields = Object.entries(errorResponse.fieldErrors)
       .map(([field, msg]) => `${field}: \n ${msg}`)
       .join('\n');
-    errorMessage += `${fields}`;
+    errorMessage += fields;
   }
 
   if (errorResponse.details?.length) {

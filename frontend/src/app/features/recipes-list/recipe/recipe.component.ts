@@ -30,6 +30,26 @@ export class RecipeComponent {
   readonly mealTagClasses = computed(() => {
     return getMealTagClasses('sm')
   });
+  readonly totals = computed(() => {
+    const selectedRecipe = this.recipe();
+    if (!selectedRecipe) return {calories: 0, carbs: 0, protein: 0, fat: 0};
+
+    return selectedRecipe.ingredients.reduce(
+      (totals, ri) => ({
+        calories: totals.calories + ri.quantity * ri.ingredient.caloriesPerUnit,
+        carbs: totals.carbs + ri.quantity * ri.ingredient.carbsPerUnit,
+        protein: totals.protein + ri.quantity * ri.ingredient.proteinPerUnit,
+        fat: totals.fat + ri.quantity * ri.ingredient.fatPerUnit,
+      }),
+      {calories: 0, carbs: 0, protein: 0, fat: 0}
+    );
+  });
+  readonly dietTagClasses = computed(() => {
+    return getDietTagClasses(this.recipe()?.dietType, 'sm')
+  });
+  readonly dietIconClasses = computed(() => {
+    return getDietTagIconClasses(this.recipe()?.dietType);
+  });
   private readonly route = inject(ActivatedRoute);
   private readonly service = inject(RecipeService);
   private readonly state = toSignal(
@@ -64,26 +84,6 @@ export class RecipeComponent {
     {initialValue: initialState}
   );
   readonly recipe = computed(() => this.state().recipe);
-  readonly totals = computed(() => {
-    const selectedRecipe = this.recipe();
-    if (!selectedRecipe) return {calories: 0, carbs: 0, protein: 0, fat: 0};
-
-    return selectedRecipe.ingredients.reduce(
-      (totals, ri) => ({
-        calories: totals.calories + ri.quantity * ri.ingredient.caloriesPerUnit,
-        carbs: totals.carbs + ri.quantity * ri.ingredient.carbsPerUnit,
-        protein: totals.protein + ri.quantity * ri.ingredient.proteinPerUnit,
-        fat: totals.fat + ri.quantity * ri.ingredient.fatPerUnit,
-      }),
-      {calories: 0, carbs: 0, protein: 0, fat: 0}
-    );
-  });
-  readonly dietTagClasses = computed(() => {
-    return getDietTagClasses(this.recipe()?.dietType, 'sm')
-  });
-  readonly dietIconClasses = computed(() => {
-    return getDietTagIconClasses(this.recipe()?.dietType);
-  });
   readonly errorMessage = computed(() => this.state().error);
   readonly isLoading = computed(() => this.state().loading);
 

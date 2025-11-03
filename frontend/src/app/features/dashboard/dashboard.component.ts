@@ -116,8 +116,7 @@ export class DashboardComponent {
   showLabels = true;
   isDoughnut = false;
   legendPosition: LegendPosition = LegendPosition.Right;
+  protected readonly faArrowRight = faArrowRight;
 
   trackCategory = (_: number, cat: { route: string }) => cat.route;
-
-  protected readonly faArrowRight = faArrowRight;
 }

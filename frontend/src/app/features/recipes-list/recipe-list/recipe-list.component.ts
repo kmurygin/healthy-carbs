@@ -57,7 +57,6 @@ export class RecipeListComponent {
   readonly dietTypes = signal(Object.values(DietType));
   readonly mealTypes = signal(Object.values(MealType));
   readonly startIndex = computed(() => (this.pageNumber() - INITIAL_PAGE_NUMBER) * this.pageSize());
-  readonly endIndex = computed(() => this.startIndex() + this.pageItems().length);
   protected readonly formatEnum = formatEnum;
   protected readonly FilterType = FilterType;
   private readonly recipeService = inject(RecipeService);
@@ -93,6 +92,7 @@ export class RecipeListComponent {
   readonly isLoading = computed(() => this.state().loading);
   readonly errorMessage = computed(() => this.state().error);
   readonly pageItems = computed(() => this.state().page.content);
+  readonly endIndex = computed(() => this.startIndex() + this.pageItems().length);
   readonly totalRecipeCount = computed(() => this.state().page.totalElements);
   readonly totalPages = computed(() => Math.max(INITIAL_PAGE_NUMBER, this.state().page.totalPages));
 

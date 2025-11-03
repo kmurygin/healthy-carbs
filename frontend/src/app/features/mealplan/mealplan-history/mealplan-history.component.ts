@@ -17,6 +17,9 @@ import {buildRows} from "../mealplan.util";
 })
 export class MealPlanHistoryComponent {
   readonly expandedMealPlans = signal<ReadonlySet<number>>(new Set());
+  readonly rows = computed<readonly MealPlanRow[]>(
+    () => buildRows(this.mealPlans())
+  );
   private readonly mealPlanService = inject(MealPlanService);
   private readonly initialState: HistoryState = {
     plans: [],
@@ -35,9 +38,6 @@ export class MealPlanHistoryComponent {
   );
   readonly loading = computed(() => this.historyState().loading);
   readonly mealPlans = computed(() => this.historyState().plans);
-  readonly rows = computed<readonly MealPlanRow[]>(
-    () => buildRows(this.mealPlans())
-  );
   readonly errorMessage = computed(() => this.historyState().error);
 
   toggleExpanded(id: number): void {
