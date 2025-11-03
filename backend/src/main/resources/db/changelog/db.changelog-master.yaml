@@ -65,3 +65,6 @@ databaseChangeLog:
   - include:
       file: 2025-10-29-user-change-id-type.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2025-11-03-add-offers-table.yaml
+      relativeToChangelogFile: true

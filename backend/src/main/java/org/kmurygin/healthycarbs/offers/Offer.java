@@ -1,0 +1,30 @@
+package org.kmurygin.healthycarbs.offers;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Set;
+
+@Entity
+@Table(name = "offers")
+@Getter
+@Setter
+public class Offer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+    private String description;
+    private int price;
+
+    @Enumerated(EnumType.STRING)
+    private Currency currency;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "offer_feature", joinColumns = @JoinColumn(name = "offer_id"))
+    @Column(name = "feature")
+    private Set<String> features;
+
+}
