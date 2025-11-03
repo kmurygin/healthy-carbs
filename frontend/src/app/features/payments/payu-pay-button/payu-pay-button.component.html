@@ -1,16 +1,18 @@
 <button
   (click)="onPay()"
-  [attr.aria-busy]="pending() ? 'true' : 'false'"
-  [attr.data-state]="pending() ? 'pending' : 'idle'"
-  [class.opacity-50]="pending()"
-  class="inline-flex items-center rounded-xl px-4 py-2 font-medium shadow cursor-pointer bg-green-600 hover:bg-green-700
-         text-white transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed
-         min-w-20 justify-center"
+  [attr.aria-busy]="isPending() ? 'true' : 'false'"
+  [attr.data-state]="isPending() ? 'pending' : 'idle'"
+  [class]="payButtonClasses()"
+  [disabled]="isPending() || externallyDisabled()"
   type="button"
 >
-  {{ label() }}
+  @if (isPending()) {
+    <i class="fa-solid fa-spinner fa-spin mr-2"></i> Redirecting to PayU…
+  } @else {
+    Buy
+  }
 </button>
 
-@if (error()) {
-  <p aria-live="polite" class="mt-2 text-red-600" role="alert">{{ error() }}</p>
+@if (errorMessage()) {
+  <app-error-message [message]="errorMessage()!"/>
 }

@@ -38,4 +38,8 @@ export const ApiEndpoints = {
     UpdateItem: (mealPlanId: number) => `${apiUrl}/shopping-list/${mealPlanId}/item`,
     Download: (mealPlanId: number) => `${apiUrl}/shopping-list/${mealPlanId}/download`,
   },
+
+  Offer: {
+    Offer: `${apiUrl}/offers`,
+  }
 };
