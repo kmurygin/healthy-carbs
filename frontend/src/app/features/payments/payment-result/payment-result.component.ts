@@ -1,74 +1,92 @@
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, signal} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, signal} from '@angular/core';
+import {ActivatedRoute, RouterLink} from '@angular/router';
+import {DecimalPipe} from '@angular/common';
 import type {Subscription} from 'rxjs';
 import {switchMap, timer} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {PayuService} from '../../../core/services/payu/payu.service';
 import {PaymentStatus} from '../dto/payment-status.enum';
 import {resolveLocalOrderId, safeRemoveLastLocalOrderId} from '../utils';
-import type {Order} from "../dto/order";
-import {ErrorMessageComponent} from "../../../shared/components/error-message/error-message.component";
-import {SuccessMessageComponent} from "../../../shared/components/success-message/success-message.component";
-import {InfoMessageComponent} from "../../../shared/components/info-message/info-message.component";
+import type {Order} from '../dto/order';
+import {ConfettiService} from "../../../core/services/confetti/confetti.service";
+import {statusToViewState, viewConfig, ViewState} from "../payment-view.config";
 
 @Component({
   selector: 'app-payment-result',
   imports: [
-    ErrorMessageComponent,
-    SuccessMessageComponent,
-    InfoMessageComponent
+    RouterLink,
+    DecimalPipe,
   ],
   templateUrl: './payment-result.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentResultComponent {
-  private readonly route = inject(ActivatedRoute);
-  readonly localOrderId = signal<string | null>(resolveLocalOrderId(this.route));
-  readonly hasOrderId = computed(() => !!this.localOrderId());
-  readonly status = signal<PaymentStatus>(this.hasOrderId() ? PaymentStatus.PENDING : PaymentStatus.REJECTED);
-  readonly polls = signal(0);
+  readonly status = signal<PaymentStatus>(PaymentStatus.PENDING);
   readonly order = signal<Order | null>(null);
-  readonly isTerminal = computed(() => this.status() !== PaymentStatus.PENDING);
-  protected readonly PaymentStatus = PaymentStatus;
+  readonly isTerminal = computed(() =>
+    this.status() === PaymentStatus.COMPLETED ||
+    this.status() === PaymentStatus.REJECTED ||
+    this.status() === PaymentStatus.CANCELED
+  );
+  readonly paidAmount = computed(() => (this.order()?.totalAmount ?? 0) / 100);
+  readonly viewData = computed(() => viewConfig[this.viewState()]);
+  private readonly confettiService = inject(ConfettiService);
   private readonly payuService = inject(PayuService);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
+  private readonly localOrderId = signal<string | null>(resolveLocalOrderId(this.route));
+  readonly viewState = computed<ViewState>(() => {
+    if (!this.localOrderId()) return 'INVALID_ORDER';
+    return statusToViewState[this.status()];
+  });
   private readonly pollIntervalMs = 1500;
 
   constructor() {
-    effect((onCleanup) => {
-      const id = this.localOrderId();
-      const terminal = this.isTerminal();
+    this.monitorPaymentStatus();
+    this.triggerConfettiOnSuccess();
+  }
 
-      if (!id || terminal) return;
+  private monitorPaymentStatus(): void {
+    effect((onCleanup) => {
+      const localOrderId = this.localOrderId();
+      const isTerminal = this.isTerminal();
+
+      if (!localOrderId || isTerminal) {
+        return;
+      }
 
       const sub: Subscription = timer(0, this.pollIntervalMs)
         .pipe(
-          takeUntilDestroyed(this.destroyRef),
-          switchMap(() => this.payuService.getOrderDetails(id))
+          switchMap(() => this.payuService.getOrderDetails(localOrderId))
         )
         .subscribe({
-          next: (res) => {
-            this.polls.update((currentCount) => currentCount + 1);
-            const nextStatus = res.paymentStatus;
-
+          next: (response) => {
+            const nextStatus = response.paymentStatus;
             if (nextStatus !== PaymentStatus.PENDING) {
               this.status.set(nextStatus);
-              this.order.set(res);
+              this.order.set(response);
               safeRemoveLastLocalOrderId();
-              sub.unsubscribe();
             }
           },
-          error: (err: unknown) => {
-            console.error(err);
-            this.polls.update((v) => v + 1);
+          error: (error: unknown) => {
+            console.error('Error fetching order status:', error);
             this.status.set(PaymentStatus.REJECTED);
-            sub.unsubscribe();
           },
         });
 
       onCleanup(() => {
-        sub.unsubscribe()
+        sub.unsubscribe();
       });
     });
   }
+
+  private triggerConfettiOnSuccess(): void {
+    let prevStatus: PaymentStatus | null = null;
+    effect(() => {
+      const current = this.status();
+      if (prevStatus === PaymentStatus.PENDING && current === PaymentStatus.COMPLETED) {
+        this.confettiService.triggerConfetti();
+      }
+      prevStatus = current;
+    });
+  }
+
 }

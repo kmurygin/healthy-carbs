@@ -1,25 +1,57 @@
-<section class="mx-auto max-w-2xl p-6">
-  @if (status() === PaymentStatus.COMPLETED) {
-    <h1 class="text-2xl font-bold mb-4">Order nr {{ order()?.localOrderId }}</h1>
-    <p>Description: {{ order()?.description }}</p>
-    <p>Paid: {{ (order()?.totalAmount ?? 0) / 100 }} {{ order()?.currency }}</p>
+<section class="flex justify-center items-start p-4 pt-16 sm:p-6 lg:pt-24">
+  <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden">
 
-    <app-success-message
-      message="Payment was succesful. Thanks for the purchase :)">\
-    </app-success-message>
+    <div class="p-8 text-center">
+      <i
+        [class]="viewData().iconType + ' ' + viewData().iconClasses"
+        class="text-6xl mb-5"
+      ></i>
 
-  } @else if (status() === PaymentStatus.REJECTED || status() === PaymentStatus.CANCELED) {
-    <app-error-message
-      message="Payment was rejected or failed. Please try again.">
-    </app-error-message>
-  } @else if (!hasOrderId()) {
-    <app-error-message
-      message="Missing order number. Please try again.">
-    </app-error-message>
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">
+        {{ viewData().title }}
+      </h1>
 
-  } @else {
-    <app-info-message
-      message="Processing… Please wait.">
-    </app-info-message>
-  }
+      <p class="text-gray-600 mb-6">{{ viewData().message }}</p>
+
+      @if (viewState() === 'COMPLETED') {
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 text-left space-y-3">
+          <div class="flex justify-between">
+            <span class="text-gray-500 text-sm">
+              Order ID
+            </span>
+            <span class="font-medium text-gray-900 text-sm">
+              {{ order()?.localOrderId }}
+            </span>
+          </div>
+          <div class="flex justify-between items-start">
+            <span class="text-gray-500 text-sm">
+              Description
+            </span>
+            <span class="font-medium text-gray-900 text-sm text-right max-w-[80%] sm:max-w-none">
+              {{ order()?.description }}
+            </span>
+          </div>
+          <hr class="border-gray-200"/>
+          <div class="flex justify-between">
+            <span class="text-gray-500 text-lg font-medium">
+              Paid Amount
+            </span>
+            <span class="font-bold text-emerald-700 text-lg">
+              {{ paidAmount() | number:'1.2-2' }} {{ order()?.currency }}
+            </span>
+          </div>
+        </div>
+      }
+
+      @if (viewData().buttonText; as buttonText) {
+        <a
+          [class]="viewData().buttonClass"
+          [routerLink]="viewData().buttonLink"
+        >
+          {{ buttonText }}
+        </a>
+      }
+    </div>
+
+  </div>
 </section>
