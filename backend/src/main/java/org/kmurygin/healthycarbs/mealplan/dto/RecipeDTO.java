@@ -23,4 +23,6 @@ public class RecipeDTO {
     private Double fat;
     private MealType mealType;
     private DietType dietType;
+    private Boolean isFavourite;
+    private Long favouritesCount;
 }
