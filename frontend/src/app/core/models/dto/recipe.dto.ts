@@ -14,4 +14,6 @@ export interface RecipeDto {
   readonly fat: number;
   readonly dietType: DietType;
   readonly mealType: MealType;
+  readonly isFavourite: boolean;
+  readonly favouritesCount: number;
 }
