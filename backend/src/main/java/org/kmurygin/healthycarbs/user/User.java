@@ -6,17 +6,16 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Getter
 @Setter
-@ToString(exclude = "password")
+@ToString(exclude = {"password", "favouriteRecipes"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -47,6 +46,30 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_favourite_recipes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "recipe_id")
+    )
+    private Set<Recipe> favouriteRecipes = new HashSet<>();
+
+    public void addFavouriteRecipe(Recipe recipe) {
+        if (favouriteRecipes == null) {
+            this.favouriteRecipes = new HashSet<>();
+        }
+        this.favouriteRecipes.add(recipe);
+        recipe.getFavouritesUsers().add(this);
+    }
+
+    public void removeFavouriteRecipe(Recipe recipe) {
+        if (favouriteRecipes == null) {
+            return;
+        }
+        this.favouriteRecipes.remove(recipe);
+        recipe.getFavouritesUsers().remove(this);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

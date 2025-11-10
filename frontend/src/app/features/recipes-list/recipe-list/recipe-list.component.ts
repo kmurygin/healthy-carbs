@@ -1,18 +1,24 @@
 import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
-import {RecipeService} from '../../../core/services/recipe/recipe.service';
-import type {RecipeDto} from '../../../core/models/dto/recipe.dto';
+import {RecipeService} from '@core/services/recipe/recipe.service';
+import type {RecipeDto} from '@core/models/dto/recipe.dto';
 import {toObservable, toSignal} from "@angular/core/rxjs-interop";
-import {catchError, map, of, startWith, switchMap} from "rxjs";
-import type {Page} from "../../../core/models/page.model";
+import {catchError, EMPTY, map, of, startWith, switchMap} from "rxjs";
+import type {Page} from "@core/models/page.model";
 import {RecipeCardComponent} from "../recipe-card/recipe-card.component";
-import type {RecipeSearchParams} from "../../../core/models/recipe-search.params";
-import {DietType} from "../../../core/models/enum/diet-type.enum";
-import {MealType} from "../../../core/models/enum/meal-type.enum";
-import {formatEnum} from "../../../shared/utils";
-import {KeyboardKey} from "../../../shared/keyboard-key.enum";
-import {FilterType} from "../filter-type.enum";
+import type {RecipeSearchParams} from "@core/models/recipe-search.params";
+import {DietType} from "@core/models/enum/diet-type.enum";
+import {MealType} from "@core/models/enum/meal-type.enum";
+import {KeyboardKey} from "@shared/keyboard-key.enum";
+import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
+import {RecipeFilterComponent} from "../recipe-filter/recipe-filter.component";
+import {PaginationControlsComponent} from "../pagination-controls/pagination-controls.component";
+import {RecipeCountInfoComponent} from "../recipe-count-info/recipe-count-info.component";
+import {PageSizeSelectorComponent} from "../page-size-selector/page-size-selector.component";
+import {FavouriteRecipesToggleComponent} from "../favourite-recipes-toggle/favourite-recipes-toggle.component";
+import {InfoMessageComponent} from "@shared/components/info-message/info-message.component";
+import type {Option, RecipeFilters} from "@features/recipes-list/recipes-list.types";
 
 const DEFAULT_PAGE_SIZE = 6;
 const PAGE_SIZE_OPTIONS = [6, 9, 12];
@@ -38,7 +44,18 @@ const initialState = {
 
 @Component({
   selector: 'app-recipe-list',
-  imports: [CommonModule, RouterModule, RecipeCardComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    RecipeCardComponent,
+    ErrorMessageComponent,
+    RecipeFilterComponent,
+    PaginationControlsComponent,
+    RecipeCountInfoComponent,
+    PageSizeSelectorComponent,
+    FavouriteRecipesToggleComponent,
+    InfoMessageComponent
+  ],
   templateUrl: './recipe-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -47,28 +64,44 @@ const initialState = {
 })
 export class RecipeListComponent {
 
-  readonly nameFilter = signal('');
-  readonly ingredientFilter = signal('');
-  readonly dietFilter = signal('');
-  readonly mealFilter = signal('');
   readonly pageNumber = signal(INITIAL_PAGE_NUMBER);
   readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+  readonly onlyFavourites = signal(false);
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
   readonly dietTypes = signal(Object.values(DietType));
   readonly mealTypes = signal(Object.values(MealType));
+
+  readonly filters = signal<RecipeFilters>({
+    name: '',
+    ingredient: '',
+    diet: '',
+    meal: '',
+    sort: '',
+  });
+
+  readonly sortOptions: Option[] = [
+    {value: '', label: 'Default'},
+    {value: 'favouritesCount,desc', label: 'Most Popular'},
+    {value: 'favouritesCount,asc', label: 'Least Popular'},
+  ];
   readonly startIndex = computed(() => (this.pageNumber() - INITIAL_PAGE_NUMBER) * this.pageSize());
   readonly endIndex = computed(() => this.startIndex() + this.pageItems().length);
-  protected readonly formatEnum = formatEnum;
-  protected readonly FilterType = FilterType;
   private readonly recipeService = inject(RecipeService);
-  private readonly recipeSearchParams = computed<RecipeSearchParams>(() => ({
-    name: this.nameFilter(),
-    ingredient: this.ingredientFilter(),
-    diet: this.dietFilter(),
-    meal: this.mealFilter(),
-    page: (this.pageNumber() - INITIAL_PAGE_NUMBER) + BACKEND_INITIAL_PAGE_INDEX,
-    size: this.pageSize(),
-  }));
+  private readonly refetchTrigger = signal(0);
+  private readonly recipeSearchParams = computed<RecipeSearchParams>(() => {
+    const currentFilters = this.filters();
+    return {
+      name: currentFilters.name,
+      ingredient: currentFilters.ingredient,
+      diet: currentFilters.diet,
+      meal: currentFilters.meal,
+      sort: currentFilters.sort,
+      page: (this.pageNumber() - INITIAL_PAGE_NUMBER) + BACKEND_INITIAL_PAGE_INDEX,
+      size: this.pageSize(),
+      onlyFavourites: this.onlyFavourites(),
+      _trigger: this.refetchTrigger()
+    };
+  });
   private readonly state = toSignal(
     toObservable(this.recipeSearchParams).pipe(
       switchMap(params => this.recipeService.getAll(params).pipe(
@@ -94,30 +127,12 @@ export class RecipeListComponent {
   readonly errorMessage = computed(() => this.state().error);
   readonly pageItems = computed(() => this.state().page.content);
   readonly totalRecipeCount = computed(() => this.state().page.totalElements);
-  readonly totalPages = computed(() => Math.max(INITIAL_PAGE_NUMBER, this.state().page.totalPages));
+  readonly totalPages = computed(() => {
+    return Math.max(INITIAL_PAGE_NUMBER, this.state().page.totalPages)
+  });
 
-  updateFilter(type: FilterType, event: Event): void {
-    const value = (event.target as HTMLInputElement | HTMLSelectElement).value;
-    switch (type) {
-      case FilterType.NAME:
-        this.nameFilter.set(value);
-        break;
-      case FilterType.INGREDIENT:
-        this.ingredientFilter.set(value);
-        break;
-      case FilterType.DIET_TYPE:
-        this.dietFilter.set(value);
-        break;
-      case FilterType.MEAL_TYPE:
-        this.mealFilter.set(value);
-        break;
-    }
-    this.pageNumber.set(INITIAL_PAGE_NUMBER);
-  }
-
-  onPageSizeChange(event: Event): void {
-    const value = parseInt((event.target as HTMLSelectElement).value, 10);
-    this.pageSize.set(value);
+  handleFiltersChange(newFilters: RecipeFilters): void {
+    this.filters.set(newFilters);
     this.pageNumber.set(INITIAL_PAGE_NUMBER);
   }
 
@@ -145,5 +160,32 @@ export class RecipeListComponent {
         this.nextPage();
         break;
     }
+  }
+
+  handleOnlyFavouritesChange(isChecked: boolean): void {
+    this.onlyFavourites.set(isChecked);
+    this.pageNumber.set(INITIAL_PAGE_NUMBER);
+  }
+
+  handlePageSizeChange(newSize: number): void {
+    this.pageSize.set(newSize);
+    this.pageNumber.set(INITIAL_PAGE_NUMBER);
+  }
+
+  handleFavouriteToggle(recipeId: number): void {
+    const recipeToToggle = this.pageItems().find((r) => r.id === recipeId);
+    if (!recipeToToggle) {
+      return;
+    }
+
+    const newStatus = !recipeToToggle.isFavourite;
+
+    const request$ = newStatus
+      ? this.recipeService.addFavourite(recipeId)
+      : this.recipeService.removeFavourite(recipeId);
+
+    request$.pipe(catchError(() => EMPTY)).subscribe(() => {
+      this.refetchTrigger.update(value => value + 1);
+    });
   }
 }

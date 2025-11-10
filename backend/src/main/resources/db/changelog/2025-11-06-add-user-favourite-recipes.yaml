@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-user-favourite-recipes
+      author: kmurygin
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: user_favourite_recipes
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE user_favourite_recipes (
+                  user_id BIGINT NOT NULL,
+                  recipe_id BIGINT NOT NULL,
+                  CONSTRAINT pk_user_favourite_recipes PRIMARY KEY (user_id, recipe_id),
+                  CONSTRAINT fk_user_favourites_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+                  CONSTRAINT fk_user_favourites_recipe FOREIGN KEY (recipe_id) REFERENCES recipes (id) ON DELETE CASCADE
+              );

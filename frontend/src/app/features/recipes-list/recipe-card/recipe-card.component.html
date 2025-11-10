@@ -1,9 +1,29 @@
 @let selectedRecipe = recipe();
 
 <li
-  class="group relative flex flex-col rounded-2xl border border-gray-200 bg-white
-  transition hover:shadow-md hover:bg-gray-50"
->
+  class="group relative flex flex-col rounded-2xl border border-gray-200
+bg-white transition hover:shadow-md hover:bg-gray-50">
+  <button
+    (click)="onToggleFavourite(selectedRecipe.id)"
+    [attr.aria-label]="selectedRecipe.isFavourite
+    ? 'Remove ' + selectedRecipe.name + ' from favourites'
+    : 'Add ' + selectedRecipe.name + ' to favourites'"
+    [attr.aria-pressed]="selectedRecipe.isFavourite"
+    class="absolute top-2 right-2 z-10 p-2 rounded-full text-gray-800
+    backdrop-blur-sm transition-transform duration-200 hover:scale-125 hover:cursor-pointer"
+    type="button"
+  >
+    @if (selectedRecipe.isFavourite) {
+      <i aria-hidden="true" class="fa-solid fa-star text-yellow-400"></i>
+    } @else {
+      <i aria-hidden="true" class="fa-regular fa-star text-gray-600"></i>
+    }
+    <span class="text-sm font-semibold">
+      {{ favouriteDisplayCount() }}
+    </span>
+    <span class="sr-only">{{ selectedRecipe.favouritesCount }} favourites</span>
+  </button>
+
   <a
     [routerLink]="['/recipes', selectedRecipe.id]"
     class="flex flex-col flex-1 p-4 focus:outline-none focus-visible:ring-2
@@ -20,36 +40,28 @@
 
     <div class="flex flex-wrap gap-2 mb-4">
       <span [class]="dietTagClasses()">
-        <i [class]="dietIconClasses()"></i>
-        {{ selectedRecipe.dietType }}
+        <i [class]="dietIconClasses()" aria-hidden="true"></i>
+        {{ formatEnum(selectedRecipe.dietType) }}
       </span>
       <span [class]="mealTagClasses()">
-        <i class="fa-solid fa-plate-wheat text-xs"></i>
-        {{ selectedRecipe.mealType }}
+        <i aria-hidden="true" class="fa-solid fa-plate-wheat text-xs"></i>
+        {{ formatEnum(selectedRecipe.mealType) }}
       </span>
     </div>
 
     <div class="mt-auto grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-      <div class="flex items-center gap-1.5">
-        <i class="fa-solid fa-fire w-3 text-center text-orange-500"></i>
-        <span class="text-gray-600">Calories:</span>
-        <span class="font-medium text-gray-900">{{ selectedRecipe.calories | number:'1.0-0' }}</span>
-      </div>
-      <div class="flex items-center gap-1.5">
-        <i class="fa-solid fa-bread-slice w-3 text-center text-amber-600"></i>
-        <span class="text-gray-600">Carbs:</span>
-        <span class="font-medium text-gray-900">{{ selectedRecipe.carbs | number:'1.0-0' }} g</span>
-      </div>
-      <div class="flex items-center gap-1.5">
-        <i class="fa-solid fa-drumstick-bite w-3 text-center text-red-500"></i>
-        <span class="text-gray-600">Protein:</span>
-        <span class="font-medium text-gray-900">{{ selectedRecipe.protein | number:'1.0-0' }} g</span>
-      </div>
-      <div class="flex items-center gap-1.5">
-        <i class="fa-solid fa-bottle-droplet w-3 text-center text-yellow-600"></i>
-        <span class="text-gray-600">Fat:</span>
-        <span class="font-medium text-gray-900">{{ selectedRecipe.fat | number:'1.0-0' }} g</span>
-      </div>
+      @for (nutrient of macros(); track nutrient.label) {
+        <div class="flex items-center gap-1.5">
+          <i
+            [class]="'fa-solid ' + nutrient.icon + ' ' + nutrient.style + ' w-3 text-center'"
+            aria-hidden="true"
+          ></i>
+          <span class="text-gray-600">{{ nutrient.label }}:</span>
+          <span class="font-medium text-gray-900">
+            {{ nutrient.value | number:'1.0-0' }} {{ nutrient.unit }}
+          </span>
+        </div>
+      }
     </div>
   </a>
 </li>

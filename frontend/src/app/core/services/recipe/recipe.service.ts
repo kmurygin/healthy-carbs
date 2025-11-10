@@ -31,6 +31,13 @@ export class RecipeService {
     if (params.meal) {
       httpParams = httpParams.set('meal', params.meal);
     }
+    if (params.onlyFavourites) {
+      httpParams = httpParams.set('onlyFavourites', params.onlyFavourites);
+    }
+    if (params.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+
 
     return this.httpClient
       .get<ApiResponse<Page<RecipeDto>>>(ApiEndpoints.Recipes.Recipes, {
@@ -49,6 +56,14 @@ export class RecipeService {
         map(resp => resp.data ?? null),
         catchError(() => of(null))
       );
+  }
+
+  addFavourite(recipeId: number): Observable<null> {
+    return this.httpClient.post<null>(`${ApiEndpoints.Recipes.Recipes}/${recipeId}/favourite`, {});
+  }
+
+  removeFavourite(recipeId: number): Observable<null> {
+    return this.httpClient.delete<null>(`${ApiEndpoints.Recipes.Recipes}/${recipeId}/favourite`);
   }
 
   private emptyPage(size: number, page: number): Page<RecipeDto> {

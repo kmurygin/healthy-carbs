@@ -2,13 +2,13 @@ package org.kmurygin.healthycarbs.mealplan.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 import org.hibernate.proxy.HibernateProxy;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
+import org.kmurygin.healthycarbs.user.User;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -48,6 +48,14 @@ public class Recipe {
 
     @Enumerated(EnumType.STRING)
     private MealType mealType;
+
+    @ManyToMany(mappedBy = "favouriteRecipes", fetch = FetchType.LAZY)
+    @Builder.Default
+    @ToString.Exclude
+    private Set<User> favouritesUsers = new HashSet<>();
+
+    @Formula("(SELECT count(*) FROM user_favourite_recipes ufr WHERE ufr.recipe_id = id)")
+    private Long favouritesCount;
 
     public void addIngredient(RecipeIngredient ingredient) {
         if (ingredient == null) return;

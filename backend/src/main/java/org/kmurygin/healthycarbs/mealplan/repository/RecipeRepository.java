@@ -3,10 +3,15 @@ package org.kmurygin.healthycarbs.mealplan.repository;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -55,5 +60,10 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>, JpaSpecif
             WHERE r.id = :id
             """)
     Optional<Recipe> findByIdWithIngredients(@Param("id") Long id);
+
+    @Override
+    @EntityGraph(attributePaths = {"ingredients", "ingredients.ingredient"})
+    @NonNull
+    Page<Recipe> findAll(Specification<Recipe> spec, @NonNull Pageable pageable);
 
 }
