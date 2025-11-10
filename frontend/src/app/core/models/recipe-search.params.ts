@@ -5,4 +5,6 @@ export interface RecipeSearchParams {
   ingredient?: string;
   diet?: string;
   meal?: string;
+  onlyFavourites?: boolean;
+  sort?: string;
 }
