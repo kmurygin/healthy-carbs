@@ -1,0 +1,42 @@
+<form
+  (ngSubmit)="onSubmit()"
+  [formGroup]="formGroup"
+  class="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4
+  lg:grid-cols-5 xl:grid-cols-5 bg-emerald-600 p-4 rounded-xl"
+  novalidate
+  role="search"
+>
+  @for (field of fields; track field.controlName) {
+    <label [for]="field.controlName" class="flex flex-col">
+      <span class="text-sm font-medium mb-1 text-white flex items-center gap-1.5">
+        <i [class]="field.icon + ' w-3 text-center text-white'" aria-hidden="true"></i>
+        {{ field.label }}
+      </span>
+
+      @if (field.inputType === 'text') {
+        <input
+          [attr.aria-invalid]="formGroup.get(field.controlName)?.invalid ? 'true' : 'false'"
+          [attr.inputmode]="field.input_mode ?? null"
+          [attr.name]="field.controlName"
+          [attr.placeholder]="field.placeholder"
+          [class]="controlClass"
+          [formControlName]="field.controlName"
+          [id]="field.controlName"
+          type="search"
+        />
+      } @else {
+        <select
+          [attr.aria-invalid]="formGroup.get(field.controlName)?.invalid ? 'true' : 'false'"
+          [attr.name]="field.controlName"
+          [class]="controlClass"
+          [formControlName]="field.controlName"
+          [id]="field.controlName"
+        >
+          @for (option of field.options(); track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      }
+    </label>
+  }
+</form>

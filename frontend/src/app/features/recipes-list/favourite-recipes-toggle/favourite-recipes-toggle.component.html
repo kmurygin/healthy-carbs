@@ -1,0 +1,28 @@
+<label [for]="id" class="flex items-center cursor-pointer w-fit">
+  <div class="relative">
+    <input
+      (change)="onToggle($any($event.target).checked)"
+      [attr.aria-checked]="onlyFavourites()"
+      [attr.aria-labelledby]="id + '-label'"
+      [checked]="onlyFavourites()"
+      [id]="id"
+      class="peer sr-only"
+      role="switch"
+      type="checkbox"
+    />
+    <div
+      class="h-6 w-11 rounded-full bg-gray-400
+      peer-checked:bg-emerald-600 transition-colors"
+    ></div>
+    <div
+      class="absolute left-1 top-1 h-4 w-4 rounded-full
+      bg-white transition-transform peer-checked:translate-x-5"
+    ></div>
+  </div>
+  <span
+    [id]="id + '-label'"
+    class="ml-3 text-sm font-medium text-gray-700"
+  >
+    Only favourites
+  </span>
+</label>

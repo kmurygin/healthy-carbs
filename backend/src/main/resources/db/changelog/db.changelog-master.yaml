@@ -68,3 +68,6 @@ databaseChangeLog:
   - include:
       file: 2025-11-03-add-offers-table.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2025-11-06-add-user-favourite-recipes.yaml
+      relativeToChangelogFile: true

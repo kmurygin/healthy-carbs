@@ -1,0 +1,14 @@
+<label class="text-sm flex items-center gap-2">
+  <span class="font-medium text-gray-700">Recipes per page:</span>
+  <select
+    (change)="onPageSizeChange(+$any($event.target).value)"
+    [value]="pageSize()"
+    aria-label="Recipes per page"
+    class="rounded-lg border border-gray-300 bg-white px-2 py-1
+    focus:border-emerald-500 focus:ring-emerald-500 hover:cursor-pointer"
+  >
+    @for (pageSizeOption of pageSizeOptions(); track pageSizeOption) {
+      <option [value]="pageSizeOption">{{ pageSizeOption }}</option>
+    }
+  </select>
+</label>

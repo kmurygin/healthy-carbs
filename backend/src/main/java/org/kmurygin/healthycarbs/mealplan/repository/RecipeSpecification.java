@@ -6,6 +6,7 @@ import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
+import org.kmurygin.healthycarbs.user.User;
 import org.springframework.data.jpa.domain.Specification;
 
 public class RecipeSpecification {
@@ -37,6 +38,13 @@ public class RecipeSpecification {
                     criteriaBuilder.lower(ingredientJoin.get("name")),
                     "%" + ingredientName.toLowerCase() + "%"
             );
+        };
+    }
+
+    public static Specification<Recipe> isFavourite(Long userId) {
+        return (recipeRoot, criteriaQuery, cb) -> {
+            Join<Recipe, User> userJoin = recipeRoot.join("favouritesUsers");
+            return cb.equal(userJoin.get("id"), userId);
         };
     }
 }

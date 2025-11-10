@@ -5,7 +5,6 @@ import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.DietTypeUtil;
 import org.kmurygin.healthycarbs.mealplan.MealType;
-import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
 import org.kmurygin.healthycarbs.mealplan.mapper.RecipeIngredientMapper;
 import org.kmurygin.healthycarbs.mealplan.mapper.RecipeMapper;
@@ -15,6 +14,8 @@ import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeSpecification;
+import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,12 +35,14 @@ public class RecipeService {
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientMapper recipeIngredientMapper;
     private final RecipeMapper recipeMapper;
+    private final UserRepository userRepository;
 
     public Page<Recipe> findAll(
             String name,
             String ingredient,
             DietType dietType,
             MealType mealType,
+            Long userId,
             Pageable pageable
     ) {
         List<Specification<Recipe>> recipeSpecifications = new ArrayList<>();
@@ -55,6 +58,9 @@ public class RecipeService {
         }
         if (mealType != null) {
             recipeSpecifications.add(RecipeSpecification.hasMealType(mealType));
+        }
+        if (userId != null) {
+            recipeSpecifications.add(RecipeSpecification.isFavourite(userId));
         }
         Specification<Recipe> finalSpec = Specification.allOf(recipeSpecifications);
 
@@ -88,7 +94,7 @@ public class RecipeService {
     }
 
     @Transactional
-    public RecipeDTO addIngredient(Long recipeId, Long ingredientId, double quantity) {
+    public Recipe addIngredient(Long recipeId, Long ingredientId, double quantity) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", recipeId));
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
@@ -99,12 +105,11 @@ public class RecipeService {
         recipeIngredient.setQuantity(quantity);
 
         recipe.addIngredient(recipeIngredient);
-        Recipe savedRecipe = recipeRepository.save(recipe);
-        return recipeMapper.toDTO(savedRecipe);
+        return recipeRepository.save(recipe);
     }
 
     @Transactional
-    public RecipeDTO removeIngredient(Long recipeId, Long ingredientId) {
+    public Recipe removeIngredient(Long recipeId, Long ingredientId) {
         Recipe recipe = findById(recipeId);
 
         RecipeIngredient recipeIngredient = recipe.getIngredients().stream()
@@ -114,8 +119,7 @@ public class RecipeService {
 
         recipe.removeIngredient(recipeIngredient);
 
-        Recipe savedRecipe = recipeRepository.save(recipe);
-        return recipeMapper.toDTO(savedRecipe);
+        return recipeRepository.save(recipe);
     }
 
     public List<RecipeIngredientDTO> findAllIngredients(Long recipeId) {
@@ -150,5 +154,27 @@ public class RecipeService {
         Long randomId = recipeIds.get(ThreadLocalRandom.current().nextInt(recipeIds.size()));
         return recipeRepository.findByIdWithIngredients(randomId)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", randomId));
+    }
+
+    @Transactional
+    public void addFavourite(Long recipeId, Long userId) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", recipeId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        user.addFavouriteRecipe(recipe);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void removeFavourite(Long recipeId, Long userId) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", recipeId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        user.removeFavouriteRecipe(recipe);
+        userRepository.save(user);
     }
 }

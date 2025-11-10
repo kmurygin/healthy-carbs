@@ -1,6 +1,5 @@
 package org.kmurygin.healthycarbs.user;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
@@ -15,9 +14,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -138,4 +139,19 @@ public class UserService {
         userRepository.save(user);
         logger.info("User {} changed password", username);
     }
+
+    @Transactional(readOnly = true)
+    public Set<Long> getFavouriteRecipesIds() {
+        User user = getCurrentUser();
+        return userRepository.findFavouriteRecipeIdsByUserId(user.getId());
+    }
+
+    public User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof User user) {
+            return user;
+        }
+        return null;
+    }
+
 }
