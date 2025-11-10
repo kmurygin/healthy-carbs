@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, effect, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, Signal, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute, RouterModule} from '@angular/router';
 import {RecipeService} from "@core/services/recipe/recipe.service";
@@ -7,6 +7,7 @@ import {catchError, EMPTY, map, of} from 'rxjs';
 import {toSignal} from "@angular/core/rxjs-interop";
 import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
 import {formatEnum, getDietTagClasses, getDietTagIconClasses, getMealTagClasses} from "@shared/utils";
+import type {MacroInfo} from "@features/recipes-list/recipes-list.types";
 
 interface RecipeState {
   recipe: RecipeDto | null;
@@ -30,7 +31,7 @@ export class RecipeComponent {
   readonly mealTagClasses = computed(() => {
     return getMealTagClasses('sm')
   });
-  readonly macros = computed(() => {
+  readonly macros = computed<MacroInfo[]>(() => {
     const totals = this.totals();
     return [
       {
@@ -86,6 +87,13 @@ export class RecipeComponent {
   });
   readonly dietIconClasses = computed(() => {
     return getDietTagIconClasses(this.recipe()?.dietType);
+  });
+  readonly instructionSteps = computed<string[]>(() => {
+    const trimmedInstructions = this.recipe()?.instructions?.trim() ?? '';
+    return trimmedInstructions
+      .split(/\r?\n+/)
+      .map(line => line.trim().replace(/^\d+\.\s*/, ''))
+      .filter(line => line.length > 0);
   });
   readonly errorMessage = computed(() => this.state().error);
   readonly isLoading = computed(() => this.state().loading);
