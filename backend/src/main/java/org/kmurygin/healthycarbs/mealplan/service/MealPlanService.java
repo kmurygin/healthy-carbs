@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import org.kmurygin.healthycarbs.auth.AuthenticationService;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealPlanGeneratedEvent;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -103,8 +105,17 @@ public class MealPlanService {
     }
 
     public MealPlan findById(Long id) {
-        return mealPlanRepository.findById(id)
+        User user = authenticationService.getCurrentUser();
+        MealPlan mealPlan = mealPlanRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
+
+        if (!Objects.equals(mealPlan.getUser().getId(), user.getId())) {
+            throw new ForbiddenException(
+                    "MealPlan with id %d is not owned by user %s".formatted(id, user.getUsername())
+            );
+        }
+
+        return mealPlan;
     }
 
     private Genome randomCandidate(DietType dietType) {

@@ -70,6 +70,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), req, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> forbidden(ForbiddenException ex, HttpServletRequest req) {
+        return buildErrorResponse(ex.getMessage(), req, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> accessDenied(AccessDeniedException ex, HttpServletRequest req) {
         return buildErrorResponse("Access denied", req, HttpStatus.FORBIDDEN);
