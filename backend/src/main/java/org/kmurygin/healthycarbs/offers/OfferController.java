@@ -35,10 +35,14 @@ public class OfferController {
     @PostMapping
     public ResponseEntity<ApiResponse<OfferDTO>> create(@Valid @RequestBody OfferDTO offerDTO) {
         Offer offer = offerService.create(
-                offerMapper.toEntity(offerDTO)
+                offerMapper.toEntity(offerDTO),
+                offerDTO.getMealPlanTemplateId()
         );
-        return ApiResponses.success(HttpStatus.CREATED,
-                offerMapper.toDTO(offer), "Offer created successfully");
+        return ApiResponses.success(
+                HttpStatus.CREATED,
+                offerMapper.toDTO(offer),
+                "Offer created successfully"
+        );
     }
 
     @PutMapping("/{id}")
@@ -46,11 +50,13 @@ public class OfferController {
             @PathVariable Long id,
             @Valid @RequestBody OfferDTO offerDTO
     ) {
-        offerDTO.setId(id);
-        Offer offer = offerService.update(id, offerMapper.toEntity(offerDTO));
+        Offer offer = offerService.update(
+                id,
+                offerMapper.toEntity(offerDTO),
+                offerDTO.getMealPlanTemplateId()
+        );
         return ApiResponses.success(offerMapper.toDTO(offer));
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
