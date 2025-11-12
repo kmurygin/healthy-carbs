@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.payments.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.kmurygin.healthycarbs.user.User;
 
 import java.util.Objects;
 
@@ -28,6 +29,10 @@ public class Payment {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", unique = true)
     private Order order;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Override
     public final boolean equals(Object o) {

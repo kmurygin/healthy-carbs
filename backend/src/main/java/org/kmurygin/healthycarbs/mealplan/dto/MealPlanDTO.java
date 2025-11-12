@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.kmurygin.healthycarbs.mealplan.MealPlanSource;
 import org.kmurygin.healthycarbs.user.dto.UserDTO;
 
 import java.time.Instant;
@@ -22,4 +23,5 @@ public class MealPlanDTO {
     private double totalProtein;
     private double totalFat;
     private Instant createdAt;
+    private MealPlanSource source;
 }

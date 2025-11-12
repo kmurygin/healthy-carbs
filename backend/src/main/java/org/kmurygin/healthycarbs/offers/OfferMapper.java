@@ -4,8 +4,11 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface OfferMapper {
+    @Mapping(source = "mealPlanTemplate.id", target = "mealPlanTemplateId")
+    @Mapping(source = "mealPlanTemplate.name", target = "mealPlanTemplateName")
     OfferDTO toDTO(Offer offer);
 
+    @Mapping(target = "mealPlanTemplate", ignore = true)
     Offer toEntity(OfferDTO dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

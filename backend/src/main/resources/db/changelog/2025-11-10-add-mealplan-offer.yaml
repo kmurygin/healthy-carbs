@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-mealplan-offer
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE IF NOT EXISTS meal_plan_templates (
+              id BIGSERIAL PRIMARY KEY,
+              name VARCHAR(255) NOT NULL UNIQUE,
+              description VARCHAR(255),
+              total_calories DOUBLE PRECISION,
+              total_carbs DOUBLE PRECISION,
+              total_protein DOUBLE PRECISION,
+              total_fat DOUBLE PRECISION
+              );
+              
+              CREATE TABLE IF NOT EXISTS meal_plan_template_days_link (
+              meal_plan_template_id BIGINT NOT NULL,
+              meal_plan_day_id BIGINT NOT NULL,
+              
+              PRIMARY KEY (meal_plan_template_id, meal_plan_day_id),
+              
+              CONSTRAINT fk_template_link_template
+              FOREIGN KEY (meal_plan_template_id)
+              REFERENCES meal_plan_templates(id),
+              
+              CONSTRAINT fk_template_link_day
+              FOREIGN KEY (meal_plan_day_id)
+              REFERENCES meal_plan_days(id)
+              );
+              
+              ALTER TABLE offers
+              ADD COLUMN meal_plan_template_id BIGINT,
+              ADD COLUMN duration_in_days INT;
+              
+              ALTER TABLE offers
+              ADD CONSTRAINT fk_offers_template
+              FOREIGN KEY (meal_plan_template_id)
+              REFERENCES meal_plan_templates(id);
+              
+              ALTER TABLE offers
+              ADD CONSTRAINT uk_offers_meal_plan_template
+              UNIQUE (meal_plan_template_id);

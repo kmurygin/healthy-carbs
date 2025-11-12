@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-user-to-payments
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE payments
+              ADD COLUMN user_id BIGINT;
+              
+              ALTER TABLE payments
+              ADD CONSTRAINT fk_payments_user
+              FOREIGN KEY (user_id)
+              REFERENCES users (id)
+              ON DELETE CASCADE;

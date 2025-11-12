@@ -16,4 +16,7 @@ public class OfferDTO {
     private int price;
     private String currency;
     private Set<String> features;
+    private int durationInDays;
+    private Long mealPlanTemplateId;
+    private String mealPlanTemplateName;
 }

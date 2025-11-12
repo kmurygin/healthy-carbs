@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.proxy.HibernateProxy;
+import org.kmurygin.healthycarbs.mealplan.MealPlanSource;
 import org.kmurygin.healthycarbs.user.User;
 
 import java.time.Instant;
@@ -48,6 +49,10 @@ public class MealPlan {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source", nullable = false)
+    private MealPlanSource source;
 
     @Override
     public final boolean equals(Object o) {

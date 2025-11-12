@@ -1,49 +1,46 @@
-package org.kmurygin.healthycarbs.payments.model;
+package org.kmurygin.healthycarbs.offers;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.mealplan.model.MealPlanDay;
 
-import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "meal_plan_templates")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Order {
+@Builder(toBuilder = true)
+@ToString(exclude = {"days"})
+public class MealPlanTemplate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "local_order_id", nullable = false, unique = true)
-    private String localOrderId;
+    @Column(nullable = false, unique = true)
+    private String name;
 
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "total_amount", nullable = false)
-    private Integer totalAmount;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "meal_plan_template_days_link",
+            joinColumns = @JoinColumn(name = "meal_plan_template_id"),
+            inverseJoinColumns = @JoinColumn(name = "meal_plan_day_id")
+    )
+    @Builder.Default
+    private List<MealPlanDay> days = new ArrayList<>();
 
-    @Column(name = "currency", nullable = false, length = 8)
-    private String currency;
-
-    @Column(name = "created_at", nullable = false)
-    private OffsetDateTime createdAt;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @PrePersist
-    void prePersist() {
-        if (createdAt == null) createdAt = OffsetDateTime.now();
-    }
+    private Double totalCalories;
+    private Double totalCarbs;
+    private Double totalProtein;
+    private Double totalFat;
 
     @Override
     public final boolean equals(Object o) {
@@ -52,8 +49,8 @@ public class Order {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        Order order = (Order) o;
-        return getId() != null && Objects.equals(getId(), order.getId());
+        MealPlanTemplate that = (MealPlanTemplate) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
     }
 
     @Override
@@ -61,4 +58,3 @@ public class Order {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
-

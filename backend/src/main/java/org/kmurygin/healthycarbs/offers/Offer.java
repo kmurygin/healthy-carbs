@@ -27,4 +27,10 @@ public class Offer {
     @Column(name = "feature")
     private Set<String> features;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "meal_plan_template_id", referencedColumnName = "id")
+    private MealPlanTemplate mealPlanTemplate;
+
+    private int durationInDays;
+
 }
