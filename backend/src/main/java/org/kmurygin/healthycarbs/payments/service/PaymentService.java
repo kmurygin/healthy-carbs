@@ -2,32 +2,40 @@ package org.kmurygin.healthycarbs.payments.service;
 
 import lombok.AllArgsConstructor;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
+import org.kmurygin.healthycarbs.offers.MealPlanTemplateService;
+import org.kmurygin.healthycarbs.payments.dto.PaymentStatus;
 import org.kmurygin.healthycarbs.payments.dto.PaymentStatusResponse;
 import org.kmurygin.healthycarbs.payments.model.Order;
 import org.kmurygin.healthycarbs.payments.model.Payment;
+import org.kmurygin.healthycarbs.payments.repository.OrderRepository;
 import org.kmurygin.healthycarbs.payments.repository.PaymentRepository;
+import org.kmurygin.healthycarbs.user.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final OrderRepository orderRepository;
+    private final MealPlanTemplateService mealPlanTemplateService;
+    private final UserService userService;
 
-    public void setStatus(String localOrderId, String status) {
-        if (localOrderId == null || localOrderId.isBlank()) return;
-        String newStatus = (status == null || status.isBlank()) ? "PENDING" : status;
-        paymentRepository.findByLocalOrderId(localOrderId)
-                .map(existing -> {
-                    existing.setStatus(newStatus);
-                    return paymentRepository.save(existing);
-                })
-                .orElseGet(() -> paymentRepository.save(
-                        Payment.builder()
-                                .localOrderId(localOrderId)
-                                .status(newStatus)
-                                .build()
-                ));
+    @Transactional
+    public void updatePaymentStatus(String localOrderId, PaymentStatus newStatus) {
+        Payment payment = paymentRepository.findByLocalOrderId(localOrderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", "localOrderId", localOrderId));
+
+        PaymentStatus oldStatus = payment.getStatus();
+
+        if (oldStatus != PaymentStatus.COMPLETED && newStatus == PaymentStatus.COMPLETED) {
+            Order order = orderRepository.findByLocalOrderId(localOrderId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Order", "localOrderId", localOrderId));
+            mealPlanTemplateService.activateMealPlanForOrder(order);
+        }
+
+        payment.setStatus(newStatus);
     }
 
     public void attachOrder(String localOrderId, Order order) {
@@ -39,8 +47,9 @@ public class PaymentService {
                 })
                 .orElseGet(() -> paymentRepository.save(
                         Payment.builder()
+                                .user(userService.getCurrentUser())
                                 .localOrderId(localOrderId)
-                                .status("PENDING")
+                                .status(PaymentStatus.PENDING)
                                 .order(order)
                                 .build()
                 ));

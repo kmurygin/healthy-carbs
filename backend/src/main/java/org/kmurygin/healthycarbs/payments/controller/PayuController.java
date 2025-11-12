@@ -8,8 +8,12 @@ import org.kmurygin.healthycarbs.payments.model.Order;
 import org.kmurygin.healthycarbs.payments.service.OrderService;
 import org.kmurygin.healthycarbs.payments.service.PaymentService;
 import org.kmurygin.healthycarbs.payments.service.PayuClient;
+import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.UserService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +27,9 @@ public class PayuController {
     private final PaymentService paymentService;
     private final OrderService orderService;
     private final PayuClient payuClient;
+    private final UserService userService;
+
+    private static final Logger logger = LoggerFactory.getLogger(PayuController.class);
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<InitPaymentResponse>> create(
@@ -30,14 +37,14 @@ public class PayuController {
             HttpServletRequest httpServletRequest
     ) {
         String ip = httpServletRequest.getRemoteAddr();
-
-        Order order = orderService.upsertFromInit(initPaymentRequest);
+        User currentUser = userService.getCurrentUser();
+        Order order = orderService.processPaymentRequest(initPaymentRequest, currentUser);
         paymentService.attachOrder(initPaymentRequest.localOrderId(), order);
 
         CreateOrderResponse response = payuClient.createOrder(initPaymentRequest, ip);
-        paymentService.setStatus(initPaymentRequest.localOrderId(), "PENDING");
+        paymentService.updatePaymentStatus(initPaymentRequest.localOrderId(), PaymentStatus.PENDING);
 
-        var data = new InitPaymentResponse(response.orderId(), response.redirectUri());
+        InitPaymentResponse data = new InitPaymentResponse(response.orderId(), response.redirectUri());
         return ApiResponses.success(
                 HttpStatus.CREATED,
                 data,
@@ -51,11 +58,14 @@ public class PayuController {
             @RequestBody JsonNode body
     ) {
         JsonNode orderNode = body.get("order");
+        logger.info("[PayU]Payment notification: {}", body);
         if (orderNode != null) {
             String extOrderId = orderNode.path("extOrderId").asText(null);
-            String status = orderNode.path("status").asText("PENDING");
+            PaymentStatus status = PaymentStatus.valueOf(orderNode.path("status")
+                    .asText(String.valueOf(PaymentStatus.PENDING)));
+            logger.info("[PayU]Payment notification status: {}", status);
             if (extOrderId != null) {
-                paymentService.setStatus(extOrderId, status);
+                paymentService.updatePaymentStatus(extOrderId, status);
             }
         }
         return ApiResponses.success(HttpStatus.OK, null, "OK");
@@ -63,14 +73,14 @@ public class PayuController {
 
     @GetMapping("/status/{localOrderId}")
     public ResponseEntity<ApiResponse<PaymentStatusResponse>> status(@PathVariable String localOrderId) {
-        var data = paymentService.getStatus(localOrderId);
+        PaymentStatusResponse data = paymentService.getStatus(localOrderId);
         return ApiResponses.success(HttpStatus.OK, data, "OK");
     }
 
     @GetMapping("/order/{localOrderId}")
     public ResponseEntity<ApiResponse<OrderResponse>> order(@PathVariable String localOrderId) {
-        String status = paymentService.getStatus(localOrderId).status();
-        var data = orderService.getByLocalOrderId(localOrderId, status);
+        PaymentStatus status = paymentService.getStatus(localOrderId).status();
+        OrderResponse data = orderService.getByLocalOrderId(localOrderId, status);
         return ApiResponses.success(HttpStatus.OK, data, "OK");
     }
 }

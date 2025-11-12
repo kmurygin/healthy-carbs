@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.payments.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.kmurygin.healthycarbs.payments.dto.PaymentStatus;
 import org.kmurygin.healthycarbs.user.User;
 
 import java.util.Objects;
@@ -23,8 +24,9 @@ public class Payment {
     @Column(name = "local_order_id", nullable = false, unique = true)
     private String localOrderId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 64)
-    private String status;
+    private PaymentStatus status;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", unique = true)
