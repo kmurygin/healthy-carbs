@@ -1,8 +1,10 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import org.kmurygin.healthycarbs.auth.AuthenticationService;
+import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealPlanGeneratedEvent;
+import org.kmurygin.healthycarbs.mealplan.MealPlanSource;
 import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.core.GeneticAlgorithm;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.core.Genome;
@@ -83,11 +85,13 @@ public class MealPlanService {
         mealPlan.setDays(transientMealPlanDays);
         updateWeeklyTotals(mealPlan);
 
+        mealPlan.setSource(MealPlanSource.GENERATED);
+
         return savePlanAndGenerateShoppingList(mealPlan);
     }
 
     @Transactional
-    protected MealPlan savePlanAndGenerateShoppingList(MealPlan mealPlan) {
+    public MealPlan savePlanAndGenerateShoppingList(MealPlan mealPlan) {
         MealPlan saved = mealPlanRepository.save(mealPlan);
         applicationEventPublisher.publishEvent(new MealPlanGeneratedEvent(saved));
         return saved;
@@ -96,6 +100,11 @@ public class MealPlanService {
     public List<MealPlan> getMealPlansHistory() {
         User user = authenticationService.getCurrentUser();
         return mealPlanRepository.findByUser(user);
+    }
+
+    public MealPlan findById(Long id) {
+        return mealPlanRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
     }
 
     private Genome randomCandidate(DietType dietType) {
