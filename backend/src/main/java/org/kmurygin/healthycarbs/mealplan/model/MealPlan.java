@@ -32,14 +32,23 @@ public class MealPlan {
     @JsonBackReference
     private User user;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "meal_plan_days_link",
-            joinColumns = @JoinColumn(name = "meal_plan_id"),
-            inverseJoinColumns = @JoinColumn(name = "meal_plan_day_id")
-    )
+    @OneToMany(mappedBy = "mealPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<MealPlanDay> days = new ArrayList<>();
+
+    public void addDay(MealPlanDay day) {
+        if (day == null) return;
+        day.setMealPlan(this);
+        this.days.add(day);
+    }
+
+    public void setDays(List<MealPlanDay> days) {
+        this.days.forEach(d -> d.setMealPlan(null));
+        this.days.clear();
+        if (days != null) {
+            days.forEach(this::addDay);
+        }
+    }
 
     private Double totalCalories;
     private Double totalCarbs;

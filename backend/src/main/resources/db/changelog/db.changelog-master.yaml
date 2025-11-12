@@ -83,3 +83,6 @@ databaseChangeLog:
   - include:
       file: 2025-11-11-add-user-to-payments.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2025-11-12-meal-plan-fix.yaml
+      relativeToChangelogFile: true
