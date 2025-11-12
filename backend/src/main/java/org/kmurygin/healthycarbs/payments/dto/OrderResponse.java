@@ -8,7 +8,7 @@ public record OrderResponse(
         int totalAmount,
         String currency,
         OffsetDateTime createdAt,
-        String paymentStatus
+        PaymentStatus paymentStatus
 ) {
 }
 

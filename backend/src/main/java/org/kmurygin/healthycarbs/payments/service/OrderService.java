@@ -4,37 +4,42 @@ import lombok.AllArgsConstructor;
 import org.kmurygin.healthycarbs.payments.config.PayuProperties;
 import org.kmurygin.healthycarbs.payments.dto.InitPaymentRequest;
 import org.kmurygin.healthycarbs.payments.dto.OrderResponse;
+import org.kmurygin.healthycarbs.payments.dto.PaymentStatus;
 import org.kmurygin.healthycarbs.payments.model.Order;
-import org.kmurygin.healthycarbs.payments.repository.PaymentOrderRepository;
+import org.kmurygin.healthycarbs.payments.repository.OrderRepository;
+import org.kmurygin.healthycarbs.user.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
 public class OrderService {
 
-    private final PaymentOrderRepository orderRepository;
-    private final PayuProperties props;
+    private final OrderRepository orderRepository;
+    private final PayuProperties payuProperties;
 
-    public Order upsertFromInit(InitPaymentRequest init) {
+    @Transactional
+    public Order processPaymentRequest(InitPaymentRequest init, User user) {
         String localOrderId = init.localOrderId();
         return orderRepository.findByLocalOrderId(localOrderId)
                 .map(existing -> {
                     existing.setDescription(init.description());
                     existing.setTotalAmount(init.totalAmount());
-                    existing.setCurrency(props.currency());
+                    existing.setCurrency(payuProperties.currency());
                     return orderRepository.save(existing);
                 })
                 .orElseGet(() -> orderRepository.save(
                         Order.builder()
+                                .user(user)
                                 .localOrderId(localOrderId)
                                 .description(init.description())
                                 .totalAmount(init.totalAmount())
-                                .currency(props.currency())
+                                .currency(payuProperties.currency())
                                 .build()
                 ));
     }
 
-    public OrderResponse getByLocalOrderId(String localOrderId, String paymentStatus) {
+    public OrderResponse getByLocalOrderId(String localOrderId, PaymentStatus paymentStatus) {
         Order order = orderRepository.findByLocalOrderId(localOrderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found: " + localOrderId));
         return new OrderResponse(
