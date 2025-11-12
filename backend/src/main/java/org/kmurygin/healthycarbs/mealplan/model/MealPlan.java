@@ -35,21 +35,6 @@ public class MealPlan {
     @OneToMany(mappedBy = "mealPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<MealPlanDay> days = new ArrayList<>();
-
-    public void addDay(MealPlanDay day) {
-        if (day == null) return;
-        day.setMealPlan(this);
-        this.days.add(day);
-    }
-
-    public void setDays(List<MealPlanDay> days) {
-        this.days.forEach(d -> d.setMealPlan(null));
-        this.days.clear();
-        if (days != null) {
-            days.forEach(this::addDay);
-        }
-    }
-
     private Double totalCalories;
     private Double totalCarbs;
     private Double totalProtein;
@@ -62,6 +47,20 @@ public class MealPlan {
     @Enumerated(EnumType.STRING)
     @Column(name = "source", nullable = false)
     private MealPlanSource source;
+
+    public void addDay(MealPlanDay day) {
+        if (day == null) return;
+        day.setMealPlan(this);
+        this.days.add(day);
+    }
+
+    public void setDays(List<MealPlanDay> days) {
+        this.days.forEach(day -> day.setMealPlan(null));
+        this.days.clear();
+        if (days != null) {
+            days.forEach(this::addDay);
+        }
+    }
 
     @Override
     public final boolean equals(Object o) {
