@@ -54,6 +54,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'mealplan/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/mealplan/mealplan/mealplan.component').then(
+        (m) => m.MealPlanComponent,
+      ),
+  },
+  {
     path: 'mealplan-history',
     canMatch: [authGuard],
     loadComponent: () =>

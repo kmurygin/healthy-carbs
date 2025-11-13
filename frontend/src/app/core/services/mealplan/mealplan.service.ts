@@ -35,4 +35,19 @@ export class MealPlanService {
         {responseType: 'blob',});
   }
 
+  getById(mealPlanId: number): Observable<MealPlanDto> {
+    return this.httpClient
+      .get<ApiResponse<MealPlanDto>>(
+        `${ApiEndpoints.MealPlan.mealplan}/${mealPlanId}`,
+      )
+      .pipe(
+        map((resp) => {
+          if (!resp.data) {
+            throw new Error(`Meal plan with id ${mealPlanId} not found.`);
+          }
+          return resp.data;
+        }),
+      );
+  }
+
 }

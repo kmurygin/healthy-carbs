@@ -1,5 +1,7 @@
-import type {MealPlanDto} from "../../core/models/dto/mealplan.dto";
-import type {MealPlanRecipeDto} from "../../core/models/dto/mealplan-recipe.dto";
+import type {MealPlanDto} from "@core/models/dto/mealplan.dto";
+import type {MealPlanRecipeDto} from "@core/models/dto/mealplan-recipe.dto";
+import type {MealPlanSource} from "@core/models/enum/mealplan-source.enum";
+import type {RecipeDto} from "@core/models/dto/recipe.dto";
 
 export type Macros = Readonly<{
   calories: number;
@@ -23,6 +25,7 @@ export type MealPlanRow = Readonly<{
   idx: number;
   id: number;
   daysCount: number;
+  source: MealPlanSource;
   total: Macros;
   createdAt: string;
   plan: MealPlanDto;
@@ -70,6 +73,7 @@ export function toRow(mealPlan: MealPlanDto, idx: number): MealPlanRow {
   return {
     idx,
     id: mealPlan.id,
+    source: mealPlan.source,
     daysCount,
     total,
     createdAt: mealPlan.createdAt,
@@ -86,3 +90,38 @@ export function buildRows(mealPlans: readonly MealPlanDto[]): readonly MealPlanR
     .map(toRow);
 }
 
+export async function downloadBlob(blobPromise: Promise<Blob>, filename: string) {
+  const blob = await blobPromise;
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+export type NutritionalInformation = Readonly<{
+  calories: number;
+  carbs: number;
+  protein: number;
+  fat: number;
+}>;
+
+export function getMacrosForRecipe(
+  recipe: RecipeDto | undefined | null,
+): NutritionalInformation {
+  const defaultMacros = {calories: 0, carbs: 0, protein: 0, fat: 0};
+
+  if (!recipe) {
+    return defaultMacros;
+  }
+
+  return {
+    calories: Math.round(recipe.calories),
+    carbs: Math.round(recipe.carbs),
+    protein: Math.round(recipe.protein),
+    fat: Math.round(recipe.fat),
+  };
+}
