@@ -44,11 +44,6 @@ export class DashboardComponent {
       image: 'assets/images/6325254.jpg'
     },
     {
-      name: 'Meal plans history',
-      route: 'mealplan-history',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
       name: 'Postępy i statystyki',
       route: 'postepy',
       image: 'assets/images/6325254.jpg'
@@ -56,11 +51,6 @@ export class DashboardComponent {
     {
       name: 'Recipes',
       route: 'recipes',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Ulubione przepisy',
-      route: 'ulubione',
       image: 'assets/images/6325254.jpg'
     },
     {

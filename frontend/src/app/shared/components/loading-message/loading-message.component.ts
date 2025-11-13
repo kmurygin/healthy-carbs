@@ -6,10 +6,9 @@ import {ChangeDetectionStrategy, Component, input} from '@angular/core';
   template: `
     <div class="text-xl font-bold tracking-tight text-gray-900 leading-tight text-center p-16">
       <i class="fa-solid fa-spinner fa-spin"></i>
-      @if (  message() !== null ) {
+      @if (message() !== null) {
         {{ message() }}
-      }
-      @else {
+      } @else {
         Loading, please wait...
       }
     </div>
