@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import confetti from "canvas-confetti";
 
 @Injectable({
@@ -16,7 +16,7 @@ export class ConfettiService {
       void confetti({
         angle: 60,
         spread: 70,
-        origin: { x: 0 },
+        origin: {x: 0},
         colors: colors,
         particleCount: (timeLeft / duration) * 10,
       });
@@ -24,7 +24,7 @@ export class ConfettiService {
       void confetti({
         angle: 120,
         spread: 70,
-        origin: { x: 1 },
+        origin: {x: 1},
         colors: colors,
         particleCount: (timeLeft / duration) * 10,
       });

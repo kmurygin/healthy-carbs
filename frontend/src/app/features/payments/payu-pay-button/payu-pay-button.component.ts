@@ -1,17 +1,24 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, output, signal} from '@angular/core';
-import {PayuService} from '../../../core/services/payu/payu.service';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
+import {PayuService} from '@core/services/payu/payu.service';
 import type {InitPaymentRequest} from '../dto/init-payment-request';
 import {take} from 'rxjs';
 import {saveLastLocalOrderId} from "../utils";
 import type {Product} from "../dto/product";
-import {ErrorMessageComponent} from "../../../shared/components/error-message/error-message.component";
+import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
+import {setError} from "@shared/utils";
 
 @Component({
   selector: 'app-payu-pay-button',
   templateUrl: './payu-pay-button.component.html',
-  imports: [
-    ErrorMessageComponent
-  ],
+  imports: [ErrorMessageComponent],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PayuPayButtonComponent {

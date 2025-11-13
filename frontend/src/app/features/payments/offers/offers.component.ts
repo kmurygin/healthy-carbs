@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal} from '@angular/core';
 import type {Offer} from '../dto/offer';
-import {ErrorMessageComponent} from "../../../shared/components/error-message/error-message.component";
-import {InfoMessageComponent} from "../../../shared/components/info-message/info-message.component";
-import {OfferService} from "../../../core/services/offer/offer.service";
+import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
+import {InfoMessageComponent} from "@shared/components/info-message/info-message.component";
+import {OfferService} from "@core/services/offer/offer.service";
 import {OfferCardComponent} from "../offer-card/offer-card.component";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
@@ -12,8 +12,8 @@ type ViewState = 'LOADING' | 'ERROR' | 'EMPTY' | 'LOADED';
   selector: 'app-offers',
   imports: [
     ErrorMessageComponent,
-    InfoMessageComponent,
-    OfferCardComponent
+    OfferCardComponent,
+    InfoMessageComponent
   ],
   templateUrl: './offers.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

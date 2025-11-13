@@ -3,12 +3,13 @@ import {ActivatedRoute, RouterLink} from '@angular/router';
 import {DecimalPipe} from '@angular/common';
 import type {Subscription} from 'rxjs';
 import {switchMap, timer} from 'rxjs';
-import {PayuService} from '../../../core/services/payu/payu.service';
+import {PayuService} from '@core/services/payu/payu.service';
 import {PaymentStatus} from '../dto/payment-status.enum';
 import {resolveLocalOrderId, safeRemoveLastLocalOrderId} from '../utils';
 import type {Order} from '../dto/order';
-import {ConfettiService} from "../../../core/services/confetti/confetti.service";
-import {statusToViewState, viewConfig, ViewState} from "../payment-view.config";
+import {ConfettiService} from "@core/services/confetti/confetti.service";
+import {statusToViewState, viewConfig} from "../payment-view.config";
+import type {ViewState} from "../payment-view.config";
 
 @Component({
   selector: 'app-payment-result',
@@ -28,7 +29,6 @@ export class PaymentResultComponent {
     this.status() === PaymentStatus.CANCELED
   );
   readonly paidAmount = computed(() => (this.order()?.totalAmount ?? 0) / 100);
-  readonly viewData = computed(() => viewConfig[this.viewState()]);
   private readonly confettiService = inject(ConfettiService);
   private readonly payuService = inject(PayuService);
   private readonly route = inject(ActivatedRoute);
@@ -37,6 +37,7 @@ export class PaymentResultComponent {
     if (!this.localOrderId()) return 'INVALID_ORDER';
     return statusToViewState[this.status()];
   });
+  readonly viewData = computed(() => viewConfig[this.viewState()]);
   private readonly pollIntervalMs = 1500;
 
   constructor() {

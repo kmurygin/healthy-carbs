@@ -85,7 +85,6 @@ export class RecipeListComponent {
     {value: 'favouritesCount,asc', label: 'Least Popular'},
   ];
   readonly startIndex = computed(() => (this.pageNumber() - INITIAL_PAGE_NUMBER) * this.pageSize());
-  readonly endIndex = computed(() => this.startIndex() + this.pageItems().length);
   private readonly recipeService = inject(RecipeService);
   private readonly refetchTrigger = signal(0);
   private readonly recipeSearchParams = computed<RecipeSearchParams>(() => {
@@ -126,6 +125,7 @@ export class RecipeListComponent {
   readonly isLoading = computed(() => this.state().loading);
   readonly errorMessage = computed(() => this.state().error);
   readonly pageItems = computed(() => this.state().page.content);
+  readonly endIndex = computed(() => this.startIndex() + this.pageItems().length);
   readonly totalRecipeCount = computed(() => this.state().page.totalElements);
   readonly totalPages = computed(() => {
     return Math.max(INITIAL_PAGE_NUMBER, this.state().page.totalPages)
