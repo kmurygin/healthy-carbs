@@ -24,7 +24,7 @@ export class DashboardComponent {
   isSmallScreen = window.innerWidth < 768;
   categories = [
     {
-      name: 'Meal plan',
+      name: 'Latest meal plan',
       route: 'mealplan',
       image: 'assets/images/6325254.jpg'
     },
@@ -34,28 +34,8 @@ export class DashboardComponent {
       image: 'assets/images/6325254.jpg'
     },
     {
-      name: 'Pomiary obwodów',
-      route: 'plan_zywieniowy',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Cele żywieniowe',
-      route: 'cele',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Postępy i statystyki',
-      route: 'postepy',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
       name: 'Recipes',
       route: 'recipes',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Baza wiedzy',
-      route: 'wiedza',
       image: 'assets/images/6325254.jpg'
     },
     {
