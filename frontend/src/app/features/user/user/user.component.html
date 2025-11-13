@@ -1,41 +1,20 @@
-<section
-  class="mx-auto max-w-3xl bg-white p-6"
->
-  <div class="flex flex-wrap gap-4">
-
-    <a
-      [ngClass]="getButtonClasses('edit_user_details')"
-      routerLink="/user/edit_user_details"
-    >
-      <i aria-hidden="true" class="fa-solid fa-user"></i>
-      Edit user details
-    </a>
-
-    <a
-      [ngClass]="getButtonClasses('change_password')"
-      routerLink="/user/change_password"
-    >
-      <i aria-hidden="true" class="fa-solid fa-lock"></i>
-      Edit password
-    </a>
-
-    <a
-      [ngClass]="getButtonClasses('my_subscription')"
-      routerLink="/user/my_subscription"
-    >
-      <i aria-hidden="true" class="fa-solid fa-clipboard-list"></i>
-      My subscription
-    </a>
-
-    <a
-      [ngClass]="getButtonClasses('history')"
-      routerLink="/user/history"
-    >
-      <i aria-hidden="true" class="fa-solid fa-clock-rotate-left"></i>
-      History
-    </a>
-
-  </div>
+<section class="mx-auto max-w-7xl bg-white p-6">
+  <nav class="flex flex-wrap gap-4 justify-center">
+    @for (item of items; track item.path) {
+      <a
+        ariaCurrentWhenActive="page"
+        class="inline-flex items-center gap-2 rounded-md border border-gray-200
+               px-4 py-2 text-sm font-medium transition w-42 justify-center
+               text-gray-700 focus:outline-none
+               focus-visible:ring-2 focus-visible:ring-emerald-500"
+        routerLink="{{ item.path }}"
+        routerLinkActive="bg-emerald-600 text-white shadow aria-current:page"
+      >
+        <i [class]="item.iconClass" aria-hidden="true"></i>
+        <span class="font-medium">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
 </section>
 
-<router-outlet></router-outlet>
+<router-outlet/>

@@ -1,40 +1,41 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {NavigationEnd, Router, RouterLink, RouterOutlet} from "@angular/router";
-import {filter} from 'rxjs/operators';
-import {NgClass} from "@angular/common";
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+
+type UserMenuItem = Readonly<{
+  path: string;
+  label: string;
+  iconClass: string
+}>;
 
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [
-    RouterLink,
-    RouterOutlet,
-    NgClass
-  ],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './user.component.html',
   styleUrl: './user.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserComponent {
-
-  currentSubPath = '';
-
-  private router = inject(Router);
-
-  constructor() {
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.currentSubPath = event.urlAfterRedirects.split('/user/')[1];
-      });
-  }
-
-  getButtonClasses(path: string) {
-    const active = this.currentSubPath === path;
-    return {
-      'flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium transition w-42 items-center justify-center': true,
-      'border-emerald-600 text-emerald-600 hover:bg-emerald-50': !active,
-      'bg-emerald-600 text-white shadow': active,
-    };
-  }
+  readonly items: UserMenuItem[] = [
+    {
+      path: '/user/edit_user_details',
+      label: 'Edit user details',
+      iconClass: 'fa-solid fa-user'
+    },
+    {
+      path: '/user/change_password',
+      label: 'Edit password',
+      iconClass: 'fa-solid fa-lock'
+    },
+    {
+      path: '/user/payments-history',
+      label: 'Payment history',
+      iconClass: 'fa-solid fa-credit-card'
+    },
+    {
+      path: '/user/mealplan-history',
+      label: 'Mealplan history',
+      iconClass: 'fa-solid fa-utensils'
+    },
+  ];
 }
