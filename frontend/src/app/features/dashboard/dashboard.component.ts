@@ -6,6 +6,12 @@ import {NgOptimizedImage} from "@angular/common";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {faArrowRight} from "@fortawesome/free-solid-svg-icons";
 
+type DashboardCategory = {
+  name: string;
+  route: string;
+  image: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -22,25 +28,30 @@ import {faArrowRight} from "@fortawesome/free-solid-svg-icons";
 export class DashboardComponent {
 
   isSmallScreen = window.innerWidth < 768;
-  categories = [
+  categories: DashboardCategory[] = [
     {
       name: 'Latest meal plan',
-      route: 'mealplan',
+      route: '/mealplan',
+      image: 'assets/images/6325254.jpg'
+    },
+    {
+      name: 'My mealplans',
+      route: '/user/mealplan-history',
       image: 'assets/images/6325254.jpg'
     },
     {
       name: 'Diet profile',
-      route: 'dietary-profile-form',
+      route: '/dietary-profile-form',
       image: 'assets/images/6325254.jpg'
     },
     {
       name: 'Recipes',
-      route: 'recipes',
+      route: '/recipes',
       image: 'assets/images/6325254.jpg'
     },
     {
       name: 'Buy a diet plan',
-      route: 'offers',
+      route: '/offers',
       image: 'assets/images/6325254.jpg'
     }
   ];
@@ -88,5 +99,4 @@ export class DashboardComponent {
   legendPosition: LegendPosition = LegendPosition.Right;
   protected readonly faArrowRight = faArrowRight;
 
-  trackCategory = (_: number, cat: { route: string }) => cat.route;
 }
