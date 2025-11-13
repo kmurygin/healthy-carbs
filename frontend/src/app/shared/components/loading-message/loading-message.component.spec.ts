@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type {ComponentFixture} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { LoadingMessageComponent } from './loading-message.component';
+import {LoadingMessageComponent} from './loading-message.component';
 
 describe('LoadingMessageComponent', () => {
   let component: LoadingMessageComponent;
@@ -10,7 +11,7 @@ describe('LoadingMessageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [LoadingMessageComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(LoadingMessageComponent);
     component = fixture.componentInstance;

@@ -1,6 +1,6 @@
 import type {Routes} from '@angular/router';
-import {authGuard} from './core/guards/auth.guard';
-import {guestGuard} from './core/guards/guest.guard';
+import {authGuard} from '@core/guards/auth.guard';
+import {guestGuard} from '@core/guards/guest.guard';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
@@ -51,6 +51,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/mealplan/mealplan/mealplan.component').then(
         (m) => m.MealPlanComponent
+      ),
+  },
+  {
+    path: 'mealplan/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/mealplan/mealplan/mealplan.component').then(
+        (m) => m.MealPlanComponent,
       ),
   },
   {

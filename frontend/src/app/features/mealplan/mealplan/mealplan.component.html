@@ -1,43 +1,50 @@
 @if (!loading()) {
-  <section class="mx-auto max-w-11/12 md:max-w-11/12 lg:max-w-10/12 px-4 py-8">
-    <div class="text-left">
+  <section class="mx-auto max-w-7xl px-4 py-8">
+    <div class="flex items-center gap-2 flex-wrap text-left">
       <h1
-        class="text-2xl font-bold tracking-tight text-gray-900 leading-tight
-      break-words"
+        class="text-2xl font-bold tracking-tight text-gray-900 leading-tight break-words"
       >
-        Meal Plan for week {{ plan()?.createdAt | date:'longDate' }}
+        @if (plan(); as p) {
+          Meal Plan for week {{ p.createdAt | date: 'longDate' }}
+        } @else {
+          Meal Plan
+        }
       </h1>
+
+      @if (plan(); as p) {
+        <app-source-tag [source]="p.source"/>
+      }
     </div>
 
     <div
       class="mb-3 mt-3 flex flex-col md:flex-row flex-wrap items-start md:items-center justify-start gap-3"
     >
-
       <div
         class="flex flex-wrap items-center gap-3 justify-start md:ml-auto md:justify-end"
       >
-        <!--      @if (!plan()) {-->
-        <button
-          (click)="onGenerate()"
-          [attr.aria-busy]="loading()"
-          [disabled]="loading()"
-          class="rounded-xl border px-4 py-2 font-medium shadow disabled:opacity-60
-          hover:bg-gray-50 transition-colors hover:cursor-pointer"
-          type="button"
-        >
-          {{ loading() ? 'Generating…' : 'Generate meal plan' }}
-        </button>
-        <!--      }-->
+        @if (!mealPlanIdSignal()) {
+          <button
+            (click)="onGenerate()"
+            [attr.aria-busy]="loading()"
+            [disabled]="loading()"
+            class="rounded-xl border px-4 py-2 font-medium shadow disabled:opacity-60
+            hover:bg-gray-50 transition-colors hover:cursor-pointer"
+            type="button"
+          >
+            {{ loading() ? 'Generating…' : 'Generate meal plan' }}
+          </button>
+        }
 
         @if (plan(); as plan) {
           <button
-            (click)="onDownloadShoppingList(plan.id)"
+            (click)="onDownloadShoppingListPdf(plan.id)"
             [attr.aria-busy]="downloadingShoppingListPdf()"
             [disabled]="downloadingShoppingListPdf()"
             aria-label="Download shopping list as PDF"
             class="flex items-center gap-2 rounded-xl px-4 py-2 font-medium
-          shadow disabled:opacity-60 bg-emerald-600 text-white hover:bg-emerald-700
-          transition-colors hover:cursor-pointer"
+            shadow disabled:opacity-60 bg-emerald-600 text-white hover:bg-emerald-700
+            transition-colors hover:cursor-pointer"
+            title="Download shopping list as PDF"
             type="button"
           >
             <i class="fa-solid fa-file-arrow-down"></i>
@@ -53,8 +60,9 @@
             [disabled]="downloadingMealPlanPdf()"
             aria-label="Download meal plan as PDF"
             class="flex items-center gap-2 rounded-xl px-4 py-2 font-medium
-          shadow disabled:opacity-60 bg-emerald-600 text-white hover:bg-emerald-700
-          transition-colors hover:cursor-pointer"
+            shadow disabled:opacity-60 bg-emerald-600 text-white hover:bg-emerald-700
+            transition-colors hover:cursor-pointer"
+            title="Download meal plan as PDF"
             type="button"
           >
             <i class="fa-solid fa-file-arrow-down"></i>
@@ -70,46 +78,75 @@
     @if (errorMessage()) {
       <app-error-message [message]="errorMessage()!"></app-error-message>
     }
-
     @if (!plan() && !loading() && !errorMessage()) {
       <p>
-        Click “Generate meal plan” to create your personalized plan.
+        @if (!plan()) {
+          Meal plan not found or failed to load.
+        } @else {
+          Click “Generate meal plan” to create your personalized plan.
+        }
       </p>
     }
-
     @if (plan()) {
+      @if (totalWeeks() > 1) {
+        <p class="mt-2 text-sm text-gray-600">
+          Showing week
+          <span class="font-medium text-emerald-800">{{ currentWeekIndex() + 1 }}</span>
+          of
+          <span class="font-medium text-emerald-800">{{ totalWeeks() }}</span>
+        </p>
+      }
+
       <nav
         aria-label="Week days"
         class="flex items-center gap-2 rounded-xl bg-gray-100 p-1.5"
         role="tablist"
       >
-        @for (day of days(); track day.dayOfWeek; let i = $index) {
+        @if (totalWeeks() > 1) {
           <button
-            (click)="selectDay(i)"
-            [attr.aria-controls]="'day-panel-' + i"
-            [attr.aria-selected]="selectedDayIndex() === i"
-            [class.bg-emerald-600]="selectedDayIndex() === i"
-            [class.hover:bg-emerald-100]="selectedDayIndex() !== i"
-            [class.hover:text-gray-800]="selectedDayIndex() !== i"
-            [class.shadow-sm]="selectedDayIndex() === i"
-            [class.text-gray-600]="selectedDayIndex() !== i"
-            [class.text-white]="selectedDayIndex() === i"
-            [id]="'day-tab-' + i"
+            (click)="previousWeek()"
+            [class]="weekButtonClasses"
+            [disabled]="!canNavigateToPreviousWeek()"
+            aria-label="Previous week"
+            type="button"
+          >
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+        }
+        @for (day of visibleDays(); track day.dayOfWeek; let i = $index) {
+          @let absoluteIndex = weekStart() + i;
+          <button
+            (click)="selectDay(absoluteIndex)"
+            [attr.aria-controls]="'day-panel-' + absoluteIndex"
+            [attr.aria-selected]="selectedDayIndex() === absoluteIndex"
+            [class]="dayButtonClasses(absoluteIndex)"
+            [id]="'day-tab-' + absoluteIndex"
             class="flex-1 whitespace-nowrap rounded-lg px-3 py-1.5
-          text-center text-sm font-medium transition-all hover:cursor-pointer"
+               text-center text-sm font-medium transition-all hover:cursor-pointer"
             role="tab"
             type="button"
           >
-          <span class="lg:hidden">
-            {{ day.dayOfWeek | titlecase | slice:0:2 }}
-          </span>
-
+              <span class="lg:hidden">
+                {{ day.dayOfWeek | titlecase | slice: 0:2 }}
+              </span>
             <span class="hidden lg:inline">
-            {{ day.dayOfWeek | titlecase }}
-          </span>
+                {{ day.dayOfWeek | titlecase }}
+              </span>
+          </button>
+        }
+        @if (totalWeeks() > 1) {
+          <button
+            (click)="nextWeek()"
+            [class]="weekButtonClasses"
+            [disabled]="!canNavigateToNextWeek()"
+            aria-label="Next week"
+            type="button"
+          >
+            <i class="fa-solid fa-arrow-right"></i>
           </button>
         }
       </nav>
+
       <div
         [attr.aria-labelledby]="'day-tab-' + selectedDayIndex()"
         [id]="'day-panel-' + selectedDayIndex()"
@@ -142,12 +179,12 @@
           class="self-start"
         />
       </div>
-
     }
   </section>
 } @else {
-  <div class="text-3xl font-bold tracking-tight text-gray-900 leading-tight text-center p-16">
-    <i class="fa-solid fa-spinner fa-spin"></i>
-    Loading, please wait...
-  </div>
+  @if (loadingMessage()) {
+    <app-loading-message [message]="loadingMessage()"/>
+  } @else {
+    <app-loading-message/>
+  }
 }

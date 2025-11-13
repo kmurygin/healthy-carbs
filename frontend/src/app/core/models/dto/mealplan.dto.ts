@@ -1,5 +1,6 @@
 import type {UserDto} from './user.dto';
 import type {MealPlanDayDto} from "./mealplan-day.dto";
+import type {MealPlanSource} from "@core/models/enum/mealplan-source.enum";
 
 export interface MealPlanDto {
   id: number;
@@ -10,4 +11,5 @@ export interface MealPlanDto {
   totalProtein: number;
   totalFat: number;
   createdAt: string;
+  source: MealPlanSource;
 }

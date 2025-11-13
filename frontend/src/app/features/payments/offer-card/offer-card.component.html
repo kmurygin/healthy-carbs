@@ -1,0 +1,47 @@
+<div class="flex flex-col h-full">
+  <div class="p-8 flex flex-col flex-grow">
+
+    <h2 class="text-3xl font-bold tracking-tight text-gray-900">
+      {{ offer().title }}
+    </h2>
+    <p class="text-base text-gray-600 mt-3">
+      {{ offer().description }}
+    </p>
+
+    <div class="my-6 flex items-baseline">
+      <span class="text-5xl font-extrabold text-emerald-600">
+        {{ offer().price | number: '1.0-0' }}
+      </span>
+      <span class="ml-1.5 text-xl font-medium text-gray-500">
+        {{ offer().currency }}
+      </span>
+    </div>
+
+    <hr class="my-6 border-gray-100">
+
+    <ul class="space-y-4 mb-8">
+      @for (feature of offer().features; track feature) {
+        <li class="flex items-center gap-x-3">
+          <fa-icon
+            [icon]="faCheck"
+            aria-hidden="true"
+            class="text-emerald-500 flex-shrink-0"
+          >
+          </fa-icon>
+          <span class="text-base text-gray-700">{{ feature }}</span>
+        </li>
+      }
+    </ul>
+
+    <div class="mt-auto border-t border-gray-100 pt-8">
+      <app-payu-pay-button
+        (paymentClicked)="onPaymentClicked()"
+        [description]="description()"
+        [externallyDisabled]="paymentPendingOnAnotherCard()"
+        [localOrderId]="orderId()"
+        [products]="[product()]"
+        [totalAmount]="totalAmount()"
+      />
+    </div>
+  </div>
+</div>

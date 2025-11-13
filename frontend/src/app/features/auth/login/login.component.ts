@@ -2,9 +2,9 @@ import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core'
 import type {FormGroup} from '@angular/forms';
 import {FormBuilder, type FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
-import {AuthService} from '../../../core/services/auth/auth.service';
-import type {LoginPayload} from "../../../core/models/payloads/login.payload";
-import {ErrorMessageComponent} from "../../../shared/components/error-message/error-message.component";
+import {AuthService} from '@core/services/auth/auth.service';
+import type {LoginPayload} from "@core/models/payloads/login.payload";
+import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
 
 type LoginForm = FormGroup<{
   username: FormControl<string>;

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, input, output, Signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import type {RecipeDto} from '@core/models/dto/recipe.dto';

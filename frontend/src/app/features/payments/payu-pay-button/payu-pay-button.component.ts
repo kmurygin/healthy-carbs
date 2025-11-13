@@ -1,38 +1,69 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input, output, signal} from '@angular/core';
-import {PayuService} from '../../../core/services/payu/payu.service';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
+import {PayuService} from '@core/services/payu/payu.service';
 import type {InitPaymentRequest} from '../dto/init-payment-request';
 import {take} from 'rxjs';
 import {saveLastLocalOrderId} from "../utils";
 import type {Product} from "../dto/product";
+import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
+import {setError} from "@shared/utils";
 
 @Component({
   selector: 'app-payu-pay-button',
-  standalone: true,
   templateUrl: './payu-pay-button.component.html',
+  imports: [ErrorMessageComponent],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PayuPayButtonComponent {
   readonly localOrderId = input.required<string>();
   readonly description = input('Healthy Carbs plan');
   readonly totalAmount = input.required<number>();
+  readonly products = input.required<Product[]>();
+  readonly externallyDisabled = input<boolean>(false);
+
+  readonly paymentClicked = output();
+
+  readonly isPending = signal(false);
+  readonly errorMessage = signal<string | null>(null);
+
   readonly totalAmountInt = computed(() => {
     const amount = this.totalAmount();
     return Number.isFinite(amount) ? Math.max(0, Math.round(amount)) : 0;
   });
 
-  readonly products = input.required<Product[]>();
+  readonly payButtonClasses = computed(() => {
+    const baseClasses = `
+      flex w-full items-center justify-center rounded-lg px-5 py-3
+      font-semibold shadow-md cursor-pointer
+      text-white transition-all duration-200 ease-in-out
+      disabled:opacity-60 disabled:cursor-not-allowed
+      bg-emerald-600 active:scale-[0.98]
+    `;
 
-  started = output();
-  readonly pending = signal(false);
-  readonly error = signal<string | null>(null);
-  readonly label = computed(() => (this.pending() ? 'Redirecting to PayU…' : 'Pay'));
+    if (this.isPending() || this.externallyDisabled()) {
+      return baseClasses + ' opacity-60';
+    }
+
+    return baseClasses + ' hover:scale-[1.02] hover:bg-emerald-700';
+  });
+
   private readonly payuService = inject(PayuService);
 
   onPay(): void {
-    this.pending.set(true);
-    this.error.set(null);
-    this.started.emit();
+    if (this.externallyDisabled() || this.isPending()) {
+      return;
+    }
 
+    this.isPending.set(true);
+    this.errorMessage.set(null);
+    this.paymentClicked.emit();
     const payload: InitPaymentRequest = {
       localOrderId: this.localOrderId(),
       description: this.description(),
@@ -49,15 +80,14 @@ export class PayuPayButtonComponent {
             window.location.assign(response.redirectUri);
             return;
           }
-        } catch (e) {
-          this.pending.set(false);
-          console.error('Failed to redirect to PayU:', e);
-          this.error.set('Failed to redirect to PayU. Please try again.');
+        } catch (e: unknown) {
+          this.isPending.set(false);
+          setError(this.errorMessage, e, 'Failed to redirect to PayU. Please try again.');
         }
       },
-      error: () => {
-        this.pending.set(false);
-        this.error.set('Failed to start PayU payment. Please try again.');
+      error: (e: unknown) => {
+        setError(this.errorMessage, e, 'Failed to start PayU payment. Please try again.');
+        this.isPending.set(false);
       }
     });
   }

@@ -6,6 +6,12 @@ import {NgOptimizedImage} from "@angular/common";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {faArrowRight} from "@fortawesome/free-solid-svg-icons";
 
+type DashboardCategory = {
+  name: string;
+  route: string;
+  image: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -22,55 +28,30 @@ import {faArrowRight} from "@fortawesome/free-solid-svg-icons";
 export class DashboardComponent {
 
   isSmallScreen = window.innerWidth < 768;
-  categories = [
+  categories: DashboardCategory[] = [
     {
-      name: 'Meal plan',
-      route: 'mealplan',
+      name: 'Latest meal plan',
+      route: '/mealplan',
+      image: 'assets/images/6325254.jpg'
+    },
+    {
+      name: 'My mealplans',
+      route: '/user/mealplan-history',
       image: 'assets/images/6325254.jpg'
     },
     {
       name: 'Diet profile',
-      route: 'dietary-profile-form',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Pomiary obwodów',
-      route: 'plan_zywieniowy',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Cele żywieniowe',
-      route: 'cele',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Meal plans history',
-      route: 'mealplan-history',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Postępy i statystyki',
-      route: 'postepy',
+      route: '/dietary-profile-form',
       image: 'assets/images/6325254.jpg'
     },
     {
       name: 'Recipes',
-      route: 'recipes',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Ulubione przepisy',
-      route: 'ulubione',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Baza wiedzy',
-      route: 'wiedza',
+      route: '/recipes',
       image: 'assets/images/6325254.jpg'
     },
     {
       name: 'Buy a diet plan',
-      route: 'offers',
+      route: '/offers',
       image: 'assets/images/6325254.jpg'
     }
   ];
@@ -116,8 +97,6 @@ export class DashboardComponent {
   showLabels = true;
   isDoughnut = false;
   legendPosition: LegendPosition = LegendPosition.Right;
-
-  trackCategory = (_: number, cat: { route: string }) => cat.route;
-
   protected readonly faArrowRight = faArrowRight;
+
 }

@@ -70,6 +70,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), req, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> forbidden(ForbiddenException ex, HttpServletRequest req) {
+        return buildErrorResponse(ex.getMessage(), req, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> accessDenied(AccessDeniedException ex, HttpServletRequest req) {
         return buildErrorResponse("Access denied", req, HttpStatus.FORBIDDEN);
@@ -78,6 +83,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({OptimisticLockingFailureException.class, DataIntegrityViolationException.class})
     public ResponseEntity<ErrorResponse> conflict(RuntimeException ex, HttpServletRequest req) {
         return buildErrorResponse("Conflict: " + ex.getMessage(), req, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> illegalState(IllegalStateException ex, HttpServletRequest req) {
+        return buildErrorResponse(ex.getMessage(), req, HttpStatus.BAD_GATEWAY);
     }
 
     @ExceptionHandler(Exception.class)

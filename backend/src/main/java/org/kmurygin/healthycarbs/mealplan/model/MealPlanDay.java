@@ -17,7 +17,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@ToString(exclude = {"recipes"})
+@ToString(exclude = {"recipes", "mealPlan"})
 public class MealPlanDay {
 
     @Id
@@ -28,9 +28,15 @@ public class MealPlanDay {
     @Column(nullable = false)
     private DayOfWeek dayOfWeek;
 
-    @OneToMany(mappedBy = "mealPlanDay",
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meal_plan_id")
+    private MealPlan mealPlan;
+
+    @OneToMany(
+            mappedBy = "mealPlanDay",
             cascade = CascadeType.ALL,
-            orphanRemoval = true)
+            orphanRemoval = true
+    )
     @Builder.Default
     private List<MealPlanRecipe> recipes = new ArrayList<>();
 
@@ -42,6 +48,17 @@ public class MealPlanDay {
     public void addRecipe(Recipe recipe) {
         MealPlanRecipe mealPlanRecipe = new MealPlanRecipe(this, recipe, recipe.getMealType());
         recipes.add(mealPlanRecipe);
+    }
+
+    public void setRecipes(List<MealPlanRecipe> recipes) {
+        this.recipes.forEach(recipe -> recipe.setMealPlanDay(null));
+        this.recipes.clear();
+        if (recipes != null) {
+            for (MealPlanRecipe recipe : recipes) {
+                recipe.setMealPlanDay(this);
+                this.recipes.add(recipe);
+            }
+        }
     }
 
     public void removeRecipe(Recipe recipe) {

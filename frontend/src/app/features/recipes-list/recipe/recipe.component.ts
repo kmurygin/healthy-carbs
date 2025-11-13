@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, effect, inject, Signal, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute, RouterModule} from '@angular/router';
 import {RecipeService} from "@core/services/recipe/recipe.service";
@@ -89,7 +89,7 @@ export class RecipeComponent {
     return getDietTagIconClasses(this.recipe()?.dietType);
   });
   readonly instructionSteps = computed<string[]>(() => {
-    const trimmedInstructions = this.recipe()?.instructions?.trim() ?? '';
+    const trimmedInstructions = this.recipe()?.instructions.trim() ?? '';
     return trimmedInstructions
       .split(/\r?\n+/)
       .map(line => line.trim().replace(/^\d+\.\s*/, ''))

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.proxy.HibernateProxy;
+import org.kmurygin.healthycarbs.mealplan.MealPlanSource;
 import org.kmurygin.healthycarbs.user.User;
 
 import java.time.Instant;
@@ -31,15 +32,9 @@ public class MealPlan {
     @JsonBackReference
     private User user;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "meal_plan_days_link",
-            joinColumns = @JoinColumn(name = "meal_plan_id"),
-            inverseJoinColumns = @JoinColumn(name = "meal_plan_day_id")
-    )
+    @OneToMany(mappedBy = "mealPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<MealPlanDay> days = new ArrayList<>();
-
     private Double totalCalories;
     private Double totalCarbs;
     private Double totalProtein;
@@ -48,6 +43,24 @@ public class MealPlan {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source", nullable = false)
+    private MealPlanSource source;
+
+    public void addDay(MealPlanDay day) {
+        if (day == null) return;
+        day.setMealPlan(this);
+        this.days.add(day);
+    }
+
+    public void setDays(List<MealPlanDay> days) {
+        this.days.forEach(day -> day.setMealPlan(null));
+        this.days.clear();
+        if (days != null) {
+            days.forEach(this::addDay);
+        }
+    }
 
     @Override
     public final boolean equals(Object o) {

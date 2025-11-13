@@ -1,0 +1,91 @@
+<section class="mx-auto max-w-7xl px-4 py-8">
+  @if (error()) {
+    <app-error-message [message]="error()!" role="alert"/>
+  }
+
+  @if (loading()) {
+    <div
+      class="flex flex-col items-center justify-center gap-2 p-12 text-gray-500"
+    >
+      <i class="fa-solid fa-spinner fa-spin text-2xl text-emerald-600"></i>
+      <p aria-live="polite" class="font-medium">Loading payments history…</p>
+    </div>
+  } @else if (rows().length === 0 && !error()) {
+    <div
+      class="flex flex-col items-center justify-center gap-2 p-12 text-gray-500"
+    >
+      <i class="fa-solid fa-circle-question text-2xl"></i>
+      <p>No payments history found.</p>
+    </div>
+  } @else {
+    <div class="md:hidden space-y-3">
+      @for (row of rows(); track row.id) {
+        <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div class="font-semibold text-gray-900">
+              {{ row.createdAt | date: 'medium' }}
+            </div>
+            <app-status-tag [status]="row.status"/>
+          </div>
+
+          <div class="mt-2 text-sm text-gray-700">
+            <div class="flex items-center gap-1.5">
+              <i class="fa-solid fa-receipt w-3 text-center text-gray-500"></i>
+              <span class="text-gray-600">Order:</span>
+              <span class="font-medium">{{ row.orderId }}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <i class="fa-solid fa-coins w-3 text-center text-amber-600"></i>
+              <span class="text-gray-600">Amount:</span>
+              <span class="font-medium"
+              >{{ row.amount | number: '1.2-2' }} {{ row.currency }}</span
+              >
+            </div>
+            <div class="flex items-center gap-1.5">
+              <i class="fa-solid fa-store w-3 text-center text-emerald-600"></i>
+              <span class="text-gray-600">Provider:</span>
+              <span class="font-medium">{{ row.provider }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div
+      class="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 shadow-sm"
+    >
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50 text-gray-600">
+        <tr>
+          <th class="px-4 py-3 text-center font-medium w-12">#</th>
+          <th class="px-4 py-3 text-center font-medium">Created At</th>
+          <th class="px-4 py-3 text-center font-medium">Order</th>
+          <th class="px-4 py-3 text-center font-medium">Provider</th>
+          <th class="px-4 py-3 text-center font-medium">Amount</th>
+          <th class="px-4 py-3 text-center font-medium">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.id) {
+            <tr class="border-t border-gray-200">
+              <td class="px-4 py-3 text-center font-medium text-gray-500">
+                {{ row.idx + 1 }}
+              </td>
+              <td class="px-4 py-3 text-center">
+                {{ row.createdAt | date: 'medium' }}
+              </td>
+              <td class="px-4 py-3 text-center">{{ row.orderId }}</td>
+              <td class="px-4 py-3 text-center">{{ row.provider }}</td>
+              <td class="px-4 py-3 text-center">
+                {{ row.amount | number: '1.2-2' }} {{ row.currency }}
+              </td>
+              <td class="px-4 py-3 text-center">
+                <app-status-tag [status]="row.status"/>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

@@ -1,8 +1,11 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import org.kmurygin.healthycarbs.auth.AuthenticationService;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
+import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealPlanGeneratedEvent;
+import org.kmurygin.healthycarbs.mealplan.MealPlanSource;
 import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.core.GeneticAlgorithm;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.core.Genome;
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -83,11 +87,13 @@ public class MealPlanService {
         mealPlan.setDays(transientMealPlanDays);
         updateWeeklyTotals(mealPlan);
 
+        mealPlan.setSource(MealPlanSource.GENERATED);
+
         return savePlanAndGenerateShoppingList(mealPlan);
     }
 
     @Transactional
-    protected MealPlan savePlanAndGenerateShoppingList(MealPlan mealPlan) {
+    public MealPlan savePlanAndGenerateShoppingList(MealPlan mealPlan) {
         MealPlan saved = mealPlanRepository.save(mealPlan);
         applicationEventPublisher.publishEvent(new MealPlanGeneratedEvent(saved));
         return saved;
@@ -96,6 +102,20 @@ public class MealPlanService {
     public List<MealPlan> getMealPlansHistory() {
         User user = authenticationService.getCurrentUser();
         return mealPlanRepository.findByUser(user);
+    }
+
+    public MealPlan findById(Long id) {
+        User user = authenticationService.getCurrentUser();
+        MealPlan mealPlan = mealPlanRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
+
+        if (!Objects.equals(mealPlan.getUser().getId(), user.getId())) {
+            throw new ForbiddenException(
+                    "MealPlan with id %d is not owned by user %s".formatted(id, user.getUsername())
+            );
+        }
+
+        return mealPlan;
     }
 
     private Genome randomCandidate(DietType dietType) {

@@ -1,11 +1,11 @@
-import type {Product} from "./product";
-
 export interface Offer {
-  id: string;
+  id: number;
   title: string;
   description: string;
-  pricePln: number;
+  price: number;
+  currency: string;
   features: string[];
-  orderId: string;
-  product: Product;
+  durationInDays: number;
+  mealPlanTemplateId: number;
+  mealPlanTemplateName: string;
 }

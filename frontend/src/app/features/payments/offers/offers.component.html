@@ -1,43 +1,30 @@
-<div class="container mx-auto px-4 py-4">
-  <h1 class="text-3xl font-bold mb-6 text-center">Choose Your Meal Plan</h1>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
 
-  @if (loading()) {
-    <p class="text-center">Loading offers…</p>
-  } @else if (error()) {
-    <p class="text-center text-red-600" role="alert">{{ error() }}</p>
-  } @else {
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      @for (offer of offers(); track offer.id) {
-        <div class="rounded-2xl border shadow-sm p-6 flex flex-col">
-          <h2 class="text-xl font-semibold">{{ offer.title }}</h2>
-          <p class="text-gray-600 mt-1 mb-4">{{ offer.description }}</p>
+  @switch (viewState()) {
+    @case ('ERROR') {
+      <app-error-message [message]="errorMessage()!"/>
+    }
+    @case ('EMPTY') {
+      <app-info-message message="No offers available."/>
+    }
+    @case ('LOADED') {
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        @for (offer of offers(); track offer.id; let first = $first) {
+          <div [class]="offerCardClasses()">
 
-          <img
-            alt="name"
-            class="h-40 w-full object-cover"
-            height="1180"
-            ngOptimizedImage
-            ngSrc="assets/images/kalendarz-1.jpg"
-            width="1611"
-          />
+            <app-offer-card
+              (paymentClicked)="onPaymentInitiated(offer)"
+              [isPriority]="first"
+              [offer]="offer"
+              [orderId]="buildOrderId(offer.id)"
+              [paymentPendingOnAnotherCard]="isPaymentPending(offer.id)"
+              class="h-full"
+            />
 
-          <div class="text-4xl font-bold mb-2 mt-2 ">{{ offer.pricePln | number: '1.2-2' }} PLN</div>
-          <ul class="text-sm text-gray-700 list-disc list-inside mb-6 space-y-1">
-            @for (feature of offer.features; track feature) {
-              <li>{{ feature }}</li>
-            }
-          </ul>
-
-          <div class="mt-auto flex justify-end">
-            <app-payu-pay-button
-              [description]="offer.title + ' - ' + offer.description"
-              [localOrderId]="offer.orderId"
-              [products]="[offer.product]"
-              [totalAmount]="offer.pricePln * 100"
-            ></app-payu-pay-button>
           </div>
-        </div>
-      }
-    </div>
+        }
+      </div>
+    }
   }
+
 </div>

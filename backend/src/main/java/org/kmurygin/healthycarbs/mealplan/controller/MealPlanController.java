@@ -31,6 +31,13 @@ public class MealPlanController {
         return ApiResponses.success(HttpStatus.CREATED, dto, "Meal plan generated successfully");
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<MealPlanDTO>> findById(@PathVariable Long id) {
+        MealPlan mealPlan = mealPlanService.findById(id);
+        MealPlanDTO dto = mealPlanMapper.toDTO(mealPlan);
+        return ApiResponses.success(dto);
+    }
+
     @GetMapping("/history")
     public ResponseEntity<ApiResponse<List<MealPlanDTO>>> findAllMealPlans() {
         return ApiResponses.success(

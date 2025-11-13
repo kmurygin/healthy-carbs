@@ -1,4 +1,5 @@
-import {DietType} from "../core/models/enum/diet-type.enum";
+import {DietType} from "@core/models/enum/diet-type.enum";
+import type {WritableSignal} from "@angular/core";
 
 export function formatEnum(value: string): string {
   return value
@@ -45,4 +46,12 @@ export function getMealTagClasses(size: Size = 'sm'): string {
   const sizeCategory = sizeClasses[size];
   return `${sizeCategory} inline-flex items-center gap-1.5 rounded-full
   bg-blue-100 px-3 py-1 text-blue-800`;
+}
+
+export function setError(signal: WritableSignal<string | null>, err: unknown, fallback: string): void {
+  const message = err instanceof Error && err.message.trim()
+    ? err.message
+    : fallback;
+  signal.set(message);
+  console.error(fallback, err);
 }

@@ -19,10 +19,14 @@ export const ApiEndpoints = {
     mealplan: `${apiUrl}/mealplan`,
   },
 
-  Payment: {
+  PaymentsPayu: {
     Create: `${apiUrl}/payments/payu/create`,
     Status: `${apiUrl}/payments/payu/status/`,
     Order: `${apiUrl}/payments/payu/order/`,
+  },
+
+  Payments: {
+    Payments: `${apiUrl}/payments`,
   },
 
   Recipes: {
@@ -38,4 +42,8 @@ export const ApiEndpoints = {
     UpdateItem: (mealPlanId: number) => `${apiUrl}/shopping-list/${mealPlanId}/item`,
     Download: (mealPlanId: number) => `${apiUrl}/shopping-list/${mealPlanId}/download`,
   },
+
+  Offer: {
+    Offer: `${apiUrl}/offers`,
+  }
 };

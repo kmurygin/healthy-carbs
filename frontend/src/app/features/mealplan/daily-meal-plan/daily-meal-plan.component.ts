@@ -1,10 +1,10 @@
 import type {Signal} from '@angular/core';
 import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import type {MealPlanDayDto} from '../../../core/models/dto/mealplan-day.dto';
-import type {MealPlanRecipeDto} from '../../../core/models/dto/mealplan-recipe.dto';
-import type {RecipeDto} from '../../../core/models/dto/recipe.dto';
-import {getDietTagClasses} from "../../../shared/utils";
+import type {MealPlanDayDto} from '@core/models/dto/mealplan-day.dto';
+import type {MealPlanRecipeDto} from '@core/models/dto/mealplan-recipe.dto';
+import type {RecipeDto} from '@core/models/dto/recipe.dto';
+import {getDietTagClasses} from "@shared/utils";
 
 type MealGroup = Readonly<{ mealType: string; items: readonly MealPlanRecipeDto[] }>;
 type NutritionalInformation = Readonly<{ calories: number; carbs: number; protein: number; fat: number }>;

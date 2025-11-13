@@ -1,17 +1,17 @@
 import {ChangeDetectionStrategy, Component, effect, inject, signal,} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {DietaryProfileService} from "../../../core/services/dietary-profile/dietary-profile.service";
-import type {DietaryProfilePayload} from "../../../core/models/payloads/dietaryprofile.payload";
+import {DietaryProfileService} from "@core/services/dietary-profile/dietary-profile.service";
+import type {DietaryProfilePayload} from "@core/models/payloads/dietaryprofile.payload";
 import {CommonModule} from "@angular/common";
-import {DietGoal} from "../../../core/models/enum/diet-goal.enum";
-import {DietType} from "../../../core/models/enum/diet-type.enum";
-import {ActivityLevel} from "../../../core/models/enum/activity-level.enum";
-import {Allergy} from "../../../core/models/enum/allergy.enum";
+import {DietGoal} from "@core/models/enum/diet-goal.enum";
+import {DietType} from "@core/models/enum/diet-type.enum";
+import {ActivityLevel} from "@core/models/enum/activity-level.enum";
+import {Allergy} from "@core/models/enum/allergy.enum";
 import {firstValueFrom} from 'rxjs';
-import {ErrorMessageComponent} from "../../../shared/components/error-message/error-message.component";
-import {SuccessMessageComponent} from "../../../shared/components/success-message/success-message.component";
-import {getFormOptionsFromEnum} from "../../../shared/form-option";
-import {ActivityLevelDescriptionMap} from "../../../core/constants/activity-level-description.map";
+import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
+import {SuccessMessageComponent} from "@shared/components/success-message/success-message.component";
+import {getFormOptionsFromEnum} from "@shared/form-option";
+import {ActivityLevelDescriptionMap} from "@core/constants/activity-level-description.map";
 
 @Component({
   selector: 'app-dietary-profile-form',

@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-meal-plan-to-meal-plan-days
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE meal_plan_days
+              ADD COLUMN meal_plan_id BIGINT;
+              
+              UPDATE meal_plan_days d
+              SET meal_plan_id = l.meal_plan_id
+              FROM meal_plan_days_link l
+              WHERE l.meal_plan_day_id = d.id;
+              
+              ALTER TABLE meal_plan_days
+              ADD CONSTRAINT fk_meal_plan_days_plan
+                FOREIGN KEY (meal_plan_id)
+                REFERENCES meal_plans(id)
+                ON DELETE CASCADE;
+  - changeSet:
+      id: drop-meal-plan-days-link
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              DROP TABLE meal_plan_days_link;

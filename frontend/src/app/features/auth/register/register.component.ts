@@ -2,11 +2,11 @@ import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core'
 import type {FormControl, FormGroup} from '@angular/forms';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
-import {AuthService} from '../../../core/services/auth/auth.service';
+import {AuthService} from '@core/services/auth/auth.service';
 
-import type {RegisterPayload} from "../../../core/models/payloads/register.payload";
+import type {RegisterPayload} from "@core/models/payloads/register.payload";
 import {NgOptimizedImage} from "@angular/common";
-import {ErrorMessageComponent} from "../../../shared/components/error-message/error-message.component";
+import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
 
 type RegisterForm = FormGroup<{
   firstname: FormControl<string>;

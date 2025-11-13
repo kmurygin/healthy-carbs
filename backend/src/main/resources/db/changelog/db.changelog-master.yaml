@@ -66,5 +66,23 @@ databaseChangeLog:
       file: 2025-10-29-user-change-id-type.yaml
       relativeToChangelogFile: true
   - include:
+      file: 2025-11-03-add-offers-table.yaml
+      relativeToChangelogFile: true
+  - include:
       file: 2025-11-06-add-user-favourite-recipes.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-11-10-add-mealplan-offer.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-11-10-add-user-to-order.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-11-11-add-source-to-mealplan.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-11-11-add-user-to-payments.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-11-12-meal-plan-fix.yaml
       relativeToChangelogFile: true

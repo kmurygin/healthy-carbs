@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-source-to-mealplan
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE meal_plans
+              ADD COLUMN source VARCHAR(20) NOT NULL DEFAULT 'GENERATED';
+              
+              UPDATE meal_plans
+              SET source = 'GENERATED' WHERE source IS NULL;
