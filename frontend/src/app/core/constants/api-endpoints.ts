@@ -19,10 +19,14 @@ export const ApiEndpoints = {
     mealplan: `${apiUrl}/mealplan`,
   },
 
-  Payment: {
+  PaymentsPayu: {
     Create: `${apiUrl}/payments/payu/create`,
     Status: `${apiUrl}/payments/payu/status/`,
     Order: `${apiUrl}/payments/payu/order/`,
+  },
+
+  Payments: {
+    Payments: `${apiUrl}/payments`,
   },
 
   Recipes: {
