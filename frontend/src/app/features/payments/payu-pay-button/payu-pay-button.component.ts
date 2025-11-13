@@ -81,20 +81,12 @@ export class PayuPayButtonComponent {
             return;
           }
         } catch (e: unknown) {
-          let msg = 'Failed to redirect to PayU. Please try again.';
-          if (e instanceof Error) {
-            msg = e.message || msg;
-          }
           this.isPending.set(false);
-          this.errorMessage.set(msg);
+          setError(this.errorMessage, e, 'Failed to redirect to PayU. Please try again.');
         }
       },
       error: (e: unknown) => {
-        let msg = 'Failed to start PayU payment. Please try again.';
-        if (e instanceof Error) {
-          msg = e.message || msg;
-        }
-        this.errorMessage.set(msg);
+        setError(this.errorMessage, e, 'Failed to start PayU payment. Please try again.');
         this.isPending.set(false);
       }
     });

@@ -5,4 +5,7 @@ export interface Offer {
   price: number;
   currency: string;
   features: string[];
+  durationInDays: number;
+  mealPlanTemplateId: number;
+  mealPlanTemplateName: string;
 }

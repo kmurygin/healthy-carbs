@@ -23,6 +23,20 @@ export const USER_ROUTES: Routes = [
       },
 
       {
+        path: 'payments-history',
+        loadComponent: () =>
+          import('@features/payments/payments-history/payments-history.component')
+            .then(c => c.PaymentsHistoryComponent)
+      },
+
+      {
+        path: 'mealplan-history',
+        loadComponent: () =>
+          import('@features/mealplan/mealplan-history/mealplan-history.component')
+            .then(c => c.MealPlanHistoryComponent)
+      },
+
+      {
         path: '**',
         loadComponent: () =>
           import('../../pages/error/error.component')
