@@ -19,7 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-@Profile("!dev")
 @RequiredArgsConstructor //from lombok
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

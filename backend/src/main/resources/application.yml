@@ -4,6 +4,10 @@ server:
 spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE}
+  cloud:
+    gcp:
+      sql:
+        enabled: true
 
   datasource:
     url: ${DB_URL}
@@ -73,3 +77,14 @@ payu:
 logging:
   level:
     io.netty.resolver.dns.DnsServerAddressStreamProviders: WARN
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  cloud:
+    gcp:
+      sql:
+        enabled: false
