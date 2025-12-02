@@ -38,8 +38,10 @@ public class IngredientController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<IngredientDTO>> create(@Valid @RequestBody IngredientDTO ingredientDTO) {
-        Ingredient ingredient = ingredientService.save(
+    public ResponseEntity<ApiResponse<IngredientDTO>> create(
+            @Valid @RequestBody IngredientDTO ingredientDTO
+    ) {
+        Ingredient ingredient = ingredientService.create(
                 ingredientMapper.toEntity(ingredientDTO)
         );
         return ApiResponses.success(HttpStatus.CREATED,
@@ -47,9 +49,13 @@ public class IngredientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<IngredientDTO>> update(@PathVariable Long id, @RequestBody IngredientDTO ingredientDTO) {
+    public ResponseEntity<ApiResponse<IngredientDTO>> update(
+            @PathVariable Long id,
+            @RequestBody IngredientDTO ingredientDTO
+    ) {
         ingredientDTO.setId(id);
-        Ingredient ingredient = ingredientService.save(
+        Ingredient ingredient = ingredientService.update(
+                id,
                 ingredientMapper.toEntity(ingredientDTO)
         );
         return ApiResponses.success(ingredientMapper.toDTO(ingredient));

@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.kmurygin.healthycarbs.mealplan.IngredientCategory;
+import org.kmurygin.healthycarbs.user.User;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,6 +37,20 @@ public class Ingredient {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private IngredientCategory category = IngredientCategory.OTHER;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "ingredient_allergens",
+            joinColumns = @JoinColumn(name = "ingredient_id"),
+            inverseJoinColumns = @JoinColumn(name = "allergen_id")
+    )
+    @Builder.Default
+    @ToString.Exclude
+    private Set<Allergen> allergens = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
 
     @Override
     public final boolean equals(Object o) {
