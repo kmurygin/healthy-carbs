@@ -86,3 +86,12 @@ databaseChangeLog:
   - include:
       file: 2025-11-12-meal-plan-fix.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2025-12-02-add-ingredient-allergens.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-12-02-add-author-to-resources.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-12-02-add-author-to-meal-plan-template.yaml
+      relativeToChangelogFile: true

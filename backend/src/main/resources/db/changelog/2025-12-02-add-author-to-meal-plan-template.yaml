@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-author-to-meal-plan-template
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE meal_plan_templates
+              ADD COLUMN author_id BIGINT;
+              
+              ALTER TABLE meal_plan_templates
+              ADD CONSTRAINT fk_meal_plan_templates_author
+                FOREIGN KEY (author_id) REFERENCES users(id);
