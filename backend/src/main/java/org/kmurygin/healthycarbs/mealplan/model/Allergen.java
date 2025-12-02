@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.mealplan.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.kmurygin.healthycarbs.user.User;
 
 import java.util.Objects;
 
@@ -22,6 +23,10 @@ public class Allergen {
 
     @Column(nullable = false, unique = true)
     private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
 
     @Override
     public final boolean equals(Object o) {
