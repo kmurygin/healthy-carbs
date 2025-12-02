@@ -6,6 +6,9 @@ import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.service.MealPlanService;
 import org.kmurygin.healthycarbs.payments.model.Order;
+import org.kmurygin.healthycarbs.user.Role;
+import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,7 @@ public class MealPlanTemplateService {
     private final MealPlanTemplateRepository mealPlanTemplateRepository;
     private final MealPlanService mealPlanService;
     private final OfferService offerService;
+    private final UserService userService;
 
     @Transactional(readOnly = true)
     public List<MealPlanTemplate> findAll() {
@@ -32,12 +36,20 @@ public class MealPlanTemplateService {
 
     @Transactional
     public MealPlanTemplate create(MealPlanTemplate entity) {
+        entity.setAuthor(userService.getCurrentUser());
         return mealPlanTemplateRepository.save(entity);
     }
 
     @Transactional
     public MealPlanTemplate update(Long id, MealPlanTemplate entity) {
         MealPlanTemplate mealPlanTemplate = findById(id);
+        User currentUser = userService.getCurrentUser();
+
+        if (!mealPlanTemplate.getAuthor().getId().equals(currentUser.getId()) &&
+                currentUser.getRole() != Role.ADMIN
+        ) {
+            throw new SecurityException("You are not authorized to update this MealPlanTemplate.");
+        }
 
         MealPlanTemplate updatedMealPlanTemplate = mealPlanTemplate.toBuilder()
                 .name(entity.getName())
@@ -54,9 +66,16 @@ public class MealPlanTemplateService {
 
     @Transactional
     public void deleteById(Long id) {
-        if (!mealPlanTemplateRepository.existsById(id)) {
-            throw new ResourceNotFoundException("MealPlanTemplate", "id", id);
+        MealPlanTemplate mealPlanTemplate = mealPlanTemplateRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MealPlanTemplate", "id", id));
+        User currentUser = userService.getCurrentUser();
+
+        if (!mealPlanTemplate.getAuthor().getId().equals(currentUser.getId()) &&
+                currentUser.getRole() != Role.ADMIN
+        ) {
+            throw new SecurityException("You are not authorized to delete this MealPlanTemplate.");
         }
+
         mealPlanTemplateRepository.deleteById(id);
     }
 

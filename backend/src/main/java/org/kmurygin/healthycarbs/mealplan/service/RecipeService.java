@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.exception.BadRequestException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.DietTypeUtil;
@@ -12,10 +13,13 @@ import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
+import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRecipeRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeSpecification;
+import org.kmurygin.healthycarbs.user.Role;
 import org.kmurygin.healthycarbs.user.User;
 import org.kmurygin.healthycarbs.user.UserRepository;
+import org.kmurygin.healthycarbs.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -33,9 +37,11 @@ public class RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
+    private final MealPlanRecipeRepository mealPlanRecipeRepository;
     private final RecipeIngredientMapper recipeIngredientMapper;
     private final RecipeMapper recipeMapper;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     public Page<Recipe> findAll(
             String name,
@@ -77,6 +83,7 @@ public class RecipeService {
     }
 
     public Recipe create(Recipe recipe) {
+        recipe.setAuthor(userService.getCurrentUser());
         return recipeRepository.save(recipe);
     }
 
@@ -84,13 +91,26 @@ public class RecipeService {
     public Recipe update(Long id, Recipe updatedRecipe) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
+        User currentUser = userService.getCurrentUser();
+
+        if (!recipe.getAuthor().getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
+            throw new SecurityException("You are not authorized to update this recipe.");
+        }
 
         recipeMapper.updateFromEntity(updatedRecipe, recipe);
         return recipeRepository.save(recipe);
     }
 
     public void deleteById(Long id) {
-        recipeRepository.deleteById(id);
+        Recipe recipe = findById(id);
+        User currentUser = userService.getCurrentUser();
+        if (!recipe.getAuthor().getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
+            throw new SecurityException("You are not authorized to delete this recipe.");
+        }
+        if (mealPlanRecipeRepository.existsByRecipeId(id)) {
+            throw new BadRequestException("Cannot delete recipe because it is used in one or more meal plans.");
+        }
+        recipeRepository.delete(recipe);
     }
 
     @Transactional

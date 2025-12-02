@@ -49,6 +49,10 @@ public class Recipe {
     @Enumerated(EnumType.STRING)
     private MealType mealType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
+
     @ManyToMany(mappedBy = "favouriteRecipes", fetch = FetchType.LAZY)
     @Builder.Default
     @ToString.Exclude
