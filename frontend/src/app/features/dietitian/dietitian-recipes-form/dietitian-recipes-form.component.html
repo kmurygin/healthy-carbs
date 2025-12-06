@@ -1,0 +1,277 @@
+<div class="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm">
+
+  <div class="flex min-h-full items-center justify-center p-4">
+
+    <div
+      class="relative w-full max-w-5xl bg-white rounded-2xl shadow-xl
+      transform transition-all animate-in fade-in zoom-in duration-200"
+    >
+      @if (isLoading()) {
+        <div
+          class="absolute inset-0 z-10 bg-white/60 backdrop-blur-[1px] rounded-2xl flex items-center justify-center"
+        >
+          <fa-icon [icon]="icons.spinner" class="text-4xl text-emerald-600 animate-spin"></fa-icon>
+        </div>
+      }
+
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <h3 class="text-xl font-bold text-gray-900">
+          {{ isEditMode() ? 'Edit Recipe' : 'Add New Recipe' }}
+        </h3>
+        <button
+          (click)="onCancel()"
+          class="text-gray-400 hover:text-gray-600 transition-colors rounded-lg
+          p-1 hover:bg-gray-100 hover:cursor-pointer"
+        >
+          <fa-icon [icon]="icons.times" class="text-lg"></fa-icon>
+        </button>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" [formGroup]="formGroup" class="p-8">
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+          <div class="space-y-5">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1" for="name">Recipe Name</label>
+              <input
+                [class.border-red-300]="formGroup.get('name')?.invalid && formGroup.get('name')?.touched"
+                class="w-full rounded-lg border-gray-300 shadow-sm p-3
+                focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                formControlName="name"
+                id="name"
+                type="text"
+              >
+              @if (formGroup.get('name')?.invalid && formGroup.get('name')?.touched) {
+                <p class="mt-1 text-sm text-red-600">Name is required (min 3 chars).</p>
+              }
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="dietType">Diet Type</label>
+                <select
+                  class="w-full rounded-lg border-gray-300 shadow-sm p-3
+                  focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  formControlName="dietType"
+                  id="dietType"
+                >
+                  @for (type of dietTypes; track type) {
+                    <option [value]="type">{{ type | titlecase }}</option>
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="mealType">Meal Type</label>
+                <select
+                  class="w-full rounded-lg border-gray-300 shadow-sm p-3
+                  focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  formControlName="mealType"
+                  id="mealType"
+                >
+                  @for (type of mealTypes; track type) {
+                    <option [value]="type">{{ type | titlecase }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1" for="description">Description</label>
+              <textarea
+                class="w-full rounded-lg border-gray-300 shadow-sm p-3
+                focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                formControlName="description"
+                id="description"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1" for="instructions">Instructions</label>
+              <textarea
+                [class.border-red-300]="formGroup.get('instructions')?.invalid &&
+                formGroup.get('instructions')?.touched"
+                class="w-full rounded-lg border-gray-300 shadow-sm p-3
+                focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                formControlName="instructions"
+                id="instructions"
+                rows="6"
+              >
+              </textarea>
+              @if (formGroup.get('instructions')?.invalid && formGroup.get('instructions')?.touched) {
+                <p class="mt-1 text-sm text-red-600">Instructions are required.</p>
+              }
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-6">
+
+            <div class="flex-1 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="block text-sm font-medium text-gray-700">Ingredients</span>
+                @if (allIngredients()) {
+                  <button
+                    (click)="addIngredient()"
+                    class="text-sm text-emerald-600 hover:text-emerald-700 font-medium
+                  flex items-center gap-1 cursor-pointer"
+                    type="button"
+                  >
+                    <fa-icon [icon]="icons.plus"></fa-icon>
+                    Add Ingredient
+                  </button>
+                }
+              </div>
+
+              @if (allIngredients(); as ingredients) {
+                <div class="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar"
+                     formArrayName="ingredients">
+                  @for (group of ingredientsArray.controls; track group; let i = $index) {
+                    <div [formGroupName]="i" class="flex gap-3 items-start m-0.5">
+                      <div class="flex-grow">
+                        <select
+                          [compareWith]="compareIngredients"
+                          aria-label="Select Ingredient"
+                          class="w-full rounded-lg border-gray-300 shadow-sm text-sm cursor-pointer p-3
+                          focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                          formControlName="ingredient"
+                        >
+                          <option [ngValue]="null" disabled>Select Ingredient</option>
+                          @for (ing of ingredients; track ing.id) {
+                            <option [ngValue]="ing">
+                              {{ ing.name }} ({{ ing.caloriesPerUnit }} kcal/{{ ing.unit }})
+                            </option>
+                          }
+                        </select>
+                      </div>
+                      <div class="w-24">
+                        <input
+                          aria-label="Quantity"
+                          class="w-full rounded-lg border-gray-300 shadow-sm text-sm p-3
+                          focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                          formControlName="quantity"
+                          placeholder="Qty"
+                          type="number"
+                        >
+                      </div>
+                      <div class="w-16 pt-3.5 text-sm text-gray-500 text-center">
+                        {{ getUnit(i) }}
+                      </div>
+                      <button
+                        (click)="removeIngredient(i)"
+                        class="pt-3.5 text-red-400 hover:text-red-600 transition-colors cursor-pointer"
+                        title="Remove ingredient"
+                        type="button"
+                      >
+                        <fa-icon [icon]="icons.trash"></fa-icon>
+                      </button>
+                    </div>
+                  } @empty {
+                    <div
+                      class="text-sm text-gray-500 italic bg-gray-50 p-6 rounded-lg
+                      text-center border border-dashed border-gray-200"
+                    >
+                      No ingredients added yet. Start building your recipe!
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div
+                  class="flex flex-col items-center justify-center p-8
+                  bg-gray-50 rounded-xl border border-gray-100"
+                >
+                  <fa-icon [icon]="icons.spinner" class="text-2xl text-emerald-500 animate-spin mb-2"></fa-icon>
+                  <span class="text-sm text-gray-500">Loading ingredient list...</span>
+                </div>
+              }
+            </div>
+
+            <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 mt-auto">
+              <h4 class="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                Nutritional Information
+              </h4>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div
+                  class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col
+                  items-center justify-center gap-1 transition-all hover:border-orange-200 hover:shadow-md"
+                >
+                  <fa-icon [icon]="icons.fire" class="text-orange-500 text-xl mb-1"></fa-icon>
+                  <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Calories</span>
+                  <div class="text-lg font-bold text-gray-900">
+                    {{ formGroup.get('calories')?.value | number:'1.0-0' }}
+                  </div>
+                </div>
+
+                <div
+                  class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col
+                  items-center justify-center gap-1 transition-all hover:border-amber-200 hover:shadow-md"
+                >
+                  <fa-icon [icon]="icons.bread" class="text-amber-600 text-xl mb-1"></fa-icon>
+                  <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Carbs</span>
+                  <div class="text-lg font-bold text-gray-900">
+                    {{ formGroup.get('carbs')?.value | number:'1.0-0' }}
+                    <span class="text-xs font-normal text-gray-400">g</span>
+                  </div>
+                </div>
+
+                <div
+                  class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col
+                  items-center justify-center gap-1 transition-all hover:border-red-200 hover:shadow-md"
+                >
+                  <fa-icon [icon]="icons.drumstick" class="text-red-500 text-xl mb-1"></fa-icon>
+                  <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Protein</span>
+                  <div class="text-lg font-bold text-gray-900">
+                    {{ formGroup.get('protein')?.value | number:'1.0-0' }}
+                    <span class="text-xs font-normal text-gray-400">g</span>
+                  </div>
+                </div>
+
+                <div
+                  class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col
+                  items-center justify-center gap-1 transition-all hover:border-yellow-200 hover:shadow-md"
+                >
+                  <fa-icon [icon]="icons.droplet" class="text-yellow-600 text-xl mb-1"></fa-icon>
+                  <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Fat</span>
+                  <div class="text-lg font-bold text-gray-900">
+                    {{ formGroup.get('fat')?.value | number:'1.0-0' }}
+                    <span class="text-xs font-normal text-gray-400">g</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-100 mt-8">
+          <button
+            (click)="onCancel()"
+            class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300
+            rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500
+            cursor-pointer"
+            type="button"
+          >
+            Cancel
+          </button>
+          <button
+            [disabled]="formGroup.invalid || formGroup.pristine || isLoading() || !allIngredients()"
+            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-emerald-600
+            rounded-xl hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+            focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
+            type="submit"
+          >
+            @if (isLoading()) {
+              <fa-icon [icon]="icons.spinner" class="animate-spin"></fa-icon>
+            } @else {
+              <fa-icon [icon]="icons.save"></fa-icon>
+            }
+            {{ isEditMode() ? 'Save Changes' : 'Create Recipe' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

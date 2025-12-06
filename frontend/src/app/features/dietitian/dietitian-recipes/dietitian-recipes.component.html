@@ -1,0 +1,78 @@
+<div class="mx-auto max-w-7xl px-4 py-8 min-h-screen bg-white">
+
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Recipe Management</h2>
+    <button
+      (click)="createRecipe()"
+      class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold
+      text-white shadow-sm hover:bg-emerald-700 transition-all hover:cursor-pointer
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+    >
+      <fa-icon [icon]="icons.plus"></fa-icon>
+      Add New Recipe
+    </button>
+  </div>
+
+  <app-recipe-filter
+    (filterChange)="handleFiltersChange($event)"
+    [dietTypes]="dietTypes()"
+    [mealTypes]="mealTypes()"
+    [sortOptions]="sortOptions"
+    class="mb-6 block"
+  />
+
+  @if (isLoading()) {
+    <div class="flex flex-col items-center justify-center gap-3 p-12 text-gray-500">
+      <fa-icon [icon]="icons.spinner" class="text-3xl text-emerald-600 animate-spin"></fa-icon>
+      <p class="font-medium animate-pulse">Loading recipes...</p>
+    </div>
+  } @else if (error()) {
+    <div
+      class="p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 flex items-center gap-3"
+    >
+      <fa-icon [icon]="icons.warn"></fa-icon>
+      {{ error() }}
+    </div>
+  } @else if (totalElements() === 0) {
+    <div
+      class="flex flex-col items-center justify-center gap-3 p-16 text-gray-400
+      bg-white rounded-2xl border border-gray-200 border-dashed"
+    >
+      <fa-icon [icon]="icons.utensils" class="text-4xl mb-2"></fa-icon>
+      <p class="text-lg font-medium text-gray-600">No recipes found.</p>
+      <p class="text-sm">Start by creating your first recipe!</p>
+    </div>
+  } @else {
+    <app-dietitian-recipe-mobile-list
+      (delete)="deleteRecipe($event)"
+      (edit)="editRecipe($event)"
+      [currentUserId]="currentUserId"
+      [recipes]="recipes()"
+    ></app-dietitian-recipe-mobile-list>
+
+    <app-dietitian-recipe-table
+      (delete)="deleteRecipe($event)"
+      (edit)="editRecipe($event)"
+      [currentUserId]="currentUserId"
+      [recipes]="recipes()"
+    ></app-dietitian-recipe-table>
+
+    <div class="mt-8">
+      <app-pagination-controls
+        (nextPage)="nextPage()"
+        (previousPage)="prevPage()"
+        [pageNumber]="currentPage() + 1"
+        [totalPages]="totalPages()"
+      ></app-pagination-controls>
+    </div>
+  }
+
+  @if (isFormOpen()) {
+    <app-recipe-form
+      (closeOutputEmitter)="closeCreateModal()"
+      (savedOutputEmitter)="onRecipeCreated()"
+      [allIngredients]="cachedIngredients()"
+      [recipeId]="selectedRecipeId()"
+    ></app-recipe-form>
+  }
+</div>
