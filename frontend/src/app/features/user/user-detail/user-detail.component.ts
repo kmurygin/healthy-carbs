@@ -2,7 +2,7 @@ import type {OnInit} from '@angular/core';
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import type {FormControl, FormGroup} from '@angular/forms';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {CommonModule} from '@angular/common';
+
 import {UserService} from '@core/services/user/user.service';
 import {AuthService} from '@core/services/auth/auth.service';
 import type {UserDto} from '@core/models/dto/user.dto';
@@ -16,7 +16,7 @@ type UserDetailForm = FormGroup<{
 @Component({
   selector: 'app-user-detail',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './user-detail.component.html',
   styleUrl: './user-detail.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush

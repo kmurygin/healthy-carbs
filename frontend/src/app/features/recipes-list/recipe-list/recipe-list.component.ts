@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {RouterModule} from '@angular/router';
 import {RecipeService} from '@core/services/recipe/recipe.service';
 import type {RecipeDto} from '@core/models/dto/recipe.dto';
@@ -45,7 +45,6 @@ const initialState = {
 @Component({
   selector: 'app-recipe-list',
   imports: [
-    CommonModule,
     RouterModule,
     RecipeCardComponent,
     ErrorMessageComponent,
@@ -55,7 +54,7 @@ const initialState = {
     PageSizeSelectorComponent,
     FavouriteRecipesToggleComponent,
     InfoMessageComponent
-  ],
+],
   templateUrl: './recipe-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -83,9 +82,12 @@ export class RecipeListComponent {
     {value: '', label: 'Default'},
     {value: 'favouritesCount,desc', label: 'Most Popular'},
     {value: 'favouritesCount,asc', label: 'Least Popular'},
+    {value: 'name,asc', label: 'Name (A-Z)'},
+    {value: 'name,desc', label: 'Name (Z-A)'},
+    {value: 'calories,asc', label: 'Calories (Low to High)'},
+    {value: 'calories,desc', label: 'Calories (High to Low)'},
   ];
   readonly startIndex = computed(() => (this.pageNumber() - INITIAL_PAGE_NUMBER) * this.pageSize());
-  readonly endIndex = computed(() => this.startIndex() + this.pageItems().length);
   private readonly recipeService = inject(RecipeService);
   private readonly refetchTrigger = signal(0);
   private readonly recipeSearchParams = computed<RecipeSearchParams>(() => {
@@ -126,6 +128,7 @@ export class RecipeListComponent {
   readonly isLoading = computed(() => this.state().loading);
   readonly errorMessage = computed(() => this.state().error);
   readonly pageItems = computed(() => this.state().page.content);
+  readonly endIndex = computed(() => this.startIndex() + this.pageItems().length);
   readonly totalRecipeCount = computed(() => this.state().page.totalElements);
   readonly totalPages = computed(() => {
     return Math.max(INITIAL_PAGE_NUMBER, this.state().page.totalPages)
