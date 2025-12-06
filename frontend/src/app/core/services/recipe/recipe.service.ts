@@ -38,7 +38,6 @@ export class RecipeService {
       httpParams = httpParams.set('sort', params.sort);
     }
 
-
     return this.httpClient
       .get<ApiResponse<Page<RecipeDto>>>(ApiEndpoints.Recipes.Recipes, {
         params: httpParams
@@ -56,6 +55,28 @@ export class RecipeService {
         map(resp => resp.data ?? null),
         catchError(() => of(null))
       );
+  }
+
+  create(recipe: RecipeDto): Observable<RecipeDto | null> {
+    return this.httpClient
+      .post<ApiResponse<RecipeDto>>(ApiEndpoints.Recipes.Recipes, recipe)
+      .pipe(
+        map(resp => resp.data ?? null),
+        catchError(() => of(null))
+      );
+  }
+
+  update(id: number, recipe: RecipeDto): Observable<RecipeDto | null> {
+    return this.httpClient
+      .put<ApiResponse<RecipeDto>>(`${ApiEndpoints.Recipes.Recipes}/${id}`, recipe)
+      .pipe(
+        map(resp => resp.data ?? null),
+        catchError(() => of(null))
+      );
+  }
+
+  delete(id: number): Observable<ApiResponse<void>> {
+    return this.httpClient.delete<ApiResponse<void>>(`${ApiEndpoints.Recipes.Recipes}/${id}`);
   }
 
   addFavourite(recipeId: number): Observable<null> {

@@ -9,4 +9,5 @@ export interface IngredientDto {
   readonly proteinPerUnit: number;
   readonly fatPerUnit: number;
   readonly category: IngredientCategory;
+  readonly authorId: number;
 }

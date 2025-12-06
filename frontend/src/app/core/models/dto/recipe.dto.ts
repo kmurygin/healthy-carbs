@@ -1,6 +1,7 @@
 import type {RecipeIngredientDto} from './recipe-ingredient.dto';
 import type {MealType} from "../enum/meal-type.enum";
 import type {DietType} from "../enum/diet-type.enum";
+import type {UserDto} from "@core/models/dto/user.dto";
 
 export interface RecipeDto {
   readonly id: number;
@@ -16,4 +17,5 @@ export interface RecipeDto {
   readonly mealType: MealType;
   readonly isFavourite: boolean;
   readonly favouritesCount: number;
+  readonly author: UserDto | null;
 }
