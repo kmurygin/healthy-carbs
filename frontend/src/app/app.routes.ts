@@ -1,6 +1,7 @@
 import type {Routes} from '@angular/router';
 import {authGuard} from '@core/guards/auth.guard';
 import {guestGuard} from '@core/guards/guest.guard';
+import {dietitianGuard} from "@core/guards/dietitian.guard";
 
 export const routes: Routes = [
   {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
@@ -100,6 +101,12 @@ export const routes: Routes = [
       import('./features/payments/payments.routes').then(
         (m) => m.PAYMENT_ROUTES
       ),
+  },
+  {
+    path: 'dietitian',
+    canActivate: [dietitianGuard],
+    loadChildren: () => import('./features/dietitian/dietitian.routes')
+      .then(m => m.DIETITIAN_ROUTES)
   },
   {
     path: 'error/404',
