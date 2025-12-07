@@ -1,0 +1,95 @@
+<div class="md:hidden space-y-4">
+  @for (ingredient of ingredients(); track ingredient.id) {
+    <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
+
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <h3 class="font-bold text-gray-900 text-lg">{{ ingredient.name }}</h3>
+          <span class="text-xs text-gray-500 font-medium">Unit: {{ ingredient.unit }}</span>
+        </div>
+
+        <span
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold
+          bg-emerald-50 text-emerald-800 border border-emerald-100"
+        >
+          <i [class]="iconFor(ingredient.category)" class="fa-solid text-emerald-600"></i>
+          {{ formatEnum(ingredient.category) }}
+        </span>
+      </div>
+
+      <div class="grid grid-cols-4 gap-2 mb-4">
+        <div
+          class="col-span-1 flex flex-col items-center justify-center p-2
+          rounded-xl bg-orange-50 border border-orange-100"
+        >
+          <fa-icon [icon]="icons.fire" class="text-orange-500 text-sm mb-1"></fa-icon>
+          <span class="font-bold text-gray-900 text-sm">
+            {{ ingredient.caloriesPerUnit | number:'1.0-0' }}
+          </span>
+          <span class="text-[10px] text-gray-500 uppercase">kcal</span>
+        </div>
+
+        <div class="col-span-3 grid grid-cols-3 gap-2 p-2 rounded-xl bg-gray-50 border border-gray-100">
+          <div class="flex flex-col items-center justify-center">
+            <span class="font-semibold text-amber-700 text-sm">
+              {{ ingredient.carbsPerUnit | number:'1.0-1' }}
+            </span>
+            <span class="text-[10px] text-gray-400 uppercase">Carbs</span>
+          </div>
+          <div class="flex flex-col items-center justify-center border-l border-gray-200">
+            <span class="font-semibold text-red-700 text-sm">
+              {{ ingredient.proteinPerUnit | number:'1.0-1' }}
+            </span>
+            <span class="text-[10px] text-gray-400 uppercase">Protein</span>
+          </div>
+          <div class="flex flex-col items-center justify-center border-l border-gray-200">
+            <span class="font-semibold text-yellow-700 text-sm">
+              {{ ingredient.fatPerUnit | number:'1.0-1' }}
+            </span>
+            <span class="text-[10px] text-gray-400 uppercase">Fat</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+        @if (ingredient.author) {
+          <span
+            class="inline-flex items-center gap-1.5 text-xs font-medium
+            text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg"
+          >
+            <fa-icon [icon]="icons.userTag"></fa-icon>
+            {{ ingredient.author.username }}
+          </span>
+        } @else {
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium
+          text-gray-500 bg-gray-100 px-2 py-1 rounded-lg"
+          >
+            <fa-icon [icon]="icons.globe"></fa-icon>
+            System
+          </span>
+        }
+
+        <div class="flex items-center gap-2">
+          <button
+            (click)="isOwner(ingredient) && edit.emit(ingredient.id)"
+            [disabled]="!isOwner(ingredient)"
+            [class.opacity-30]="!isOwner(ingredient)"
+            class="p-2 text-gray-400 hover:text-emerald-600
+            hover:bg-emerald-50 rounded-lg transition-colors"
+          >
+            <fa-icon [icon]="icons.pen"></fa-icon>
+          </button>
+          <button
+            (click)="isOwner(ingredient) && delete.emit(ingredient.id)"
+            [disabled]="!isOwner(ingredient)"
+            [class.opacity-30]="!isOwner(ingredient)"
+            class="p-2 text-gray-400 hover:text-red-600
+            hover:bg-red-50 rounded-lg transition-colors"
+          >
+            <fa-icon [icon]="icons.trash"></fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

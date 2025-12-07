@@ -1,0 +1,56 @@
+<form
+  (ngSubmit)="onSubmit()"
+  [formGroup]="formGroup"
+  class="mb-6 bg-emerald-600 p-4 rounded-xl shadow-md grid grid-cols-1 md:grid-cols-12 gap-4 items-end"
+  novalidate
+  role="search"
+>
+  <label class="col-span-12 md:col-span-5 flex flex-col" for="name">
+    <span class="text-sm font-medium mb-1 text-white flex items-center gap-1.5">
+      <i aria-hidden="true" class="fa-solid fa-magnifying-glass w-4 text-center text-white"></i>
+      Search by name
+    </span>
+    <input
+      [class]="controlClass"
+      formControlName="name"
+      id="name"
+      inputmode="search"
+      placeholder="e.g. Oats"
+      type="search"
+    />
+  </label>
+
+  <label class="col-span-12 md:col-span-5 flex flex-col" for="category">
+    <span class="text-sm font-medium mb-1 text-white flex items-center gap-1.5">
+      <i aria-hidden="true" class="fa-solid fa-filter w-4 text-center text-white"></i>
+      Category
+    </span>
+    <select
+      [class]="controlClass"
+      formControlName="category"
+      id="category"
+    >
+      @for (option of categoryOptions(); track option.value) {
+        <option [ngValue]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </label>
+
+  <div class="col-span-12 md:col-span-2 flex items-center h-[42px]">
+    <label class="inline-flex items-center cursor-pointer group">
+      <input class="sr-only peer" formControlName="onlyMine" type="checkbox">
+
+      <div class="relative w-11 h-6 bg-emerald-800/50 peer-focus:outline-none peer-focus:ring-2
+                  peer-focus:ring-white/50 rounded-full peer
+                  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full
+                  peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px]
+                  after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full
+                  after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-900">
+      </div>
+
+      <span class="ms-3 text-sm font-medium text-white group-hover:text-emerald-50 transition-colors select-none">
+        Only added by me
+      </span>
+    </label>
+  </div>
+</form>

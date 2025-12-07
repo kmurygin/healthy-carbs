@@ -13,4 +13,10 @@ export const DIETITIAN_ROUTES: Routes = [
       .then(m => m.DietitianRecipesComponent),
     title: 'Recipes'
   },
+  {
+    path: 'ingredients',
+    loadComponent: () => import('./dietitian-ingredients/dietitian-ingredients.component')
+      .then(m => m.DietitianIngredientsComponent),
+    title: 'Ingredients'
+  },
 ];

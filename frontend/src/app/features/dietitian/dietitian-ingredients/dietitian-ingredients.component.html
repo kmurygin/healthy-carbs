@@ -1,0 +1,74 @@
+<div class="mx-auto max-w-7xl px-4 py-8 bg-white">
+
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Ingredient Inventory</h2>
+    <button
+      (click)="openCreate()"
+      class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold
+      text-white shadow-sm hover:bg-emerald-700 transition-all hover:cursor-pointer
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+    >
+      <fa-icon [icon]="icons.plus"></fa-icon>
+      Add Ingredient
+    </button>
+  </div>
+
+  <app-ingredient-filter
+    (filterChange)="handleFilterChange($event)"
+    [categories]="categories"
+  ></app-ingredient-filter>
+
+  @if (isDataLoading()) {
+    <div class="flex flex-col items-center justify-center gap-3 p-12 text-gray-500">
+      <fa-icon [icon]="icons.spinner" class="text-3xl text-emerald-600 animate-spin"></fa-icon>
+      <p class="font-medium animate-pulse">Loading pantry...</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 flex items-center gap-3">
+      <fa-icon [icon]="icons.warn"></fa-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  } @else if (ingredients().length === 0) {
+    <div
+      class="flex flex-col items-center justify-center gap-3 p-16 text-gray-400
+      bg-white rounded-2xl border border-gray-200 border-dashed"
+    >
+      <fa-icon [icon]="icons.carrot" class="text-4xl mb-2"></fa-icon>
+      <p class="text-lg font-medium text-gray-600">No ingredients found.</p>
+    </div>
+  } @else {
+    <div class="space-y-4">
+
+      <app-dietitian-ingredients-mobile-list
+        [ingredients]="ingredients()"
+        [currentUserId]="currentUserId()"
+        (edit)="openEdit($event)"
+        (delete)="deleteItem($event)"
+      ></app-dietitian-ingredients-mobile-list>
+
+      <div class="hidden md:block">
+        <app-dietitian-ingredients-table
+          [ingredients]="ingredients()"
+          [currentUserId]="currentUserId()"
+          (edit)="openEdit($event)"
+          (delete)="deleteItem($event)"
+        ></app-dietitian-ingredients-table>
+      </div>
+
+      <app-pagination-controls
+        [pageNumber]="currentPage() + 1"
+        [totalPages]="totalPages()"
+        (nextPage)="nextPage()"
+        (previousPage)="prevPage()"
+      ></app-pagination-controls>
+    </div>
+  }
+
+  @if (isFormOpen()) {
+    <app-dietitian-ingredients-form
+      (closeOutputEmitter)="closeForm()"
+      (savedOutputEmitter)="onSaveSuccess($event)"
+      [ingredientId]="selectedId()"
+    ></app-dietitian-ingredients-form>
+  }
+</div>
