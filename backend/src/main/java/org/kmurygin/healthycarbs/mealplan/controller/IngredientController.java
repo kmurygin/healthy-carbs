@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,6 +61,7 @@ public class IngredientController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<IngredientDTO>> create(
             @Valid @RequestBody IngredientDTO ingredientDTO
     ) {
@@ -71,6 +73,7 @@ public class IngredientController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<IngredientDTO>> update(
             @PathVariable Long id,
             @RequestBody IngredientDTO ingredientDTO
@@ -84,6 +87,7 @@ public class IngredientController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         ingredientService.deleteById(id);
         return ApiResponses.success(HttpStatus.NO_CONTENT, null, "Ingredient deleted successfully");
