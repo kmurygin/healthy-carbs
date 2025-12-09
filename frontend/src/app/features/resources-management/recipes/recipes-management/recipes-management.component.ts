@@ -27,6 +27,7 @@ import {
 import {
   RecipesManagementTableComponent
 } from "@features/resources-management/recipes/recipes-management-table/recipes-management-table.component";
+
 const DEFAULT_PAGE_SIZE = 10;
 const INITIAL_PAGE_INDEX = 0;
 const INITIAL_PAGE: Page<RecipeDto> = {
@@ -45,7 +46,7 @@ const INITIAL_PAGE: Page<RecipeDto> = {
     RecipesManagementMobileListComponent,
     RecipesManagementTableComponent
   ],
-  templateUrl: './recipes-management.html',
+  templateUrl: './recipes-management.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecipesManagementComponent {
