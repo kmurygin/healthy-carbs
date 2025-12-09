@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {NutrientTotalComponent} from "../nutrient-total/nutrient-total.component";
 
 type Totals = Readonly<{
@@ -11,7 +11,7 @@ type Totals = Readonly<{
 
 @Component({
   selector: 'app-daily-meal-plan-totals',
-  imports: [CommonModule, NutrientTotalComponent],
+  imports: [NutrientTotalComponent],
   templateUrl: './daily-meal-plan-totals.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

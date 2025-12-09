@@ -6,7 +6,7 @@ import {NgOptimizedImage} from "@angular/common";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {faArrowRight} from "@fortawesome/free-solid-svg-icons";
 
-type DashboardCategory = {
+interface DashboardCategory {
   name: string;
   route: string;
   image: string;

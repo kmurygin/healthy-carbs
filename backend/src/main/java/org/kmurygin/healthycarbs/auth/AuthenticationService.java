@@ -18,6 +18,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -55,7 +58,8 @@ public class AuthenticationService {
                 "HealthyCarbs registration"
         ));
 
-        String jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(getExtraClaims(user), user);
+
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
@@ -76,7 +80,16 @@ public class AuthenticationService {
         User user = repository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
 
-        String jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(getExtraClaims(user), user);
+
         return AuthenticationResponse.builder().token(jwtToken).build();
+    }
+
+    private Map<String, Object> getExtraClaims(User user) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("id", user.getId());
+        extraClaims.put("role", user.getRole().name());
+
+        return extraClaims;
     }
 }

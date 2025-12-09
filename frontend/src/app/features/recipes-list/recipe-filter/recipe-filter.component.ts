@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, output,} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -29,7 +29,7 @@ type Field = TextField | SelectField;
 
 @Component({
   selector: 'app-recipe-filter',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './recipe-filter.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -43,6 +43,20 @@ export class RecipeFilterComponent {
   readonly sortSelectOptions = computed<readonly Option[]>(() =>
     this.sortOptions().map(o => ({value: o.value, label: o.label})),
   );
+  protected readonly controlClass = `
+  px-3 py-2 rounded-xl border border-gray-300 bg-white
+  focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600
+  focus:outline-none focus-visible:outline-none ring-0
+  `;
+  protected readonly formatEnum = formatEnum;
+  readonly dietOptions = computed<readonly Option[]>(() => [
+    {value: '', label: 'All'},
+    ...this.dietTypes().map(dietType => ({value: dietType, label: this.formatEnum(dietType)})),
+  ]);
+  readonly mealOptions = computed<readonly Option[]>(() => [
+    {value: '', label: 'All'},
+    ...this.mealTypes().map(mealType => ({value: mealType, label: this.formatEnum(mealType)})),
+  ]);
   readonly fields: readonly Field[] = [
     {
       inputType: 'text',
@@ -82,20 +96,6 @@ export class RecipeFilterComponent {
       options: () => this.sortSelectOptions(),
     },
   ] as const;
-  protected readonly controlClass = `
-  px-3 py-2 rounded-xl border border-gray-300 bg-white
-  focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600
-  focus:outline-none focus-visible:outline-none ring-0
-  `;
-  protected readonly formatEnum = formatEnum;
-  readonly dietOptions = computed<readonly Option[]>(() => [
-    {value: '', label: 'All'},
-    ...this.dietTypes().map(dietType => ({value: dietType, label: this.formatEnum(dietType)})),
-  ]);
-  readonly mealOptions = computed<readonly Option[]>(() => [
-    {value: '', label: 'All'},
-    ...this.mealTypes().map(mealType => ({value: mealType, label: this.formatEnum(mealType)})),
-  ]);
   private readonly formBuilder = inject(FormBuilder);
   protected readonly formGroup = this.formBuilder.nonNullable
     .group<RecipeFilters>({

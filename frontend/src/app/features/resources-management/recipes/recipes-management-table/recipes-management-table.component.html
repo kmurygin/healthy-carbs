@@ -1,0 +1,117 @@
+<div class="hidden md:block overflow-hidden rounded-2xl border border-gray-200 shadow-sm bg-white">
+  <table class="min-w-full text-sm text-left">
+    <thead class="bg-gray-50 text-gray-600 border-b border-gray-200">
+    <tr>
+      <th class="px-6 py-4 font-medium">Name</th>
+      <th class="px-6 py-4 font-medium text-center">Type</th>
+      <th class="px-6 py-4 font-medium text-center">Calories</th>
+      <th class="px-6 py-4 font-medium text-center">Macros</th>
+      <th class="px-6 py-4 font-medium text-center">Author</th>
+      <th class="px-6 py-4 font-medium text-right">Actions</th>
+    </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      @for (recipe of recipes(); track recipe.id) {
+        <tr class="hover:bg-gray-50/80 transition-colors">
+          <td class="px-6 py-4">
+            <div class="font-semibold text-gray-900 text-base">{{ recipe.name }}</div>
+            @if (recipe.description) {
+              <div class="text-gray-500 text-xs mt-0.5 line-clamp-1 max-w-xs">
+                {{ recipe.description }}
+              </div>
+            }
+          </td>
+          <td class="px-6 py-4 text-center">
+            <div class="flex flex-row justify-center gap-2 items-center">
+              <span
+                class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-1
+                text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20"
+              >
+                {{ recipe.dietType | titlecase }}
+              </span>
+              <span
+                class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1
+                    text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10"
+              >
+                    {{ recipe.mealType | titlecase }}
+              </span>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-center">
+                <span class="inline-flex items-center gap-1 font-semibold text-gray-900">
+                  <fa-icon [icon]="icons.fire" class="text-orange-500 text-xs"></fa-icon>
+                  {{ recipe.calories | number:'1.0-0' }}
+                </span>
+          </td>
+          <td class="px-6 py-4">
+            <div class="flex items-center justify-center gap-3 text-xs text-gray-600">
+              <span class="flex flex-col items-center" title="Carbs">
+                <span class="font-medium text-amber-700">
+                  {{ recipe.carbs | number:'1.0-0' }}g
+                </span>
+                <span class="text-[10px] text-gray-400">carbs</span>
+              </span>
+              <div class="h-6 w-px bg-gray-200"></div>
+              <span class="flex flex-col items-center" title="Protein">
+                <span class="font-medium text-red-700">
+                  {{ recipe.protein | number:'1.0-0' }}g
+                </span>
+                <span class="text-[10px] text-gray-400">protein</span>
+              </span>
+              <div class="h-6 w-px bg-gray-200"></div>
+              <span class="flex flex-col items-center" title="Fat">
+                <span class="font-medium text-yellow-700">
+                  {{ recipe.fat | number:'1.0-0' }}g
+                </span>
+                <span class="text-[10px] text-gray-400">fat</span>
+              </span>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-center">
+            @if (recipe.author) {
+              <span
+                class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1
+                    text-xs font-medium text-emerald-700"
+              >
+                    <fa-icon [icon]="icons.userTag"></fa-icon>
+                {{ recipe.author.username }}
+                  </span>
+            } @else {
+              <span
+                class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1
+                    text-xs font-medium text-gray-600"
+              >
+                    <fa-icon [icon]="icons.globe"></fa-icon>
+                    System
+                  </span>
+            }
+          </td>
+          <td class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button
+                (click)="isOwner(recipe) && edit.emit(recipe.id)"
+                [class.opacity-30]="!isOwner(recipe)"
+                [disabled]="!isOwner(recipe)"
+                class="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50
+                    rounded-lg transition-colors disabled:cursor-not-allowed cursor-pointer"
+                title="Edit recipe"
+              >
+                <fa-icon [icon]="icons.pen" class="text-sm"></fa-icon>
+              </button>
+              <button
+                (click)="isOwner(recipe) && delete.emit(recipe.id)"
+                [class.opacity-30]="!isOwner(recipe)"
+                [disabled]="!isOwner(recipe)"
+                class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50
+                    rounded-lg transition-colors disabled:cursor-not-allowed cursor-pointer"
+                title="Delete recipe"
+              >
+                <fa-icon [icon]="icons.trash" class="text-sm"></fa-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

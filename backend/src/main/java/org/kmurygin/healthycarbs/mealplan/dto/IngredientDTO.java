@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.kmurygin.healthycarbs.mealplan.IngredientCategory;
+import org.kmurygin.healthycarbs.user.dto.UserDTO;
+
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -17,4 +20,8 @@ public class IngredientDTO {
     private Double proteinPerUnit;
     private Double fatPerUnit;
     private IngredientCategory category;
+
+    private Set<AllergenDTO> allergens;
+
+    private UserDTO author;
 }

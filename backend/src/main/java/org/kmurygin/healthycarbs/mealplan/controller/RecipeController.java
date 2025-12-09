@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,6 +64,7 @@ public class RecipeController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<RecipeDTO>> create(
             @Valid @RequestBody RecipeDTO recipeDTO
     ) {
@@ -75,6 +77,7 @@ public class RecipeController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<RecipeDTO>> update(
             @PathVariable Long id,
             @RequestBody RecipeDTO recipeDTO
@@ -85,6 +88,7 @@ public class RecipeController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         recipeService.deleteById(id);
         return ApiResponses.success(
@@ -102,6 +106,7 @@ public class RecipeController {
     }
 
     @PostMapping("/{recipeId}/ingredients/{ingredientId}")
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<RecipeDTO>> addIngredient(
             @PathVariable Long recipeId,
             @PathVariable Long ingredientId,

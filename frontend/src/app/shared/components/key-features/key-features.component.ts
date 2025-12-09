@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {NgOptimizedImage} from '@angular/common';
 
 interface Feature {
   label: string;
@@ -13,8 +13,7 @@ interface Feature {
 @Component({
   selector: 'app-key-features',
   imports: [
-    CommonModule,
-    NgOptimizedImage,
+    NgOptimizedImage
   ],
   templateUrl: './key-features.component.html',
   styleUrl: './key-features.component.css',

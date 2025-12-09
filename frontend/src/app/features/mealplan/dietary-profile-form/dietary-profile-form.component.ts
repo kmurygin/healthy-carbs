@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, effect, inject, signal,} from '@angu
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DietaryProfileService} from "@core/services/dietary-profile/dietary-profile.service";
 import type {DietaryProfilePayload} from "@core/models/payloads/dietaryprofile.payload";
-import {CommonModule} from "@angular/common";
+
 import {DietGoal} from "@core/models/enum/diet-goal.enum";
 import {DietType} from "@core/models/enum/diet-type.enum";
 import {ActivityLevel} from "@core/models/enum/activity-level.enum";
@@ -18,9 +18,8 @@ import {ActivityLevelDescriptionMap} from "@core/constants/activity-level-descri
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    CommonModule,
     ErrorMessageComponent,
-    SuccessMessageComponent,
+    SuccessMessageComponent
   ],
   templateUrl: './dietary-profile-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

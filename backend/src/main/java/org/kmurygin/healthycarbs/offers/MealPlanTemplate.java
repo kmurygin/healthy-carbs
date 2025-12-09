@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlanDay;
+import org.kmurygin.healthycarbs.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,10 @@ public class MealPlanTemplate {
     private Double totalCarbs;
     private Double totalProtein;
     private Double totalFat;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
 
     @Override
     public final boolean equals(Object o) {

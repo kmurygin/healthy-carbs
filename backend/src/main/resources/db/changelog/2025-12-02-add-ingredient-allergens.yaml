@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-ingredient-allergens
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE ingredient_allergens (
+                ingredient_id BIGINT NOT NULL,
+                allergen_id BIGINT NOT NULL,
+                CONSTRAINT pk_ingredient_allergens
+                  PRIMARY KEY (ingredient_id, allergen_id),
+                CONSTRAINT fk_ingredient_allergens_ingredient
+                  FOREIGN KEY (ingredient_id) REFERENCES ingredients (id),
+                CONSTRAINT fk_ingredient_allergens_allergen
+                  FOREIGN KEY (allergen_id) REFERENCES allergens (id)
+              );

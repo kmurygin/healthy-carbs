@@ -45,5 +45,10 @@ export const ApiEndpoints = {
 
   Offer: {
     Offer: `${apiUrl}/offers`,
+  },
+
+  Ingredients: {
+    Ingredients: `${apiUrl}/ingredients`,
+    IngredientsPage: `${apiUrl}/ingredients/page`,
   }
 };

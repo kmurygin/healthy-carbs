@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
+import org.kmurygin.healthycarbs.user.dto.UserDTO;
 
 import java.util.List;
 
@@ -25,4 +26,5 @@ public class RecipeDTO {
     private DietType dietType;
     private Boolean isFavourite;
     private Long favouritesCount;
+    private UserDTO author;
 }

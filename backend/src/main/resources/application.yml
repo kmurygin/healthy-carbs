@@ -80,6 +80,7 @@ logging:
 
 
 ---
+
 spring:
   config:
     activate:
@@ -87,4 +88,6 @@ spring:
   cloud:
     gcp:
       sql:
+        enabled: false
+      core:
         enabled: false

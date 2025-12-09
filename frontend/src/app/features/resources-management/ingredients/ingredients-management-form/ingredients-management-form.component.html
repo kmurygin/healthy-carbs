@@ -1,0 +1,185 @@
+<div class="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm">
+  <div class="flex min-h-full items-center justify-center p-4">
+    <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-200">
+
+      @if (isLoading()) {
+        <div
+          class="absolute inset-0 z-10 bg-white/60 backdrop-blur-[2px] rounded-2xl flex items-center justify-center"
+        >
+          <fa-icon [icon]="icons.spinner" class="text-4xl text-emerald-600 animate-spin"></fa-icon>
+        </div>
+      }
+
+      <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100">
+        <h3 class="text-xl font-bold text-gray-900 tracking-tight">
+          {{ ingredientId() ? 'Edit Ingredient' : 'New Ingredient' }}
+        </h3>
+        <button
+          (click)="onCancel()"
+          class="text-gray-400 hover:text-gray-600 p-2 rounded-xl hover:bg-gray-100 transition-colors hover:cursor-pointer"
+        >
+          <fa-icon [icon]="icons.times" class="text-lg"></fa-icon>
+        </button>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" [formGroup]="formGroup" class="p-8 space-y-8">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <div class="col-span-full">
+            <label class="block text-sm font-semibold text-gray-900 mb-2" for="name">Ingredient Name</label>
+            <input
+              class="w-full rounded-xl border-gray-300 shadow-sm py-3 px-4 text-gray-900
+              focus:border-emerald-500 focus:ring-emerald-500 transition-all placeholder:text-gray-400"
+              formControlName="name"
+              id="name"
+              placeholder="e.g. Rolled Oats"
+              type="text"
+            >
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-900 mb-2" for="category">Category</label>
+            <select
+              class="w-full rounded-xl border-gray-300 shadow-sm py-3 px-4 text-gray-900
+                     focus:border-emerald-500 focus:ring-emerald-500 transition-all bg-white"
+              formControlName="category"
+              id="category"
+            >
+              @for (cat of categories; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-900 mb-2" for="unit">Unit</label>
+            <input
+              class="w-full rounded-xl border-gray-300 shadow-sm py-3 px-4 text-gray-900
+              focus:border-emerald-500 focus:ring-emerald-500 transition-all placeholder:text-gray-400"
+              formControlName="unit"
+              id="unit"
+              placeholder="e.g. g, ml, piece"
+              type="text"
+            >
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200">
+          <div class="flex items-center justify-between mb-5">
+            <h4 class="text-sm font-bold text-gray-900">Nutritional Data</h4>
+            <span
+              class="text-xs font-medium text-gray-500 bg-white px-2 py-1
+              rounded-md border border-gray-200 shadow-sm"
+            >
+              per 1 unit
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5" for="calories">Calories</label>
+              <div class="relative">
+                <input
+                  class="w-full rounded-xl border-gray-300 shadow-sm py-2.5 px-3 text-gray-900
+                  focus:border-orange-500 focus:ring-orange-500 transition-all"
+                  formControlName="caloriesPerUnit"
+                  id="calories"
+                  type="number"
+                >
+                <div
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none
+                  text-xs text-gray-400 font-medium"
+                >
+                  kcal
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5"
+                     for="carbs">Carbs</label>
+              <div class="relative">
+                <input
+                  class="w-full rounded-xl border-gray-300 shadow-sm py-2.5 px-3 text-gray-900
+                  focus:border-amber-500 focus:ring-amber-500 transition-all"
+                  formControlName="carbsPerUnit"
+                  id="carbs"
+                  type="number"
+                >
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none
+                text-xs text-gray-400 font-medium"
+                >
+                  g
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5"
+                     for="protein">Protein</label>
+              <div class="relative">
+                <input
+                  class="w-full rounded-xl border-gray-300 shadow-sm py-2.5 px-3 text-gray-900
+                  focus:border-red-500 focus:ring-red-500 transition-all"
+                  formControlName="proteinPerUnit"
+                  id="protein"
+                  type="number"
+                >
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none
+                text-xs text-gray-400 font-medium"
+                >
+                  g
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5" for="fat">Fat</label>
+              <div class="relative">
+                <input
+                  class="w-full rounded-xl border-gray-300 shadow-sm py-2.5 px-3 text-gray-900
+                  focus:border-yellow-500 focus:ring-yellow-500 transition-all"
+                  formControlName="fatPerUnit"
+                  id="fat"
+                  type="number"
+                >
+                <div
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none
+                  text-xs text-gray-400 font-medium"
+                >
+                  g
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+          <button
+            (click)="onCancel()"
+            class="px-6 py-3 text-sm font-semibold text-gray-700 bg-white border border-gray-300
+            rounded-xl hover:bg-gray-50 transition-colors shadow-sm hover:cursor-pointer"
+            type="button"
+          >
+            Cancel
+          </button>
+
+          <button
+            [disabled]="formGroup.invalid || isLoading()"
+            class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-emerald-600
+            rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm
+            transition-all hover:shadow-md focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 hover:cursor-pointer"
+            type="submit"
+          >
+            <fa-icon [icon]="icons.save"></fa-icon>
+            {{ ingredientId() ? 'Save Changes' : 'Create Ingredient' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

@@ -23,9 +23,6 @@ import {SourceTagComponent} from "@features/mealplan/source-tag/source-tag.compo
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MealPlanHistoryComponent {
-  readonly rows = computed<readonly MealPlanRow[]>(
-    () => buildRows(this.mealPlans())
-  );
   private readonly mealPlanService = inject(MealPlanService);
   private readonly initialState: HistoryState = {
     plans: [],
@@ -48,5 +45,8 @@ export class MealPlanHistoryComponent {
   );
   readonly loading = computed(() => this.historyState().loading);
   readonly mealPlans = computed(() => this.historyState().plans);
+  readonly rows = computed<readonly MealPlanRow[]>(
+    () => buildRows(this.mealPlans())
+  );
   readonly errorMessage = computed(() => this.historyState().error);
 }
