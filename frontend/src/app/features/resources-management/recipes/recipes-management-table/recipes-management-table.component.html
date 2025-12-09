@@ -23,18 +23,18 @@
           </td>
           <td class="px-6 py-4 text-center">
             <div class="flex flex-row justify-center gap-2 items-center">
-                  <span
-                    class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-1
-                    text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20"
-                  >
-                    {{ recipe.dietType | titlecase }}
-                  </span>
+              <span
+                class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-1
+                text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20"
+              >
+                {{ recipe.dietType | titlecase }}
+              </span>
               <span
                 class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1
                     text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10"
               >
                     {{ recipe.mealType | titlecase }}
-                  </span>
+              </span>
             </div>
           </td>
           <td class="px-6 py-4 text-center">
@@ -45,26 +45,26 @@
           </td>
           <td class="px-6 py-4">
             <div class="flex items-center justify-center gap-3 text-xs text-gray-600">
-                  <span class="flex flex-col items-center" title="Carbs">
-                    <span class="font-medium text-amber-700">
-                      {{ recipe.carbs | number:'1.0-0' }}g
-                    </span>
-                    <span class="text-[10px] text-gray-400">carbs</span>
-                  </span>
+              <span class="flex flex-col items-center" title="Carbs">
+                <span class="font-medium text-amber-700">
+                  {{ recipe.carbs | number:'1.0-0' }}g
+                </span>
+                <span class="text-[10px] text-gray-400">carbs</span>
+              </span>
               <div class="h-6 w-px bg-gray-200"></div>
               <span class="flex flex-col items-center" title="Protein">
-                    <span class="font-medium text-red-700">
-                      {{ recipe.protein | number:'1.0-0' }}g
-                    </span>
-                    <span class="text-[10px] text-gray-400">protein</span>
-                  </span>
+                <span class="font-medium text-red-700">
+                  {{ recipe.protein | number:'1.0-0' }}g
+                </span>
+                <span class="text-[10px] text-gray-400">protein</span>
+              </span>
               <div class="h-6 w-px bg-gray-200"></div>
               <span class="flex flex-col items-center" title="Fat">
-                    <span class="font-medium text-yellow-700">
-                      {{ recipe.fat | number:'1.0-0' }}g
-                    </span>
-                    <span class="text-[10px] text-gray-400">fat</span>
-                  </span>
+                <span class="font-medium text-yellow-700">
+                  {{ recipe.fat | number:'1.0-0' }}g
+                </span>
+                <span class="text-[10px] text-gray-400">fat</span>
+              </span>
             </div>
           </td>
           <td class="px-6 py-4 text-center">

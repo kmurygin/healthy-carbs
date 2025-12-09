@@ -43,19 +43,19 @@
       <p class="text-sm">Start by creating your first recipe!</p>
     </div>
   } @else {
-    <app-dietitian-recipe-mobile-list
+    <app-recipes-management-mobile-list
       (delete)="deleteRecipe($event)"
       (edit)="editRecipe($event)"
       [currentUserId]="currentUserId"
       [recipes]="recipes()"
-    ></app-dietitian-recipe-mobile-list>
+    ></app-recipes-management-mobile-list>
 
-    <app-dietitian-recipe-table
+    <app-recipes-management-table
       (delete)="deleteRecipe($event)"
       (edit)="editRecipe($event)"
       [currentUserId]="currentUserId"
       [recipes]="recipes()"
-    ></app-dietitian-recipe-table>
+    ></app-recipes-management-table>
 
     <div class="mt-8">
       <app-pagination-controls

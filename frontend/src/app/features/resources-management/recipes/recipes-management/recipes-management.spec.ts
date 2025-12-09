@@ -1,19 +1,19 @@
 import type {ComponentFixture} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing';
 
-import {DietitianRecipesFormComponent} from './dietitian-recipes-form.component';
+import {RecipesManagementComponent} from './recipes-management.component';
 
-describe('DietitianRecipesFormComponent', () => {
-  let component: DietitianRecipesFormComponent;
-  let fixture: ComponentFixture<DietitianRecipesFormComponent>;
+describe('RecipesManagementComponent', () => {
+  let component: RecipesManagementComponent;
+  let fixture: ComponentFixture<RecipesManagementComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DietitianRecipesFormComponent]
+      imports: [RecipesManagementComponent]
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(DietitianRecipesFormComponent);
+    fixture = TestBed.createComponent(RecipesManagementComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

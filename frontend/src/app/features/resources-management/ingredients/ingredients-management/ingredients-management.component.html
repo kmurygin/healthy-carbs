@@ -39,20 +39,20 @@
   } @else {
     <div class="space-y-4">
 
-      <app-dietitian-ingredients-mobile-list
+      <app-ingredients-management-mobile-list
         [ingredients]="ingredients()"
         [currentUserId]="currentUserId()"
         (edit)="openEdit($event)"
         (delete)="deleteItem($event)"
-      ></app-dietitian-ingredients-mobile-list>
+      ></app-ingredients-management-mobile-list>
 
       <div class="hidden md:block">
-        <app-dietitian-ingredients-table
+        <app-ingredients-management-table
           [ingredients]="ingredients()"
           [currentUserId]="currentUserId()"
           (edit)="openEdit($event)"
           (delete)="deleteItem($event)"
-        ></app-dietitian-ingredients-table>
+        ></app-ingredients-management-table>
       </div>
 
       <app-pagination-controls
@@ -65,10 +65,10 @@
   }
 
   @if (isFormOpen()) {
-    <app-dietitian-ingredients-form
+    <app-ingredients-management-form
       (closeOutputEmitter)="closeForm()"
       (savedOutputEmitter)="onSaveSuccess($event)"
       [ingredientId]="selectedId()"
-    ></app-dietitian-ingredients-form>
+    ></app-ingredients-management-form>
   }
 </div>

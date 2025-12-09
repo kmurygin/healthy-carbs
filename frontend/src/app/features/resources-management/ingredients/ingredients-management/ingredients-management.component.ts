@@ -10,20 +10,20 @@ import type {IngredientDto} from '@core/models/dto/ingredient.dto';
 import type {Page} from '@core/models/page.model';
 import type {IngredientSearchParams} from '@core/models/ingredient-search.params';
 import {AbstractManagementComponent} from '@shared/components/abstract-management/abstract-management.component';
-import {PaginationControlsComponent} from '../../recipes-list/pagination-controls/pagination-controls.component';
+import {PaginationControlsComponent} from '../../../recipes-list/pagination-controls/pagination-controls.component';
 import {
-  DietitianIngredientsFormComponent
-} from '@features/dietitian/dietitian-ingredients-form/dietitian-ingredients-form.component';
+  IngredientsManagementFormComponent
+} from '@features/resources-management/ingredients/ingredients-management-form/ingredients-management-form.component';
 import {
-  DietitianIngredientsTableComponent
-} from '@features/dietitian/dietitian-ingredients-table/dietitian-ingredients-table.component';
+  IngredientsManagementTableComponent
+} from '@features/resources-management/ingredients/ingredients-management-table/ingredients-management-table.component';
 import {IngredientCategory} from "@core/models/enum/ingredient-category.enum";
 import {AuthService} from "@core/services/auth/auth.service";
-import {IngredientFilterComponent} from "@features/dietitian/ingredient-filter/ingredient-filter.component";
-import type {IngredientFilters} from "@features/dietitian/ingredient-filter/ingredient-filter.component";
+import {IngredientFilterComponent} from "@features/resources-management/ingredients/ingredient-filter/ingredient-filter.component";
+import type {IngredientFilters} from "@features/resources-management/ingredients/ingredient-filter/ingredient-filter.component";
 import {
-  DietitianIngredientsMobileListComponent
-} from "@features/dietitian/dietitian-ingredients-mobile-list/dietitian-ingredients-mobile-list.component";
+  IngredientsManagementMobileListComponent
+} from "@features/resources-management/ingredients/ingredients-management-mobile-list/ingredients-management-mobile-list.component";
 
 const DEFAULT_PAGE_SIZE = 10;
 const INITIAL_PAGE_INDEX = 0;
@@ -40,20 +40,20 @@ interface IngredientsState {
 }
 
 @Component({
-  selector: 'app-dietitian-ingredients',
+  selector: 'app-ingredients-management',
   imports: [
     CommonModule,
     FontAwesomeModule,
-    DietitianIngredientsFormComponent,
-    DietitianIngredientsTableComponent,
-    DietitianIngredientsMobileListComponent,
+    IngredientsManagementFormComponent,
+    IngredientsManagementTableComponent,
+    IngredientsManagementMobileListComponent,
     PaginationControlsComponent,
     IngredientFilterComponent
   ],
-  templateUrl: './dietitian-ingredients.component.html',
+  templateUrl: './ingredients-management.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DietitianIngredientsComponent extends AbstractManagementComponent<IngredientDto> {
+export class IngredientsManagementComponent extends AbstractManagementComponent<IngredientDto> {
   readonly categories = Object.values(IngredientCategory);
   protected readonly icons = {
     spinner: faSpinner,

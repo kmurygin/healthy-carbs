@@ -9,14 +9,14 @@ export const DIETITIAN_ROUTES: Routes = [
   },
   {
     path: 'recipes',
-    loadComponent: () => import('./dietitian-recipes/dietitian-recipes.component')
-      .then(m => m.DietitianRecipesComponent),
+    loadComponent: () => import('@features/resources-management/recipes/recipes-management/recipes-management.component')
+      .then(m => m.RecipesManagementComponent),
     title: 'Recipes'
   },
   {
     path: 'ingredients',
-    loadComponent: () => import('./dietitian-ingredients/dietitian-ingredients.component')
-      .then(m => m.DietitianIngredientsComponent),
+    loadComponent: () => import('@features/resources-management/ingredients/ingredients-management/ingredients-management.component')
+      .then(m => m.IngredientsManagementComponent),
     title: 'Ingredients'
   },
 ];

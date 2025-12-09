@@ -9,25 +9,24 @@ import {IngredientService} from '@core/services/ingredient/ingredient.service';
 import {AuthService} from '@core/services/auth/auth.service';
 import {ConfirmationService} from '@core/services/ui/confirmation.service';
 import {NotificationService} from '@core/services/ui/notification.service';
-import {PaginationControlsComponent} from '../../recipes-list/pagination-controls/pagination-controls.component';
-import {RecipeFilterComponent} from '../../recipes-list/recipe-filter/recipe-filter.component';
+import {PaginationControlsComponent} from '../../../recipes-list/pagination-controls/pagination-controls.component';
+import {RecipeFilterComponent} from '../../../recipes-list/recipe-filter/recipe-filter.component';
 import {
-  DietitianRecipesFormComponent
-} from '@features/dietitian/dietitian-recipes-form/dietitian-recipes-form.component';
+  RecipesManagementFormComponent
+} from '@features/resources-management/recipes/recipes-management-form/recipes-management-form.component';
 import type {RecipeDto} from '@core/models/dto/recipe.dto';
 import type {IngredientDto} from '@core/models/dto/ingredient.dto';
 import type {Page} from '@core/models/page.model';
 import type {RecipeSearchParams} from '@core/models/recipe-search.params';
 import {DietType} from '@core/models/enum/diet-type.enum';
 import {MealType} from '@core/models/enum/meal-type.enum';
-import type {Option, RecipeFilters} from '../../recipes-list/recipes-list.types';
+import type {Option, RecipeFilters} from '../../../recipes-list/recipes-list.types';
 import {
-  DietitianRecipeMobileListComponent
-} from "@features/dietitian/dietitian-recipe-mobile-list/dietitian-recipe-mobile-list.component";
+  RecipesManagementMobileListComponent
+} from "@features/resources-management/recipes/recipes-management-mobile-list/recipes-management-mobile-list.component";
 import {
-  DietitianRecipeTableComponent
-} from "@features/dietitian/dietitian-recipe-table/dietitian-recipe-table.component";
-
+  RecipesManagementTableComponent
+} from "@features/resources-management/recipes/recipes-management-table/recipes-management-table.component";
 const DEFAULT_PAGE_SIZE = 10;
 const INITIAL_PAGE_INDEX = 0;
 const INITIAL_PAGE: Page<RecipeDto> = {
@@ -36,20 +35,20 @@ const INITIAL_PAGE: Page<RecipeDto> = {
 };
 
 @Component({
-  selector: 'app-dietitian-recipes',
+  selector: 'app-recipes-management',
   imports: [
     CommonModule,
     FontAwesomeModule,
     PaginationControlsComponent,
     RecipeFilterComponent,
-    DietitianRecipesFormComponent,
-    DietitianRecipeMobileListComponent,
-    DietitianRecipeTableComponent
+    RecipesManagementFormComponent,
+    RecipesManagementMobileListComponent,
+    RecipesManagementTableComponent
   ],
-  templateUrl: './dietitian-recipes.component.html',
+  templateUrl: './recipes-management.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DietitianRecipesComponent {
+export class RecipesManagementComponent {
   readonly dietTypes = signal(Object.values(DietType));
   readonly mealTypes = signal(Object.values(MealType));
   readonly isFormOpen = signal(false);

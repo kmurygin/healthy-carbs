@@ -40,10 +40,10 @@ import {MealType} from '@core/models/enum/meal-type.enum';
 @Component({
   selector: 'app-recipe-form',
   imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
-  templateUrl: './dietitian-recipes-form.component.html',
+  templateUrl: './recipes-management-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DietitianRecipesFormComponent implements OnInit {
+export class RecipesManagementFormComponent implements OnInit {
   readonly recipeId = input<number | null>(null);
   readonly allIngredients = input<IngredientDto[] | null>(null);
 

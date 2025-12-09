@@ -8,12 +8,12 @@ import type {IngredientDto} from '@core/models/dto/ingredient.dto';
 import {IngredientCategory} from '@core/models/enum/ingredient-category.enum';
 
 @Component({
-  selector: 'app-dietitian-ingredients-form',
+  selector: 'app-ingredients-management-form',
   imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
-  templateUrl: './dietitian-ingredients-form.component.html',
+  templateUrl: './ingredients-management-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DietitianIngredientsFormComponent {
+export class IngredientsManagementFormComponent {
   readonly ingredientId = input<number | null>(null);
   readonly closeOutputEmitter = output();
   readonly savedOutputEmitter = output<string>();

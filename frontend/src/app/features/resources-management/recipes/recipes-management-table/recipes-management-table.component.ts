@@ -1,16 +1,16 @@
 import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {CommonModule, DecimalPipe, TitleCasePipe} from '@angular/common';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {faFire, faPen, faTrash} from '@fortawesome/free-solid-svg-icons';
+import {faFire, faGlobe, faPen, faTrash, faUserTag} from '@fortawesome/free-solid-svg-icons';
 import type {RecipeDto} from '@core/models/dto/recipe.dto';
 
 @Component({
-  selector: 'app-dietitian-recipe-mobile-list',
+  selector: 'app-recipes-management-table',
   imports: [CommonModule, FontAwesomeModule, TitleCasePipe, DecimalPipe],
-  templateUrl: './dietitian-recipe-mobile-list.component.html',
+  templateUrl: './recipes-management-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DietitianRecipeMobileListComponent {
+export class RecipesManagementTableComponent {
   readonly recipes = input.required<readonly RecipeDto[]>();
   readonly currentUserId = input<number | null>(null);
 
@@ -18,9 +18,11 @@ export class DietitianRecipeMobileListComponent {
   readonly delete = output<number>();
 
   protected readonly icons = {
-    fire: faFire,
     pen: faPen,
-    trash: faTrash
+    trash: faTrash,
+    userTag: faUserTag,
+    globe: faGlobe,
+    fire: faFire
   };
 
   isOwner(recipe: RecipeDto): boolean {

@@ -1,19 +1,19 @@
 import type {ComponentFixture} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing';
 
-import {DietitianIngredientsComponent} from './dietitian-ingredients.component';
+import {IngredientsManagementComponent} from './ingredients-management.component';
 
-describe('DietitianIngredientsComponent', () => {
-  let component: DietitianIngredientsComponent;
-  let fixture: ComponentFixture<DietitianIngredientsComponent>;
+describe('IngredientsManagementComponent', () => {
+  let component: IngredientsManagementComponent;
+  let fixture: ComponentFixture<IngredientsManagementComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DietitianIngredientsComponent]
+      imports: [IngredientsManagementComponent]
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(DietitianIngredientsComponent);
+    fixture = TestBed.createComponent(IngredientsManagementComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

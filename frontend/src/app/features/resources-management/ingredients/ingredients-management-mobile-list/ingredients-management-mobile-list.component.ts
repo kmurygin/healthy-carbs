@@ -14,12 +14,12 @@ import { CategoryIconMap } from '@core/constants/category-icon.map';
 import {formatEnum} from "@shared/utils";
 
 @Component({
-  selector: 'app-dietitian-ingredients-mobile-list',
+  selector: 'app-ingredients-management-mobile-list',
   imports: [CommonModule, FontAwesomeModule, DecimalPipe],
-  templateUrl: './dietitian-ingredients-mobile-list.component.html',
+  templateUrl: './ingredients-management-mobile-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DietitianIngredientsMobileListComponent {
+export class IngredientsManagementMobileListComponent {
   readonly ingredients = input.required<readonly IngredientDto[]>();
   readonly currentUserId = input<number | null>(null);
 

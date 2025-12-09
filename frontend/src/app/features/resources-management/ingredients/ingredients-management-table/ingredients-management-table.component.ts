@@ -8,7 +8,7 @@ import {CategoryIconMap} from "@core/constants/category-icon.map";
 import {formatEnum} from "@shared/utils";
 
 @Component({
-  selector: 'app-dietitian-ingredients-table',
+  selector: 'app-ingredients-management-table',
   imports: [CommonModule, FontAwesomeModule, DecimalPipe],
   template: `
     <div class="overflow-hidden rounded-2xl border border-gray-200 shadow-sm bg-white">
@@ -130,7 +130,7 @@ import {formatEnum} from "@shared/utils";
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DietitianIngredientsTableComponent {
+export class IngredientsManagementTableComponent {
   readonly ingredients = input.required<readonly IngredientDto[]>();
   readonly currentUserId = input<number | null>(null);
   readonly edit = output<number>();
