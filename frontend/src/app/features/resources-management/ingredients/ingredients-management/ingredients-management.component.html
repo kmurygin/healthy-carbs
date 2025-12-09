@@ -40,26 +40,26 @@
     <div class="space-y-4">
 
       <app-ingredients-management-mobile-list
-        [ingredients]="ingredients()"
-        [currentUserId]="currentUserId()"
-        (edit)="openEdit($event)"
         (delete)="deleteItem($event)"
+        (edit)="openEdit($event)"
+        [currentUserId]="currentUserId()"
+        [ingredients]="ingredients()"
       ></app-ingredients-management-mobile-list>
 
       <div class="hidden md:block">
         <app-ingredients-management-table
-          [ingredients]="ingredients()"
-          [currentUserId]="currentUserId()"
-          (edit)="openEdit($event)"
           (delete)="deleteItem($event)"
+          (edit)="openEdit($event)"
+          [currentUserId]="currentUserId()"
+          [ingredients]="ingredients()"
         ></app-ingredients-management-table>
       </div>
 
       <app-pagination-controls
-        [pageNumber]="currentPage() + 1"
-        [totalPages]="totalPages()"
         (nextPage)="nextPage()"
         (previousPage)="prevPage()"
+        [pageNumber]="currentPage() + 1"
+        [totalPages]="totalPages()"
       ></app-pagination-controls>
     </div>
   }

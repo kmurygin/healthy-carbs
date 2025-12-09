@@ -1,16 +1,10 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import {
-  faFire,
-  faPen,
-  faTrash,
-  faGlobe,
-  faUserTag
-} from '@fortawesome/free-solid-svg-icons';
-import { IngredientDto } from '@core/models/dto/ingredient.dto';
-import { IngredientCategory } from '@core/models/enum/ingredient-category.enum';
-import { CategoryIconMap } from '@core/constants/category-icon.map';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {CommonModule, DecimalPipe} from '@angular/common';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {faFire, faGlobe, faPen, faTrash, faUserTag} from '@fortawesome/free-solid-svg-icons';
+import type {IngredientDto} from '@core/models/dto/ingredient.dto';
+import type {IngredientCategory} from '@core/models/enum/ingredient-category.enum';
+import {CategoryIconMap} from '@core/constants/category-icon.map';
 import {formatEnum} from "@shared/utils";
 
 @Component({
@@ -33,6 +27,7 @@ export class IngredientsManagementMobileListComponent {
     globe: faGlobe,
     userTag: faUserTag
   };
+  protected readonly formatEnum = formatEnum;
 
   isOwner(ingredient: IngredientDto): boolean {
     return ingredient.author?.id === this.currentUserId();
@@ -40,8 +35,6 @@ export class IngredientsManagementMobileListComponent {
 
   iconFor(category: IngredientCategory): string {
     const key = category.toUpperCase().trim();
-    return CategoryIconMap[key as keyof typeof CategoryIconMap] || CategoryIconMap['OTHER'];
+    return CategoryIconMap[key as keyof typeof CategoryIconMap] || CategoryIconMap.OTHER;
   }
-
-  protected readonly formatEnum = formatEnum;
 }

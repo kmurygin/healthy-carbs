@@ -19,8 +19,12 @@ import {
 } from '@features/resources-management/ingredients/ingredients-management-table/ingredients-management-table.component';
 import {IngredientCategory} from "@core/models/enum/ingredient-category.enum";
 import {AuthService} from "@core/services/auth/auth.service";
-import {IngredientFilterComponent} from "@features/resources-management/ingredients/ingredient-filter/ingredient-filter.component";
-import type {IngredientFilters} from "@features/resources-management/ingredients/ingredient-filter/ingredient-filter.component";
+import type {
+  IngredientFilters
+} from "@features/resources-management/ingredients/ingredient-filter/ingredient-filter.component";
+import {
+  IngredientFilterComponent
+} from "@features/resources-management/ingredients/ingredient-filter/ingredient-filter.component";
 import {
   IngredientsManagementMobileListComponent
 } from "@features/resources-management/ingredients/ingredients-management-mobile-list/ingredients-management-mobile-list.component";
@@ -38,6 +42,12 @@ interface IngredientsState {
   loading: boolean;
   error: string | null;
 }
+
+const INITIAL_STATE: IngredientsState = {
+  page: EMPTY_PAGE,
+  loading: true,
+  error: null
+};
 
 @Component({
   selector: 'app-ingredients-management',
@@ -89,7 +99,7 @@ export class IngredientsManagementComponent extends AbstractManagementComponent<
           map((page) => (
             {page: page ?? EMPTY_PAGE, loading: false, error: null}
           )),
-          catchError((err) => {
+          catchError((err: unknown) => {
             console.error(err);
             return of({
               page: EMPTY_PAGE,
@@ -99,9 +109,9 @@ export class IngredientsManagementComponent extends AbstractManagementComponent<
           })
         )
       ),
-      startWith({page: EMPTY_PAGE, loading: true, error: null} as IngredientsState)
+      startWith(INITIAL_STATE)
     ),
-    {initialValue: {page: EMPTY_PAGE, loading: true, error: null}}
+    {initialValue: INITIAL_STATE}
   );
 
   readonly ingredients = computed(() => this.state().page.content);

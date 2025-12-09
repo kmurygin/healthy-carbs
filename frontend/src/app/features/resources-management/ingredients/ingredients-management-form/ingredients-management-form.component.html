@@ -27,24 +27,24 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           <div class="col-span-full">
-            <label for="name" class="block text-sm font-semibold text-gray-900 mb-2">Ingredient Name</label>
+            <label class="block text-sm font-semibold text-gray-900 mb-2" for="name">Ingredient Name</label>
             <input
-              id="name"
               class="w-full rounded-xl border-gray-300 shadow-sm py-3 px-4 text-gray-900
               focus:border-emerald-500 focus:ring-emerald-500 transition-all placeholder:text-gray-400"
               formControlName="name"
+              id="name"
               placeholder="e.g. Rolled Oats"
               type="text"
             >
           </div>
 
           <div>
-            <label for="category" class="block text-sm font-semibold text-gray-900 mb-2">Category</label>
+            <label class="block text-sm font-semibold text-gray-900 mb-2" for="category">Category</label>
             <select
-              id="category"
               class="w-full rounded-xl border-gray-300 shadow-sm py-3 px-4 text-gray-900
                      focus:border-emerald-500 focus:ring-emerald-500 transition-all bg-white"
               formControlName="category"
+              id="category"
             >
               @for (cat of categories; track cat) {
                 <option [value]="cat">{{ cat }}</option>
@@ -53,12 +53,12 @@
           </div>
 
           <div>
-            <label for="unit" class="block text-sm font-semibold text-gray-900 mb-2">Unit</label>
+            <label class="block text-sm font-semibold text-gray-900 mb-2" for="unit">Unit</label>
             <input
-              id="unit"
               class="w-full rounded-xl border-gray-300 shadow-sm py-3 px-4 text-gray-900
               focus:border-emerald-500 focus:ring-emerald-500 transition-all placeholder:text-gray-400"
               formControlName="unit"
+              id="unit"
               placeholder="e.g. g, ml, piece"
               type="text"
             >
@@ -79,13 +79,13 @@
           <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
 
             <div>
-              <label for="calories" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Calories</label>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5" for="calories">Calories</label>
               <div class="relative">
                 <input
-                  id="calories"
                   class="w-full rounded-xl border-gray-300 shadow-sm py-2.5 px-3 text-gray-900
                   focus:border-orange-500 focus:ring-orange-500 transition-all"
                   formControlName="caloriesPerUnit"
+                  id="calories"
                   type="number"
                 >
                 <div
@@ -98,13 +98,14 @@
             </div>
 
             <div>
-              <label for="carbs" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Carbs</label>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5"
+                     for="carbs">Carbs</label>
               <div class="relative">
                 <input
-                  id="carbs"
                   class="w-full rounded-xl border-gray-300 shadow-sm py-2.5 px-3 text-gray-900
                   focus:border-amber-500 focus:ring-amber-500 transition-all"
                   formControlName="carbsPerUnit"
+                  id="carbs"
                   type="number"
                 >
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none
@@ -116,13 +117,14 @@
             </div>
 
             <div>
-              <label for="protein" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Protein</label>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5"
+                     for="protein">Protein</label>
               <div class="relative">
                 <input
-                  id="protein"
                   class="w-full rounded-xl border-gray-300 shadow-sm py-2.5 px-3 text-gray-900
                   focus:border-red-500 focus:ring-red-500 transition-all"
                   formControlName="proteinPerUnit"
+                  id="protein"
                   type="number"
                 >
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none
@@ -134,13 +136,13 @@
             </div>
 
             <div>
-              <label for="fat" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Fat</label>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5" for="fat">Fat</label>
               <div class="relative">
                 <input
-                  id="fat"
                   class="w-full rounded-xl border-gray-300 shadow-sm py-2.5 px-3 text-gray-900
                   focus:border-yellow-500 focus:ring-yellow-500 transition-all"
                   formControlName="fatPerUnit"
+                  id="fat"
                   type="number"
                 >
                 <div

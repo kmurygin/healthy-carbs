@@ -72,8 +72,8 @@
         <div class="flex items-center gap-2">
           <button
             (click)="isOwner(ingredient) && edit.emit(ingredient.id)"
-            [disabled]="!isOwner(ingredient)"
             [class.opacity-30]="!isOwner(ingredient)"
+            [disabled]="!isOwner(ingredient)"
             class="p-2 text-gray-400 hover:text-emerald-600
             hover:bg-emerald-50 rounded-lg transition-colors"
           >
@@ -81,8 +81,8 @@
           </button>
           <button
             (click)="isOwner(ingredient) && delete.emit(ingredient.id)"
-            [disabled]="!isOwner(ingredient)"
             [class.opacity-30]="!isOwner(ingredient)"
+            [disabled]="!isOwner(ingredient)"
             class="p-2 text-gray-400 hover:text-red-600
             hover:bg-red-50 rounded-lg transition-colors"
           >

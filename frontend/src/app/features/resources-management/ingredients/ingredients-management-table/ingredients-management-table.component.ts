@@ -142,6 +142,7 @@ export class IngredientsManagementTableComponent {
     userTag: faUserTag,
     globe: faGlobe,
   };
+  protected readonly formatEnum = formatEnum;
 
   isIngredientCategory(value: string): value is IngredientCategory {
     return value in IngredientCategory;
@@ -158,6 +159,4 @@ export class IngredientsManagementTableComponent {
   isOwner(ingredient: IngredientDto): boolean {
     return ingredient.author?.id === this.currentUserId();
   }
-
-  protected readonly formatEnum = formatEnum;
 }
