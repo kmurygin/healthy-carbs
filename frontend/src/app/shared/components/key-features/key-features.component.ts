@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
+import {NgOptimizedImage} from '@angular/common';
 
 interface Feature {
   label: string;
@@ -14,7 +14,7 @@ interface Feature {
   selector: 'app-key-features',
   imports: [
     NgOptimizedImage
-],
+  ],
   templateUrl: './key-features.component.html',
   styleUrl: './key-features.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush

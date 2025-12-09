@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
+import {NgOptimizedImage} from '@angular/common';
 
 interface Step {
   label: string;
@@ -14,7 +14,7 @@ interface Step {
   selector: 'app-how-works',
   imports: [
     NgOptimizedImage
-],
+  ],
   templateUrl: './how-works.component.html',
   styleUrl: './how-works.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush

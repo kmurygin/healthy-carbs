@@ -20,7 +20,7 @@ import {ActivityLevelDescriptionMap} from "@core/constants/activity-level-descri
     ReactiveFormsModule,
     ErrorMessageComponent,
     SuccessMessageComponent
-],
+  ],
   templateUrl: './dietary-profile-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

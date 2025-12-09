@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, output, signal,} from '@angular/core';
 import {PayuService} from '@core/services/payu/payu.service';
 import type {InitPaymentRequest} from '../dto/init-payment-request';
 import {take} from 'rxjs';

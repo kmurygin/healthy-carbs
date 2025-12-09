@@ -54,7 +54,7 @@ const initialState = {
     PageSizeSelectorComponent,
     FavouriteRecipesToggleComponent,
     InfoMessageComponent
-],
+  ],
   templateUrl: './recipe-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

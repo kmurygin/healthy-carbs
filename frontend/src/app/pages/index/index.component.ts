@@ -13,7 +13,7 @@ import {HowWorksComponent} from '@shared/components/how-works/how-works.componen
     OurMissionComponent,
     KeyFeaturesComponent,
     HowWorksComponent
-],
+  ],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush

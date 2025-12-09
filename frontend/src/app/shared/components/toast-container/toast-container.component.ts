@@ -5,10 +5,11 @@ import {
   faCheckCircle,
   faExclamationCircle,
   faInfoCircle,
-  faTimes,
-  IconDefinition
+  faTimes
 } from '@fortawesome/free-solid-svg-icons';
-import {NotificationService, ToastType} from '@core/services/ui/notification.service';
+import type {IconDefinition} from '@fortawesome/free-solid-svg-icons';
+import {NotificationService} from '@core/services/ui/notification.service';
+import type {ToastType} from '@core/services/ui/notification.service';
 
 interface ToastConfig {
   icon: IconDefinition;
