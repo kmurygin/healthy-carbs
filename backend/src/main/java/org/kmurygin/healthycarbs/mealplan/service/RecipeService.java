@@ -20,9 +20,12 @@ import org.kmurygin.healthycarbs.user.Role;
 import org.kmurygin.healthycarbs.user.User;
 import org.kmurygin.healthycarbs.user.UserRepository;
 import org.kmurygin.healthycarbs.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +45,7 @@ public class RecipeService {
     private final RecipeMapper recipeMapper;
     private final UserRepository userRepository;
     private final UserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(RecipeService.class);
 
     public Page<Recipe> findAll(
             String name,
@@ -82,8 +86,13 @@ public class RecipeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
     }
 
+    @Transactional
     public Recipe create(Recipe recipe) {
+        logger.info("Creating recipe: {}", recipe);
         recipe.setAuthor(userService.getCurrentUser());
+        if (recipe.getIngredients() != null) {
+            recipe.getIngredients().forEach(ri -> ri.setRecipe(recipe));
+        }
         return recipeRepository.save(recipe);
     }
 
@@ -92,19 +101,32 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
         User currentUser = userService.getCurrentUser();
+        User author = recipe.getAuthor();
 
-        if (!recipe.getAuthor().getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
+        if (author == null) {
+            throw new AccessDeniedException("Recipe author is null");
+        }
+        if (!author.getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
             throw new SecurityException("You are not authorized to update this recipe.");
         }
 
         recipeMapper.updateFromEntity(updatedRecipe, recipe);
+        if (recipe.getIngredients() != null) {
+            recipe.getIngredients().forEach(ri -> ri.setRecipe(recipe));
+        }
+
         return recipeRepository.save(recipe);
     }
 
     public void deleteById(Long id) {
         Recipe recipe = findById(id);
         User currentUser = userService.getCurrentUser();
-        if (!recipe.getAuthor().getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
+        User author = recipe.getAuthor();
+
+        if (author == null) {
+            throw new AccessDeniedException("Recipe author is null");
+        }
+        if (!author.getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
             throw new SecurityException("You are not authorized to delete this recipe.");
         }
         if (mealPlanRecipeRepository.existsByRecipeId(id)) {

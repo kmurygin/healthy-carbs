@@ -3,12 +3,17 @@ package org.kmurygin.healthycarbs.mealplan.service;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.exception.BadRequestException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
+import org.kmurygin.healthycarbs.mealplan.IngredientCategory;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeIngredientRepository;
 import org.kmurygin.healthycarbs.user.Role;
 import org.kmurygin.healthycarbs.user.User;
 import org.kmurygin.healthycarbs.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,9 +25,29 @@ public class IngredientService {
     private final IngredientRepository ingredientRepository;
     private final UserService userService;
     private final RecipeIngredientRepository recipeIngredientRepository;
+    private static final Logger logger = LoggerFactory.getLogger(IngredientService.class);
 
     public List<Ingredient> findAll() {
         return ingredientRepository.findAll();
+    }
+
+    public Page<Ingredient> findAllPage(
+            String name,
+            IngredientCategory category,
+            Boolean onlyMine,
+            Pageable pageable
+    ) {
+        String searchName = null;
+        if (name != null && !name.trim().isEmpty()) {
+            searchName = name.trim().toLowerCase() + "%";
+        }
+
+        Long authorId = null;
+        if (Boolean.TRUE.equals(onlyMine)) {
+            authorId = userService.getCurrentUser().getId();
+        }
+
+        return ingredientRepository.search(searchName, category, authorId, pageable);
     }
 
     public Ingredient findById(Long id) {
@@ -40,7 +65,9 @@ public class IngredientService {
                 .orElseThrow(() -> new ResourceNotFoundException("Ingredient", "id", id));
         User currentUser = userService.getCurrentUser();
 
-        if (!ingredient.getAuthor().getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
+        if (!ingredient.getAuthor().getId().equals(currentUser.getId()) &&
+                currentUser.getRole() != Role.ADMIN
+        ) {
             throw new SecurityException("You are not authorized to update this ingredient.");
         }
 
@@ -51,7 +78,9 @@ public class IngredientService {
         Ingredient ingredient = findById(id);
         User currentUser = userService.getCurrentUser();
 
-        if (!ingredient.getAuthor().getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
+        if (!ingredient.getAuthor().getId().equals(currentUser.getId()) &&
+                currentUser.getRole() != Role.ADMIN
+        ) {
             throw new SecurityException("You are not authorized to delete this ingredient.");
         }
         if (recipeIngredientRepository.existsByIngredientId(id)) {
