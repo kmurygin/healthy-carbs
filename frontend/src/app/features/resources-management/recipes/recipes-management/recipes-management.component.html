@@ -3,7 +3,7 @@
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
     <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Recipe Management</h2>
     <button
-      (click)="createRecipe()"
+      (click)="openCreate()"
       class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold
       text-white shadow-sm hover:bg-emerald-700 transition-all hover:cursor-pointer
       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
@@ -21,7 +21,7 @@
     class="mb-6 block"
   />
 
-  @if (isLoading()) {
+  @if (isDataLoading()) {
     <div class="flex flex-col items-center justify-center gap-3 p-12 text-gray-500">
       <fa-icon [icon]="icons.spinner" class="text-3xl text-emerald-600 animate-spin"></fa-icon>
       <p class="font-medium animate-pulse">Loading recipes...</p>
@@ -44,15 +44,15 @@
     </div>
   } @else {
     <app-recipes-management-mobile-list
-      (delete)="deleteRecipe($event)"
-      (edit)="editRecipe($event)"
+      (delete)="deleteItem($event)"
+      (edit)="openEdit($event)"
       [currentUserId]="currentUserId"
       [recipes]="recipes()"
     ></app-recipes-management-mobile-list>
 
     <app-recipes-management-table
-      (delete)="deleteRecipe($event)"
-      (edit)="editRecipe($event)"
+      (delete)="deleteItem($event)"
+      (edit)="openEdit($event)"
       [currentUserId]="currentUserId"
       [recipes]="recipes()"
     ></app-recipes-management-table>
@@ -69,10 +69,10 @@
 
   @if (isFormOpen()) {
     <app-recipe-form
-      (closeOutputEmitter)="closeCreateModal()"
-      (savedOutputEmitter)="onRecipeCreated()"
+      (closeOutputEmitter)="closeForm()"
+      (savedOutputEmitter)="onSaveSuccess('Recipe saved successfully')"
       [allIngredients]="cachedIngredients()"
-      [recipeId]="selectedRecipeId()"
+      [recipeId]="selectedId()"
     ></app-recipe-form>
   }
 </div>

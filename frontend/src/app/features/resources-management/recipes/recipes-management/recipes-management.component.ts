@@ -1,14 +1,12 @@
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {takeUntilDestroyed, toObservable, toSignal} from '@angular/core/rxjs-interop';
-import {catchError, filter, map, of, shareReplay, startWith, switchMap} from 'rxjs';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import {catchError, map, of, shareReplay, startWith, switchMap} from 'rxjs';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {faExclamationCircle, faPlus, faSpinner, faUtensils} from '@fortawesome/free-solid-svg-icons';
 import {RecipeService} from '@core/services/recipe/recipe.service';
 import {IngredientService} from '@core/services/ingredient/ingredient.service';
 import {AuthService} from '@core/services/auth/auth.service';
-import {ConfirmationService} from '@core/services/ui/confirmation.service';
-import {NotificationService} from '@core/services/ui/notification.service';
 import {PaginationControlsComponent} from '../../../recipes-list/pagination-controls/pagination-controls.component';
 import {RecipeFilterComponent} from '../../../recipes-list/recipe-filter/recipe-filter.component';
 import {
@@ -27,6 +25,7 @@ import {
 import {
   RecipesManagementTableComponent
 } from "@features/resources-management/recipes/recipes-management-table/recipes-management-table.component";
+import {AbstractManagementComponent} from "@shared/components/abstract-management/abstract-management.component";
 
 const DEFAULT_PAGE_SIZE = 10;
 const INITIAL_PAGE_INDEX = 0;
@@ -49,11 +48,10 @@ const INITIAL_PAGE: Page<RecipeDto> = {
   templateUrl: './recipes-management.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RecipesManagementComponent {
+export class RecipesManagementComponent extends AbstractManagementComponent<RecipeDto> {
   readonly dietTypes = signal(Object.values(DietType));
   readonly mealTypes = signal(Object.values(MealType));
-  readonly isFormOpen = signal(false);
-  readonly selectedRecipeId = signal<number | null>(null);
+
   readonly sortOptions: Option[] = [
     {value: '', label: 'Default'},
     {value: 'name,asc', label: 'Name (A-Z)'},
@@ -61,12 +59,14 @@ export class RecipesManagementComponent {
     {value: 'calories,asc', label: 'Calories (Low to High)'},
     {value: 'calories,desc', label: 'Calories (High to Low)'},
   ];
+
   protected readonly icons = {
     spinner: faSpinner,
     plus: faPlus,
     utensils: faUtensils,
     warn: faExclamationCircle
   };
+
   private readonly recipeService = inject(RecipeService);
   private readonly ingredientService = inject(IngredientService);
   readonly cachedIngredients = toSignal(
@@ -80,16 +80,13 @@ export class RecipesManagementComponent {
     ),
     {initialValue: null}
   );
-
   private readonly authService = inject(AuthService);
   readonly currentUserId = this.authService.userId();
-  private readonly confirmationService = inject(ConfirmationService);
-  private readonly notificationService = inject(NotificationService);
-  private readonly destroyRef = inject(DestroyRef);
   private readonly searchParams = signal<RecipeSearchParams>({
     page: INITIAL_PAGE_INDEX,
     size: DEFAULT_PAGE_SIZE,
   });
+
   private readonly state = toSignal(
     toObservable(this.searchParams).pipe(
       switchMap(params => this.recipeService.getAll(params).pipe(
@@ -107,12 +104,22 @@ export class RecipesManagementComponent {
     ),
     {initialValue: {page: INITIAL_PAGE, loading: true, error: null}}
   );
+
   readonly recipes = computed(() => this.state().page.content);
   readonly totalElements = computed(() => this.state().page.totalElements);
   readonly totalPages = computed(() => this.state().page.totalPages);
   readonly currentPage = computed(() => this.state().page.number);
-  readonly isLoading = computed(() => this.state().loading);
+
+  readonly isDataLoading = computed(() => this.state().loading);
   readonly error = computed(() => this.state().error);
+
+  override reloadData(): void {
+    this.searchParams.update(p => ({...p}));
+  }
+
+  override deleteItem(id: number): void {
+    this.confirmAndDelete(id, 'Recipe', this.recipeService.delete(id));
+  }
 
   handleFiltersChange(filters: RecipeFilters): void {
     this.searchParams.update(current => ({
@@ -136,49 +143,6 @@ export class RecipesManagementComponent {
     if (this.currentPage() > 0) {
       this.updateParams({page: this.currentPage() - 1});
     }
-  }
-
-  createRecipe(): void {
-    this.selectedRecipeId.set(null);
-    this.isFormOpen.set(true);
-  }
-
-  editRecipe(id: number): void {
-    this.selectedRecipeId.set(id);
-    this.isFormOpen.set(true);
-  }
-
-  closeCreateModal(): void {
-    this.isFormOpen.set(false);
-    this.selectedRecipeId.set(null);
-  }
-
-  onRecipeCreated(): void {
-    this.isFormOpen.set(false);
-    this.selectedRecipeId.set(null);
-    this.notificationService.success('Recipe saved successfully');
-    this.searchParams.update(p => ({...p}));
-  }
-
-  deleteRecipe(id: number): void {
-    this.confirmationService.confirm(
-      'Are you sure you want to delete this recipe? This action cannot be undone.',
-      'Delete Recipe',
-      'danger'
-    ).pipe(
-      filter(Boolean),
-      switchMap(() => this.recipeService.delete(id)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: () => {
-        this.notificationService.success('Recipe deleted successfully');
-        this.searchParams.update(params => ({...params}));
-      },
-      error: (err: unknown) => {
-        console.error('Delete failed', err);
-        this.notificationService.error('Failed to delete recipe. Please try again.');
-      }
-    });
   }
 
   private updateParams(changes: Partial<RecipeSearchParams>): void {

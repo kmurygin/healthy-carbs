@@ -1,10 +1,14 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { ConfirmationService } from '@core/services/ui/confirmation.service';
-import { NotificationService } from '@core/services/ui/notification.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { filter, switchMap } from 'rxjs';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, signal} from '@angular/core';
+import {ConfirmationService} from '@core/services/ui/confirmation.service';
+import {NotificationService} from '@core/services/ui/notification.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {filter, switchMap} from 'rxjs';
+import type {Observable} from 'rxjs';
 
-@Component({ template: '' })
+@Component({
+  template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
 export abstract class AbstractManagementComponent<T> {
   protected readonly confirmationService = inject(ConfirmationService);
   protected readonly notificationService = inject(NotificationService);
@@ -38,7 +42,7 @@ export abstract class AbstractManagementComponent<T> {
     this.reloadData();
   }
 
-  protected confirmAndDelete(id: number, contentName: string, deleteObservable$: any) {
+  protected confirmAndDelete(id: number, contentName: string, deleteObservable$: Observable<unknown>) {
     this.confirmationService.confirm(
       `Are you sure you want to delete this ${contentName.toLowerCase()}? This action cannot be undone.`,
       `Delete ${contentName}`,
