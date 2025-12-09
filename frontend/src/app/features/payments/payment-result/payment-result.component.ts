@@ -1,8 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, effect, inject, signal} from '@angular/core';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {DecimalPipe} from '@angular/common';
-import type {Subscription} from 'rxjs';
-import {switchMap, timer} from 'rxjs';
+import {finalize, pairwise, switchMap, takeWhile, tap, timer} from 'rxjs';
 import {PayuService} from '@core/services/payu/payu.service';
 import {PaymentStatus} from '../dto/payment-status.enum';
 import {resolveLocalOrderId, safeRemoveLastLocalOrderId} from '../utils';
@@ -10,6 +9,8 @@ import type {Order} from '../dto/order';
 import {ConfettiService} from "@core/services/confetti/confetti.service";
 import type {ViewState} from "../payment-view.config";
 import {statusToViewState, viewConfig} from "../payment-view.config";
+import {takeUntilDestroyed, toObservable} from "@angular/core/rxjs-interop";
+import {filter} from "rxjs/operators";
 
 @Component({
   selector: 'app-payment-result',
@@ -23,11 +24,6 @@ import {statusToViewState, viewConfig} from "../payment-view.config";
 export class PaymentResultComponent {
   readonly status = signal<PaymentStatus>(PaymentStatus.PENDING);
   readonly order = signal<Order | null>(null);
-  readonly isTerminal = computed(() =>
-    this.status() === PaymentStatus.COMPLETED ||
-    this.status() === PaymentStatus.REJECTED ||
-    this.status() === PaymentStatus.CANCELED
-  );
   readonly paidAmount = computed(() => (this.order()?.totalAmount ?? 0) / 100);
   readonly viewData = computed(() => viewConfig[this.viewState()]);
   private readonly confettiService = inject(ConfettiService);
@@ -47,47 +43,45 @@ export class PaymentResultComponent {
 
   private monitorPaymentStatus(): void {
     effect((onCleanup) => {
-      const localOrderId = this.localOrderId();
-      const isTerminal = this.isTerminal();
+      const orderId = this.localOrderId();
 
-      if (!localOrderId || isTerminal) {
-        return;
-      }
+      if (!orderId) return;
 
-      const sub: Subscription = timer(0, this.pollIntervalMs)
+      const sub = timer(0, this.pollIntervalMs)
         .pipe(
-          switchMap(() => this.payuService.getOrderDetails(localOrderId))
-        )
-        .subscribe({
-          next: (response) => {
-            const nextStatus = response.paymentStatus;
-            if (nextStatus !== PaymentStatus.PENDING) {
-              this.status.set(nextStatus);
+          switchMap(() => this.payuService.getOrderDetails(orderId)),
+          takeWhile(response => response.paymentStatus === PaymentStatus.PENDING, true),
+          tap({
+            next: (response) => {
+              this.status.set(response.paymentStatus);
               this.order.set(response);
+            },
+            error: (err) => {
+              console.error('Error fetching order status:', err);
+              this.status.set(PaymentStatus.REJECTED);
+            }
+          }),
+          finalize(() => {
+            if (this.status() !== PaymentStatus.PENDING) {
               safeRemoveLastLocalOrderId();
             }
-          },
-          error: (error: unknown) => {
-            console.error('Error fetching order status:', error);
-            this.status.set(PaymentStatus.REJECTED);
-          },
-        });
+          })
+        )
+        .subscribe();
 
-      onCleanup(() => {
-        sub.unsubscribe();
-      });
+      onCleanup(() => sub.unsubscribe());
     });
   }
 
   private triggerConfettiOnSuccess(): void {
-    let prevStatus: PaymentStatus | null = null;
-    effect(() => {
-      const current = this.status();
-      if (prevStatus === PaymentStatus.PENDING && current === PaymentStatus.COMPLETED) {
+    toObservable(this.status)
+      .pipe(
+        pairwise(),
+        filter(([prev, curr]) => prev === PaymentStatus.PENDING && curr === PaymentStatus.COMPLETED),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => {
         this.confettiService.triggerConfetti();
-      }
-      prevStatus = current;
-    });
+      });
   }
-
 }
