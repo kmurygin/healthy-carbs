@@ -109,6 +109,12 @@ export const routes: Routes = [
       .then(m => m.DIETITIAN_ROUTES)
   },
   {
+    path: 'user-measurements',
+    canMatch: [authGuard],
+    loadComponent: () =>
+      import('./features/measurement/user-measurements/user-measurements.component').then((m) => m.UserMeasurementsComponent),
+  },
+  {
     path: 'error/404',
     loadComponent: () =>
       import('./pages/error/error.component').then((m) => m.ErrorComponent),
