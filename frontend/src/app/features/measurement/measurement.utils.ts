@@ -1,5 +1,5 @@
-import {UserMeasurement} from "@core/services/user-measurement/user-measurement.service";
-import {ChartOptions} from "@core/models/chart-options.model";
+import type {UserMeasurement} from "@core/services/user-measurement/user-measurement.service";
+import type {ChartOptions} from "@core/models/chart-options.model";
 
 export function getSeriesData(data: UserMeasurement[], key: keyof UserMeasurement): [number, number][] {
   return data

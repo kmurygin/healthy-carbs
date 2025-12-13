@@ -1,15 +1,10 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {
-  faCheckCircle,
-  faExclamationCircle,
-  faInfoCircle,
-  faTimes
-} from '@fortawesome/free-solid-svg-icons';
 import type {IconDefinition} from '@fortawesome/free-solid-svg-icons';
-import {NotificationService} from '@core/services/ui/notification.service';
+import {faCheckCircle, faExclamationCircle, faInfoCircle, faTimes} from '@fortawesome/free-solid-svg-icons';
 import type {ToastType} from '@core/services/ui/notification.service';
+import {NotificationService} from '@core/services/ui/notification.service';
 
 interface ToastConfig {
   icon: IconDefinition;
@@ -115,6 +110,6 @@ export class ToastContainerComponent {
   };
 
   getToastConfig(type: ToastType): ToastConfig {
-    return this.config[type] || this.config.info;
+    return this.config[type];
   }
 }

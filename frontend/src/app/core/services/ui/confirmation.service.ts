@@ -1,6 +1,6 @@
 import {Injectable, signal} from '@angular/core';
-import {Subject} from 'rxjs';
 import type {Observable} from 'rxjs';
+import {Subject} from 'rxjs';
 
 export interface ConfirmationOptions {
   title: string;

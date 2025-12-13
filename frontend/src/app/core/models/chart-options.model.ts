@@ -1,8 +1,14 @@
 import type {
   ApexAxisChartSeries,
-  ApexChart, ApexDataLabels, ApexGrid, ApexLegend,
-  ApexMarkers, ApexNonAxisChartSeries, ApexPlotOptions,
-  ApexStroke, ApexTitleSubtitle,
+  ApexChart,
+  ApexDataLabels,
+  ApexGrid,
+  ApexLegend,
+  ApexMarkers,
+  ApexNonAxisChartSeries,
+  ApexPlotOptions,
+  ApexStroke,
+  ApexTitleSubtitle,
   ApexTooltip,
   ApexXAxis,
   ApexYAxis

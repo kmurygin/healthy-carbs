@@ -1,5 +1,5 @@
 import type {OnInit} from '@angular/core';
-import {ChangeDetectionStrategy, Component, inject, signal, viewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {UserMeasurementService} from '@core/services/user-measurement/user-measurement.service';
 import {NgApexchartsModule} from 'ng-apexcharts';
@@ -49,9 +49,9 @@ export class DashboardComponent implements OnInit {
             total: {
               show: true,
               label: 'Kalorie',
-              formatter: (w: { globals: { seriesTotals: number[] } }) => {
-                return w.globals.seriesTotals
-                  .reduce((a, b) => a + b, 0)
+              formatter: (chartContext: { globals: { seriesTotals: number[] } }): string => {
+                return chartContext.globals.seriesTotals
+                  .reduce((accumulator: number, currentValue: number) => accumulator + currentValue, 0)
                   .toFixed(0);
               }
             }
@@ -68,8 +68,8 @@ export class DashboardComponent implements OnInit {
     tooltip: {
       enabled: true,
       y: {
-        formatter: function (val) {
-          return val + "%"
+        formatter: function (value: number): string {
+          return `${value}%`;
         }
       }
     }
@@ -125,7 +125,7 @@ export class DashboardComponent implements OnInit {
 
         this.weightChartOptions.update(options => ({
           ...options,
-          series: [{ name: "Waga", data: seriesData }]
+          series: [{name: "Waga", data: seriesData}]
         }));
       },
       error: (err: unknown) => {

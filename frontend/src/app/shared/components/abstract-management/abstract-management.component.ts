@@ -2,23 +2,23 @@ import {ChangeDetectionStrategy, Component, DestroyRef, inject, signal} from '@a
 import {ConfirmationService} from '@core/services/ui/confirmation.service';
 import {NotificationService} from '@core/services/ui/notification.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {filter, switchMap} from 'rxjs';
 import type {Observable} from 'rxjs';
+import {filter, switchMap} from 'rxjs';
 
 @Component({
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export abstract class AbstractManagementComponent<T> {
+  readonly isLoading = signal(false);
+  readonly isFormOpen = signal(false);
+  readonly selectedId = signal<number | null>(null);
   protected readonly confirmationService = inject(ConfirmationService);
   protected readonly notificationService = inject(NotificationService);
   protected readonly destroyRef = inject(DestroyRef);
 
-  readonly isLoading = signal(false);
-  readonly isFormOpen = signal(false);
-  readonly selectedId = signal<number | null>(null);
-
   abstract deleteItem(id: number): void;
+
   abstract reloadData(): void;
 
   openCreate(): void {

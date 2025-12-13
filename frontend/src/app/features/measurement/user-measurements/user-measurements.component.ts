@@ -44,15 +44,6 @@ const measurementTypes: MeasurementType[] = [
 })
 export class UserMeasurementsComponent {
   readonly showForm = signal(false);
-  private readonly measurementService = inject(UserMeasurementService);
-  private readonly notificationService = inject(NotificationService);
-  private readonly refreshTrigger = signal(0);
-  readonly historyData = toSignal(
-    toObservable(this.refreshTrigger).pipe(
-      switchMap(() => this.measurementService.getAllHistory())
-    ),
-    {initialValue: [] as UserMeasurement[]}
-  );
   readonly charts = computed(() => {
     const data = this.historyData() ?? [];
     return measurementTypes.map(type => {
@@ -69,6 +60,15 @@ export class UserMeasurementsComponent {
       };
     });
   });
+  private readonly measurementService = inject(UserMeasurementService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly refreshTrigger = signal(0);
+  readonly historyData = toSignal(
+    toObservable(this.refreshTrigger).pipe(
+      switchMap(() => this.measurementService.getAllHistory())
+    ),
+    {initialValue: [] as UserMeasurement[]}
+  );
 
   toggleForm(): void {
     if (this.showForm()) {

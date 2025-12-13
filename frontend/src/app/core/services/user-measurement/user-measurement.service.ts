@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {catchError, map, of} from 'rxjs';
 import type {Observable} from 'rxjs';
+import {catchError, map, of} from 'rxjs';
 import type {ApiResponse} from '../../models/api-response.model';
 import {ApiEndpoints} from "../../constants/api-endpoints";
 
@@ -52,7 +52,7 @@ export class UserMeasurementService {
   }
 
   canAddMeasurement(history: UserMeasurement[]): CanAddMeasurementItem {
-    if (history.length === 0) return { allowed: true, remainingMs: 0 };
+    if (history.length === 0) return {allowed: true, remainingMs: 0};
 
     const latestTime = Math.max(...history.map(item => new Date(item.date).getTime()));
     const timeSince = Date.now() - latestTime;

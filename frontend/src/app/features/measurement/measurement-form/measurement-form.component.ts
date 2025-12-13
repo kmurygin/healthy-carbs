@@ -45,6 +45,14 @@ export class MeasurementFormComponent {
     thighCircumference: new FormControl<number | null>(null, [Validators.min(5)]),
     calfCircumference: new FormControl<number | null>(null, [Validators.min(5)])
   })
+  readonly circumferenceFields: CircumferenceFieldConfig[] = [
+    {controlName: 'waistCircumference', label: 'Waist', id: 'waist'},
+    {controlName: 'hipCircumference', label: 'Hips', id: 'hips'},
+    {controlName: 'chestCircumference', label: 'Chest', id: 'chest'},
+    {controlName: 'armCircumference', label: 'Arm (Biceps)', id: 'arm'},
+    {controlName: 'thighCircumference', label: 'Thigh', id: 'thigh'},
+    {controlName: 'calfCircumference', label: 'Calf', id: 'calf'},
+  ];
   protected readonly icons = {
     save: faSave,
     spinner: faSpinner,
@@ -52,15 +60,6 @@ export class MeasurementFormComponent {
   };
   private readonly measurementService = inject(UserMeasurementService);
   private readonly notificationService = inject(NotificationService);
-
-  readonly circumferenceFields: CircumferenceFieldConfig[] = [
-    { controlName: 'waistCircumference', label: 'Waist', id: 'waist' },
-    { controlName: 'hipCircumference', label: 'Hips', id: 'hips' },
-    { controlName: 'chestCircumference', label: 'Chest', id: 'chest' },
-    { controlName: 'armCircumference', label: 'Arm (Biceps)', id: 'arm' },
-    { controlName: 'thighCircumference', label: 'Thigh', id: 'thigh' },
-    { controlName: 'calfCircumference', label: 'Calf', id: 'calf' },
-  ];
 
   onEscapeKey(): void {
     this.onCancel();
@@ -98,6 +97,6 @@ export class MeasurementFormComponent {
 
   hasError(controlName: keyof MeasurementForm): boolean {
     const control = this.formGroup.get(controlName);
-    return !!(control?.invalid && control?.touched);
+    return !!(control?.invalid && control.touched);
   }
 }

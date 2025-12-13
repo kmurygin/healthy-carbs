@@ -1,15 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  inject,
-  viewChild
-} from '@angular/core';
 import type {ElementRef} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCheck, faExclamationTriangle, faInfoCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { ConfirmationService } from '@core/services/ui/confirmation.service';
+import {ChangeDetectionStrategy, Component, effect, inject, viewChild} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {faCheck, faExclamationTriangle, faInfoCircle, faTimes} from '@fortawesome/free-solid-svg-icons';
+import {ConfirmationService} from '@core/services/ui/confirmation.service';
 
 @Component({
   selector: 'app-confirmation-modal',
@@ -22,7 +16,7 @@ import { ConfirmationService } from '@core/services/ui/confirmation.service';
     @if (confirmationService.state().isOpen && confirmationService.state().options; as opts) {
       <div
         #modalContainer
-        class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm transition-all duration-300 outline-none"
+        class="fixed inset-0 z-100 bg-slate-900/60 backdrop-blur-sm transition-all duration-300 outline-none"
         role="dialog"
         aria-modal="true"
         tabindex="-1"
@@ -78,15 +72,13 @@ import { ConfirmationService } from '@core/services/ui/confirmation.service';
 })
 export class ConfirmationModalComponent {
   public confirmationService = inject(ConfirmationService);
-
-  private readonly modalContainer = viewChild<ElementRef<HTMLDivElement>>('modalContainer');
-
   protected readonly icons = {
     danger: faExclamationTriangle,
     info: faInfoCircle,
     check: faCheck,
     times: faTimes
   };
+  private readonly modalContainer = viewChild<ElementRef<HTMLDivElement>>('modalContainer');
 
   constructor() {
     effect(() => {

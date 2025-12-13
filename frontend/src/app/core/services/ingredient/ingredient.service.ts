@@ -2,8 +2,8 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import type {IngredientDto} from '../../models/dto/ingredient.dto';
 import type {ApiResponse} from '../../models/api-response.model';
-import {catchError, map, of} from 'rxjs';
 import type {Observable} from 'rxjs';
+import {catchError, map, of} from 'rxjs';
 import {ApiEndpoints} from "@core/constants/api-endpoints";
 import type {Page} from "@core/models/page.model";
 import type {IngredientSearchParams} from "@core/models/ingredient-search.params";
@@ -26,7 +26,7 @@ export class IngredientService {
       .set('page', params.page)
       .set('size', params.size);
 
-    console.log("Params: " + params.page + " " + params.size);
+    console.log(`Params: ${params.page} ${params.size}`);
 
     if (params.name != null) {
       httpParams = httpParams.set('name', params.name);
@@ -38,7 +38,7 @@ export class IngredientService {
       httpParams = httpParams.set('onlyMine', 'true');
     }
 
-    console.log("Params: " + params.name + "Category:  " + params.category);
+    console.log(`Params: ${params.name} Category: ${params.category}`);
 
     return this.httpClient
       .get<ApiResponse<Page<IngredientDto>>>(ApiEndpoints.Ingredients.IngredientsPage, {
@@ -46,7 +46,7 @@ export class IngredientService {
       })
       .pipe(
         map(resp => resp.data ?? null),
-        catchError((err) => {
+        catchError((err: unknown) => {
           console.error('API Error:', err);
           return of(null);
         })
