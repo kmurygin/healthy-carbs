@@ -42,6 +42,23 @@ public class DietaryProfileService {
         return dietaryProfileRepository.save(profile);
     }
 
+    @Transactional
+    public void updateWeight(User user, Double newWeight) {
+        DietaryProfile profile = dietaryProfileRepository.findByUser(user);
+        if (profile != null) {
+            profile.setWeight(newWeight);
+            applyNutritionalTargets(profile);
+            dietaryProfileRepository.save(profile);
+
+            logger.info("Updated weight for user {} to {} kg and recalculated targets.", user.getId(), newWeight);
+        }
+    }
+
+    private void applyNutritionalTargets(DietaryProfile profile) {
+        NutritionCalculator.DailyTargets targets = calculateNutritionForProfile(profile);
+        profile.applyTargets(targets);
+    }
+
     private void updateDietaryProfile(DietaryProfile profile, DietaryProfilePayload payload, User user) {
         profile.setUser(user);
         profile.setWeight(payload.getWeight());

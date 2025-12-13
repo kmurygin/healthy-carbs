@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {AuthService} from '@core/services/auth/auth.service';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
+import type {IconDefinition} from '@fortawesome/free-solid-svg-icons';
 import {
   faArrowRight,
   faCarrot,
@@ -10,7 +11,6 @@ import {
   faUsers,
   faUtensils,
 } from '@fortawesome/free-solid-svg-icons';
-import type {IconDefinition} from '@fortawesome/free-solid-svg-icons';
 
 interface DashboardMenuItem {
   route: string;

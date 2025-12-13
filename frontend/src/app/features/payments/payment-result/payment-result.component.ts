@@ -56,7 +56,7 @@ export class PaymentResultComponent {
               this.status.set(response.paymentStatus);
               this.order.set(response);
             },
-            error: (err) => {
+            error: (err: unknown) => {
               console.error('Error fetching order status:', err);
               this.status.set(PaymentStatus.REJECTED);
             }
@@ -69,7 +69,9 @@ export class PaymentResultComponent {
         )
         .subscribe();
 
-      onCleanup(() => sub.unsubscribe());
+      onCleanup(() => {
+        sub.unsubscribe()
+      });
     });
   }
 

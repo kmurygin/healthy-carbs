@@ -95,3 +95,9 @@ databaseChangeLog:
   - include:
       file: 2025-12-02-add-author-to-meal-plan-template.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2025-12-10-add-user-measurement-table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2025-12-10-alter-user-measurement-timestamp.yaml
+      relativeToChangelogFile: true

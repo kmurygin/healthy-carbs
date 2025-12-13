@@ -1,10 +1,12 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {RouterLink} from '@angular/router';
-import type {Color} from '@swimlane/ngx-charts';
-import {LegendPosition, NgxChartsModule, ScaleType} from '@swimlane/ngx-charts';
-import {NgOptimizedImage} from "@angular/common";
-import {FaIconComponent} from "@fortawesome/angular-fontawesome";
+import type {OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {UserMeasurementService} from '@core/services/user-measurement/user-measurement.service';
+import {NgApexchartsModule} from 'ng-apexcharts';
 import {faArrowRight} from "@fortawesome/free-solid-svg-icons";
+import {RouterLink} from "@angular/router";
+import {FaIconComponent} from "@fortawesome/angular-fontawesome";
+import type {ChartOptions} from "@core/models/chart-options.model";
 
 interface DashboardCategory {
   name: string;
@@ -14,20 +16,64 @@ interface DashboardCategory {
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
-  imports: [
-    RouterLink,
-    NgxChartsModule,
-    NgOptimizedImage,
-    FaIconComponent,
-  ],
+  imports: [CommonModule, NgApexchartsModule, RouterLink, FaIconComponent, NgOptimizedImage],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent {
-
-  isSmallScreen = window.innerWidth < 768;
+export class DashboardComponent implements OnInit {
+  public readonly weightChartOptions = signal<Partial<ChartOptions>>({
+    series: [],
+    chart: {type: 'area', height: 350, toolbar: {show: false}},
+    dataLabels: {enabled: true},
+    stroke: {curve: 'smooth', width: 2},
+    xaxis: {type: 'datetime'},
+    tooltip: {x: {format: 'dd MMM yyyy HH:mm'}},
+    grid: {borderColor: '#f1f1f1'},
+    markers: {size: 5}
+  });
+  public readonly macroChartOptions = signal<Partial<ChartOptions>>({
+    series: [30, 25, 45],
+    labels: ['Białka', 'Tłuszcze', 'Węglowodany'],
+    chart: {
+      type: 'donut',
+      height: 350
+    },
+    colors: ['#5AA454', '#A10A28', '#C7B42C'],
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '70%',
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              label: 'Kalorie',
+              formatter: (chartContext: { globals: { seriesTotals: number[] } }): string => {
+                return chartContext.globals.seriesTotals
+                  .reduce((accumulator: number, currentValue: number) => accumulator + currentValue, 0)
+                  .toFixed(0);
+              }
+            }
+          }
+        }
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    legend: {
+      position: 'bottom'
+    },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: function (value: number): string {
+          return `${value}%`;
+        }
+      }
+    }
+  });
   categories: DashboardCategory[] = [
     {
       name: 'Latest meal plan',
@@ -45,6 +91,11 @@ export class DashboardComponent {
       image: 'assets/images/6325254.jpg'
     },
     {
+      name: 'Measurements',
+      route: '/user-measurements',
+      image: 'assets/images/6325254.jpg'
+    },
+    {
       name: 'Recipes',
       route: '/recipes',
       image: 'assets/images/6325254.jpg'
@@ -55,48 +106,31 @@ export class DashboardComponent {
       image: 'assets/images/6325254.jpg'
     }
   ];
-  weightData = [
-    {
-      name: 'Waga',
-      series: [
-        {name: '15 Maj', value: 100.2},
-        {name: '20 Maj', value: 84.5},
-        {name: '25 Maj', value: 84.0},
-        {name: '31 Maj', value: 83.6},
-        {name: '5 Cze', value: 83.0},
-        {name: '10 Cze', value: 82.5},
-        {name: '15 Cze', value: 81.9},
-        {name: '20 Cze', value: 80.8},
-        {name: '25 Cze', value: 79.9},
-        {name: '30 Cze', value: 78.9},
-        {name: '5 Lip', value: 78.1},
-        {name: '10 Lip', value: 77.3}
-      ]
-    }
-  ];
-  caloriesData = [
-    {name: 'Białka', value: 30},
-    {name: 'Tłuszcze', value: 25},
-    {name: 'Węglowodany', value: 45}
-  ];
-  colorScheme: Color = {
-    name: 'macroScheme',
-    selectable: true,
-    group: ScaleType.Ordinal,
-    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
-  };
-  showXAxis = true;
-  showYAxis = true;
-  gradient = false;
-  showLegend = true;
-  showXAxisLabel = true;
-  xAxisLabel = 'Data';
-  showYAxisLabel = true;
-  yAxisLabel = 'Waga (kg)';
-  timeline = true;
-  showLabels = true;
-  isDoughnut = false;
-  legendPosition: LegendPosition = LegendPosition.Right;
   protected readonly faArrowRight = faArrowRight;
+  private readonly measurementService = inject(UserMeasurementService);
 
+  ngOnInit(): void {
+    this.loadWeightHistory();
+  }
+
+  private loadWeightHistory(): void {
+    this.measurementService.getAllHistory().subscribe({
+      next: (history) => {
+        const data = history ?? [];
+
+        const seriesData = data.map(item => [
+          new Date(item.date).getTime(),
+          item.weight
+        ]);
+
+        this.weightChartOptions.update(options => ({
+          ...options,
+          series: [{name: "Waga", data: seriesData}]
+        }));
+      },
+      error: (err: unknown) => {
+        console.error('Failed to load history', err);
+      }
+    });
+  }
 }

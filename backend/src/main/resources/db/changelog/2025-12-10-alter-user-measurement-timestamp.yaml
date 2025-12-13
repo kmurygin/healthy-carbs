@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2025-12-10-alter-measurements-timestamp
+      author: kmurygin
+      changes:
+        - sql:
+            sql:
+              ALTER TABLE user_measurements
+              ALTER COLUMN date
+              TYPE TIMESTAMP USING date::timestamp;

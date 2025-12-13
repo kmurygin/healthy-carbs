@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-user-measurements-table
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE user_measurements (
+                id BIGSERIAL NOT NULL PRIMARY KEY,
+                user_id BIGINT NOT NULL,
+                date DATE NOT NULL,
+                weight DOUBLE PRECISION NOT NULL,
+                waist_circumference DOUBLE PRECISION,
+                hip_circumference DOUBLE PRECISION,
+                chest_circumference DOUBLE PRECISION,
+                arm_circumference DOUBLE PRECISION,
+                thigh_circumference DOUBLE PRECISION,
+                calf_circumference DOUBLE PRECISION,
+                CONSTRAINT fk_user_measurements_user
+                  FOREIGN KEY (user_id)
+                  REFERENCES users (id)
+                  ON DELETE CASCADE
+              );

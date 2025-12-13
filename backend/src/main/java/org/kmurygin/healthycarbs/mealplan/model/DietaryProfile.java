@@ -3,10 +3,7 @@ package org.kmurygin.healthycarbs.mealplan.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import org.kmurygin.healthycarbs.mealplan.ActivityLevel;
-import org.kmurygin.healthycarbs.mealplan.DietGoal;
-import org.kmurygin.healthycarbs.mealplan.DietType;
-import org.kmurygin.healthycarbs.mealplan.Gender;
+import org.kmurygin.healthycarbs.mealplan.*;
 import org.kmurygin.healthycarbs.user.User;
 
 import java.util.Objects;
@@ -65,6 +62,13 @@ public class DietaryProfile {
 
     @Column(name = "fat_target")
     private Double fatTarget;
+
+    public void applyTargets(NutritionCalculator.DailyTargets targets) {
+        this.setCalorieTarget(targets.calories());
+        this.setCarbsTarget(targets.carbsGrams());
+        this.setProteinTarget(targets.proteinGrams());
+        this.setFatTarget(targets.fatGrams());
+    }
 
     @Override
     public final boolean equals(Object o) {
