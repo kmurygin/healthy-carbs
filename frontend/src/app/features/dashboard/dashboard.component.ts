@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
   public readonly weightChartOptions = signal<Partial<ChartOptions>>({
     series: [],
     chart: {type: 'area', height: 350, toolbar: {show: false}},
-    dataLabels: {enabled: false},
+    dataLabels: {enabled: true},
     stroke: {curve: 'smooth', width: 2},
     xaxis: {type: 'datetime'},
     tooltip: {x: {format: 'dd MMM yyyy HH:mm'}},
