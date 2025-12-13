@@ -34,7 +34,7 @@ interface ToastConfig {
     }
   `],
   template: `
-    <div class="fixed top-4 right-4 z-[100] flex flex-col gap-3 w-full max-w-sm pointer-events-none p-4">
+    <div class="fixed top-4 right-4 z-100 flex flex-col gap-3 w-full max-w-sm pointer-events-none p-4">
 
       @for (toast of notificationService.toasts(); track toast.id) {
         <div
@@ -46,7 +46,7 @@ interface ToastConfig {
           [ngClass]="getToastConfig(toast.type).borderClass"
         >
           <div class="flex items-start gap-3 p-4">
-            <div class="flex-shrink-0 pt-0.5">
+            <div class="shrink-0 pt-0.5">
               <fa-icon
                 [icon]="getToastConfig(toast.type).icon"
                 [class]="getToastConfig(toast.type).textClass"
@@ -62,7 +62,7 @@ interface ToastConfig {
 
             <button
               (click)="notificationService.remove(toast.id)"
-              class="flex-shrink-0 -mt-1 -mr-1 p-1.5 text-gray-400 hover:text-gray-500 rounded-lg
+              class="shrink-0 -mt-1 -mr-1 p-1.5 text-gray-400 hover:text-gray-500 rounded-lg
               hover:bg-gray-50 transition-colors cursor-pointer"
               aria-label="Close notification"
               type="button"
