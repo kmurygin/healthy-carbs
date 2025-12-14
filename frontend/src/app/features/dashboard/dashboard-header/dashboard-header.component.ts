@@ -33,6 +33,7 @@ import {faBullseye, faWeightScale} from '@fortawesome/free-solid-svg-icons';
                       [class]=weightDifferenceClasses()
                       class="text-xs font-medium px-1.5 py-0.5 rounded"
                     >
+                      <i class="fa-solid {{ weightDifferenceIcon() }}"></i>
                       {{ weightDifferenceLabel() }}
                     </span>
                   }
@@ -76,7 +77,13 @@ export class DashboardHeaderComponent {
     const difference = this.weightDifference();
     if (difference === null) return '';
 
-    return difference > 0 ? `+${difference}` : `-${difference}`;
+    return difference > 0 ? `${difference}` : `${Math.abs(difference)}`;
+  });
+  readonly weightDifferenceIcon = computed(() => {
+    const difference = this.weightDifference();
+    if (difference === null) return '';
+
+    return difference > 0 ? `fa-plus` : `fa-minus`;
   });
   protected readonly faWeightScale = faWeightScale;
   protected readonly faBullseye = faBullseye;
