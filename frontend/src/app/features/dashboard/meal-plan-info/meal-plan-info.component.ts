@@ -56,7 +56,7 @@ export class MealPlanInfoComponent {
     };
   });
   private readonly INITIAL_STATE: MealPlanState = {status: 'loading'};
-  readonly state : Signal<MealPlanState> = toSignal(
+  readonly state: Signal<MealPlanState> = toSignal(
     this.mealPlanService.getHistory().pipe(
       map((history): MealPlanState => {
         const latestPlan = history.at(-1);

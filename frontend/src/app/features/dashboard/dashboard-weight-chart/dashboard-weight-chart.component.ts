@@ -59,6 +59,7 @@ import type {UserMeasurement} from "@core/services/user-measurement/user-measure
     :host ::ng-deep .apexcharts-menu-icon.apexcharts-selected svg {
       fill: #10b981 !important;
     }
+
     :host ::ng-deep .apexcharts-menu-icon:hover svg {
       fill: #10b981 !important;
     }
