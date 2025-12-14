@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -70,10 +72,14 @@ public class MealPlanService {
         Fitness fitness = this.fitnessFactory.createCalorieFitness(dietaryProfile);
         DietType dietType = dietaryProfile.getDietType();
 
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
         List<CompletableFuture<MealPlanDay>> futures = Arrays.stream(DayOfWeek.values())
                 .map(dayOfWeek -> CompletableFuture.supplyAsync(() -> {
                     Genome bestGenomeForDay = geneticAlgorithm.run(() -> randomCandidate(dietType), fitness, dietType);
-                    return toMealPlanDay(bestGenomeForDay, dayOfWeek);
+                    LocalDate date = startOfWeek.plusDays(dayOfWeek.ordinal());
+                    return toMealPlanDay(bestGenomeForDay, dayOfWeek, date);
                 }, taskExecutor))
                 .toList();
 
@@ -126,9 +132,10 @@ public class MealPlanService {
         return genome;
     }
 
-    private MealPlanDay toMealPlanDay(Genome genome, DayOfWeek dayOfWeek) {
+    private MealPlanDay toMealPlanDay(Genome genome, DayOfWeek dayOfWeek, LocalDate date) {
         MealPlanDay day = new MealPlanDay();
         day.setDayOfWeek(dayOfWeek);
+        day.setDate(date);
         day.setTotalCalories(genome.getTotalCalories());
         day.setTotalCarbs(genome.getTotalCarbs());
         day.setTotalProtein(genome.getTotalProtein());

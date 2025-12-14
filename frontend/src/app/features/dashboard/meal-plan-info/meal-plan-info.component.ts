@@ -56,6 +56,7 @@ export class MealPlanInfoComponent {
     };
   });
   private readonly INITIAL_STATE: MealPlanState = {status: 'loading'};
+
   readonly state: Signal<MealPlanState> = toSignal(
     this.mealPlanService.getHistory().pipe(
       map((history): MealPlanState => {
@@ -63,8 +64,21 @@ export class MealPlanInfoComponent {
         if (!latestPlan) {
           return {status: 'empty', data: null};
         }
-        const day = latestPlan.days[0];
-        return {status: day ? 'success' : 'empty', data: day || null};
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const dayOfMonth = String(now.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${dayOfMonth}`;
+
+        const currentDayPlan = latestPlan.days.find(
+          mealPlanDate => mealPlanDate.date === todayStr
+        );
+
+        return {
+          status: currentDayPlan ? 'success' : 'empty',
+          data: currentDayPlan || null
+        };
       }),
 
       startWith<MealPlanState>(this.INITIAL_STATE),
@@ -76,6 +90,7 @@ export class MealPlanInfoComponent {
     ),
     {initialValue: this.INITIAL_STATE}
   );
+
   readonly isLoading = computed(() => this.state().status === 'loading');
   readonly isError = computed(() => this.state().status === 'error');
   readonly dailyPlan = computed(() => this.state().data);

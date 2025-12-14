@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
@@ -15,6 +16,7 @@ import java.util.List;
 public class MealPlanDayDTO {
     private Long id;
     private DayOfWeek dayOfWeek;
+    private LocalDate date;
     private List<MealPlanRecipeDTO> recipes;
     private double totalCalories;
     private double totalCarbs;

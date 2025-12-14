@@ -4,6 +4,9 @@
     <div>
       <h3 class="text-lg font-bold text-gray-900">
         Meal Plan for {{ dailyPlan()?.dayOfWeek | titlecase }}
+        <span class="text-gray-400 font-medium text-sm ml-1">
+          {{ dailyPlan()?.date | date:'mediumDate' }}
+        </span>
       </h3>
     </div>
     @if (dailyPlan()) {

@@ -101,3 +101,6 @@ databaseChangeLog:
   - include:
       file: 2025-12-10-alter-user-measurement-timestamp.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2025-12-14-add-date-to-meal-plan-day.yaml
+      relativeToChangelogFile: true
