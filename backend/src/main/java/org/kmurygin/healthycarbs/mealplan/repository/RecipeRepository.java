@@ -57,6 +57,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>, JpaSpecif
             FROM Recipe r
             LEFT JOIN FETCH r.ingredients ri
             LEFT JOIN FETCH ri.ingredient ing
+            LEFT JOIN FETCH ing.allergens
             WHERE r.id = :id
             """)
     Optional<Recipe> findByIdWithIngredients(@Param("id") Long id);

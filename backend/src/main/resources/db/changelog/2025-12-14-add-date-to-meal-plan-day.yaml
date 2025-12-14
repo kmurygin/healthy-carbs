@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2025-12-14-add-date-to-meal-plan-day
+      author: kmurygin
+      changes:
+        - sql:
+            sql:
+              ALTER TABLE meal_plan_days
+              ADD COLUMN date DATE;

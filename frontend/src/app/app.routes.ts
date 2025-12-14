@@ -10,7 +10,7 @@ export const routes: Routes = [
     path: 'dashboard',
     canMatch: [authGuard],
     loadComponent: () =>
-      import('./features/dashboard/dashboard.component').then(
+      import('@features/dashboard/dashboard/dashboard.component').then(
         (m) => m.DashboardComponent
       ),
   },
