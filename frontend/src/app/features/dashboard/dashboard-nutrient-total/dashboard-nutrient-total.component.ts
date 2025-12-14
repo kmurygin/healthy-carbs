@@ -27,7 +27,7 @@ import {DecimalPipe} from '@angular/common';
 
         <span
           class="ml-1 text-xs font-bold"
-          [class]="percent() > 100 ? 'text-red-500' : 'text-gray-400'"
+          [class]="percent() > 100 ? 'text-red-500' : 'text-emerald-500'"
         >
           ({{ percent() | number:'1.0-0' }}%)
         </span>
