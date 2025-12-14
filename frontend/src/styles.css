@@ -72,3 +72,15 @@
     hover:text-emerald-800;
   }
 }
+
+.apexcharts-canvas .apexcharts-toolbar .apexcharts-menu-icon.apexcharts-selected svg,
+.apexcharts-canvas .apexcharts-toolbar .apexcharts-pan-icon.apexcharts-selected svg,
+.apexcharts-canvas .apexcharts-toolbar .apexcharts-zoom-icon.apexcharts-selected svg {
+  fill: #10b981 !important;
+  stroke: none !important;
+}
+
+.apexcharts-canvas .apexcharts-toolbar .apexcharts-menu-icon:hover svg {
+  fill: #10b981 !important;
+  stroke: none !important;
+}
