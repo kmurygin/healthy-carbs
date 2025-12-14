@@ -1,77 +1,128 @@
-<div class="flex flex-col gap-6">
+<div class="flex flex-col">
 
-  <div class="flex items-center justify-between">
-    <div>
-      <h3 class="text-lg font-bold text-gray-900">
-        Meal Plan for {{ dailyPlan()?.dayOfWeek | titlecase }}
-        <span class="text-gray-400 font-medium text-sm ml-1">
-          {{ dailyPlan()?.date | date:'mediumDate' }}
-        </span>
-      </h3>
-    </div>
-    @if (dailyPlan()) {
-      <a
-        class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center
-        justify-center hover:bg-emerald-600 hover:text-white transition-all duration-300"
-        routerLink="/mealplan"
-      >
-        <fa-icon [icon]="faChevronRight" class="text-xs"></fa-icon>
-      </a>
+  @switch (state().status) {
+    @case ('loading') {
+      <div class="flex flex-col items-center justify-center py-12 space-y-3 text-gray-400">
+        <i class="fa-solid fa-spinner fa-spin text-xl text-emerald-500"></i>
+        <span class="text-sm font-medium">Loading your plan...</span>
+      </div>
     }
-  </div>
 
-  @if (isLoading()) {
-    <div class="flex flex-col items-center justify-center py-12 space-y-3 text-gray-400">
-      <i class="fa-solid fa-spinner fa-spin text-xl text-emerald-500"></i>
-      <span class="text-sm font-medium">Loading your plan...</span>
-    </div>
+    @case ('error') {
+      <div class="flex flex-col items-center justify-center py-8 text-center bg-red-50 rounded-xl">
+        <p class="text-sm text-red-500 mb-2 font-medium">{{ errorMessage() }}</p>
+        <button (click)="retry()" class="text-xs font-bold text-red-600 hover:underline">Try Again</button>
+      </div>
+    }
 
-  } @else if (isError()) {
-    <div class="flex flex-col items-center justify-center py-8 text-center bg-red-50 rounded-xl">
-      <p class="text-sm text-red-500 mb-2 font-medium">{{ errorMessage() }}</p>
-      <button (click)="retry()" class="text-xs font-bold text-red-600 hover:underline">Try Again</button>
-    </div>
+    @case ('success') {
+      <div class="flex items-center justify-between">
+        <div class="mb-3">
+          <h3 class="text-lg font-bold text-gray-900">
+            Meal Plan for {{ dailyPlan()?.dayOfWeek | titlecase }}
+            <span class="text-gray-400 font-medium text-sm ml-1">
+              {{ dailyPlan()?.date | date:'mediumDate' }}
+            </span>
+          </h3>
+        </div>
 
-  } @else if (dailyPlan()) {
-
-    <div class="px-1">
-      <app-dashboard-daily-totals
-        [dailyTargets]="dailyTargets()"
-        [dailyTotals]="dailyTotals()"
-      ></app-dashboard-daily-totals>
-    </div>
-
-    <div class="flex flex-col gap-4 mt-2">
-      <div class="flex items-center gap-2 pl-1 mb-1">
-        <span class="h-px w-4 bg-gray-200"></span>
-        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Daily schedule</span>
-        <span class="h-px flex-1 bg-gray-200"></span>
+        <a
+          class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center
+            justify-center hover:bg-emerald-600 hover:text-white transition-all duration-300"
+          routerLink="/mealplan"
+        >
+          <fa-icon [icon]="faChevronRight" class="text-xs"></fa-icon>
+        </a>
       </div>
 
-      @for (item of dailyPlan()?.recipes; track item.id) {
-        <app-dashboard-recipe-card [item]="item"/>
-      }
-    </div>
-
-  } @else {
-    <div
-      class="bg-white rounded-2xl p-8 border border-gray-100 flex
-      flex-col items-center justify-center text-center"
-    >
-      <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-        <i class="fa-regular fa-calendar-xmark text-2xl text-gray-400"></i>
+      <div class="px-1 py-3">
+        <app-dashboard-daily-totals
+          [dailyTargets]="dailyTargets()"
+          [dailyTotals]="dailyTotals()"
+        ></app-dashboard-daily-totals>
       </div>
-      <h4 class="text-sm font-bold text-gray-900 mb-1">No meals planned</h4>
-      <p class="text-xs text-gray-500 mb-6 leading-relaxed max-w-[200px]">
-        You haven't generated a meal plan for today yet.
-      </p>
-      <a
-        class="text-xs bg-emerald-600 text-white px-5 py-2.5 rounded-xl
-        font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-100"
-        routerLink="/dietary-profile-form"
+
+      <div class="flex flex-col gap-4 mt-2">
+        <div class="flex items-center gap-2 pl-1 mb-1">
+          <span class="h-px w-4 bg-gray-200"></span>
+          <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Daily schedule</span>
+          <span class="h-px flex-1 bg-gray-200"></span>
+        </div>
+
+        @for (item of dailyPlan()?.recipes; track item.id) {
+          <app-dashboard-recipe-card [item]="item"/>
+        }
+      </div>
+    }
+    @case ('empty') {
+      <div
+        class="group relative bg-white rounded-3xl p-10 border border-gray-100 flex
+          flex-col items-center justify-center text-center min-h-[450px] overflow-hidden"
       >
-        Create My Plan
-      </a>
-    </div>
+
+        <div class="relative z-10 flex flex-col items-center">
+          <div class="mb-6 relative">
+            <div
+              class="absolute inset-0 bg-emerald-100 rounded-2xl
+              rotate-6 group-hover:rotate-12 transition-transform duration-500"
+            ></div>
+            <div
+              class="relative w-20 h-20 bg-white rounded-2xl shadow-sm
+              border border-emerald-50 flex items-center justify-center"
+            >
+              <i class="fa-regular fa-calendar-plus text-3xl text-emerald-500"></i>
+            </div>
+          </div>
+
+          <h4 class="text-xl font-bold text-gray-900 mb-2">No plan for today</h4>
+          <p class="text-sm text-gray-500 mb-8 max-w-[260px] leading-relaxed">
+            Your daily nutrition roadmap is missing. Generate a new plan
+          </p>
+
+          <div
+            class="grid grid-cols-2 gap-3 w-full max-w-xs mb-8 text-left"
+          >
+            <div
+              class="flex items-center gap-2 text-xs text-gray-600
+            bg-gray-50 p-2.5 rounded-lg border border-gray-100"
+            >
+              <i class="fa-solid fa-check text-emerald-500"></i>
+              <span>Macro targets</span>
+            </div>
+            <div
+              class="flex items-center gap-2 text-xs text-gray-600
+            bg-gray-50 p-2.5 rounded-lg border border-gray-100"
+            >
+              <i class="fa-solid fa-check text-emerald-500"></i>
+              <span>Healthy recipes</span>
+            </div>
+            <div
+              class="flex items-center gap-2 text-xs text-gray-600
+            bg-gray-50 p-2.5 rounded-lg border border-gray-100"
+            >
+              <i class="fa-solid fa-check text-emerald-500"></i>
+              <span>Shopping list</span>
+            </div>
+            <div
+              class="flex items-center gap-2 text-xs text-gray-600
+            bg-gray-50 p-2.5 rounded-lg border border-gray-100"
+            >
+              <i class="fa-solid fa-check text-emerald-500"></i>
+              <span>Progress tracking</span>
+            </div>
+          </div>
+
+          <a
+            class="inline-flex items-center gap-2 text-sm bg-emerald-600
+            text-white px-8 py-3.5 rounded-xl font-bold hover:bg-emerald-700"
+            routerLink="/mealplan"
+          >
+            <span>Generate Now</span>
+            <fa-icon [icon]="faChevronRight" class="text-xs"></fa-icon>
+          </a>
+        </div>
+      </div>
+    }
   }
+
 </div>
