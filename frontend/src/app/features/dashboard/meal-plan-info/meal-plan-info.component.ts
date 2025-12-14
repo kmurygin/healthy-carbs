@@ -77,7 +77,7 @@ export class MealPlanInfoComponent {
 
         return {
           status: currentDayPlan ? 'success' : 'empty',
-          data: currentDayPlan || null
+          data: currentDayPlan ?? null
         };
       }),
 
