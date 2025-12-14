@@ -1,0 +1,74 @@
+<div class="flex flex-col gap-6">
+
+  <div class="flex items-center justify-between">
+    <div>
+      <h3 class="text-lg font-bold text-gray-900">
+        Meal Plan for {{ dailyPlan()?.dayOfWeek | titlecase }}
+      </h3>
+    </div>
+    @if (dailyPlan()) {
+      <a
+        class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center
+        justify-center hover:bg-emerald-600 hover:text-white transition-all duration-300"
+        routerLink="/mealplan"
+      >
+        <fa-icon [icon]="faChevronRight" class="text-xs"></fa-icon>
+      </a>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex flex-col items-center justify-center py-12 space-y-3 text-gray-400">
+      <i class="fa-solid fa-spinner fa-spin text-xl text-emerald-500"></i>
+      <span class="text-sm font-medium">Loading your plan...</span>
+    </div>
+
+  } @else if (isError()) {
+    <div class="flex flex-col items-center justify-center py-8 text-center bg-red-50 rounded-xl">
+      <p class="text-sm text-red-500 mb-2 font-medium">{{ errorMessage() }}</p>
+      <button (click)="retry()" class="text-xs font-bold text-red-600 hover:underline">Try Again</button>
+    </div>
+
+  } @else if (dailyPlan()) {
+
+    <div class="px-1">
+      <app-dashboard-daily-totals
+        [dailyTargets]="dailyTargets()"
+        [dailyTotals]="dailyTotals()"
+      ></app-dashboard-daily-totals>
+    </div>
+
+    <div class="flex flex-col gap-4 mt-2">
+      <div class="flex items-center gap-2 pl-1 mb-1">
+        <span class="h-px w-4 bg-gray-200"></span>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Daily schedule</span>
+        <span class="h-px flex-1 bg-gray-200"></span>
+      </div>
+
+      @for (item of dailyPlan()?.recipes; track item.id) {
+        <app-dashboard-recipe-card [item]="item"/>
+      }
+    </div>
+
+  } @else {
+    <div
+      class="bg-white rounded-2xl p-8 border border-gray-100 flex
+      flex-col items-center justify-center text-center"
+    >
+      <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+        <i class="fa-regular fa-calendar-xmark text-2xl text-gray-400"></i>
+      </div>
+      <h4 class="text-sm font-bold text-gray-900 mb-1">No meals planned</h4>
+      <p class="text-xs text-gray-500 mb-6 leading-relaxed max-w-[200px]">
+        You haven't generated a meal plan for today yet.
+      </p>
+      <a
+        class="text-xs bg-emerald-600 text-white px-5 py-2.5 rounded-xl
+        font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-100"
+        routerLink="/dietary-profile-form"
+      >
+        Create My Plan
+      </a>
+    </div>
+  }
+</div>

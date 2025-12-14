@@ -1,136 +1,63 @@
-import type {OnInit} from '@angular/core';
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {UserMeasurementService} from '@core/services/user-measurement/user-measurement.service';
-import {NgApexchartsModule} from 'ng-apexcharts';
-import {faArrowRight} from "@fortawesome/free-solid-svg-icons";
-import {RouterLink} from "@angular/router";
-import {FaIconComponent} from "@fortawesome/angular-fontawesome";
-import type {ChartOptions} from "@core/models/chart-options.model";
-
-interface DashboardCategory {
-  name: string;
-  route: string;
-  image: string;
-}
+import {MealPlanInfoComponent} from '@features/dashboard/meal-plan-info/meal-plan-info.component';
+import {DashboardHeaderComponent} from '../dashboard-header/dashboard-header.component';
+import {DashboardWeightChartComponent} from '../dashboard-weight-chart/dashboard-weight-chart.component';
+import {DashboardNavGridComponent} from '../dashboard-nav-grid/dashboard-nav-grid.component';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, NgApexchartsModule, RouterLink, FaIconComponent, NgOptimizedImage],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
+  imports: [
+    CommonModule,
+    DashboardHeaderComponent,
+    DashboardWeightChartComponent,
+    DashboardNavGridComponent,
+    MealPlanInfoComponent
+  ],
+  template: `
+    <div class="min-h-screen bg-gray-50 pb-12">
+      <app-dashboard-header
+        [currentWeight]="currentWeight()"
+        [weightDifference]="weightDifference()">
+      </app-dashboard-header>
+
+      <div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div class="lg:col-span-2 flex flex-col gap-6">
+            <app-dashboard-weight-chart
+              [weightHistory]="weightHistory() ?? []">
+            </app-dashboard-weight-chart>
+            <app-dashboard-nav-grid></app-dashboard-nav-grid>
+          </div>
+
+          <div class="lg:col-span-1 h-full min-h-[500px]">
+            <div class="sticky top-24 h-full">
+              <app-meal-plan-info class="block h-full"></app-meal-plan-info>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit {
-  public readonly weightChartOptions = signal<Partial<ChartOptions>>({
-    series: [],
-    chart: {type: 'area', height: 350, toolbar: {show: false}},
-    dataLabels: {enabled: true},
-    stroke: {curve: 'smooth', width: 2},
-    xaxis: {type: 'datetime'},
-    tooltip: {x: {format: 'dd MMM yyyy HH:mm'}},
-    grid: {borderColor: '#f1f1f1'},
-    markers: {size: 5}
-  });
-  public readonly macroChartOptions = signal<Partial<ChartOptions>>({
-    series: [30, 25, 45],
-    labels: ['Białka', 'Tłuszcze', 'Węglowodany'],
-    chart: {
-      type: 'donut',
-      height: 350
-    },
-    colors: ['#5AA454', '#A10A28', '#C7B42C'],
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '70%',
-          labels: {
-            show: true,
-            total: {
-              show: true,
-              label: 'Kalorie',
-              formatter: (chartContext: { globals: { seriesTotals: number[] } }): string => {
-                return chartContext.globals.seriesTotals
-                  .reduce((accumulator: number, currentValue: number) => accumulator + currentValue, 0)
-                  .toFixed(0);
-              }
-            }
-          }
-        }
-      }
-    },
-    dataLabels: {
-      enabled: false
-    },
-    legend: {
-      position: 'bottom'
-    },
-    tooltip: {
-      enabled: true,
-      y: {
-        formatter: function (value: number): string {
-          return `${value}%`;
-        }
-      }
-    }
-  });
-  categories: DashboardCategory[] = [
-    {
-      name: 'Latest meal plan',
-      route: '/mealplan',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'My mealplans',
-      route: '/user/mealplan-history',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Diet profile',
-      route: '/dietary-profile-form',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Measurements',
-      route: '/user-measurements',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Recipes',
-      route: '/recipes',
-      image: 'assets/images/6325254.jpg'
-    },
-    {
-      name: 'Buy a diet plan',
-      route: '/offers',
-      image: 'assets/images/6325254.jpg'
-    }
-  ];
-  protected readonly faArrowRight = faArrowRight;
+export class DashboardComponent {
   private readonly measurementService = inject(UserMeasurementService);
+  readonly weightHistory = toSignal(this.measurementService.getAllHistory(), {
+    initialValue: []
+  });
+  readonly currentWeight = computed(() => {
+    const data = this.weightHistory();
+    return data?.length ? data[data.length - 1].weight : null;
+  });
+  readonly weightDifference = computed(() => {
+    const data = this.weightHistory();
+    if (!data || data.length < 2) return null;
 
-  ngOnInit(): void {
-    this.loadWeightHistory();
-  }
-
-  private loadWeightHistory(): void {
-    this.measurementService.getAllHistory().subscribe({
-      next: (history) => {
-        const data = history ?? [];
-
-        const seriesData = data.map(item => [
-          new Date(item.date).getTime(),
-          item.weight
-        ]);
-
-        this.weightChartOptions.update(options => ({
-          ...options,
-          series: [{name: "Waga", data: seriesData}]
-        }));
-      },
-      error: (err: unknown) => {
-        console.error('Failed to load history', err);
-      }
-    });
-  }
+    const latest = data[data.length - 1];
+    const prev = data[data.length - 2];
+    return Number((latest.weight - prev.weight).toFixed(1));
+  });
 }

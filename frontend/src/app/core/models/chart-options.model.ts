@@ -19,6 +19,7 @@ export interface ChartOptions {
   chart: ApexChart,
   xaxis: ApexXAxis,
   yaxis: ApexYAxis,
+  fill: ApexFill,
   dataLabels: ApexDataLabels,
   grid: ApexGrid,
   stroke: ApexStroke,
