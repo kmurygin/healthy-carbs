@@ -1,10 +1,12 @@
-package org.kmurygin.healthycarbs.offers;
+package org.kmurygin.healthycarbs.offers.mealPlanTemplate;
 
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.exception.BadRequestException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.service.MealPlanService;
+import org.kmurygin.healthycarbs.offers.offer.Offer;
+import org.kmurygin.healthycarbs.offers.offer.OfferService;
 import org.kmurygin.healthycarbs.payments.model.Order;
 import org.kmurygin.healthycarbs.user.Role;
 import org.kmurygin.healthycarbs.user.User;

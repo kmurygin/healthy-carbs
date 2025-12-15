@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.offers;
+package org.kmurygin.healthycarbs.offers.mealPlanTemplate;
 
 import org.kmurygin.healthycarbs.exception.BadRequestException;
 import org.kmurygin.healthycarbs.mealplan.MealPlanSource;

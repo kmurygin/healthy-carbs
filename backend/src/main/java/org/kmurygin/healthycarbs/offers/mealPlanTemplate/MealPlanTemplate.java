@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.offers;
+package org.kmurygin.healthycarbs.offers.mealPlanTemplate;
 
 import jakarta.persistence.*;
 import lombok.*;

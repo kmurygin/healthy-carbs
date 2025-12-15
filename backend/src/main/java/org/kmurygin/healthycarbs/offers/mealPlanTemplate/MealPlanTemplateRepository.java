@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.offers;
+package org.kmurygin.healthycarbs.offers.mealPlanTemplate;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

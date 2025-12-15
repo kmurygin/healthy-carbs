@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.offers;
+package org.kmurygin.healthycarbs.offers.offer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

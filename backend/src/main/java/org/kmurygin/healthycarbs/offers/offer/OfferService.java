@@ -1,7 +1,9 @@
-package org.kmurygin.healthycarbs.offers;
+package org.kmurygin.healthycarbs.offers.offer;
 
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
+import org.kmurygin.healthycarbs.offers.mealPlanTemplate.MealPlanTemplate;
+import org.kmurygin.healthycarbs.offers.mealPlanTemplate.MealPlanTemplateRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
