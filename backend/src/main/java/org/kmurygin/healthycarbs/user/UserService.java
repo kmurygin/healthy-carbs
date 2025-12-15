@@ -15,7 +15,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,6 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final UserProfileImageRepository profileImageRepository;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -152,6 +155,30 @@ public class UserService {
             return user;
         }
         return null;
+    }
+
+    public List<User> findAllByRole(Role role) {
+        return userRepository.findAllByRole(role);
+    }
+
+    @Transactional
+    public void uploadProfileImage(Long userId, MultipartFile file) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        UserProfileImage image = UserProfileImage.builder()
+                .contentType(file.getContentType())
+                .imageData(file.getBytes())
+                .build();
+
+        user.setProfileImage(image);
+        userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public UserProfileImage getProfileImageById(Long imageId) {
+        return profileImageRepository.findById(imageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Image", "id", imageId));
     }
 
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -90,10 +91,17 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), req, HttpStatus.BAD_GATEWAY);
     }
 
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxSizeException(
+            MaxUploadSizeExceededException ex, HttpServletRequest req
+    ) {
+        return buildErrorResponse(ex.getMessage(), req, HttpStatus.PAYLOAD_TOO_LARGE);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> unhandled(Exception ex, HttpServletRequest req) {
         logger.error("Unhandled exception at {}: {}", req.getRequestURI(), ex.getMessage(), ex);
-        return buildErrorResponse("An unexpected error occurred", req, HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildErrorResponse(ex.getMessage(), req, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private String generateTraceId() {

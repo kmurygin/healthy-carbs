@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-user-profile-image
+      author: kmurygin
+      changes:
+        - sql:
+            sql:
+              CREATE TABLE user_profile_images (
+              id BIGSERIAL NOT NULL PRIMARY KEY,
+              content_type VARCHAR(255),
+              image_data BYTEA NOT NULL
+              );
+              
+              ALTER TABLE users
+              ADD COLUMN profile_image_id BIGINT;
+              
+              ALTER TABLE users
+              ADD CONSTRAINT fk_users_profile_image
+              FOREIGN KEY (profile_image_id)
+              REFERENCES user_profile_images (id);
