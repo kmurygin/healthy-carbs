@@ -34,7 +34,7 @@ export const DASHBOARD_CATEGORIES: DashboardCategory[] = [
   {
     name: 'Premium',
     subtitle: 'Get expert help',
-    route: '/offers',
+    route: '/dietitians',
     image: 'assets/images/dietetyk-kliniczny-1024x683.jpg'
   }
 ];

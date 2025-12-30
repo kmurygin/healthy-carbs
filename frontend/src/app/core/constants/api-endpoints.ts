@@ -54,5 +54,10 @@ export const ApiEndpoints = {
 
   Measurements: {
     Measurements: `${apiUrl}/measurements`,
+  },
+
+  Dietitian: {
+    Dietitian: `${apiUrl}/dietitian`,
+    Collaboration: (dietitianId: number) => `${apiUrl}/dietitian/collaboration/${dietitianId}`,
   }
 };

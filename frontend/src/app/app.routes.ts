@@ -115,6 +115,12 @@ export const routes: Routes = [
       import('./features/measurement/user-measurements/user-measurements.component').then((m) => m.UserMeasurementsComponent),
   },
   {
+    path: 'dietitians',
+    canMatch: [authGuard],
+    loadComponent: () =>
+      import('./features/collaboration/dietitian-list/dietitian-list.component').then((m) => m.DietitianListComponent),
+  },
+  {
     path: 'error/404',
     loadComponent: () =>
       import('./pages/error/error.component').then((m) => m.ErrorComponent),
