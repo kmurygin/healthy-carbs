@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-collaborations-table
+      author: kmurygin
+      changes:
+        - sql:
+            sql:
+              CREATE TABLE collaborations (
+              id BIGSERIAL NOT NULL PRIMARY KEY,
+              dietitian_id BIGINT NOT NULL,
+              client_id BIGINT NOT NULL,
+              started_at TIMESTAMP WITH TIME ZONE NOT NULL,
+              ended_at TIMESTAMP WITH TIME ZONE,
+              
+              CONSTRAINT fk_collaborations_dietitian
+              FOREIGN KEY (dietitian_id)
+              REFERENCES users (id),
+              
+              CONSTRAINT fk_collaborations_client
+              FOREIGN KEY (client_id)
+              REFERENCES users (id)
+              );
+              
+              CREATE INDEX idx_collaborations_dietitian
+              ON collaborations(dietitian_id);
+              
+              CREATE INDEX idx_collaborations_client
+              ON collaborations(client_id);
