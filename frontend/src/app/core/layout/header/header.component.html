@@ -79,7 +79,14 @@
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
            routerLink="/user"
         >
-          <i aria-hidden="true" class="fa-solid fa-circle-user fa-fw text-base"></i>
+          <div class="h-7 w-7 overflow-hidden rounded-full border-2 border-emerald-800 shadow-md bg-gray-100">
+            <img
+              [src]="profileImageSrc()"
+              alt="User profile picture"
+              class="h-full w-full object-cover"
+              loading="eager"
+            />
+          </div>
           <span>{{ username }}</span>
         </a>
         <button (click)="logout()"
