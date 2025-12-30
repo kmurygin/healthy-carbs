@@ -12,7 +12,6 @@ type UserMenuItem = Readonly<{
   standalone: true,
   imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './user.component.html',
-  styleUrl: './user.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserComponent {
