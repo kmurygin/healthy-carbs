@@ -19,4 +19,22 @@ export const DIETITIAN_ROUTES: Routes = [
       .then(m => m.IngredientsManagementComponent),
     title: 'Ingredients'
   },
+  {
+    path: 'clients',
+    loadComponent: () => import('@features/dietitian/clients/client-list/client-list.component')
+      .then(m => m.ClientListComponent),
+    title: 'My Clients'
+  },
+  {
+    path: 'clients/:clientId/measurements',
+    loadComponent: () => import('@features/dietitian/clients/client-progress/client-progress.component')
+      .then(m => m.ClientProgressComponent),
+    title: 'Client Progress'
+  },
+  {
+    path: 'clients/:clientId/create-meal-plan',
+    loadComponent: () => import('@features/dietitian/mealplan/meal-plan-creator/meal-plan-creator.component')
+      .then(m => m.MealPlanCreatorComponent),
+    title: 'Create Meal Plan'
+  }
 ];
