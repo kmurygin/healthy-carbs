@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.mealplan.dto.CreateMealPlanRequest;
 import org.kmurygin.healthycarbs.mealplan.dto.MealPlanDTO;
 import org.kmurygin.healthycarbs.mealplan.mapper.MealPlanMapper;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
@@ -58,6 +59,15 @@ public class MealPlanController {
         headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+    }
+
+    @PostMapping("/manual")
+    public ResponseEntity<ApiResponse<MealPlanDTO>> createManualMealPlan(
+            @RequestBody CreateMealPlanRequest request
+    ) {
+        MealPlan mealPlan = mealPlanService.createManualMealPlan(request);
+        MealPlanDTO dto = mealPlanMapper.toDTO(mealPlan);
+        return ApiResponses.success(HttpStatus.CREATED, dto, "Meal plan created successfully");
     }
 
 }
