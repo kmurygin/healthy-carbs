@@ -1,0 +1,70 @@
+<header class="top-0 z-30 w-full bg-white border-b border-gray-200">
+  <div class="mx-auto max-w-7xl px-4 py-3 flex flex-col gap-3">
+
+    <div class="flex items-start justify-between gap-3 mt-3">
+      <div class="min-w-0">
+        <h1 class="text-lg sm:text-2xl font-bold text-gray-800 truncate">
+          {{ title() }}
+        </h1>
+
+        @if (subtitle()) {
+          <p class="text-xs sm:text-sm text-gray-500">
+            {{ subtitle() }}
+          </p>
+        }
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+
+        @if (showLibraryButton()) {
+          <button
+            (click)="toggleLibrary.emit()"
+            class="lg:hidden inline-flex items-center gap-2 rounded-lg
+            border border-gray-200 bg-white px-3 py-2 text-sm
+            font-medium text-gray-700 hover:bg-gray-50"
+            type="button"
+          >
+            <i aria-hidden="true" class="fa-solid fa-book"></i>
+            <span>Library</span>
+          </button>
+        }
+
+        <button
+          (click)="save.emit()"
+          [class.cursor-not-allowed]="!canSave()"
+          [class.hover:cursor-pointer]="canSave()"
+          [class.opacity-50]="!canSave()"
+          [disabled]="!canSave()"
+          class="inline-flex items-center gap-2 rounded-lg
+          bg-emerald-600 px-4 py-2 text-sm
+          font-semibold text-white shadow-sm
+          transition hover:bg-emerald-700"
+          type="button"
+        >
+          <i aria-hidden="true" class="fa-solid fa-save"></i>
+          <span>Save</span>
+        </button>
+
+      </div>
+    </div>
+
+    @if (profileChips()?.length) {
+      <div class="hidden sm:flex flex-wrap items-center gap-2">
+        @for (chip of profileChips(); track chip.label) {
+          <div
+            class="inline-flex items-center gap-2 rounded-full
+            border border-gray-200 bg-gray-50
+            px-3 py-1 text-sm text-gray-700"
+          >
+            <i [class]="chip.iconClass" aria-hidden="true"></i>
+            <span class="text-gray-500">{{ chip.label }}:</span>
+            <span class="font-semibold text-emerald-700">
+              {{ chip.value }}
+            </span>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</header>

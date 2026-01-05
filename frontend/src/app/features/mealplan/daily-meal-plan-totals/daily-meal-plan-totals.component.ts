@@ -19,6 +19,8 @@ export class DailyMealPlanTotalsComponent {
   readonly dailyTotals = input<Totals>({calories: 0, carbs: 0, protein: 0, fat: 0});
   readonly dailyTargets = input<Totals>({calories: 0, carbs: 0, protein: 0, fat: 0});
 
+  readonly displayHeader = input<boolean>(true);
+
   readonly percents = computed<Totals>(() => {
     const totals = this.dailyTotals();
     const dailyTargets = this.dailyTargets();

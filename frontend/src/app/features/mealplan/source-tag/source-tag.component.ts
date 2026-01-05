@@ -39,9 +39,15 @@ export class SourceTagComponent {
       ariaLabel: 'Purchased plan'
     },
     GENERATED: {
-      style: 'bg-emerald-100 text-emerald-800',
+      style: 'bg-amber-100 text-amber-800',
       icon: 'fa-robot',
       label: 'Generated',
+      ariaLabel: 'Generated plan'
+    },
+    DIETITIAN: {
+      style: 'bg-emerald-100 text-emerald-800',
+      icon: 'fa-user',
+      label: 'Dietitian',
       ariaLabel: 'Generated plan'
     }
   };

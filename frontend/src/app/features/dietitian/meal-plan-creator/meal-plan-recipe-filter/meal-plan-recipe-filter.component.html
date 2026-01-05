@@ -1,0 +1,69 @@
+<form [formGroup]="formGroup" class="flex flex-col gap-3">
+
+  <div class="relative">
+    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <i class="fa-solid fa-search text-gray-400 text-sm"></i>
+    </div>
+    <input
+      class="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700
+      placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-1
+      focus:ring-emerald-500 transition-colors"
+      formControlName="name"
+      placeholder="Search recipe..."
+      type="text"
+    />
+  </div>
+
+  <div class="relative">
+    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <i class="fa-solid fa-carrot text-gray-400 text-sm"></i>
+    </div>
+    <input
+      class="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700
+      placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-1
+      focus:ring-emerald-500 transition-colors"
+      formControlName="ingredient"
+      placeholder="By ingredient..."
+      type="text"
+    />
+  </div>
+
+  <div class="grid grid-cols-2 gap-2">
+    <select
+      class="w-full px-2 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700
+      focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+      formControlName="diet"
+    >
+      @for (option of dietOptions(); track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+
+    <select
+      class="w-full px-2 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700
+      focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+      formControlName="meal"
+    >
+      @for (option of mealOptions(); track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="relative">
+    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <i class="fa-solid fa-arrow-up-wide-short text-gray-400 text-sm"></i>
+    </div>
+    <select
+      class="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700
+      focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer appearance-none"
+      formControlName="sort"
+    >
+      <option value="">Default sorting</option>
+      @for (option of sortOptions(); track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+
+</form>

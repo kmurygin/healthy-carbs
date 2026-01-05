@@ -33,7 +33,7 @@ export const DIETITIAN_ROUTES: Routes = [
   },
   {
     path: 'clients/:clientId/create-meal-plan',
-    loadComponent: () => import('@features/dietitian/mealplan/meal-plan-creator/meal-plan-creator.component')
+    loadComponent: () => import('@features/dietitian/meal-plan-creator/meal-plan-creator/meal-plan-creator.component')
       .then(m => m.MealPlanCreatorComponent),
     title: 'Create Meal Plan'
   }

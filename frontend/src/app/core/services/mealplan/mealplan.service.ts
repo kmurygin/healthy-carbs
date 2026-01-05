@@ -50,4 +50,13 @@ export class MealPlanService {
       );
   }
 
+  createManual(request: any): Observable<MealPlanDto> {
+    return this.httpClient
+      .post<ApiResponse<MealPlanDto>>(`${ApiEndpoints.MealPlan.mealplan}/manual`, request)
+      .pipe(map(resp => {
+        if (!resp.data) throw new Error('Failed to create meal plan');
+        return resp.data;
+      }));
+  }
+
 }
