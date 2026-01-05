@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import type {ApiResponse} from '../../models/api-response.model';
 import type {UserDto} from '../../models/dto/user.dto';
 import type {ChangePasswordPayload} from '../../models/payloads';
-import type {Observable} from "rxjs";
+import {map, Observable} from "rxjs";
 import {ApiEndpoints} from "@core/constants/api-endpoints";
 
 @Injectable({
@@ -16,6 +16,14 @@ export class UserService {
     return this.httpClient.get<ApiResponse<UserDto>>(
       ApiEndpoints.User.GetUserByUsername + username
     );
+  }
+
+  getUserById(id: number) {
+    return this.httpClient
+      .get<ApiResponse<UserDto>>(
+        ApiEndpoints.User.User + id
+      )
+      .pipe(map((resp) => resp.data ?? null));;
   }
 
   updateUser(id: number, updatedUser: UserDto) {
