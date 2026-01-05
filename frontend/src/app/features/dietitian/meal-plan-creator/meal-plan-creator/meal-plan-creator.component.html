@@ -227,11 +227,16 @@
                     }
 
                     @for (recipe of day.slots[mealType]; track recipe.id) {
-                      <div [cdkDragData]="recipe" cdkDrag class="cursor-grab active:cursor-grabbing">
+                      <div
+                        cdkDrag
+                        [cdkDragData]="recipe"
+                        [cdkDragDisabled]="true"
+                        class="cursor-default"
+                      >
                         <app-meal-plan-creator-placed-recipe-card
-                          (remove)="removeRecipeFromSlot(dayIndex, mealType)"
-                          (viewDetails)="openRecipeDetails(recipe)"
                           [recipe]="recipe"
+                          (remove)="removeRecipeFromSlot(selectedDayIndex(), mealType)"
+                          (viewDetails)="openRecipeDetails(recipe)"
                         />
                       </div>
                     }
@@ -305,11 +310,16 @@
                   }
 
                   @for (recipe of day.slots[mealType]; track recipe.id) {
-                    <div [cdkDragData]="recipe" cdkDrag class="cursor-grab active:cursor-grabbing">
+                    <div
+                      cdkDrag
+                      [cdkDragData]="recipe"
+                      [cdkDragDisabled]="true"
+                      class="cursor-default"
+                    >
                       <app-meal-plan-creator-placed-recipe-card
+                        [recipe]="recipe"
                         (remove)="removeRecipeFromSlot(selectedDayIndex(), mealType)"
                         (viewDetails)="openRecipeDetails(recipe)"
-                        [recipe]="recipe"
                       />
                     </div>
                   }
