@@ -43,11 +43,11 @@ export abstract class AbstractManagementComponent<T> {
   }
 
   protected confirmAndDelete(id: number, contentName: string, deleteObservable$: Observable<unknown>) {
-    this.confirmationService.confirm(
-      `Are you sure you want to delete this ${contentName.toLowerCase()}? This action cannot be undone.`,
-      `Delete ${contentName}`,
-      'danger'
-    ).pipe(
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete this ${contentName.toLowerCase()}? This action cannot be undone.`,
+      title: `Delete ${contentName}`,
+      type: 'danger'
+    }).pipe(
       filter(Boolean),
       switchMap(() => deleteObservable$),
       takeUntilDestroyed(this.destroyRef)

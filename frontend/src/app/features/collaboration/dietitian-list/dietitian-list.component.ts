@@ -49,11 +49,11 @@ export class DietitianListComponent {
     if (this.isCollaborationPending(dietitian.id)) return;
 
     this.confirmationService
-      .confirm(
-        `Do you want to start collaboration with ${dietitian.firstName} ${dietitian.lastName}?`,
-        'Collaboration',
-        'info'
-      )
+      .confirm({
+        message: `Do you want to start collaboration with ${dietitian.firstName} ${dietitian.lastName}?`,
+        title: 'Collaboration',
+        type: 'info'
+      })
       .pipe(
         filter(Boolean),
         tap(() => {

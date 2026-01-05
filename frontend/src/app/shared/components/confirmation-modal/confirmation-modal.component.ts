@@ -31,7 +31,7 @@ import {ConfirmationService} from '@core/services/ui/confirmation.service';
           >
             <div class="flex flex-col items-center text-center">
               <div
-                [class]="opts.type === 'danger' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'"
+                [class]="opts.type === 'danger' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-emerald-600'"
                 class="flex h-16 w-16 items-center justify-center rounded-full mb-5 transition-colors"
               >
                 <fa-icon
@@ -109,7 +109,7 @@ export class ConfirmationModalComponent {
 
     const variant = type === 'danger'
       ? 'bg-red-600 hover:bg-red-700 focus-visible:ring-red-600'
-      : 'bg-blue-600 hover:bg-blue-700 focus-visible:ring-blue-600';
+      : 'bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-emerald-600';
 
     return `${base} ${variant}`;
   }
