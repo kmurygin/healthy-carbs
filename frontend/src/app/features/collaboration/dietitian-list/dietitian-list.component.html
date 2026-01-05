@@ -1,0 +1,71 @@
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+  <div class="mb-8">
+    <h2 class="text-3xl font-bold text-gray-900">Our Dietitians</h2>
+    <p class="mt-2 text-gray-600">Find the perfect expert to guide your journey.</p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-12">
+      <div
+        class="h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent"
+      ></div>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="rounded-lg bg-red-50 p-4 text-red-700">
+      {{ errorMessage() }}
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      @for (dietitian of dietitians(); track dietitian.id) {
+        <div
+          class="flex flex-col rounded-xl bg-white shadow-sm border border-gray-100
+          overflow-hidden transition-all hover:shadow-md"
+        >
+          <div class="p-6 flex flex-col items-center">
+            <div class="relative mb-4 h-24 w-24 overflow-hidden rounded-full border-4 border-emerald-50">
+              <img
+                [attr.alt]="'Profile picture of ' + dietitian.firstName + ' ' + dietitian.lastName"
+                [src]="getProfileImage(dietitian.id)"
+                class="h-full w-full object-cover"
+                decoding="async"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+              />
+            </div>
+
+            <h3 class="text-lg font-semibold text-gray-900">
+              {{ dietitian.firstName }} {{ dietitian.lastName }}
+            </h3>
+
+            <span
+              class="mt-1 inline-flex items-center rounded-full bg-emerald-50
+              px-2 py-1 text-xs font-medium text-emerald-700"
+            >
+              Certified Dietitian
+            </span>
+
+            <p class="mt-2 text-sm text-gray-500">{{ dietitian.email }}</p>
+          </div>
+
+          <div class="mt-auto border-t border-gray-100 bg-gray-50 p-4">
+            <button
+              (click)="onCollaborate(dietitian)"
+              [disabled]="isCollaborationPending(dietitian.id)"
+              class="flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-2
+              text-sm font-medium text-white transition-colors hover:bg-emerald-700 focus:outline-none
+              focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-60
+              disabled:cursor-not-allowed hover:cursor-pointer"
+              type="button"
+            >
+              @if (isCollaborationPending(dietitian.id)) {
+                Sending request…
+              } @else {
+                Request Collaboration
+              }
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

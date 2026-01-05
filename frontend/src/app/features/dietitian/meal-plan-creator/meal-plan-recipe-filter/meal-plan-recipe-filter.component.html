@@ -1,0 +1,73 @@
+<form [formGroup]="formGroup" class="space-y-2">
+  <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
+      </div>
+      <input
+        class="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-300 bg-white text-sm text-gray-700
+        placeholder:text-gray-400 focus:outline-none focus:border-emerald-500
+        focus:ring-1 focus:ring-emerald-500"
+        formControlName="name"
+        placeholder="Search recipe..."
+        type="text"
+      />
+    </div>
+
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <i class="fa-solid fa-carrot text-gray-400 text-sm"></i>
+      </div>
+      <input
+        class="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-300 bg-white text-sm text-gray-700
+        placeholder:text-gray-400 focus:outline-none focus:border-emerald-500
+        focus:ring-1 focus:ring-emerald-500"
+        formControlName="ingredient"
+        placeholder="Ingredient..."
+        type="text"
+      />
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-2 md:grid-cols-3">
+    <select
+      class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm text-gray-700
+      focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+      formControlName="diet"
+    >
+      @for (option of dietOptions(); track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+
+    <select
+      class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm text-gray-700
+      focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+      formControlName="meal"
+    >
+      @for (option of mealOptions(); track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <i class="fa-solid fa-arrow-up-wide-short text-gray-400 text-sm"></i>
+      </div>
+      <select
+        class="w-full h-10 pl-9 pr-9 rounded-lg border border-gray-300 bg-white
+        text-sm text-gray-700 appearance-none focus:outline-none focus:border-emerald-500
+        focus:ring-1 focus:ring-emerald-500"
+        formControlName="sort"
+      >
+        <option value="">Default sorting</option>
+        @for (option of sortOptions(); track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+      <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
+        <i class="fa-solid fa-chevron-down text-xs"></i>
+      </div>
+    </div>
+  </div>
+</form>

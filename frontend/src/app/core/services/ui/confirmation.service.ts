@@ -10,6 +10,12 @@ export interface ConfirmationOptions {
   type: 'danger' | 'info';
 }
 
+export interface ConfirmationPayload {
+  message: string;
+  title: string;
+  type: 'danger' | 'info';
+}
+
 @Injectable({providedIn: 'root'})
 export class ConfirmationService {
   readonly state = signal<{ isOpen: boolean; options: ConfirmationOptions | null }>({
@@ -19,11 +25,7 @@ export class ConfirmationService {
 
   private pendingSubject: Subject<boolean> | null = null;
 
-  confirm(
-    message: string,
-    title = 'Confirm Action',
-    type: 'danger' | 'info' = 'danger'
-  ): Observable<boolean> {
+  confirm(params: ConfirmationPayload): Observable<boolean> {
     if (this.pendingSubject) {
       this.pendingSubject.complete();
     }
@@ -33,11 +35,11 @@ export class ConfirmationService {
     this.state.set({
       isOpen: true,
       options: {
-        title,
-        message,
+        title: params.title,
+        message: params.message,
         confirmText: 'Confirm',
         cancelText: 'Cancel',
-        type
+        type: params.type
       }
     });
 

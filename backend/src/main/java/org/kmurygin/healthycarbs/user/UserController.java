@@ -8,9 +8,12 @@ import org.kmurygin.healthycarbs.user.dto.UserDTO;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -52,7 +55,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDTO>> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<ApiResponse<UserDTO>> updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateUserRequest request
+    ) {
         UserDTO dto = userMapper.toDTO(userService.update(id, request));
         return ApiResponses.success(dto);
     }
@@ -66,6 +72,28 @@ public class UserController {
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         userService.changePassword(request.getOldPassword(), request.getNewPassword());
-        return ApiResponses.success(HttpStatus.OK, null, "Password has been changed successfully");
+        return ApiResponses.success(
+                HttpStatus.OK, null, "Password has been changed successfully"
+        );
+    }
+
+    @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Void>> uploadProfileImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file
+    ) throws IOException {
+        userService.uploadProfileImage(id, file);
+        return ApiResponses.success(
+                HttpStatus.OK, null, "Profile image updated successfully"
+        );
+    }
+
+    @GetMapping("/images/{imageId}")
+    public ResponseEntity<byte[]> getProfileImage(@PathVariable Long imageId) {
+        UserProfileImage image = userService.getProfileImageById(imageId);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(image.getContentType()))
+                .body(image.getImageData());
     }
 }

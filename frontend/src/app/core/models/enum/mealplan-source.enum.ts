@@ -1,4 +1,5 @@
 export enum MealPlanSource {
   GENERATED = 'GENERATED',
   PURCHASED = 'PURCHASED',
+  DIETITIAN = 'DIETITIAN'
 }

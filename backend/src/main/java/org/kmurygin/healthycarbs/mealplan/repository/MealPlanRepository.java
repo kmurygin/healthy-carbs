@@ -11,4 +11,6 @@ public interface MealPlanRepository extends JpaRepository<MealPlan, Long> {
     List<MealPlan> findByUser(User user);
 
     Optional<MealPlan> findByIdAndUser(Long id, User user);
+
+    List<MealPlan> findByUserAndAuthor(User user, User author);
 }

@@ -46,6 +46,12 @@ spring:
           starttls:
             enable: true
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 6MB
+
 application:
   security:
     jwt:

@@ -20,7 +20,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@ToString(exclude = {"user", "days"})
+@ToString(exclude = {"user", "days", "author"})
 public class MealPlan {
 
     @Id
@@ -43,6 +43,10 @@ public class MealPlan {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "source", nullable = false)

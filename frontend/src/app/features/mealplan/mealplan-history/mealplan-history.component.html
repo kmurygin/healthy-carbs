@@ -1,110 +1,21 @@
-<section class="mx-auto max-w-7xl px-4 py-8">
-  @if (errorMessage()) {
-    <app-error-message [message]="errorMessage()!" role="alert"/>
-  }
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+  <div class="mb-8">
+    <h2 class="text-3xl font-bold text-gray-900">Your Meal Plans</h2>
+    <p class="mt-2 text-gray-600">History of your generated and assigned meal plans.</p>
+  </div>
+
   @if (loading()) {
-    <div
-      class="flex flex-col items-center justify-center gap-2 p-12 text-gray-500"
-    >
-      <i class="fa-solid fa-spinner fa-spin text-2xl text-emerald-600"></i>
-      <p aria-live="polite" class="font-medium">Loading meal plan history…</p>
-    </div>
-  } @else if (rows().length === 0 && !errorMessage()) {
-    <div
-      class="flex flex-col items-center justify-center gap-2 p-12 text-gray-500"
-    >
-      <i class="fa-solid fa-circle-question text-2xl"></i>
-      <p>No meal plan history found.</p>
+    <app-loading-message message="Loading history..." />
+  } @else if (errorMessage()) {
+    <app-error-message [message]="errorMessage()!" />
+  } @else if (mealPlans().length === 0) {
+    <div class="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
+      <p class="text-gray-500">You haven't created any meal plans yet.</p>
+      <a routerLink="/meal-plan/create" class="text-emerald-600 hover:text-emerald-700 font-medium mt-2 inline-block">
+        Create your first plan
+      </a>
     </div>
   } @else {
-    <div class="md:hidden space-y-4">
-      @for (planRow of rows(); track planRow.id) {
-        <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm hover:bg-gray-50">
-          <a
-            [routerLink]="['/mealplan', planRow.id]"
-            role="link"
-          >
-            <div class="flex items-center justify-between">
-              <div class="font-semibold text-gray-900">
-                {{ planRow.createdAt | date: 'medium' }}
-              </div>
-              <app-source-tag [source]="planRow.source"/>
-            </div>
-
-            <div class="text-sm text-gray-500 mt-0.5">
-              {{ planRow.daysCount }} days
-            </div>
-
-            <div class="mt-2 flex flex-row flex-wrap gap-x-3 gap-y-1 text-sm text-gray-600">
-            <span class="inline-flex items-center gap-1.5 font-medium">
-              <i aria-hidden="true" class="fa-solid fa-fire w-3 text-center text-orange-500"></i>
-              {{ planRow.total.calories }} kcal
-            </span>
-              <span class="inline-flex items-center gap-1.5 font-medium">
-              <i aria-hidden="true" class="fa-solid fa-bread-slice w-3 text-center text-amber-600"></i>
-                {{ planRow.total.carbs }} g
-            </span>
-              <span class="inline-flex items-center gap-1.5 font-medium">
-              <i aria-hidden="true" class="fa-solid fa-drumstick-bite w-3 text-center text-red-500"></i>
-                {{ planRow.total.protein }} g
-            </span>
-              <span class="inline-flex items-center gap-1.5 font-medium">
-              <i aria-hidden="true" class="fa-solid fa-bottle-droplet w-3 text-center text-yellow-600"></i>
-                {{ planRow.total.fat }} g
-            </span>
-            </div>
-
-            <div class="mt-3 flex items-center justify-end text-emerald-600 text-sm font-medium">
-              <i class="fa-solid fa-arrow-right ml-1.5"></i>
-            </div>
-          </a>
-        </div>
-      }
-    </div>
-
-    <div class="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm hidden md:block">
-      <table class="min-w-full text-sm">
-        <thead class="bg-gray-50 text-center text-gray-600">
-        <tr>
-          <th class="px-4 py-3 font-medium">#</th>
-          <th class="px-4 py-3 font-medium">Created At</th>
-          <th class="px-4 py-3 font-medium">Source</th>
-          <th class="px-4 py-3 font-medium">Days</th>
-          <th class="px-4 py-3 font-medium">Average calories (kcal)</th>
-          <th class="px-4 py-3 font-medium">Average carbs (g)</th>
-          <th class="px-4 py-3 font-medium">Average protein (g)</th>
-          <th class="px-4 py-3 font-medium">Average fat (g)</th>
-          <th class="px-4 py-3 font-medium"></th>
-        </tr>
-        </thead>
-        <tbody>
-          @for (planRow of rows(); track planRow.id) {
-            <tr class="border-t border-gray-200 text-center">
-              <td class="px-4 py-3 font-medium text-gray-500">
-                {{ planRow.idx + 1 }}
-              </td>
-              <td class="px-4 py-3">{{ planRow.createdAt | date: 'medium' }}</td>
-              <td class="px-4 py-3">
-                <app-source-tag [source]="planRow.source"/>
-              </td>
-              <td class="px-4 py-3">{{ planRow.daysCount }}</td>
-              <td class="px-4 py-3">{{ planRow.total.calories }}</td>
-              <td class="px-4 py-3">{{ planRow.total.carbs }}</td>
-              <td class="px-4 py-3">{{ planRow.total.protein }}</td>
-              <td class="px-4 py-3">{{ planRow.total.fat }}</td>
-              <td class="px-4 py-3 text-center">
-                <a
-                  [routerLink]="['/mealplan', planRow.id]"
-                  class="inline-flex items-center justify-centre gap-2 rounded-lg
-                px-1.5 py-1.5 font-medium transition text-emerald-600 text-xl"
-                >
-                  <i class="fa-solid fa-circle-arrow-right"></i>
-                </a>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+    <app-mealplan-table [mealPlans]="mealPlans()" />
   }
-</section>
+</div>

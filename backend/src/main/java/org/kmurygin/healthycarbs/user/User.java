@@ -15,7 +15,7 @@ import java.util.*;
 
 @Getter
 @Setter
-@ToString(exclude = {"password", "favouriteRecipes"})
+@ToString(exclude = {"password", "favouriteRecipes", "profileImage"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -69,6 +69,17 @@ public class User implements UserDetails {
         }
         this.favouriteRecipes.remove(recipe);
         recipe.getFavouritesUsers().remove(this);
+    }
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profile_image_id")
+    private UserProfileImage profileImage;
+
+    public void setProfileImage(UserProfileImage image) {
+        this.profileImage = image;
+        if (image != null) {
+            image.setUser(this);
+        }
     }
 
     @Override

@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import type {Observable} from 'rxjs';
 import {catchError, map, of} from 'rxjs';
 import type {ApiResponse} from '../../models/api-response.model';
-import {ApiEndpoints} from "../../constants/api-endpoints";
+import {ApiEndpoints} from '../../constants/api-endpoints';
 
 export interface MeasurementPayload {
   weight: number;
@@ -32,7 +32,7 @@ export interface CanAddMeasurementItem {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserMeasurementService {
   private readonly httpClient = inject(HttpClient);
@@ -42,11 +42,17 @@ export class UserMeasurementService {
       .post<ApiResponse<void>>(ApiEndpoints.Measurements.Measurements, payload);
   }
 
+  updateRecentMeasurement(payload: MeasurementPayload): Observable<ApiResponse<void>> {
+    const url = `${ApiEndpoints.Measurements.Measurements}/recent`;
+    return this.httpClient
+      .put<ApiResponse<void>>(url, payload);
+  }
+
   getAllHistory(): Observable<UserMeasurement[] | null> {
     return this.httpClient
       .get<ApiResponse<UserMeasurement[]>>(ApiEndpoints.Measurements.Measurements)
       .pipe(
-        map(resp => resp.data ?? null),
+        map((resp) => resp.data ?? null),
         catchError(() => of(null))
       );
   }
@@ -54,13 +60,13 @@ export class UserMeasurementService {
   canAddMeasurement(history: UserMeasurement[]): CanAddMeasurementItem {
     if (history.length === 0) return {allowed: true, remainingMs: 0};
 
-    const latestTime = Math.max(...history.map(item => new Date(item.date).getTime()));
+    const latestTime = Math.max(...history.map((item) => new Date(item.date).getTime()));
     const timeSince = Date.now() - latestTime;
     const limit = 24 * 60 * 60 * 1000;
 
     return {
       allowed: timeSince >= limit,
-      remainingMs: Math.max(0, limit - timeSince)
+      remainingMs: Math.max(0, limit - timeSince),
     };
   }
 }

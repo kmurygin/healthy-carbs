@@ -6,7 +6,7 @@ export interface DietaryProfileDto {
   weight: number;
   height: number;
   age: number;
-  gender: number;
+  gender: string;
   dietGoal: string;
   dietType: string;
   activityLevel: string;

@@ -1,0 +1,106 @@
+<div
+  class="relative flex flex-col h-full overflow-hidden rounded-2xl border border-gray-200
+  bg-white shadow-sm transition-all hover:shadow-md"
+>
+  <div class="flex-1 p-6 flex flex-col items-center text-center">
+
+    <span
+      class="absolute top-4 right-4 inline-flex items-center rounded-full bg-emerald-50
+      px-2 py-1 text-xs font-medium text-emerald-700 border border-emerald-100"
+    >
+      Active
+    </span>
+
+    <div class="relative h-20 w-20 shrink-0 mb-4">
+      @if (profileImageUrl()) {
+        <img
+          [src]="profileImageUrl()"
+          alt=""
+          class="h-full w-full rounded-full object-cover ring-4 ring-white shadow-sm"
+        />
+      } @else {
+        <div
+          class="flex h-full w-full items-center justify-center rounded-full bg-emerald-100
+          text-xl font-bold text-emerald-700 ring-4 ring-white shadow-sm"
+        >
+          {{ getInitials(client()) }}
+        </div>
+      }
+    </div>
+
+    <div class="w-full">
+      <h3 class="text-lg font-semibold text-gray-900 truncate">
+        {{ client().firstName | titlecase }} {{ client().lastName | titlecase }}
+      </h3>
+      <p class="text-sm text-gray-500 mb-3 truncate">{{ client().email }}</p>
+
+      <div class="text-sm text-gray-500 text-left">
+        @if (dietaryProfile(); as profile) {
+          @if (profile.dietType) {
+            <div class="flex items-center justify-between gap-3 min-w-0">
+              <span class="text-gray-500">Diet type:</span>
+              <span class="font-semibold text-gray-900 whitespace-nowrap">
+              {{ profile.dietType | lowercase }}
+              </span>
+            </div>
+          }
+
+          @if (profile.dietGoal) {
+            <div class="flex items-center justify-between gap-3 min-w-0">
+              <span class="text-gray-500">Goal:</span>
+              <span class="font-semibold text-gray-900 whitespace-nowrap">
+              {{ profile.dietGoal | lowercase }}
+              </span>
+            </div>
+          }
+
+          @if (profile.calorieTarget) {
+            <div class="flex items-center justify-between gap-3 min-w-0">
+              <span class="text-gray-500">Calorie target:</span>
+              <span class="font-semibold text-gray-900 whitespace-nowrap">
+              {{ profile.calorieTarget }} kcal
+              </span>
+            </div>
+          }
+
+        }
+      </div>
+
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-px border-t border-gray-200 bg-gray-200">
+    <a
+      [routerLink]="['/dietitian/clients', client().id, 'create-meal-plan']"
+      class="col-span-2 group flex items-center justify-center gap-x-2 bg-white
+      px-4 py-3 text-sm font-medium text-emerald-600 hover:bg-emerald-50
+      hover:text-emerald-700 transition-colors hover:cursor-pointer"
+    >
+      <fa-icon
+        [icon]="faUtensils"
+        class="text-emerald-500 group-hover:text-emerald-600"
+      ></fa-icon>
+      Create Meal Plan
+    </a>
+
+    <a
+      [routerLink]="['/dietitian/clients', client().id, 'meal-plans']"
+      class="flex items-center justify-center gap-x-2 bg-white
+      px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50
+      hover:text-gray-900 transition-colors hover:cursor-pointer"
+    >
+      <fa-icon [icon]="faHistory" class="text-gray-400"></fa-icon>
+      History
+    </a>
+
+    <a
+      [routerLink]="['/dietitian/clients', client().id, 'measurements']"
+      class="flex items-center justify-center gap-x-2 bg-white
+      px-4 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50
+      hover:text-gray-900 transition-colors hover:cursor-pointer"
+    >
+      <fa-icon [icon]="faChartLine" class="text-gray-400"></fa-icon>
+      Progress
+    </a>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 import {DietType} from "@core/models/enum/diet-type.enum";
 import type {WritableSignal} from "@angular/core";
+import type {NotificationService} from "@core/services/ui/notification.service";
 
 export function formatEnum(value: string): string {
   return value
@@ -55,3 +56,12 @@ export function setError(signal: WritableSignal<string | null>, err: unknown, fa
   signal.set(message);
   console.error(fallback, err);
 }
+
+export function setErrorNotification(service: NotificationService, err: unknown, fallback: string): void {
+  const message = err instanceof Error && err.message.trim()
+    ? err.message
+    : fallback;
+  service.error(message);
+  console.error(fallback, err);
+}
+

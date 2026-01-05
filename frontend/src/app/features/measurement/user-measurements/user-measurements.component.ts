@@ -1,14 +1,14 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {toObservable, toSignal} from "@angular/core/rxjs-interop";
-import {switchMap} from "rxjs";
-import {type UserMeasurement, UserMeasurementService} from "@core/services/user-measurement/user-measurement.service";
-import {NotificationService} from "@core/services/ui/notification.service";
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import {switchMap} from 'rxjs';
+import {type UserMeasurement, UserMeasurementService,} from '@core/services/user-measurement/user-measurement.service';
+import {NotificationService} from '@core/services/ui/notification.service';
 import {MeasurementFormComponent} from '../measurement-form/measurement-form.component';
 import {
   MeasurementChartCardComponent,
-  type MeasurementTypeDefinition
-} from "@features/measurement/measurement-chart-card/measurement-chart-card.component";
+  type MeasurementTypeDefinition,
+} from '@features/measurement/measurement-chart-card/measurement-chart-card.component';
 
 const MEASUREMENT_TYPES: MeasurementTypeDefinition[] = [
   {key: 'weight', label: 'Weight', unit: 'kg'},
@@ -17,36 +17,44 @@ const MEASUREMENT_TYPES: MeasurementTypeDefinition[] = [
   {key: 'chestCircumference', label: 'Chest', unit: 'cm'},
   {key: 'armCircumference', label: 'Arm', unit: 'cm'},
   {key: 'thighCircumference', label: 'Thigh', unit: 'cm'},
-  {key: 'calfCircumference', label: 'Calf', unit: 'cm'}
+  {key: 'calfCircumference', label: 'Calf', unit: 'cm'},
 ];
 
 @Component({
   selector: 'app-user-measurements',
   imports: [CommonModule, MeasurementFormComponent, MeasurementChartCardComponent],
   templateUrl: './user-measurements.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserMeasurementsComponent {
-  readonly showForm = signal(false);
   readonly measurementTypes = MEASUREMENT_TYPES;
+
+  readonly showForm = signal(false);
+  readonly editingMeasurement = signal<UserMeasurement | null>(null);
+  readonly latestMeasurement = computed<UserMeasurement | null>(() => {
+    const userMeasurements: UserMeasurement[] = this.historyData() ?? [];
+    if (userMeasurements.length === 0) return null;
+
+    let latest: UserMeasurement = userMeasurements[0];
+    for (const measurement of userMeasurements) {
+      if (new Date(measurement.date).getTime() > new Date(latest.date).getTime()) {
+        latest = measurement;
+      }
+    }
+    return latest;
+  });
   private readonly measurementService = inject(UserMeasurementService);
   private readonly notificationService = inject(NotificationService);
   private readonly refreshTrigger = signal(0);
   readonly historyData = toSignal(
-    toObservable(this.refreshTrigger).pipe(
-      switchMap(() => this.measurementService.getAllHistory())
-    ),
+    toObservable(this.refreshTrigger).pipe(switchMap(() => this.measurementService.getAllHistory())),
     {initialValue: [] as UserMeasurement[]}
   );
 
-  toggleForm(): void {
-    if (this.showForm()) {
-      this.showForm.set(false);
-      return;
-    }
+  openAddForm(): void {
+    this.editingMeasurement.set(null);
 
     const historyItems = this.historyData() ?? [];
-
     if (historyItems.length === 0) {
       this.showForm.set(true);
       return;
@@ -56,8 +64,8 @@ export class UserMeasurementsComponent {
 
     if (!allowed) {
       this.notificationService.error(
-        `You can add another measurement only after 24 hours have passed since the last entry.\n
-         Time remaining: ${this.getFormattedTimeRemaining(remainingMs)}.`
+        `You can add another measurement only after 24 hours have passed since the last entry.\n` +
+        `Time remaining: ${this.getFormattedTimeRemaining(remainingMs)}.`
       );
       return;
     }
@@ -65,9 +73,25 @@ export class UserMeasurementsComponent {
     this.showForm.set(true);
   }
 
-  onFormSuccess(): void {
+  openEditRecentForm(): void {
+    const latest = this.latestMeasurement();
+    if (!latest) {
+      this.notificationService.error('No measurement history found to edit.');
+      return;
+    }
+
+    this.editingMeasurement.set(latest);
+    this.showForm.set(true);
+  }
+
+  closeForm(): void {
     this.showForm.set(false);
-    this.refreshTrigger.update(value => value + 1);
+    this.editingMeasurement.set(null);
+  }
+
+  onFormSuccess(): void {
+    this.closeForm();
+    this.refreshTrigger.update((value) => value + 1);
   }
 
   private getFormattedTimeRemaining(remainingMs: number): string {

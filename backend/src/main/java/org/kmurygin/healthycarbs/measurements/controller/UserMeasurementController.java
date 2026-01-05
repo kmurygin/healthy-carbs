@@ -41,4 +41,14 @@ public class UserMeasurementController {
 
         return ApiResponses.success(dtos);
     }
+
+    @PutMapping("/recent")
+    public ResponseEntity<ApiResponse<Void>> updateRecentMeasurement(
+            @Valid @RequestBody MeasurementPayload payload
+    ) {
+        UserMeasurement update = userMeasurementMapper.toEntity(payload);
+        userMeasurementService.updateRecentMeasurement(update);
+        return ApiResponses.success(HttpStatus.OK, null, "Measurement updated successfully");
+    }
+
 }

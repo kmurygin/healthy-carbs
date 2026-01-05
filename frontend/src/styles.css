@@ -84,3 +84,19 @@
   fill: #10b981 !important;
   stroke: none !important;
 }
+
+.cdk-drag {
+  cursor: grab;
+}
+
+.cdk-drag.cdk-drag-dragging {
+  cursor: grabbing !important;
+}
+
+.cdk-drag-preview {
+  cursor: grabbing !important;
+}
+
+.cdk-drag-placeholder {
+  cursor: grabbing;
+}
