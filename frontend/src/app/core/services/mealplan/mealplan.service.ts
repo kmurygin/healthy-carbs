@@ -5,6 +5,7 @@ import type {MealPlanDto} from "../../models/dto/mealplan.dto";
 import type {ApiResponse} from "../../models/api-response.model";
 import {HttpClient} from "@angular/common/http";
 import {ApiEndpoints} from "../../constants/api-endpoints";
+import {CreateMealPlanRequest} from "@features/dietitian/meal-plan-creator/meal-plan-creator.util";
 
 @Injectable({
   providedIn: 'root'
@@ -50,7 +51,7 @@ export class MealPlanService {
       );
   }
 
-  createManual(request: any): Observable<MealPlanDto> {
+  createManual(request: CreateMealPlanRequest): Observable<MealPlanDto> {
     return this.httpClient
       .post<ApiResponse<MealPlanDto>>(`${ApiEndpoints.MealPlan.mealplan}/manual`, request)
       .pipe(map(resp => {
