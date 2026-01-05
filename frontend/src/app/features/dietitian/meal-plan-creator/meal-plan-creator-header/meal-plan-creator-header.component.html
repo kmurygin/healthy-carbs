@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    @if (profileChips()?.length) {
+    @if (profileChips().length) {
       <div class="hidden sm:flex flex-wrap items-center gap-2">
         @for (chip of profileChips(); track chip.label) {
           <div
