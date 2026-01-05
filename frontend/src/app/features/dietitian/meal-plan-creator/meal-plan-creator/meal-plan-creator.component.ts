@@ -28,6 +28,7 @@ import type {RecipeSearchParams} from '@core/models/recipe-search.params';
 import {DietType} from '@core/models/enum/diet-type.enum';
 import {MealType} from '@core/models/enum/meal-type.enum';
 import {
+  type CreateMealPlanRequest,
   type CreatorDay,
   DAY_NAMES,
   type DayMacros,
@@ -36,6 +37,7 @@ import {
   formatEnum,
   formatNumber,
   genderInfo,
+  type MealPlanDayPayload,
   normalizeNumber,
   type ProfileChip,
   startOfWeekMonday
@@ -415,7 +417,7 @@ export class MealPlanCreatorComponent {
 
     const requestedMealTypes = this.mealTypes();
 
-    const daysPayload = this.planDays().map((creatorDay, dayOffset) => {
+    const daysPayload: MealPlanDayPayload[] = this.planDays().map((creatorDay, dayOffset) => {
       const recipeIds: number[] = [];
 
       for (const mealType of requestedMealTypes) {
@@ -430,7 +432,7 @@ export class MealPlanCreatorComponent {
       return {dayOffset, recipeIds};
     });
 
-    const requestPayload = {
+    const requestPayload: CreateMealPlanRequest = {
       clientId: currentClientId,
       startDate: this.startDate().toISOString().split('T')[0],
       days: daysPayload,
@@ -557,11 +559,18 @@ export class MealPlanCreatorComponent {
     pageNumber: number;
     totalPages: number;
   }> {
+    const filters = this.filters();
+
     const params: RecipeSearchParams = {
-      ...(this.filters() as any),
+      name: filters.name || undefined,
+      ingredient: filters.ingredient || undefined,
+      diet: filters.diet || undefined,
+      meal: filters.meal || undefined,
+      sort: filters.sort || undefined,
       page,
       size: this.pageSize(),
     };
+
 
     const pageResp = await firstValueFrom(
       this.recipeService.getAll(params).pipe(take(1))

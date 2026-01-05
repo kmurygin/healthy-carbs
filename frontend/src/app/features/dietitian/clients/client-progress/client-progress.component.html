@@ -20,12 +20,12 @@
   @if (dietaryProfile(); as profile) {
     <div class="mb-8 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
       <div
-        class="flex flex-col gap-3 px-6 py-4 sm:flex-row
-        sm:items-center sm:justify-between border-b border-gray-100 bg-gray-50"
         [class.bg-gray-100]="bmiCategory() === 'Normal weight'"
         [class.bg-orange-100]="bmiCategory() === 'Overweight'"
         [class.bg-red-100]="bmiCategory() === 'Obese'"
         [class.bg-yellow-100]="bmiCategory() === 'Underweight'"
+        class="flex flex-col gap-3 px-6 py-4 sm:flex-row
+        sm:items-center sm:justify-between border-b border-gray-100 bg-gray-50"
       >
         <div>
           <h3 class="text-sm font-semibold text-gray-900">Profile snapshot</h3>

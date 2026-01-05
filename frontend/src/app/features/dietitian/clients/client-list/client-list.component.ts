@@ -1,61 +1,36 @@
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, type OnInit, signal,} from '@angular/core';
-import {RouterLink} from '@angular/router';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, type OnInit, signal,} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {type SafeUrl} from '@angular/platform-browser';
-import {FaIconComponent} from '@fortawesome/angular-fontawesome';
-import {faChartLine, faUtensils} from '@fortawesome/free-solid-svg-icons';
+import {catchError, defaultIfEmpty, finalize, map, mergeMap, reduce, switchMap, tap,} from 'rxjs/operators';
 import {EMPTY, from, of} from 'rxjs';
-import {catchError, defaultIfEmpty, finalize, map, mergeMap, reduce, switchMap, tap} from 'rxjs/operators';
 import {DietitianService} from '@core/services/dietitian/dietitian.service';
 import {type UserDto} from '@core/models/dto/user.dto';
 import {NotificationService} from '@core/services/ui/notification.service';
 import {setErrorNotification} from '@shared/utils';
-import {generateUiAvatarsUrl, getInitials} from '@features/collaboration/collaboration.utils';
+import {ClientCardComponent} from '../client-card/client-card.component';
 
 @Component({
   selector: 'app-client-list',
-  imports: [RouterLink, FaIconComponent],
+  imports: [ClientCardComponent],
   templateUrl: './client-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientListComponent implements OnInit {
-  readonly faChartLine = faChartLine;
-  readonly faUtensils = faUtensils;
-
   readonly clients = signal<readonly UserDto[]>([]);
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly profileImageMap = signal<Map<number, SafeUrl>>(new Map());
-
-  readonly clientViewModels = computed(() => {
-    const profileImageMap = this.profileImageMap();
-    return this.clients().map((client) => ({
-      ...client,
-      displayProfileImage:
-        profileImageMap.get(client.id) ??
-        generateUiAvatarsUrl(client.firstName, client.lastName),
-      initials: getInitials(client.firstName, client.lastName),
-    }));
-  });
-
   private readonly dietitianService = inject(DietitianService);
   private readonly notificationService = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
-    this.destroyRef.onDestroy(() => {
-      this.dietitianService.cleanupProfileImages()
-    });
     this.loadClients();
   }
 
   private loadClients(): void {
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
-
-    type UserWithImage = UserDto & { profileImageId: number | string };
-
-    const hasProfileImageId = (user: UserDto): user is UserWithImage =>
+    const hasProfileImageId = (user: UserDto): user is UserDto &
+      { profileImageId: number | string } =>
       user.profileImageId != null;
 
     this.dietitianService

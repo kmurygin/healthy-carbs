@@ -33,6 +33,17 @@ export interface CreatorDay {
   macros: DayMacros;
 }
 
+export interface MealPlanDayPayload {
+  dayOffset: number;
+  recipeIds: number[];
+}
+
+export interface CreateMealPlanRequest {
+  clientId: number;
+  startDate: string;
+  days: MealPlanDayPayload[];
+}
+
 export function startOfWeekMonday(inputDate: Date): Date {
   const normalizedDate = new Date(inputDate);
   const weekdayIndex = normalizedDate.getDay();
