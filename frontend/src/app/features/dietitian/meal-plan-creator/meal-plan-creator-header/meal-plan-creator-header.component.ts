@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, input, output,} from '@angular/core';
-import {ProfileChip} from "@features/dietitian/meal-plan-creator/meal-plan-creator.util";
+import type {ProfileChip} from "@features/dietitian/meal-plan-creator/meal-plan-creator.util";
 
 @Component({
   selector: 'app-meal-plan-creator-header',
@@ -13,6 +13,6 @@ export class MealPlanCreatorHeaderComponent {
   readonly canSave = input<boolean>(false);
   readonly showLibraryButton = input<boolean>(false);
 
-  readonly toggleLibrary = output<void>();
-  readonly save = output<void>();
+  readonly toggleLibrary = output();
+  readonly save = output();
 }

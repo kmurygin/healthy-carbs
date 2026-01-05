@@ -12,7 +12,7 @@ import {normalizeNumber} from "@features/dietitian/meal-plan-creator/meal-plan-c
   template: `
     <div
       class="relative h-full min-w-0 rounded-xl border border-emerald-100 bg-white p-3 shadow-sm
-      transition hover:border-emerald-500 hover:shadow-md flex flex-col"
+      transition hover:border-emerald-500 hover:shadow-md flex flex-col group"
     >
       <div class="flex flex-col gap-2 pr-10">
         <h4

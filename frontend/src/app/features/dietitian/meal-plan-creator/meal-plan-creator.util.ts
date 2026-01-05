@@ -1,4 +1,4 @@
-import {MealType} from "@core/models/enum/meal-type.enum";
+import type {MealType} from "@core/models/enum/meal-type.enum";
 import type {RecipeDto} from "@core/models/dto/recipe.dto";
 
 export type ProfileChip = Readonly<{

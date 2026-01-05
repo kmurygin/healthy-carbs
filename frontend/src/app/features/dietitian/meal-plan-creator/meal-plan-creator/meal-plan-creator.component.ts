@@ -2,9 +2,8 @@ import {ChangeDetectionStrategy, Component, computed, DestroyRef, DOCUMENT, inje
 import {CommonModule} from '@angular/common';
 import {type CdkDragDrop, copyArrayItem, DragDropModule, transferArrayItem,} from '@angular/cdk/drag-drop';
 import {ActivatedRoute, Router} from '@angular/router';
-import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import {takeUntilDestroyed, toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {catchError, filter, firstValueFrom, map, of, shareReplay, startWith, switchMap, take,} from 'rxjs';
-
 import {PageSizeSelectorComponent} from '@features/recipes-list/page-size-selector/page-size-selector.component';
 import {PaginationControlsComponent} from '@features/recipes-list/pagination-controls/pagination-controls.component';
 import {DailyMealPlanTotalsComponent} from '@features/mealplan/daily-meal-plan-totals/daily-meal-plan-totals.component';
@@ -18,29 +17,27 @@ import {
 import {
   MealPlanCreatorPlacedRecipeCardComponent
 } from '@features/dietitian/meal-plan-creator/meal-plan-creator-placed-recipe-card/meal-plan-creator-placed-recipe-card.component';
-
 import {RecipeService} from '@core/services/recipe/recipe.service';
 import {MealPlanService} from '@core/services/mealplan/mealplan.service';
 import {DietitianService} from '@core/services/dietitian/dietitian.service';
 import {NotificationService} from '@core/services/ui/notification.service';
 import {ConfirmationService} from '@core/services/ui/confirmation.service';
-
 import type {RecipeDto} from '@core/models/dto/recipe.dto';
 import type {Option, RecipeFilters} from '@features/recipes-list/recipes-list.types';
 import type {RecipeSearchParams} from '@core/models/recipe-search.params';
 import {DietType} from '@core/models/enum/diet-type.enum';
 import {MealType} from '@core/models/enum/meal-type.enum';
 import {
-  CreatorDay,
+  type CreatorDay,
   DAY_NAMES,
-  DayMacros,
-  DaySlots,
+  type DayMacros,
+  type DaySlots,
   emptyMacros,
   formatEnum,
   formatNumber,
   genderInfo,
   normalizeNumber,
-  ProfileChip,
+  type ProfileChip,
   startOfWeekMonday
 } from "@features/dietitian/meal-plan-creator/meal-plan-creator.util";
 import {
@@ -86,14 +83,10 @@ export class MealPlanCreatorComponent {
   readonly pageNumber = signal(0);
   readonly pageSize = signal(10);
   readonly pageSizeOptions = [10, 20, 50] as const;
-
   readonly selectedRecipe = signal<RecipeDto | null>(null);
-
   readonly startDate = signal<Date>(startOfWeekMonday(new Date()));
   readonly planDays = signal<CreatorDay[]>(this.initializeWeek(this.startDate()));
-
   readonly isRecipeLibraryOpen = signal(false);
-
   readonly selectedRecipeForPlacement = signal<RecipeDto | null>(null);
   readonly selectedRecipeForPlacementId = computed(
     () => this.selectedRecipeForPlacement()?.id ?? null
@@ -109,6 +102,32 @@ export class MealPlanCreatorComponent {
       availableMealTypes.every((mealType) => creatorDay.slots[mealType].length > 0)
     );
   });
+  readonly recipesList = signal<RecipeDto[]>([]);
+  readonly totalPages = signal(0);
+  readonly recipesLoadingMore = signal(false);
+  readonly canLoadMoreRecipes = signal(true);
+  readonly selectedDayIndex = signal(0);
+  readonly totalDays = computed(() => this.planDays().length);
+  readonly currentDay = computed<CreatorDay | null>(() => {
+    const days = this.planDays();
+    const idx = this.selectedDayIndex();
+    return days[idx] ?? null;
+  });
+  readonly showAllDays = signal(false);
+  readonly completedDayIndexes = computed<Set<number>>(() => {
+    const days = this.planDays();
+    const mealTypes = this.mealTypes();
+
+    const complete = new Set<number>();
+
+    days.forEach((day, idx) => {
+      const isComplete = mealTypes.every((mt) => day.slots[mt].length > 0);
+      if (isComplete) complete.add(idx);
+    });
+
+    return complete;
+  });
+  readonly recipesRefreshing = signal(false);
   private readonly recipeService = inject(RecipeService);
   private readonly mealPlanService = inject(MealPlanService);
   private readonly dietitianService = inject(DietitianService);
@@ -147,15 +166,12 @@ export class MealPlanCreatorComponent {
       fat: normalizeNumber(currentProfile.fatTarget),
     };
   });
-  profileChips = computed<ProfileChip[]>(() => {
+  readonly profileChips = computed<ProfileChip[]>(() => {
     const profile = this.dietaryProfile();
     if (!profile) return [];
 
     const gender = genderInfo(profile.gender);
-    const fullName =
-      profile.user
-        ? `${profile.user.firstName} ${profile.user.lastName}`
-        : '—';
+    const fullName = `${profile.user.firstName} ${profile.user.lastName}`;
 
     return [
       {
@@ -187,12 +203,20 @@ export class MealPlanCreatorComponent {
     switchMap((searchParams) => this.recipeService.getAll(searchParams)),
     shareReplay({bufferSize: 1, refCount: true})
   );
-  readonly recipesPage = toSignal(this.recipesPageStream$, {initialValue: null});
-  readonly recipes = computed(() => this.recipesPage()?.content ?? []);
-  readonly totalPages = computed(() => this.recipesPage()?.totalPages ?? 0);
+  private readonly loadTriggerPx = 120;
+  private readonly baseRecipeParams = computed(() => ({
+    ...this.filters(),
+    size: this.pageSize(),
+  }));
 
   constructor() {
     this.initializePointerDetection();
+
+    toObservable(this.baseRecipeParams)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        void this.resetAndLoadRecipes();
+      });
   }
 
   openRecipeLibrary(): void {
@@ -282,12 +306,10 @@ export class MealPlanCreatorComponent {
 
   handleFiltersChange(updatedFilters: RecipeFilters): void {
     this.filters.set(updatedFilters);
-    this.pageNumber.set(0);
   }
 
   onPageSizeChange(updatedPageSize: number): void {
     this.pageSize.set(updatedPageSize);
-    this.pageNumber.set(0);
   }
 
   onNextPage(): void {
@@ -423,6 +445,31 @@ export class MealPlanCreatorComponent {
     }
   }
 
+  prevDay(): void {
+    this.selectedDayIndex.update((i) => Math.max(0, i - 1));
+  }
+
+  nextDay(): void {
+    this.selectedDayIndex.update((i) => Math.min(this.totalDays() - 1, i + 1));
+  }
+
+  goToDay(index: number): void {
+    this.selectedDayIndex.set(index);
+  }
+
+  onRecipeLibraryScroll(event: Event): void {
+    const element = event.target as HTMLElement;
+
+    const distanceToEnd = element.scrollWidth - (element.scrollLeft + element.clientWidth);
+    if (distanceToEnd > this.loadTriggerPx) return;
+
+    void this.tryLoadNextRecipesPage();
+  }
+
+  toggleShowAllDays(): void {
+    this.showAllDays.update(v => !v);
+  }
+
   private initializePointerDetection(): void {
     const mediaQueryList =
       window.matchMedia('(any-pointer: coarse), (pointer: coarse), (hover: none)');
@@ -503,6 +550,94 @@ export class MealPlanCreatorComponent {
         };
       })
     );
+  }
+
+  private async fetchRecipesPage(page: number): Promise<{
+    items: readonly RecipeDto[];
+    pageNumber: number;
+    totalPages: number;
+  }> {
+    const params: RecipeSearchParams = {
+      ...(this.filters() as any),
+      page,
+      size: this.pageSize(),
+    };
+
+    const pageResp = await firstValueFrom(
+      this.recipeService.getAll(params).pipe(take(1))
+    );
+
+    return {
+      items: pageResp.content,
+      pageNumber: pageResp.number,
+      totalPages: pageResp.totalPages,
+    };
+  }
+
+  private async loadPage(page: number, mode: 'replace' | 'append'): Promise<void> {
+    if (this.recipesLoadingMore()) return;
+
+    this.recipesLoadingMore.set(true);
+    try {
+      const result = await this.fetchRecipesPage(page);
+
+      this.totalPages.set(result.totalPages);
+      this.pageNumber.set(result.pageNumber);
+
+      const incoming = [...result.items];
+      if (mode === 'replace') {
+        this.recipesList.set(incoming);
+      } else {
+        const existingIds = new Set(this.recipesList().map((r) => r.id));
+        const appended = incoming.filter((r) => !existingIds.has(r.id));
+        this.recipesList.set([...this.recipesList(), ...appended]);
+      }
+
+      const isLast =
+        result.totalPages === 0 || result.pageNumber >= result.totalPages - 1;
+      this.canLoadMoreRecipes.set(!isLast);
+    } catch {
+      this.notificationService.error('Failed to load recipes.', 2500);
+    } finally {
+      this.recipesLoadingMore.set(false);
+    }
+  }
+
+  private async resetAndLoadRecipes(): Promise<void> {
+    this.recipesRefreshing.set(true);
+
+    this.canLoadMoreRecipes.set(true);
+    this.totalPages.set(0);
+    this.pageNumber.set(0);
+
+    try {
+      const first = await this.fetchRecipesPage(0);
+
+      this.totalPages.set(first.totalPages);
+      this.pageNumber.set(first.pageNumber);
+      this.recipesList.set([...first.items]);
+
+      const isLast = first.totalPages === 0 || first.pageNumber >= first.totalPages - 1;
+      this.canLoadMoreRecipes.set(!isLast);
+    } catch {
+      this.notificationService.error('Failed to load recipes.', 2500);
+    } finally {
+      this.recipesRefreshing.set(false);
+    }
+  }
+
+  private async tryLoadNextRecipesPage(): Promise<void> {
+    if (this.recipesLoadingMore()) return;
+    if (!this.canLoadMoreRecipes()) return;
+
+    const nextPage = this.pageNumber() + 1;
+
+    if (this.totalPages() > 0 && nextPage >= this.totalPages()) {
+      this.canLoadMoreRecipes.set(false);
+      return;
+    }
+
+    await this.loadPage(nextPage, 'append');
   }
 
 
