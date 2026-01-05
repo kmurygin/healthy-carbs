@@ -16,7 +16,6 @@ type ChangePasswordForm = FormGroup<{
     ReactiveFormsModule,
   ],
   templateUrl: './change-password.component.html',
-  styleUrl: './change-password.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChangePasswordComponent {

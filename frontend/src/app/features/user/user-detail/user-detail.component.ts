@@ -112,15 +112,15 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     this.userService.updateUser(currentUser.id, updatedUser)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-      next: (res) => {
-        this.notificationService.success(res.message ?? 'Updated successfully');
-        this.user.set(updatedUser);
-        this.errorMessage.set('');
-      },
-      error: (error: unknown) => {
-        setErrorNotification(this.notificationService, error, 'Failed to update user data');
-      }
-    });
+        next: (res) => {
+          this.notificationService.success(res.message ?? 'Updated successfully');
+          this.user.set(updatedUser);
+          this.errorMessage.set('');
+        },
+        error: (error: unknown) => {
+          setErrorNotification(this.notificationService, error, 'Failed to update user data');
+        }
+      });
   }
 
   triggerFileInput(): void {
@@ -131,40 +131,40 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     this.userService.getUserByUsername(username)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-      next: (response) => {
-        const data = response.data;
-        if (!data) return;
+        next: (response) => {
+          const data = response.data;
+          if (!data) return;
 
-        this.user.set(data);
-        this.formGroup.patchValue(data);
+          this.user.set(data);
+          this.formGroup.patchValue(data);
 
-        if (data.profileImageId) {
-          this.loadSecureImage(data.profileImageId, data);
-        } else {
-          this.setFallbackImage(data);
+          if (data.profileImageId) {
+            this.loadSecureImage(data.profileImageId, data);
+          } else {
+            this.setFallbackImage(data);
+          }
+        },
+        error: (error: unknown) => {
+          setError(this.errorMessage, error, 'Failed to fetch user data')
         }
-      },
-      error: (error: unknown) => {
-        setError(this.errorMessage, error, 'Failed to fetch user data')
-      }
-    });
+      });
   }
 
   private loadSecureImage(imageId: number, user: UserDto): void {
     this.userService.getProfileImage(imageId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-      next: (blob) => {
-        this.revokeCurrentObjectUrl();
-        this.currentObjectUrl = URL.createObjectURL(blob);
+        next: (blob) => {
+          this.revokeCurrentObjectUrl();
+          this.currentObjectUrl = URL.createObjectURL(blob);
 
-        this.profileImageSrc.set(this.currentObjectUrl);
-      },
-      error: (error: unknown) => {
-        console.error('Failed to load secure image', error);
-        this.setFallbackImage(user);
-      }
-    });
+          this.profileImageSrc.set(this.currentObjectUrl);
+        },
+        error: (error: unknown) => {
+          console.error('Failed to load secure image', error);
+          this.setFallbackImage(user);
+        }
+      });
   }
 
   private setFallbackImage(user: UserDto): void {

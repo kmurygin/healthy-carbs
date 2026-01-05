@@ -56,7 +56,6 @@ export class MealPlanInfoComponent {
     };
   });
   private readonly INITIAL_STATE: MealPlanState = {status: 'loading'};
-
   readonly state: Signal<MealPlanState> = toSignal(
     this.mealPlanService.getHistory().pipe(
       map((history): MealPlanState => {
@@ -85,12 +84,11 @@ export class MealPlanInfoComponent {
 
       catchError((err: unknown) => of<MealPlanState>({
         status: 'error',
-        error: 'Could not load daily plan.'
+        error: ''
       }))
     ),
     {initialValue: this.INITIAL_STATE}
   );
-
   readonly isLoading = computed(() => this.state().status === 'loading');
   readonly isError = computed(() => this.state().status === 'error');
   readonly dailyPlan = computed(() => this.state().data);
