@@ -1,5 +1,6 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.kmurygin.healthycarbs.auth.AuthenticationService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
@@ -36,6 +37,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+@Slf4j
 @Service
 public class MealPlanService {
     private final GeneticAlgorithm geneticAlgorithm;
@@ -146,6 +148,7 @@ public class MealPlanService {
 
         MealPlan mealPlan = new MealPlan();
         mealPlan.setUser(client);
+        mealPlan.setAuthor(creator);
         mealPlan.setSource(MealPlanSource.DIETITIAN);
 
         LocalDate startDate = request.startDate() != null ? request.startDate() : LocalDate.now();
@@ -171,6 +174,16 @@ public class MealPlanService {
         ));
 
         return savePlanAndGenerateShoppingList(mealPlan);
+    }
+
+    public List<MealPlan> getDietitianMealPlansForClient(Long clientId) {
+        User dietitian = authenticationService.getCurrentUser();
+        User client = userService.getUserById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", clientId.toString()));
+
+        List<MealPlan> matchedMealPlans = mealPlanRepository.findByUserAndAuthor(client, dietitian);
+        log.info("Found {} meal plans for client {}", matchedMealPlans.size(), clientId);
+        return matchedMealPlans;
     }
 
     private MealPlanDay createDayFromDto(ManualMealPlanDayDTO dayDto, LocalDate startDate) {

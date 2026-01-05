@@ -17,6 +17,7 @@ import java.util.List;
 public class MealPlanDTO {
     private Long id;
     private UserDTO user;
+    private UserDTO author;
     private List<MealPlanDayDTO> days;
     private double totalCalories;
     private double totalCarbs;
