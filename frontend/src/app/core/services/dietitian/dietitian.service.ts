@@ -8,6 +8,7 @@ import {type DietaryProfileDto} from '../../models/dto/dietaryprofile.dto';
 import {ApiEndpoints} from '@core/constants/api-endpoints';
 import {UserService} from '@core/services/user/user.service';
 import type {UserMeasurement} from '@core/services/user-measurement/user-measurement.service';
+import type {MealPlanDto} from "@core/models/dto/mealplan.dto";
 
 @Injectable({providedIn: 'root'})
 export class DietitianService implements OnDestroy {
@@ -80,5 +81,13 @@ export class DietitianService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.cleanupProfileImages();
+  }
+
+  getClientMealPlans(clientId: number): Observable<MealPlanDto[]> {
+    return this.httpClient
+      .get<ApiResponse<MealPlanDto[]>>(
+        `${ApiEndpoints.Dietitian.Dietitian}/clients/${clientId}/meal-plans`
+      )
+      .pipe(map((resp) => resp.data ?? []));
   }
 }
