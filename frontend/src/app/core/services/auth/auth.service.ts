@@ -83,6 +83,7 @@ export class AuthService {
 
   logout(): void {
     this.token.set(null);
+    localStorage.removeItem(LocalStorage.token);
     this.router.navigate(['login'], {replaceUrl: true})
       .catch((err: unknown) => {
         console.error('Navigation failed', err);
