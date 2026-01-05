@@ -1,14 +1,14 @@
-<section class="mx-auto max-w-7xl bg-white p-6">
+<section class="mx-auto max-w-7xl p-6">
   <nav class="flex flex-wrap gap-4 justify-center">
     @for (item of items; track item.path) {
       <a
         ariaCurrentWhenActive="page"
         class="inline-flex items-center gap-2 rounded-md border border-gray-200
                px-4 py-2 text-sm font-medium transition w-42 justify-center
-               text-gray-700 focus:outline-none
+               text-gray-700 bg-white focus:outline-none
                focus-visible:ring-2 focus-visible:ring-emerald-500"
         routerLink="{{ item.path }}"
-        routerLinkActive="bg-emerald-600 text-white shadow aria-current:page"
+        routerLinkActive="!bg-emerald-600 text-white shadow aria-current:page"
       >
         <i [class]="item.iconClass" aria-hidden="true"></i>
         <span class="font-medium">{{ item.label }}</span>
