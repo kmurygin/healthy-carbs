@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-blog-post-images
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE blog_post_images (
+                id BIGSERIAL NOT NULL PRIMARY KEY,
+                content_type VARCHAR(255),
+                image_data BYTEA NOT NULL
+              );
+
+              ALTER TABLE blog_posts
+              ADD COLUMN image_id BIGINT;
+
+              ALTER TABLE blog_posts
+              ADD CONSTRAINT fk_blog_posts_image
+              FOREIGN KEY (image_id)
+              REFERENCES blog_post_images (id);
