@@ -113,3 +113,6 @@ databaseChangeLog:
   - include:
       file: 2026-01-05-add-author-to-mealplan.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2026-01-06-add-blog-tables.yaml
+      relativeToChangelogFile: true
