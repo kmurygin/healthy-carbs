@@ -26,9 +26,10 @@ public class BlogPost {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String summary;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,4 +47,15 @@ public class BlogPost {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "image_id")
+    private BlogPostImage image;
+
+    public void setImage(BlogPostImage image) {
+        this.image = image;
+        if (image != null) {
+            image.setPost(this);
+        }
+    }
 }
