@@ -57,7 +57,16 @@ export const ApiEndpoints = {
   },
 
   Dietitian: {
-    Dietitian: `${apiUrl}/dietitian`,
-    Collaboration: (dietitianId: number) => `${apiUrl}/dietitian/collaboration/${dietitianId}`,
+    Base: getUrl('dietitian'),
+    Collaboration: (dietitianId: number) => getUrl(`dietitian/collaboration/${dietitianId}`),
+  },
+
+  Blog: {
+    Base: getUrl('blog'),
+    Post: (postId: number) => getUrl(`blog/${postId}`),
+    AddComment: (postId: number) => getUrl(`blog/${postId}/comment`),
+    DeleteComment: (commentId: number) => getUrl(`blog/comment/${commentId}`),
+    UploadImage: (postId: number) => getUrl(`blog/${postId}/image`),
+    GetImage: (imageId: number) => getUrl(`blog/images/${imageId}`),
   }
 } as const;
