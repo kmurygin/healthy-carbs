@@ -39,18 +39,18 @@ export class UserMeasurementService {
 
   addMeasurement(payload: MeasurementPayload): Observable<ApiResponse<void>> {
     return this.httpClient
-      .post<ApiResponse<void>>(ApiEndpoints.Measurements.Measurements, payload);
+      .post<ApiResponse<void>>(ApiEndpoints.Measurements.Base, payload);
   }
 
   updateRecentMeasurement(payload: MeasurementPayload): Observable<ApiResponse<void>> {
-    const url = `${ApiEndpoints.Measurements.Measurements}/recent`;
+    const url = `${ApiEndpoints.Measurements.Base}/recent`;
     return this.httpClient
       .put<ApiResponse<void>>(url, payload);
   }
 
   getAllHistory(): Observable<UserMeasurement[] | null> {
     return this.httpClient
-      .get<ApiResponse<UserMeasurement[]>>(ApiEndpoints.Measurements.Measurements)
+      .get<ApiResponse<UserMeasurement[]>>(ApiEndpoints.Measurements.Base)
       .pipe(
         map((resp) => resp.data ?? null),
         catchError(() => of(null))

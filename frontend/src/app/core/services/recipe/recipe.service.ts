@@ -39,7 +39,7 @@ export class RecipeService {
     }
 
     return this.httpClient
-      .get<ApiResponse<Page<RecipeDto>>>(ApiEndpoints.Recipes.Recipes, {
+      .get<ApiResponse<Page<RecipeDto>>>(ApiEndpoints.Recipes.Base, {
         params: httpParams
       })
       .pipe(
@@ -50,7 +50,7 @@ export class RecipeService {
 
   getById(id: number): Observable<RecipeDto | null> {
     return this.httpClient
-      .get<ApiResponse<RecipeDto>>(`${ApiEndpoints.Recipes.Recipes}/${id}`)
+      .get<ApiResponse<RecipeDto>>(`${ApiEndpoints.Recipes.Base}/${id}`)
       .pipe(
         map(resp => resp.data ?? null),
         catchError(() => of(null))
@@ -59,7 +59,7 @@ export class RecipeService {
 
   create(recipe: RecipeDto): Observable<RecipeDto | null> {
     return this.httpClient
-      .post<ApiResponse<RecipeDto>>(ApiEndpoints.Recipes.Recipes, recipe)
+      .post<ApiResponse<RecipeDto>>(ApiEndpoints.Recipes.Base, recipe)
       .pipe(
         map(resp => resp.data ?? null),
         catchError(() => of(null))
@@ -68,7 +68,7 @@ export class RecipeService {
 
   update(id: number, recipe: RecipeDto): Observable<RecipeDto | null> {
     return this.httpClient
-      .put<ApiResponse<RecipeDto>>(`${ApiEndpoints.Recipes.Recipes}/${id}`, recipe)
+      .put<ApiResponse<RecipeDto>>(`${ApiEndpoints.Recipes.Base}/${id}`, recipe)
       .pipe(
         map(resp => resp.data ?? null),
         catchError(() => of(null))
@@ -76,15 +76,15 @@ export class RecipeService {
   }
 
   delete(id: number): Observable<ApiResponse<void>> {
-    return this.httpClient.delete<ApiResponse<void>>(`${ApiEndpoints.Recipes.Recipes}/${id}`);
+    return this.httpClient.delete<ApiResponse<void>>(`${ApiEndpoints.Recipes.Base}/${id}`);
   }
 
   addFavourite(recipeId: number): Observable<null> {
-    return this.httpClient.post<null>(`${ApiEndpoints.Recipes.Recipes}/${recipeId}/favourite`, {});
+    return this.httpClient.post<null>(`${ApiEndpoints.Recipes.Base}/${recipeId}/favourite`, {});
   }
 
   removeFavourite(recipeId: number): Observable<null> {
-    return this.httpClient.delete<null>(`${ApiEndpoints.Recipes.Recipes}/${recipeId}/favourite`);
+    return this.httpClient.delete<null>(`${ApiEndpoints.Recipes.Base}/${recipeId}/favourite`);
   }
 
   private emptyPage(size: number, page: number): Page<RecipeDto> {

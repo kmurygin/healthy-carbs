@@ -15,7 +15,7 @@ export class DietaryProfileService {
 
   save(dietaryProfile: DietaryProfilePayload): Observable<DietaryProfileDto | null> {
     return this.httpClient
-      .post<ApiResponse<DietaryProfileDto>>(ApiEndpoints.DietaryProfiles.DietaryProfiles, dietaryProfile)
+      .post<ApiResponse<DietaryProfileDto>>(ApiEndpoints.DietaryProfiles.Base, dietaryProfile)
       .pipe(
         map(response => response.data ?? null)
       );
@@ -23,7 +23,7 @@ export class DietaryProfileService {
 
   getProfile(): Observable<DietaryProfileDto | null> {
     return this.httpClient
-      .get<ApiResponse<DietaryProfileDto>>(ApiEndpoints.DietaryProfiles.DietaryProfiles)
+      .get<ApiResponse<DietaryProfileDto>>(ApiEndpoints.DietaryProfiles.Base)
       .pipe(
         map(response => response.data ?? null)
       );
