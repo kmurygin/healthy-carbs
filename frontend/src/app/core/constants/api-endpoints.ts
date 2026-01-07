@@ -1,63 +1,63 @@
 import {environment} from '../../../environments/environment';
 
-const apiUrl = environment.apiUrl;
+const getUrl = (path: string) => `${environment.apiUrl}/${path}`;
 
 export const ApiEndpoints = {
   Auth: {
-    Register: `${apiUrl}/auth/register`,
-    Login: `${apiUrl}/auth/authenticate`,
+    Register: getUrl('auth/register'),
+    Login: getUrl('auth/authenticate'),
   },
 
   User: {
-    User: `${apiUrl}/users/`,
-    GetUserByUsername: `${apiUrl}/users/username/`,
-    ChangePassword: `${apiUrl}/users/change-password`,
+    Base: getUrl('users/'),
+    GetByUsername: getUrl('users/username/'),
+    ChangePassword: getUrl('users/change-password'),
   },
 
   MealPlan: {
-    userprofile: `${apiUrl}/meal-plan/userprofile`,
-    mealplan: `${apiUrl}/mealplan`,
+    UserProfile: getUrl('meal-plan/userprofile'),
+    Base: getUrl('mealplan'),
   },
 
   PaymentsPayu: {
-    Create: `${apiUrl}/payments/payu/create`,
-    Status: `${apiUrl}/payments/payu/status/`,
-    Order: `${apiUrl}/payments/payu/order/`,
+    Create: getUrl('payments/payu/create'),
+    Status: getUrl('payments/payu/status/'),
+    Order: getUrl('payments/payu/order/'),
   },
 
   Payments: {
-    Payments: `${apiUrl}/payments`,
+    Base: getUrl('payments'),
   },
 
   Recipes: {
-    Recipes: `${apiUrl}/recipes`,
+    Base: getUrl('recipes'),
   },
 
   DietaryProfiles: {
-    DietaryProfiles: `${apiUrl}/dietary-profiles`,
+    Base: getUrl('dietary-profiles'),
   },
 
   ShoppingList: {
-    Get: (mealPlanId: number) => `${apiUrl}/shopping-list/${mealPlanId}`,
-    UpdateItem: (mealPlanId: number) => `${apiUrl}/shopping-list/${mealPlanId}/item`,
-    Download: (mealPlanId: number) => `${apiUrl}/shopping-list/${mealPlanId}/download`,
+    Get: (mealPlanId: number) => getUrl(`shopping-list/${mealPlanId}`),
+    UpdateItem: (mealPlanId: number) => getUrl(`shopping-list/${mealPlanId}/item`),
+    Download: (mealPlanId: number) => getUrl(`shopping-list/${mealPlanId}/download`),
   },
 
   Offer: {
-    Offer: `${apiUrl}/offers`,
+    Base: getUrl('offers'),
   },
 
   Ingredients: {
-    Ingredients: `${apiUrl}/ingredients`,
-    IngredientsPage: `${apiUrl}/ingredients/page`,
+    Base: getUrl('ingredients'),
+    Page: getUrl('ingredients/page'),
   },
 
   Measurements: {
-    Measurements: `${apiUrl}/measurements`,
+    Base: getUrl('measurements'),
   },
 
   Dietitian: {
     Dietitian: `${apiUrl}/dietitian`,
     Collaboration: (dietitianId: number) => `${apiUrl}/dietitian/collaboration/${dietitianId}`,
   }
-};
+} as const;
