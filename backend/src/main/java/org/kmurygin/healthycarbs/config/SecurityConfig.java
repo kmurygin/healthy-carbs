@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 .requestMatchers("/swagger-ui.html").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/v1/payments/payu/notify").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/payments/payu/continue").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/blog/images/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

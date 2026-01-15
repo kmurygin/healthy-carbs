@@ -14,7 +14,7 @@ export class PaymentsService {
 
   listMyPayments(): Observable<PaymentSummary[] | null> {
     return this.httpClient
-      .get<ApiResponse<PaymentSummary[]>>(ApiEndpoints.Payments.Payments)
+      .get<ApiResponse<PaymentSummary[]>>(ApiEndpoints.Payments.Base)
       .pipe(
         map(resp => resp.data ?? null)
       );

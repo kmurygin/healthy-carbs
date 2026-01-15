@@ -1,3 +1,5 @@
+import type {UserRole} from "@core/models/enum/user-role.enum";
+
 export interface UserDto {
   id: number;
   username: string;
@@ -5,4 +7,5 @@ export interface UserDto {
   lastName: string;
   email: string;
   profileImageId: number | null;
+  role: UserRole;
 }

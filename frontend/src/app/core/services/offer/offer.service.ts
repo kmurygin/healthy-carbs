@@ -14,7 +14,7 @@ export class OfferService {
 
   getAll(): Observable<Offer[] | null> {
     return this.httpClient
-      .get<ApiResponse<Offer[]>>(ApiEndpoints.Offer.Offer)
+      .get<ApiResponse<Offer[]>>(ApiEndpoints.Offer.Base)
       .pipe(
         map(response => response.data ?? null)
       );

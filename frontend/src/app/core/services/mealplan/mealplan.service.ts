@@ -5,7 +5,7 @@ import type {MealPlanDto} from "../../models/dto/mealplan.dto";
 import type {ApiResponse} from "../../models/api-response.model";
 import {HttpClient} from "@angular/common/http";
 import {ApiEndpoints} from "../../constants/api-endpoints";
-import {CreateMealPlanRequest} from "@features/dietitian/meal-plan-creator/meal-plan-creator.util";
+import type {CreateMealPlanRequest} from "@features/dietitian/meal-plan-creator/meal-plan-creator.util";
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class MealPlanService {
 
   generate(): Observable<MealPlanDto> {
     return this.httpClient
-      .post<ApiResponse<MealPlanDto>>(ApiEndpoints.MealPlan.mealplan, null)
+      .post<ApiResponse<MealPlanDto>>(ApiEndpoints.MealPlan.Base, null)
       .pipe(map(resp => {
         if (!resp.data) {
           throw new Error('Failed to generate meal plan');
@@ -26,20 +26,20 @@ export class MealPlanService {
 
   getHistory(): Observable<MealPlanDto[]> {
     return this.httpClient
-      .get<ApiResponse<MealPlanDto[]>>(ApiEndpoints.MealPlan.mealplan + `/history`)
+      .get<ApiResponse<MealPlanDto[]>>(ApiEndpoints.MealPlan.Base + `/history`)
       .pipe(map(resp => resp.data ?? []));
   }
 
   downloadPdf(mealPlanId: number): Observable<Blob> {
     return this.httpClient
-      .get(`${ApiEndpoints.MealPlan.mealplan}/${mealPlanId}/download`,
+      .get(`${ApiEndpoints.MealPlan.Base}/${mealPlanId}/download`,
         {responseType: 'blob',});
   }
 
   getById(mealPlanId: number): Observable<MealPlanDto> {
     return this.httpClient
       .get<ApiResponse<MealPlanDto>>(
-        `${ApiEndpoints.MealPlan.mealplan}/${mealPlanId}`,
+        `${ApiEndpoints.MealPlan.Base}/${mealPlanId}`,
       )
       .pipe(
         map((resp) => {
@@ -53,7 +53,7 @@ export class MealPlanService {
 
   createManual(request: CreateMealPlanRequest): Observable<MealPlanDto> {
     return this.httpClient
-      .post<ApiResponse<MealPlanDto>>(`${ApiEndpoints.MealPlan.mealplan}/manual`, request)
+      .post<ApiResponse<MealPlanDto>>(`${ApiEndpoints.MealPlan.Base}/manual`, request)
       .pipe(map(resp => {
         if (!resp.data) throw new Error('Failed to create meal plan');
         return resp.data;

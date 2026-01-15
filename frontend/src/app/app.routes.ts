@@ -126,6 +126,12 @@ export const routes: Routes = [
       import('./pages/error/error.component').then((m) => m.ErrorComponent),
   },
   {
+    path: 'blog',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/blog/blog.routes')
+      .then(m => m.BLOG_ROUTES)
+  },
+  {
     path: '**',
     loadComponent: () =>
       import('./pages/error/error.component').then((m) => m.ErrorComponent),

@@ -21,7 +21,7 @@ export class DietitianService implements OnDestroy {
 
   getAllDietitians(): Observable<UserDto[]> {
     return this.httpClient
-      .get<ApiResponse<UserDto[]>>(ApiEndpoints.Dietitian.Dietitian)
+      .get<ApiResponse<UserDto[]>>(ApiEndpoints.Dietitian.Base)
       .pipe(map((resp) => resp.data ?? []));
   }
 
@@ -51,14 +51,14 @@ export class DietitianService implements OnDestroy {
 
   getMyClients(): Observable<UserDto[]> {
     return this.httpClient
-      .get<ApiResponse<UserDto[]>>(`${ApiEndpoints.Dietitian.Dietitian}/clients`)
+      .get<ApiResponse<UserDto[]>>(`${ApiEndpoints.Dietitian.Base}/clients`)
       .pipe(map((resp) => resp.data ?? []));
   }
 
   getClientMeasurements(clientId: number): Observable<UserMeasurement[]> {
     return this.httpClient
       .get<ApiResponse<UserMeasurement[]>>(
-        `${ApiEndpoints.Dietitian.Dietitian}/clients/${clientId}/measurements`
+        `${ApiEndpoints.Dietitian.Base}/clients/${clientId}/measurements`
       )
       .pipe(map((resp) => resp.data ?? []));
   }
@@ -66,7 +66,7 @@ export class DietitianService implements OnDestroy {
   getClientDietaryProfile(clientId: number): Observable<DietaryProfileDto | null> {
     return this.httpClient
       .get<ApiResponse<DietaryProfileDto>>(
-        `${ApiEndpoints.Dietitian.Dietitian}/clients/${clientId}/dietary-profile`
+        `${ApiEndpoints.Dietitian.Base}/clients/${clientId}/dietary-profile`
       )
       .pipe(map((resp) => resp.data ?? null));
   }
@@ -86,7 +86,7 @@ export class DietitianService implements OnDestroy {
   getClientMealPlans(clientId: number): Observable<MealPlanDto[]> {
     return this.httpClient
       .get<ApiResponse<MealPlanDto[]>>(
-        `${ApiEndpoints.Dietitian.Dietitian}/clients/${clientId}/meal-plans`
+        `${ApiEndpoints.Dietitian.Base}/clients/${clientId}/meal-plans`
       )
       .pipe(map((resp) => resp.data ?? []));
   }

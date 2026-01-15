@@ -14,7 +14,7 @@ export class IngredientService {
 
   getAll(): Observable<IngredientDto[] | null> {
     return this.httpClient
-      .get<ApiResponse<IngredientDto[]>>(ApiEndpoints.Ingredients.Ingredients)
+      .get<ApiResponse<IngredientDto[]>>(ApiEndpoints.Ingredients.Base)
       .pipe(
         map(resp => resp.data ?? null),
         catchError(() => of(null))
@@ -41,7 +41,7 @@ export class IngredientService {
     console.log(`Params: ${params.name} Category: ${params.category}`);
 
     return this.httpClient
-      .get<ApiResponse<Page<IngredientDto>>>(ApiEndpoints.Ingredients.IngredientsPage, {
+      .get<ApiResponse<Page<IngredientDto>>>(ApiEndpoints.Ingredients.Page, {
         params: httpParams
       })
       .pipe(
@@ -55,7 +55,7 @@ export class IngredientService {
 
   getById(id: number): Observable<IngredientDto | null> {
     return this.httpClient
-      .get<ApiResponse<IngredientDto>>(`${ApiEndpoints.Ingredients.Ingredients}/${id}`)
+      .get<ApiResponse<IngredientDto>>(`${ApiEndpoints.Ingredients.Base}/${id}`)
       .pipe(
         map(resp => resp.data ?? null),
         catchError(() => of(null))
@@ -64,7 +64,7 @@ export class IngredientService {
 
   create(ingredient: IngredientDto): Observable<IngredientDto | null> {
     return this.httpClient
-      .post<ApiResponse<IngredientDto>>(ApiEndpoints.Ingredients.Ingredients, ingredient)
+      .post<ApiResponse<IngredientDto>>(ApiEndpoints.Ingredients.Base, ingredient)
       .pipe(
         map(resp => resp.data ?? null),
         catchError(() => of(null))
@@ -73,7 +73,7 @@ export class IngredientService {
 
   update(id: number, ingredient: IngredientDto): Observable<IngredientDto | null> {
     return this.httpClient
-      .put<ApiResponse<IngredientDto>>(`${ApiEndpoints.Ingredients.Ingredients}/${id}`, ingredient)
+      .put<ApiResponse<IngredientDto>>(`${ApiEndpoints.Ingredients.Base}/${id}`, ingredient)
       .pipe(
         map(resp => resp.data ?? null),
         catchError(() => of(null))
@@ -81,7 +81,7 @@ export class IngredientService {
   }
 
   delete(id: number): Observable<null> {
-    return this.httpClient.delete<null>(`${ApiEndpoints.Ingredients.Ingredients}/${id}`);
+    return this.httpClient.delete<null>(`${ApiEndpoints.Ingredients.Base}/${id}`);
   }
 
 }
