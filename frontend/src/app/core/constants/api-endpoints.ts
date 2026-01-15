@@ -64,8 +64,8 @@ export const ApiEndpoints = {
   Blog: {
     Base: getUrl('blog'),
     Post: (postId: number) => getUrl(`blog/${postId}`),
-    AddComment: (postId: number) => getUrl(`blog/${postId}/comment`),
-    DeleteComment: (commentId: number) => getUrl(`blog/comment/${commentId}`),
+    AddComment: (postId: number) => getUrl(`blog/${postId}/comments`),
+    DeleteComment: (commentId: number) => getUrl(`blog/comments/${commentId}`),
     UploadImage: (postId: number) => getUrl(`blog/${postId}/image`),
     GetImage: (imageId: number) => getUrl(`blog/images/${imageId}`),
   }
