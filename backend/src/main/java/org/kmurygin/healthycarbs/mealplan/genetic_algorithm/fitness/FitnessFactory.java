@@ -12,6 +12,6 @@ public class FitnessFactory {
     private final GeneticAlgorithmConfig config;
 
     public Fitness createCalorieFitness(DietaryProfile profile) {
-        return new CalorieFitness(profile, config);
+        return new MacroNutrientFitness(profile, config);
     }
 }

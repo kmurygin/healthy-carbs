@@ -5,7 +5,7 @@ import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.core.Genome;
 import org.kmurygin.healthycarbs.mealplan.model.DietaryProfile;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 
-public class CalorieFitness implements Fitness {
+public class MacroNutrientFitness implements Fitness {
 
     private final double calorieTarget;
     private final double carbsTarget;
@@ -17,7 +17,7 @@ public class CalorieFitness implements Fitness {
     private final double proteinWeight;
     private final double fatWeight;
 
-    public CalorieFitness(DietaryProfile profile, GeneticAlgorithmConfig config) {
+    public MacroNutrientFitness(DietaryProfile profile, GeneticAlgorithmConfig config) {
         this.calorieTarget = profile.getCalorieTarget();
         this.carbsTarget = profile.getCarbsTarget();
         this.proteinTarget = profile.getProteinTarget();
