@@ -40,7 +40,6 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse register(RegisterRequest request) {
-//        User user = UserMapper.fromRegisterRequest(request, passwordEncoder);
         User user = User.builder()
                 .firstName(request.getFirstname())
                 .lastName(request.getLastname())
