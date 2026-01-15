@@ -9,7 +9,7 @@ import java.util.List;
 @Component
 public class PopulationEvaluator {
     public void evaluate(List<Genome> population, Fitness fitness) {
-        population.parallelStream()
+        population
                 .forEach(genome -> genome.setFitness(fitness.evaluate(genome)));
     }
 }
