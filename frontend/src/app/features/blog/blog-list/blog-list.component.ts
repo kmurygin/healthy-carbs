@@ -162,7 +162,7 @@ export class BlogListComponent {
   getCoverUrl(imageId: number | undefined | null): string {
     return imageId
       ? this.blogService.getPostImageUrl(imageId)
-      : '';
+      : '/assets/images/vegetables-blog.jpg';
   }
 
   openCreateForm(): void {
