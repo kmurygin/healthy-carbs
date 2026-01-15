@@ -83,33 +83,48 @@ public class MealPlanService {
     public MealPlan generateMealPlan() {
         User user = authenticationService.getCurrentUser();
         DietaryProfile dietaryProfile = dietaryProfileService.getByUserId(user.getId());
-        Fitness fitness = this.fitnessFactory.createCalorieFitness(dietaryProfile);
-        DietType dietType = dietaryProfile.getDietType();
 
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate startOfWeek = getStartOfCurrentWeek();
+        List<MealPlanDay> days = generateWeeklyDays(dietaryProfile, startOfWeek);
+        MealPlan mealPlan = buildMealPlan(user, days);
+
+        return savePlanAndGenerateShoppingList(mealPlan);
+    }
+
+    private LocalDate getStartOfCurrentWeek() {
+        return LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+    }
+
+    private List<MealPlanDay> generateWeeklyDays(DietaryProfile profile, LocalDate startOfWeek) {
+        Fitness fitness = fitnessFactory.createCalorieFitness(profile);
+        DietType dietType = profile.getDietType();
 
         List<CompletableFuture<MealPlanDay>> futures = Arrays.stream(DayOfWeek.values())
                 .map(dayOfWeek -> CompletableFuture.supplyAsync(() -> {
-                    Genome bestGenomeForDay = geneticAlgorithm.run(() -> randomCandidate(dietType), fitness, dietType);
+                    Genome bestGenome = geneticAlgorithm.run(
+                            () -> randomCandidate(dietType),
+                            fitness,
+                            dietType
+                    );
                     LocalDate date = startOfWeek.plusDays(dayOfWeek.ordinal());
-                    return toMealPlanDay(bestGenomeForDay, dayOfWeek, date);
+                    return toMealPlanDay(bestGenome, dayOfWeek, date);
                 }, taskExecutor))
                 .toList();
 
-        List<MealPlanDay> transientMealPlanDays = futures.stream()
+        return futures.stream()
                 .map(CompletableFuture::join)
                 .toList();
+    }
 
+    private MealPlan buildMealPlan(User user, List<MealPlanDay> days) {
         MealPlan mealPlan = new MealPlan();
         mealPlan.setUser(user);
-
-        mealPlan.setDays(transientMealPlanDays);
-        updateWeeklyTotals(mealPlan);
-
+        mealPlan.setDays(days);
         mealPlan.setSource(MealPlanSource.GENERATED);
 
-        return savePlanAndGenerateShoppingList(mealPlan);
+        updateWeeklyTotals(mealPlan);
+
+        return mealPlan;
     }
 
     @Transactional
