@@ -1,6 +1,5 @@
-import {ChangeDetectionStrategy, Component, inject, input, type OnDestroy, type OnInit, signal,} from '@angular/core';
-import {type AbstractControl, type ControlValueAccessor, NgControl,} from '@angular/forms';
-import type {Subscription} from 'rxjs';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
+import {AbstractInputComponent} from "@shared/components/abstract-input/abstract-input.component";
 
 @Component({
   selector: 'app-text-input',
@@ -40,94 +39,32 @@ import type {Subscription} from 'rxjs';
     </div>
   `,
 })
-export class TextInputComponent implements ControlValueAccessor, OnInit, OnDestroy {
-  readonly label = input.required<string>();
-  readonly id = input.required<string>();
+export class TextInputComponent extends AbstractInputComponent<string | number> {
   readonly placeholder = input<string>('');
   readonly type = input<string>('text');
   readonly autocomplete = input<string>('off');
   readonly autocapitalize = input<string>('none');
 
-  readonly value = signal('');
-  readonly isDisabled = signal(false);
+  override get errorMessage(): string {
+    const errors = this.validationErrors();
+    if (!errors) return '';
 
-  private readonly ngControl = inject(NgControl, {optional: true, self: true});
+    if (errors['required']) return `${this.label()} is required`;
+    if (errors['email']) return 'Invalid email format';
 
-  private statusSubscription?: Subscription;
-  private valueSub?: Subscription;
-
-  constructor() {
-    if (this.ngControl) {
-      this.ngControl.valueAccessor = this;
-    }
-  }
-
-  get formControl(): AbstractControl | null {
-    return this.ngControl?.control ?? null;
-  }
-
-  get hasError(): boolean {
-    const control = this.formControl;
-    return !!control && control.invalid && (control.touched || control.dirty);
-  }
-
-  get errorMessage(): string {
-    const control = this.formControl;
-    if (!control?.errors) return '';
-
-    if (control.hasError('required')) return `${this.label()} is required`;
-    if (control.hasError('email')) return 'Invalid email format';
-    if (control.hasError('minlength')) {
-      const minLengthError = control.errors['minlength'] as { requiredLength: number };
+    if (errors['minlength']) {
+      const minLengthError = errors['minlength'] as { requiredLength: number };
       return `Min ${minLengthError.requiredLength} characters`;
     }
-    if (control.hasError('mismatch')) return 'Passwords do not match';
+
+    if (errors['mismatch']) return 'Passwords do not match';
 
     return 'Invalid value';
   }
 
-  ngOnInit(): void {
-    const control = this.formControl;
-    if (!control) return;
-    this.statusSubscription = control.statusChanges.subscribe(() => {
-      this.value.update((updatedValue: string) => updatedValue);
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.statusSubscription?.unsubscribe();
-    this.valueSub?.unsubscribe();
-  }
-
   onInput(event: Event): void {
-    const next: string = (event.target as HTMLInputElement).value;
-    this.value.set(next);
-    this.onChange(next);
+    const enteredText = (event.target as HTMLInputElement).value;
+    this.value.set(enteredText);
+    this.onChangeCallback(enteredText);
   }
-
-  onBlur(): void {
-    this.onTouched();
-  }
-
-  writeValue(value: unknown): void {
-    this.value.set((value ?? '') as string);
-  }
-
-  registerOnChange(onChangeCallback: (value: string) => void): void {
-    this.onChange = onChangeCallback;
-  }
-
-  registerOnTouched(onTouchedCallback: () => void): void {
-    this.onTouched = onTouchedCallback;
-  }
-
-  setDisabledState(isDisabled: boolean): void {
-    this.isDisabled.set(isDisabled);
-  }
-
-  /* eslint-disable @typescript-eslint/no-empty-function */
-  private onChange: (value: string) => void = () => {
-  };
-  private onTouched: () => void = () => {
-  };
 }
