@@ -1,50 +1,108 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import type {FormControl, FormGroup} from '@angular/forms';
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, inject, signal, type WritableSignal} from '@angular/core';
+import type {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '@core/services/auth/auth.service';
-
 import type {RegisterPayload} from "@core/models/payloads/register.payload";
-import {NgOptimizedImage} from "@angular/common";
 import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
+import type {FormFieldConfig} from "@features/auth/form-field.config";
+import {TextInputComponent} from "@features/auth/text-input/text-input.component";
+import {NotificationService} from "@core/services/ui/notification.service";
 
 type RegisterForm = FormGroup<{
-  firstname: FormControl<string>;
-  lastname: FormControl<string>;
+  firstName: FormControl<string>;
+  lastName: FormControl<string>;
   username: FormControl<string>;
   email: FormControl<string>;
   password: FormControl<string>;
+  confirmPassword: FormControl<string>;
 }>;
 
 @Component({
   selector: 'app-register',
-  standalone: true,
   imports: [
-    FormsModule,
     ReactiveFormsModule,
     RouterLink,
-    NgOptimizedImage,
-    ErrorMessageComponent
+    ErrorMessageComponent,
+    TextInputComponent
   ],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterComponent {
-  readonly errorMessage = signal('');
-  readonly isSubmitting = signal(false);
+  readonly errorMessage: WritableSignal<string> = signal('');
+  readonly isSubmitting: WritableSignal<boolean> = signal(false);
 
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private formBuilder = inject(FormBuilder);
-
+  readonly registerFormFields: FormFieldConfig[] = [
+    {
+      key: 'firstName',
+      label: 'First name',
+      type: 'text',
+      placeholder: 'First name',
+      autocomplete: 'given-name',
+      containerClass: 'col-span-1',
+      autocapitalize: 'words'
+    },
+    {
+      key: 'lastName',
+      label: 'Last name',
+      type: 'text',
+      placeholder: 'Last name',
+      autocomplete: 'family-name',
+      containerClass: 'col-span-1',
+      autocapitalize: 'words'
+    },
+    {
+      key: 'username',
+      label: 'Username',
+      type: 'text',
+      placeholder: 'Choose a username',
+      autocomplete: 'username',
+      containerClass: 'col-span-2',
+      autocapitalize: 'none'
+    },
+    {
+      key: 'email',
+      label: 'Email address',
+      type: 'email',
+      placeholder: 'example@example.com',
+      autocomplete: 'email',
+      containerClass: 'col-span-2',
+      autocapitalize: 'none'
+    },
+    {
+      key: 'password',
+      label: 'Password',
+      type: 'password',
+      placeholder: 'Create a password',
+      autocomplete: 'new-password',
+      containerClass: 'col-span-2',
+      autocapitalize: 'none'
+    },
+    {
+      key: 'confirmPassword',
+      label: 'Confirm Password',
+      type: 'password',
+      placeholder: 'Confirm your password',
+      autocomplete: 'new-password',
+      containerClass: 'col-span-2',
+      autocapitalize: 'none'
+    }
+  ];
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly notificationService = inject(NotificationService);
 
   readonly form: RegisterForm = this.formBuilder.group({
-    firstname: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
-    lastname: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
+    firstName: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
+    lastName: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
     username: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
     email: this.formBuilder.control('', {validators: [Validators.required, Validators.email], nonNullable: true}),
     password: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
+    confirmPassword: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
+  }, {
+    validators: passwordMatchValidator
   });
 
   onSubmit(): void {
@@ -53,16 +111,24 @@ export class RegisterComponent {
     this.isSubmitting.set(true);
     this.errorMessage.set('');
 
-    const registerPayload: RegisterPayload = this.form.getRawValue();
+    const rawFormValues: RegisterPayload & { confirmPassword: string } = this.form.getRawValue();
+
+    const registerPayload: RegisterPayload = {
+      email: rawFormValues.email,
+      username: rawFormValues.username,
+      password: rawFormValues.password,
+      firstName: rawFormValues.firstName,
+      lastName: rawFormValues.lastName,
+    };
 
     this.authService.register(registerPayload).subscribe({
       next: (response) => {
         this.isSubmitting.set(false);
-
+        this.notificationService.success('Successfully signed up.');
         if (response.status) {
           this.router.navigate(['login'])
             .catch((err: unknown) => {
-              console.error('Navigation failed', err);
+              console.error('Navigation failed', err)
             });
         } else {
           this.errorMessage.set(response.message ?? 'Registration failed.');
@@ -70,12 +136,38 @@ export class RegisterComponent {
       },
       error: (err: unknown) => {
         this.isSubmitting.set(false);
-        let msg = 'Something went wrong. Please try again.';
-        if (err instanceof Error) {
-          msg = err.message || msg;
-        }
+        const msg = err instanceof Error
+          ? err.message
+          : 'Something went wrong.';
         this.errorMessage.set(msg);
       }
     });
   }
 }
+
+const passwordMatchValidator: ValidatorFn = (abstractControl: AbstractControl): ValidationErrors | null => {
+  const password = abstractControl.get('password');
+  const confirmPassword = abstractControl.get('confirmPassword');
+
+  if (!password || !confirmPassword) {
+    return null;
+  }
+
+  if (confirmPassword.value && password.value !== confirmPassword.value) {
+    confirmPassword.setErrors({...confirmPassword.errors, mismatch: true});
+    return {mismatch: true};
+  }
+
+  if (confirmPassword.hasError('mismatch')) {
+    const errors = {...confirmPassword.errors};
+    delete errors['mismatch'];
+
+    confirmPassword.setErrors(
+      Object.keys(errors).length > 0
+        ? errors
+        : null
+    );
+  }
+
+  return null;
+};
