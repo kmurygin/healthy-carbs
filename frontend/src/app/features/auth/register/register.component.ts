@@ -5,7 +5,7 @@ import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '@core/services/auth/auth.service';
 import type {RegisterPayload} from "@core/models/payloads/register.payload";
 import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
-import type {FormFieldConfig} from "@features/auth/form-field.config";
+import type {FormFieldConfig} from "@shared/form-field.config";
 import {TextInputComponent} from "@features/auth/text-input/text-input.component";
 import {NotificationService} from "@core/services/ui/notification.service";
 

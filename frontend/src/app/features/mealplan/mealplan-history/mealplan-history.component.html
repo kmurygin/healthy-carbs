@@ -5,17 +5,17 @@
   </div>
 
   @if (loading()) {
-    <app-loading-message message="Loading history..." />
+    <app-loading-message message="Loading history..."/>
   } @else if (errorMessage()) {
-    <app-error-message [message]="errorMessage()!" />
+    <app-error-message [message]="errorMessage()!"/>
   } @else if (mealPlans().length === 0) {
     <div class="text-center py-16 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
       <p class="text-gray-500">You haven't created any meal plans yet.</p>
-      <a routerLink="/meal-plan/create" class="text-emerald-600 hover:text-emerald-700 font-medium mt-2 inline-block">
+      <a class="text-emerald-600 hover:text-emerald-700 font-medium mt-2 inline-block" routerLink="/meal-plan/create">
         Create your first plan
       </a>
     </div>
   } @else {
-    <app-mealplan-table [mealPlans]="mealPlans()" />
+    <app-mealplan-table [mealPlans]="mealPlans()"/>
   }
 </div>

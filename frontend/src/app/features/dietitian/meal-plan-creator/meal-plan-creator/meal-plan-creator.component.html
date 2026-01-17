@@ -61,11 +61,11 @@
             }
 
             @if (recipesLoadingMore()) {
-            <div class="w-[320px] flex items-center justify-center">
+              <div class="w-[320px] flex items-center justify-center">
                 <div class="flex items-center gap-2 text-sm text-gray-500">
                   <i class="fa-solid fa-spinner fa-spin"></i>
                 </div>
-            </div>
+              </div>
             }
           </div>
         </div>
@@ -228,15 +228,15 @@
 
                     @for (recipe of day.slots[mealType]; track recipe.id) {
                       <div
-                        cdkDrag
                         [cdkDragData]="recipe"
                         [cdkDragDisabled]="true"
+                        cdkDrag
                         class="cursor-default"
                       >
                         <app-meal-plan-creator-placed-recipe-card
-                          [recipe]="recipe"
                           (remove)="removeRecipeFromSlot(selectedDayIndex(), mealType)"
                           (viewDetails)="openRecipeDetails(recipe)"
+                          [recipe]="recipe"
                         />
                       </div>
                     }
@@ -311,15 +311,15 @@
 
                   @for (recipe of day.slots[mealType]; track recipe.id) {
                     <div
-                      cdkDrag
                       [cdkDragData]="recipe"
                       [cdkDragDisabled]="true"
+                      cdkDrag
                       class="cursor-default"
                     >
                       <app-meal-plan-creator-placed-recipe-card
-                        [recipe]="recipe"
                         (remove)="removeRecipeFromSlot(selectedDayIndex(), mealType)"
                         (viewDetails)="openRecipeDetails(recipe)"
+                        [recipe]="recipe"
                       />
                     </div>
                   }
