@@ -1,0 +1,155 @@
+@if (isLoading()) {
+  <p class="text-center text-gray-600">Loading your profile...</p>
+} @else {
+  @if (profileExists()) {
+    <div class="p-6 text-center max-w-2xl mx-auto">
+      <h2 class="text-xl font-semibold text-emerald-800">Profile already created</h2>
+      <p class="mt-2 text-emerald-700">You have already created your dietary profile.</p>
+
+      @if (successMessage()) {
+        <div class="mt-4">
+          <app-success-message [message]="successMessage()!"/>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="container mx-auto max-w-3xl px-4 py-8">
+      <h1 class="mb-6 text-2xl font-semibold tracking-tight">Create your dietary profile</h1>
+
+      <form (ngSubmit)="onSubmit()" [formGroup]="formGroup" class="space-y-10" novalidate>
+
+        <fieldset>
+          <legend class="text-lg font-semibold">Personal Details</legend>
+          <p class="mt-1 text-sm text-gray-600"></p>
+
+          <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+            @for (field of personalInformationFields; track field.key) {
+              <div [class.md:col-span-2]="field.key === 'activityLevel'">
+
+                @if (field.controlType === 'input') {
+                  <app-dietary-profile-text-input
+                    [formControlName]="field.key"
+                    [id]="field.key"
+                    [inputMode]="field.inputMode ?? 'text'"
+                    [label]="field.label"
+                    [max]="field.max ?? null"
+                    [min]="field.min ?? null"
+                    [step]="field.step ?? null"
+                    [type]="field.type"
+                  />
+                }
+
+                @if (field.controlType === 'select') {
+                  <app-dietary-profile-select-input
+                    [formControlName]="field.key"
+                    [id]="field.key"
+                    [label]="field.label"
+                    [options]="field.options!"
+                  />
+                }
+
+              </div>
+            }
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-lg font-semibold">Goals & Preferences</legend>
+          <p class="mt-1 text-sm text-gray-600"></p>
+
+          <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+            @for (field of preferenceFields; track field.key) {
+              <div [class.md:col-span-2]="field.key === 'activityLevel'">
+
+                @if (field.controlType === 'input') {
+                  <app-dietary-profile-text-input
+                    [formControlName]="field.key"
+                    [id]="field.key"
+                    [inputMode]="field.inputMode ?? 'text'"
+                    [label]="field.label"
+                    [max]="field.max ?? null"
+                    [min]="field.min ?? null"
+                    [step]="field.step ?? null"
+                    [type]="field.type"
+                  />
+                }
+
+
+                @if (field.controlType === 'select') {
+                  <app-dietary-profile-select-input
+                    [formControlName]="field.key"
+                    [id]="field.key"
+                    [label]="field.label"
+                    [options]="field.options!"
+                  />
+                }
+              </div>
+            }
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-lg font-semibold">Allergies</legend>
+          <p class="mt-1 text-sm text-gray-600">Select any known allergies.</p>
+          <div class="mt-4 grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-6">
+            @for (allergy of allergies; track allergy) {
+              @let isSelected = selectedAllergies().has(allergy);
+              <button
+                (click)="toggleAllergy(allergy)"
+                [attr.aria-checked]="isSelected"
+                [class.bg-emerald-600]="isSelected"
+                [class.bg-white]="!isSelected"
+                [class.border-emerald-600]="isSelected"
+                [class.border-gray-200]="!isSelected"
+                [class.hover:bg-gray-50]="!isSelected"
+                [class.text-gray-800]="!isSelected"
+                [class.text-white]="isSelected"
+                class="flex items-center justify-between gap-2 rounded-xl border p-3 shadow-sm transition
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500
+                focus-visible:ring-offset-2 hover:cursor-pointer"
+                role="checkbox"
+                type="button"
+              >
+                <span class="truncate text-sm">{{ allergy }}</span>
+                @if (isSelected) {
+                  <i aria-hidden="true" class="fa-solid fa-check h-4 w-4"></i>
+                }
+              </button>
+            }
+          </div>
+        </fieldset>
+
+        @if (successMessage()) {
+          <app-success-message [message]="successMessage()!"/>
+        }
+        @if (formError()) {
+          <app-error-message [message]="formError()!"/>
+        }
+
+        <div class="flex items-center justify-end gap-3 border-t border-gray-200 pt-6">
+          <button
+            (click)="onReset()"
+            [disabled]="submitting()"
+            class="inline-flex items-center rounded-xl bg-gray-100 px-4 py-2 font-medium
+            text-gray-800 shadow-sm transition hover:bg-gray-200 disabled:opacity-60
+            hover:cursor-pointer"
+            type="button"
+          >
+            Reset
+          </button>
+
+          <button
+            [attr.aria-busy]="submitting()"
+            [disabled]="submitting() || formGroup.invalid"
+            class="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2 font-medium
+            text-white shadow-sm transition enabled:hover:bg-emerald-700 disabled:cursor-not-allowed
+            disabled:opacity-60 hover:cursor-pointer"
+            type="submit"
+          >
+            {{ submitting() ? "Saving..." : "Save Profile" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+}

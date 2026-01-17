@@ -42,7 +42,7 @@ export const routes: Routes = [
     path: 'dietary-profile-form',
     canMatch: [authGuard],
     loadComponent: () =>
-      import('./features/mealplan/dietary-profile-form/dietary-profile-form.component').then(
+      import('@features/mealplan/dietary-profile/dietary-profile-form/dietary-profile-form.component').then(
         (m) => m.DietaryProfileFormComponent
       ),
   },
