@@ -24,12 +24,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/payments/payu")
 public class PayuController {
 
+    private static final Logger logger = LoggerFactory.getLogger(PayuController.class);
     private final PaymentService paymentService;
     private final OrderService orderService;
     private final PayuClient payuClient;
     private final UserService userService;
-
-    private static final Logger logger = LoggerFactory.getLogger(PayuController.class);
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<InitPaymentResponse>> create(

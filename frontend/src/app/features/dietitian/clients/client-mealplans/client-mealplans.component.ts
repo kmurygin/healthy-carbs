@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, Component, inject, input, type OnInit, signal} 
 import {CommonModule} from '@angular/common';
 import {DietitianService} from '@core/services/dietitian/dietitian.service';
 import {ErrorMessageComponent} from '@shared/components/error-message/error-message.component';
-import {LoadingMessageComponent} from '@shared/components/loading-message/loading-message.component';
 import {finalize} from 'rxjs';
 import {type MealPlanDto} from '@core/models/dto/mealplan.dto';
 import {MealPlanTableComponent} from "@features/mealplan/mealplan-table/mealplan-table.component";
@@ -15,8 +14,7 @@ import {UserService} from "@core/services/user/user.service";
   imports: [
     CommonModule,
     MealPlanTableComponent,
-    ErrorMessageComponent,
-    LoadingMessageComponent
+    ErrorMessageComponent
   ],
   template: `
     <div class="container mx-auto px-4 py-8 max-w-7xl">

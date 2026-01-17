@@ -22,10 +22,10 @@ import java.util.List;
 @Service
 public class IngredientService {
 
+    private static final Logger logger = LoggerFactory.getLogger(IngredientService.class);
     private final IngredientRepository ingredientRepository;
     private final UserService userService;
     private final RecipeIngredientRepository recipeIngredientRepository;
-    private static final Logger logger = LoggerFactory.getLogger(IngredientService.class);
 
     public List<Ingredient> findAll() {
         return ingredientRepository.findAll();

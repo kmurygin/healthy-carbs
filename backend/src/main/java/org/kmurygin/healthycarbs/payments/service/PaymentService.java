@@ -2,7 +2,7 @@ package org.kmurygin.healthycarbs.payments.service;
 
 import lombok.AllArgsConstructor;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
-import org.kmurygin.healthycarbs.offers.MealPlanTemplateService;
+import org.kmurygin.healthycarbs.offers.mealPlanTemplate.MealPlanTemplateService;
 import org.kmurygin.healthycarbs.payments.dto.PaymentStatus;
 import org.kmurygin.healthycarbs.payments.dto.PaymentStatusResponse;
 import org.kmurygin.healthycarbs.payments.model.Order;
@@ -36,6 +36,7 @@ public class PaymentService {
         }
 
         payment.setStatus(newStatus);
+        paymentRepository.save(payment);
     }
 
     public void attachOrder(String localOrderId, Order order) {

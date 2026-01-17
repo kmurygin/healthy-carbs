@@ -32,11 +32,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>, JpaSpecif
             @Param("dietType") DietType dietType
     );
 
-    @Query("""
-            SELECT r.id
-            FROM Recipe r
-            WHERE r.mealType = :mealType
-            """)
     List<Long> findIdsByMealType(
             @Param("mealTypes") MealType mealType
     );

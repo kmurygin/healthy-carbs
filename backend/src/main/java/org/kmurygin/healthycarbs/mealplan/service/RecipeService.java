@@ -38,6 +38,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 public class RecipeService {
 
+    private static final Logger logger = LoggerFactory.getLogger(RecipeService.class);
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
     private final MealPlanRecipeRepository mealPlanRecipeRepository;
@@ -45,7 +46,6 @@ public class RecipeService {
     private final RecipeMapper recipeMapper;
     private final UserRepository userRepository;
     private final UserService userService;
-    private static final Logger logger = LoggerFactory.getLogger(RecipeService.class);
 
     public Page<Recipe> findAll(
             String name,

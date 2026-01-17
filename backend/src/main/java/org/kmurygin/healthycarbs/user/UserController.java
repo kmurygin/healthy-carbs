@@ -70,7 +70,9 @@ public class UserController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request
+    ) {
         userService.changePassword(request.getOldPassword(), request.getNewPassword());
         return ApiResponses.success(
                 HttpStatus.OK, null, "Password has been changed successfully"

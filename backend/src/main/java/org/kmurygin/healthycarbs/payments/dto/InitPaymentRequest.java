@@ -6,6 +6,7 @@ public record InitPaymentRequest(
         String localOrderId,
         String description,
         int totalAmount,
+        Long offerId,
         List<ProductDTO> products
 ) {
 }

@@ -26,10 +26,9 @@ import java.util.List;
 @RequestMapping("/api/v1/ingredients")
 public class IngredientController {
 
+    private static final Logger logger = LoggerFactory.getLogger(IngredientController.class);
     private final IngredientService ingredientService;
     private final IngredientMapper ingredientMapper;
-    private static final Logger logger = LoggerFactory.getLogger(IngredientController.class);
-
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<IngredientDTO>>> getAll() {

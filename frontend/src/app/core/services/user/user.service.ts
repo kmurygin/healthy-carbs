@@ -21,9 +21,10 @@ export class UserService {
   getUserById(id: number) {
     return this.httpClient
       .get<ApiResponse<UserDto>>(
-        ApiEndpoints.User.Base + id
+        `${ApiEndpoints.User.Base}${id}`
       )
-      .pipe(map((resp) => resp.data ?? null));;
+      .pipe(map((resp) => resp.data ?? null));
+
   }
 
   updateUser(id: number, updatedUser: UserDto) {

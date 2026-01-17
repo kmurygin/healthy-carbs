@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MealPlanService } from '@core/services/mealplan/mealplan.service';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, map, of, startWith } from 'rxjs';
-import { ErrorMessageComponent } from '@shared/components/error-message/error-message.component';
-import { LoadingMessageComponent } from '@shared/components/loading-message/loading-message.component';
-import type { HistoryState } from '../mealplan.util';
+import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {MealPlanService} from '@core/services/mealplan/mealplan.service';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {catchError, map, of, startWith} from 'rxjs';
+import {ErrorMessageComponent} from '@shared/components/error-message/error-message.component';
+import {LoadingMessageComponent} from '@shared/components/loading-message/loading-message.component';
+import type {HistoryState} from '../mealplan.util';
 import {MealPlanTableComponent} from "@features/mealplan/mealplan-table/mealplan-table.component";
 import {RouterLink} from "@angular/router";
 
@@ -33,7 +33,7 @@ export class MealPlanHistoryComponent {
 
   private readonly historyState = toSignal(
     this.mealPlanService.getHistory().pipe(
-      map((plans) => ({ plans, loading: false, error: null })),
+      map((plans) => ({plans, loading: false, error: null})),
       startWith(this.initialState),
       catchError(() =>
         of({
@@ -43,7 +43,7 @@ export class MealPlanHistoryComponent {
         }),
       ),
     ),
-    { initialValue: this.initialState },
+    {initialValue: this.initialState},
   );
 
   readonly loading = computed(() => this.historyState().loading);

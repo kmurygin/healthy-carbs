@@ -113,7 +113,7 @@ export class PostCommentListComponent {
       )
       .subscribe({
         next: (createdComment) => {
-          if(!createdComment) return;
+          if (!createdComment) return;
 
           this.commentControl.reset();
           this.commentCreated.emit(createdComment);

@@ -1,67 +1,60 @@
-<div class="light-form-wrapper max-w-sm mx-auto mt-24 p-4 bg-white rounded-xl border border-gray-400">
-  <!--  <h2 class="text-center mb-6 text-2xl font-semibold">Please sign in</h2>-->
+<div class=" flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
+  <div class="max-w-md w-full space-y-8 p-8">
 
-  <form (ngSubmit)="onSubmit()" [formGroup]="form" class="space-y-5">
-
-    <input autocomplete="username" hidden type="text"/>
-
-    <div>
-      <label class="block mb-1 text-sm font-medium text-gray-700" for="username">
-        Username
-      </label>
-
-      @let u = form.controls['username'];
-      <input
-        [attr.aria-invalid]="u.invalid && (u.touched || u.dirty || submitted()) ? 'true' : null"
-        [class.border-red-500]="u.invalid && (u.touched || u.dirty || submitted())"
-        autocomplete="username"
-        class="input"
-        formControlName="username"
-        id="username"
-        placeholder="Username"
-        type="text"
-      />
-
-      @if (u.invalid && (u.touched || u.dirty || submitted()) && u.hasError('required')) {
-        <p class="mt-1 text-xs text-red-600" id="username-error">Username is required</p>
-      }
+    <div class="text-center">
+      <h2 class="text-3xl font-extrabold text-emerald-900">
+        Welcome back!
+      </h2>
+      <p class="mt-2 text-sm text-gray-600">
+        Please sign in to use your account
+      </p>
     </div>
 
-    <div>
-      <label class="block mb-1 text-sm font-medium text-gray-700" for="password">
-        Password
-      </label>
-
-      @let p = form.controls['password'];
-      <input
-        [attr.aria-invalid]="p.invalid && (p.touched || p.dirty || submitted()) ? 'true' : null"
-        [class.border-red-500]="p.invalid && (p.touched || p.dirty || submitted())"
-        autocomplete="current-password"
-        class="input"
-        formControlName="password"
-        id="password"
-        placeholder="Password"
-        type="password"
-      />
-
-      @if (p.invalid && (p.touched || p.dirty || submitted()) && p.hasError('required')) {
-        <p class="mt-1 text-xs text-red-600" id="password-error">Password is required</p>
-      }
-    </div>
-
-    <button
-      [disabled]="form.invalid || isSubmitting()"
-      class="w-full flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-white
-             text-sm font-medium transition hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none"
-      type="submit"
+    <form
+      (ngSubmit)="onSubmit()"
+      [formGroup]="form"
+      class="mt-8 space-y-6"
     >
-      {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
-    </button>
+      <div class="grid gap-4">
 
-    @if (errorMessage()) {
-      <app-error-message
-        [message]="errorMessage()">
-      </app-error-message>
-    }
-  </form>
+        @for (field of loginFormFields; track field.key) {
+          <app-text-input
+            [autocapitalize]="field.autocapitalize ?? 'none'"
+            [autocomplete]="field.autocomplete"
+            [formControlName]="field.key"
+            [id]="field.key"
+            [label]="field.label"
+            [placeholder]="field.placeholder"
+            [type]="field.type"
+          />
+        }
+
+      </div>
+
+      <div>
+        <button
+          [disabled]="form.invalid || isSubmitting()"
+          class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium
+          rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none
+          focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50
+          disabled:cursor-not-allowed transition-colors hover:cursor-pointer"
+          type="submit"
+        >
+          {{ isSubmitting() ? 'Signing in...' : 'Sign in' }}
+        </button>
+      </div>
+
+      @if (errorMessage()) {
+        <app-error-message [message]="errorMessage()"/>
+      }
+    </form>
+
+    <p class="mt-2 text-center text-sm text-gray-600">
+      Don't have an account?
+      <a class="font-medium text-emerald-600 hover:text-emerald-500" routerLink="/register">
+        Sign up
+      </a>
+    </p>
+
+  </div>
 </div>

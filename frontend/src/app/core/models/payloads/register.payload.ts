@@ -1,6 +1,6 @@
 export interface RegisterPayload {
-  firstname: string,
-  lastname: string,
+  firstName: string,
+  lastName: string,
   username: string,
   email: string,
   password: string,

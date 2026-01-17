@@ -60,10 +60,10 @@ application:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
 
 genetic-algorithm:
-  population-size: 150
-  max-generations: 1000
+  population-size: 100
+  max-generations: 300
   mutation-rate: 0.05
-  target-fitness: 0.98
+  target-fitness: 0.95
   elite-count: 10
   calories-weight: 0.1
   carbs-weight: 0.3
