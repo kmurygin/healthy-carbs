@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, signal, type WritableSignal} from '@angular/core';
 import type {FormControl, FormGroup} from '@angular/forms';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {AuthService} from '@core/services/auth/auth.service';
 import type {RegisterPayload} from "@core/models/payloads/register.payload";
 import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
@@ -9,6 +9,9 @@ import type {FormFieldConfig} from "@shared/form-field.config";
 import {TextInputComponent} from "@features/auth/text-input/text-input.component";
 import {NotificationService} from "@core/services/ui/notification.service";
 import {passwordMatchValidator} from "@shared/validators/password-match.validator";
+import {AuthHelperTextComponent} from "@features/auth/auth-helper-text/auth-helper-text.component";
+import {AuthHeaderComponent} from "@features/auth/auth-header/auth-header.component";
+import {getButtonClasses} from "@features/auth/auth.util";
 
 type RegisterForm = FormGroup<{
   firstName: FormControl<string>;
@@ -23,9 +26,10 @@ type RegisterForm = FormGroup<{
   selector: 'app-register',
   imports: [
     ReactiveFormsModule,
-    RouterLink,
     ErrorMessageComponent,
-    TextInputComponent
+    TextInputComponent,
+    AuthHelperTextComponent,
+    AuthHeaderComponent
   ],
   templateUrl: './register.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -90,6 +94,7 @@ export class RegisterComponent {
       autocapitalize: 'none'
     }
   ];
+  protected readonly getButtonClasses = getButtonClasses;
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly formBuilder = inject(FormBuilder);

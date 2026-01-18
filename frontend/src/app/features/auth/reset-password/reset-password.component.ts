@@ -8,20 +8,20 @@ import {NotificationService} from "@core/services/ui/notification.service";
 import {setErrorNotification} from "@shared/utils";
 import {passwordMatchValidator} from "@shared/validators/password-match.validator";
 import type {ApiResponse} from "@core/models/api-response.model";
-import type {ResetPasswordState} from "@features/auth/auth.util";
+import {getButtonClasses, type ResetPasswordState} from "@features/auth/auth.util";
+import {AuthHeaderComponent} from "@features/auth/auth-header/auth-header.component";
 
 @Component({
   selector: 'app-reset-password',
-  imports: [ReactiveFormsModule, TextInputComponent, ErrorMessageComponent],
+  imports: [ReactiveFormsModule, TextInputComponent, ErrorMessageComponent, AuthHeaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
       <div class="max-w-md w-full space-y-8 p-8">
-        <div class="text-center">
-          <h2 class="text-3xl font-extrabold text-emerald-900">
-            Reset your password
-          </h2>
-        </div>
+
+        <app-auth-header
+          [headerText]="'Reset your password'"
+        />
 
         <form
           [formGroup]="form"
@@ -48,11 +48,9 @@ import type {ResetPasswordState} from "@features/auth/auth.util";
           </div>
 
           <button
-            type="submit"
             [disabled]="form.invalid || isSubmitting()"
-            class="w-full flex justify-center py-2 px-4 border border-transparent text-sm
-            font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700
-            disabled:opacity-50 hover:cursor-pointer"
+            [class]="getButtonClasses()"
+            type="submit"
           >
             @if (isSubmitting()) {
               Resetting...
@@ -74,16 +72,14 @@ export class ResetPasswordComponent implements OnInit {
   otp = '';
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal('');
-
+  protected readonly getButtonClasses = getButtonClasses;
   private formBuilder = inject(NonNullableFormBuilder);
-
   form = this.formBuilder.group({
-    newPassword: ['', [Validators.required, Validators.minLength(12)]],
-    confirmPassword: ['', [Validators.required]]
+      newPassword: ['', [Validators.required, Validators.minLength(12)]],
+      confirmPassword: ['', [Validators.required]]
     },
     {validators: passwordMatchValidator('newPassword', 'confirmPassword')}
   );
-
   private passwordRecoveryService = inject(PasswordRecoveryService);
   private notificationService = inject(NotificationService);
   private router = inject(Router);

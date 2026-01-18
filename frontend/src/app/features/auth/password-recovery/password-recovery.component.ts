@@ -1,28 +1,28 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {TextInputComponent} from '../text-input/text-input.component';
 import {ErrorMessageComponent} from '@shared/components/error-message/error-message.component';
 import {PasswordRecoveryService} from "@core/services/password-recovery/password-recovery.service";
 import {setErrorNotification} from "@shared/utils";
 import {NotificationService} from "@core/services/ui/notification.service";
 import type {ApiResponse} from "@core/models/api-response.model";
+import {AuthHelperTextComponent} from "@features/auth/auth-helper-text/auth-helper-text.component";
+import {AuthHeaderComponent} from "@features/auth/auth-header/auth-header.component";
+import {getButtonClasses} from "@features/auth/auth.util";
 
 @Component({
   selector: 'app-password-recovery',
-  imports: [ReactiveFormsModule, RouterLink, TextInputComponent, ErrorMessageComponent],
+  imports: [ReactiveFormsModule, TextInputComponent, ErrorMessageComponent, AuthHelperTextComponent, AuthHeaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
       <div class="max-w-md w-full space-y-8 p-8">
-        <div class="text-center">
-          <h2 class="text-3xl font-extrabold text-emerald-900">
-            Forgot your password?
-          </h2>
-          <p class="mt-2 text-sm text-gray-600">
-            Type your username to receive a one time password (OTP)
-          </p>
-        </div>
+
+        <app-auth-header
+          [headerText]="'Forgot your password?'"
+          [headerSubText]="'Type your username to receive a one time password (OTP)'"
+        />
 
         <form
           [formGroup]="form"
@@ -38,11 +38,9 @@ import type {ApiResponse} from "@core/models/api-response.model";
             />
           </div>
           <button
-            type="submit"
             [disabled]="form.invalid || isSubmitting()"
-            class="w-full flex justify-center py-2 px-4 border border-transparent text-sm
-            font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700
-            disabled:opacity-50 hover:cursor-pointer"
+            [class]="getButtonClasses()"
+            type="submit"
           >
             @if (isSubmitting()) {
               Sending...
@@ -56,14 +54,12 @@ import type {ApiResponse} from "@core/models/api-response.model";
           }
         </form>
 
-        <div class="text-center">
-          <a
-            routerLink="/login"
-            class="font-medium text-emerald-600 hover:text-emerald-500"
-          >
-            Back to signing in
-          </a>
-        </div>
+        <app-auth-helper-text
+          [infoText]="'Remember your password?'"
+          [linkText]="'Back to signing in'"
+          [linkUrl]="'/login'"
+        />
+
       </div>
     </div>
   `
@@ -104,4 +100,6 @@ export class PasswordRecoveryComponent {
       }
     });
   }
+
+  protected readonly getButtonClasses = getButtonClasses;
 }

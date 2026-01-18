@@ -1,14 +1,10 @@
 <div class=" flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
   <div class="max-w-md w-full space-y-8 p-8">
 
-    <div class="text-center">
-      <h2 class="text-3xl font-extrabold text-emerald-900">
-        Welcome back!
-      </h2>
-      <p class="mt-2 text-sm text-gray-600">
-        Please sign in to use your account
-      </p>
-    </div>
+    <app-auth-header
+      [headerSubText]="'Please sign in to use your account'"
+      [headerText]="'Welcome back!'"
+    />
 
     <form
       (ngSubmit)="onSubmit()"
@@ -33,11 +29,8 @@
 
       <div>
         <button
+          [class]="getButtonClasses()"
           [disabled]="form.invalid || isSubmitting()"
-          class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium
-          rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none
-          focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50
-          disabled:cursor-not-allowed transition-colors hover:cursor-pointer"
           type="submit"
         >
           {{ isSubmitting() ? 'Signing in...' : 'Sign in' }}
@@ -49,12 +42,20 @@
       }
     </form>
 
-    <p class="mt-2 text-center text-sm text-gray-600">
-      Don't have an account?
-      <a class="font-medium text-emerald-600 hover:text-emerald-500" routerLink="/register">
-        Sign up
+    <div class="mt-4 flex justify-end">
+      <a
+        class="text-sm text-gray-500 hover:text-emerald-600 transition-colors"
+        routerLink="/forgot-password"
+      >
+        Forgot your password?
       </a>
-    </p>
+    </div>
+
+    <app-auth-helper-text
+      [infoText]="'Don\'t have an account yet?'"
+      [linkText]="'Sign up'"
+      [linkUrl]="'/register'"
+    />
 
   </div>
 </div>
