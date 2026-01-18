@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject, signal, type WritableSignal} from '@angular/core';
-import type {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
+import type {FormControl, FormGroup} from '@angular/forms';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '@core/services/auth/auth.service';
@@ -8,6 +8,7 @@ import {ErrorMessageComponent} from "@shared/components/error-message/error-mess
 import type {FormFieldConfig} from "@shared/form-field.config";
 import {TextInputComponent} from "@features/auth/text-input/text-input.component";
 import {NotificationService} from "@core/services/ui/notification.service";
+import {passwordMatchValidator} from "@shared/validators/password-match.validator";
 
 type RegisterForm = FormGroup<{
   firstName: FormControl<string>;
@@ -92,8 +93,6 @@ export class RegisterComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly formBuilder = inject(FormBuilder);
-  private readonly notificationService = inject(NotificationService);
-
   readonly form: RegisterForm = this.formBuilder.group({
     firstName: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
     lastName: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
@@ -102,8 +101,9 @@ export class RegisterComponent {
     password: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
     confirmPassword: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
   }, {
-    validators: passwordMatchValidator
+    validators: passwordMatchValidator('newPassword', 'confirmPassword')
   });
+  private readonly notificationService = inject(NotificationService);
 
   onSubmit(): void {
     if (this.form.invalid) return;
@@ -144,30 +144,3 @@ export class RegisterComponent {
     });
   }
 }
-
-const passwordMatchValidator: ValidatorFn = (abstractControl: AbstractControl): ValidationErrors | null => {
-  const password = abstractControl.get('password');
-  const confirmPassword = abstractControl.get('confirmPassword');
-
-  if (!password || !confirmPassword) {
-    return null;
-  }
-
-  if (confirmPassword.value && password.value !== confirmPassword.value) {
-    confirmPassword.setErrors({...confirmPassword.errors, mismatch: true});
-    return {mismatch: true};
-  }
-
-  if (confirmPassword.hasError('mismatch')) {
-    const errors = {...confirmPassword.errors};
-    delete errors['mismatch'];
-
-    confirmPassword.setErrors(
-      Object.keys(errors).length > 0
-        ? errors
-        : null
-    );
-  }
-
-  return null;
-};
