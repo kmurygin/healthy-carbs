@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {AbstractInputComponent} from "@shared/components/abstract-input/abstract-input.component";
+import {NgClass} from "@angular/common";
 
 @Component({
   selector: 'app-text-input',
@@ -20,24 +21,26 @@ import {AbstractInputComponent} from "@shared/components/abstract-input/abstract
         (input)="onInput($event)"
         (blur)="onBlur()"
         class="w-full px-3 py-2 border rounded-md shadow-sm bg-white
-        focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent
-        disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed
-        transition-all duration-200 ease-in-out"
-        [class]="{
-          'border-gray-300': !hasError,
-          'border-red-500 focus:ring-red-500': hasError
+        focus:outline-none focus:ring-2 disabled:bg-gray-50 disabled:text-gray-500
+        disabled:cursor-not-allowed transition-all duration-200 ease-in-out"
+        [ngClass]="{
+          'border-gray-300 focus:ring-emerald-600 focus:border-transparent': !hasError,
+          'border-red-600 focus:ring-red-500 focus:border-red-500': hasError
         }"
         [attr.aria-invalid]="hasError"
         [autocapitalize]="autocapitalize()"
       />
 
       @if (hasError) {
-        <p class="mt-1 text-xs text-red-600 animate-pulse">
+        <p class="mt-1 text-xs text-red-600">
           {{ errorMessage }}
         </p>
       }
     </div>
   `,
+  imports: [
+    NgClass
+  ]
 })
 export class TextInputComponent extends AbstractInputComponent<string | number> {
   readonly placeholder = input<string>('');
