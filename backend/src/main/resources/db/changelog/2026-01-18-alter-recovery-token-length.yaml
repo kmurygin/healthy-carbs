@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: alter-password-recovery-token-length
+      author: k.murygin
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE password_recovery_tokens
+              ALTER COLUMN token TYPE VARCHAR(255);
