@@ -4,8 +4,12 @@ const getUrl = (path: string) => `${environment.apiUrl}/${path}`;
 
 export const ApiEndpoints = {
   Auth: {
+    Base: getUrl('auth'),
     Register: getUrl('auth/register'),
     Login: getUrl('auth/authenticate'),
+    ForgotPassword: getUrl('auth/forgot-password'),
+    VerifyOtp: getUrl('auth/verify-otp'),
+    ResetPassword: getUrl('auth/reset-password'),
   },
 
   User: {
