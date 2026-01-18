@@ -98,6 +98,20 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), req, HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
+    @ExceptionHandler(InvalidOtpException.class)
+    public ResponseEntity<ErrorResponse> invalidOtpException(
+            InvalidOtpException ex, HttpServletRequest req
+    ) {
+        return buildErrorResponse(ex.getMessage(), req, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> badRequestException(
+            BadRequestException ex, HttpServletRequest req
+    ) {
+        return buildErrorResponse(ex.getMessage(), req, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> unhandled(Exception ex, HttpServletRequest req) {
         logger.error("Unhandled exception at {}: {}", req.getRequestURI(), ex.getMessage(), ex);
@@ -130,4 +144,3 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(body);
     }
 }
-
