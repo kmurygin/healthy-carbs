@@ -95,7 +95,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMaxSizeException(
             MaxUploadSizeExceededException ex, HttpServletRequest req
     ) {
-        return buildErrorResponse(ex.getMessage(), req, HttpStatus.PAYLOAD_TOO_LARGE);
+        return buildErrorResponse(ex.getMessage(), req, HttpStatus.CONTENT_TOO_LARGE);
     }
 
     @ExceptionHandler(InvalidOtpException.class)
