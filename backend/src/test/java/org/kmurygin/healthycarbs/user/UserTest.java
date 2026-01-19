@@ -104,7 +104,9 @@ class UserTest {
                     "Kowalski",
                     "jan@kowalski.com",
                     "Jankowalski22$",
-                    Role.ADMIN
+                    Role.ADMIN,
+                    new java.util.HashSet<>(),
+                    null
             );
 
             assertAll(
