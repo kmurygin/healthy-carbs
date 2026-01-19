@@ -2,11 +2,10 @@ package org.kmurygin.healthycarbs.auth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kmurygin.healthycarbs.email.EmailDetails;
-import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.exception.InvalidOtpException;
 import org.kmurygin.healthycarbs.user.User;
 import org.kmurygin.healthycarbs.user.UserRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +21,9 @@ public class PasswordRecoveryService {
 
     private final UserRepository userRepository;
     private final PasswordRecoveryTokenRepository tokenRepository;
-    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final SecureRandom secureRandom = new SecureRandom();
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void forgotPassword(String username) {
@@ -56,10 +55,10 @@ public class PasswordRecoveryService {
 
         tokenRepository.save(recoveryToken);
 
-        emailService.sendMail(new EmailDetails(
+        eventPublisher.publishEvent(new OtpGeneratedEvent(
                 user.getEmail(),
-                "Your one-time password: " + otp,
-                "HealthyCarbs - Password Recovery"
+                user.getUsername(),
+                otp
         ));
     }
 
