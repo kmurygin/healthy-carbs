@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.kmurygin.healthycarbs.offers.Currency;
 import org.kmurygin.healthycarbs.offers.mealPlanTemplate.MealPlanTemplate;
-import org.kmurygin.healthycarbs.user.User;
 
 import java.util.Set;
 
@@ -35,9 +34,5 @@ public class Offer {
     private MealPlanTemplate mealPlanTemplate;
 
     private int durationInDays;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dietitian_id")
-    private User dietitian;
 
 }

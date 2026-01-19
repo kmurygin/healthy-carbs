@@ -1,5 +1,6 @@
 server:
   address: 0.0.0.0
+  port: ${PORT:8080}
 
 spring:
   profiles:
@@ -83,6 +84,8 @@ payu:
 logging:
   level:
     io.netty.resolver.dns.DnsServerAddressStreamProviders: WARN
+    liquibase: INFO
+    org.springframework.boot.autoconfigure.liquibase: DEBUG
 
 
 ---
