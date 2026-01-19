@@ -1,7 +1,7 @@
 name: Deploy to Google Cloud Platform
 
 on:
-  push:
+  # push:
     # branches:
       # - main
   workflow_dispatch:
@@ -112,6 +112,6 @@ jobs:
 
       - name: Deploy to Firebase
         run: |
-          echo '${{ secrets.GCP_SA_KEY }}' > "$runner_temp/gcp_key.json"
-          export GOOGLE_APPLICATION_CREDENTIALS="$runner_temp/gcp_key.json"
+          echo '${{ secrets.GCP_SA_KEY }}' > "${{ runner.temp }}/gcp_key.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="${{ runner.temp }}/gcp_key.json"
           firebase deploy --only hosting --project ${{ env.PROJECT_ID }}
