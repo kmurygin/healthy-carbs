@@ -1,6 +1,9 @@
-package org.kmurygin.healthycarbs.auth;
+package org.kmurygin.healthycarbs.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.auth.dto.AuthenticationRequest;
+import org.kmurygin.healthycarbs.auth.dto.AuthenticationResponse;
+import org.kmurygin.healthycarbs.auth.dto.RegisterRequest;
 import org.kmurygin.healthycarbs.config.JwtService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;

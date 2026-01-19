@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.auth;
+package org.kmurygin.healthycarbs.auth.model;
 
 import jakarta.persistence.*;
 import lombok.*;

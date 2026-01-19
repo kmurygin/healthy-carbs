@@ -1,7 +1,10 @@
-package org.kmurygin.healthycarbs.auth;
+package org.kmurygin.healthycarbs.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.kmurygin.healthycarbs.auth.OtpGeneratedEvent;
+import org.kmurygin.healthycarbs.auth.model.PasswordRecoveryToken;
+import org.kmurygin.healthycarbs.auth.repository.PasswordRecoveryTokenRepository;
 import org.kmurygin.healthycarbs.exception.InvalidOtpException;
 import org.kmurygin.healthycarbs.user.User;
 import org.kmurygin.healthycarbs.user.UserRepository;

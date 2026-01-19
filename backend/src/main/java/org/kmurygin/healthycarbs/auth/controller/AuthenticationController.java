@@ -1,10 +1,10 @@
-package org.kmurygin.healthycarbs.auth;
+package org.kmurygin.healthycarbs.auth.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.auth.dto.ForgotPasswordRequest;
-import org.kmurygin.healthycarbs.auth.dto.ResetPasswordRequest;
-import org.kmurygin.healthycarbs.auth.dto.VerifyOtpRequest;
+import org.kmurygin.healthycarbs.auth.dto.*;
+import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.auth.service.PasswordRecoveryService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;

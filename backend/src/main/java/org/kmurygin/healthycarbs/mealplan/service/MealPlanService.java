@@ -1,7 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.kmurygin.healthycarbs.auth.AuthenticationService;
+import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.exception.ForbiddenException;

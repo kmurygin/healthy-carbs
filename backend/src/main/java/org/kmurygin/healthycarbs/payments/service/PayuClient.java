@@ -1,7 +1,7 @@
 package org.kmurygin.healthycarbs.payments.service;
 
 import lombok.AllArgsConstructor;
-import org.kmurygin.healthycarbs.auth.AuthenticationService;
+import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.payments.config.PayuProperties;
 import org.kmurygin.healthycarbs.payments.dto.*;
 import org.kmurygin.healthycarbs.user.User;
