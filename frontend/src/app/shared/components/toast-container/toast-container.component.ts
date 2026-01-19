@@ -39,14 +39,11 @@ interface ToastConfig {
       @for (toast of notificationService.toasts(); track toast.id) {
         <div
           class="pointer-events-auto relative flex flex-col w-full rounded-xl bg-white
-          shadow-lg ring-1 ring-black/5 transform transition-all duration-300 animate-in
-          slide-in-from-right fade-in overflow-hidden"
-          role="alert"
-          [class.border-l-4]="true"
-          [ngClass]="getToastConfig(toast.type).borderClass"
+          shadow-lg ring-1 ring-black/5 transition-all overflow-hidden"
+          [class]="getToastConfig(toast.type).borderClass"
         >
-          <div class="flex items-start gap-3 p-4">
-            <div class="shrink-0 pt-0.5">
+          <div class="p-4 flex items-center">
+            <div class="shrink-0">
               <fa-icon
                 [icon]="getToastConfig(toast.type).icon"
                 [class]="getToastConfig(toast.type).textClass"
@@ -54,21 +51,21 @@ interface ToastConfig {
               ></fa-icon>
             </div>
 
-            <div class="flex-1">
-              <p class="text-sm font-medium text-gray-900 leading-snug">
-                {{ toast.message }}
-              </p>
+            <div class="ml-3 w-0 flex-1">
+              <p class="text-sm font-medium text-gray-900">{{ toast.message }}</p>
             </div>
 
-            <button
-              (click)="notificationService.remove(toast.id)"
-              class="shrink-0 -mt-1 -mr-1 p-1.5 text-gray-400 hover:text-gray-500 rounded-lg
-              hover:bg-gray-50 transition-colors cursor-pointer"
-              aria-label="Close notification"
-              type="button"
-            >
-              <fa-icon [icon]="icons.close" class="text-sm"></fa-icon>
-            </button>
+            <div class="ml-4 flex shrink-0">
+              <button
+                (click)="notificationService.remove(toast.id)"
+                class="p-1.5 -mr-1 text-gray-400 hover:text-gray-500 rounded-lg
+                hover:bg-gray-50 transition-colors cursor-pointer"
+                aria-label="Close notification"
+                type="button"
+              >
+                <fa-icon [icon]="icons.close" class="text-sm"></fa-icon>
+              </button>
+            </div>
           </div>
 
           <div class="h-1 w-full bg-gray-100">
@@ -91,19 +88,19 @@ export class ToastContainerComponent {
   private readonly config: Record<ToastType, ToastConfig> = {
     success: {
       icon: faCheckCircle,
-      borderClass: 'border-emerald-500',
+      borderClass: 'border-l-4 border-emerald-500',
       textClass: 'text-emerald-500',
       bgClass: 'bg-emerald-500'
     },
     error: {
       icon: faExclamationCircle,
-      borderClass: 'border-red-500',
+      borderClass: 'border-l-4 border-red-500',
       textClass: 'text-red-500',
       bgClass: 'bg-red-500'
     },
     info: {
       icon: faInfoCircle,
-      borderClass: 'border-blue-500',
+      borderClass: 'border-l-4 border-blue-500',
       textClass: 'text-blue-500',
       bgClass: 'bg-blue-500'
     }
