@@ -8,6 +8,9 @@ import {ErrorMessageComponent} from "@shared/components/error-message/error-mess
 import type {FormFieldConfig} from "@shared/form-field.config";
 import {TextInputComponent} from "@features/auth/text-input/text-input.component";
 import {NotificationService} from "@core/services/ui/notification.service";
+import {AuthHelperTextComponent} from "@features/auth/auth-helper-text/auth-helper-text.component";
+import {AuthHeaderComponent} from "@features/auth/auth-header/auth-header.component";
+import {getButtonClasses} from "@features/auth/auth.util";
 
 type LoginForm = FormGroup<{
   username: FormControl<string>;
@@ -21,6 +24,8 @@ type LoginForm = FormGroup<{
     ErrorMessageComponent,
     RouterLink,
     TextInputComponent,
+    AuthHelperTextComponent,
+    AuthHeaderComponent,
   ],
   templateUrl: './login.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -47,6 +52,7 @@ export class LoginComponent {
       autocapitalize: 'none'
     }
   ];
+  protected readonly getButtonClasses = getButtonClasses;
   private readonly authService: AuthService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
   private readonly router: Router = inject(Router);

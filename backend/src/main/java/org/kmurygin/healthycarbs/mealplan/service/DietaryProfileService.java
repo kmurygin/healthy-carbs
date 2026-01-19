@@ -2,7 +2,7 @@ package org.kmurygin.healthycarbs.mealplan.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.auth.AuthenticationService;
+import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.NutritionCalculator;
 import org.kmurygin.healthycarbs.mealplan.dto.DietaryProfilePayload;

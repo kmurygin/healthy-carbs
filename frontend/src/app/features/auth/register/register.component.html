@@ -1,14 +1,10 @@
 <div class="flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
   <div class="max-w-lg w-full space-y-8  p-8">
 
-    <div class="text-center">
-      <h2 class="text-3xl font-extrabold text-emerald-900">
-        Create an account
-      </h2>
-      <p class="mt-2 text-sm text-gray-600">
-        Join us to start your healthy journey
-      </p>
-    </div>
+    <app-auth-header
+      [headerSubText]="'Join us to start your healthy journey'"
+      [headerText]="'Create an account'"
+    />
 
     <form
       (ngSubmit)="onSubmit()"
@@ -35,11 +31,8 @@
 
       <div>
         <button
+          [class]="getButtonClasses()"
           [disabled]="form.invalid || isSubmitting()"
-          class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium
-          rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none
-          focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50
-          disabled:cursor-not-allowed transition-colors hover:cursor-pointer"
           type="submit"
         >
           {{ isSubmitting() ? 'Creating account...' : 'Create account' }}
@@ -51,12 +44,11 @@
       }
     </form>
 
-    <p class="mt-2 text-center text-sm text-gray-600">
-      Already have an account?
-      <a class="font-medium text-emerald-600 hover:text-emerald-500" routerLink="/login">
-        Log in
-      </a>
-    </p>
+    <app-auth-helper-text
+      [infoText]="'Already have an account?'"
+      [linkText]="'Sign in'"
+      [linkUrl]="'/login'"
+    />
 
   </div>
 </div>

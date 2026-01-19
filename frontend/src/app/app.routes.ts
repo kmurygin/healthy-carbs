@@ -15,20 +15,8 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'login',
-    canMatch: [guestGuard],
-    loadComponent: () =>
-      import('./features/auth/login/login.component').then(
-        (m) => m.LoginComponent
-      ),
-  },
-  {
-    path: 'register',
-    canMatch: [guestGuard],
-    loadComponent: () =>
-      import('./features/auth/register/register.component').then(
-        (m) => m.RegisterComponent
-      ),
+    path: '',
+    loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
   },
   {
     path: 'recipes/:id',

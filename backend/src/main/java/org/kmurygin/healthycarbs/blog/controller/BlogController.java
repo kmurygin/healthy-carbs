@@ -3,7 +3,7 @@ package org.kmurygin.healthycarbs.blog.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kmurygin.healthycarbs.auth.AuthenticationService;
+import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.blog.dto.BlogCommentDTO;
 import org.kmurygin.healthycarbs.blog.dto.BlogPostDTO;
 import org.kmurygin.healthycarbs.blog.dto.CreateBlogCommentRequest;

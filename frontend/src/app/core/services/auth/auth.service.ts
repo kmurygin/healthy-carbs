@@ -3,10 +3,8 @@ import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {jwtDecode} from 'jwt-decode';
 import {map, tap} from 'rxjs';
-
 import {LocalStorage} from '../../constants/constants';
 import {ApiEndpoints} from '../../constants/api-endpoints';
-import type {UserDto} from '../../models/dto/user.dto';
 import type {RegisterPayload} from '../../models/payloads/register.payload';
 import type {ApiResponse} from '../../models/api-response.model';
 import type {LoginPayload} from '../../models/payloads/login.payload';
@@ -16,6 +14,9 @@ import type {JwtClaims} from './jwtclaims';
 @Injectable({providedIn: 'root'})
 export class AuthService {
   readonly isLoggedIn = computed(() => !this.isTokenExpired());
+  readonly user = computed(() => this.claims()?.sub ?? null);
+  readonly userId = computed(() => this.claims()?.id ?? null);
+  readonly userRole = computed(() => this.claims()?.role ?? null);
   private readonly httpClient = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly token = signal<string | null>(localStorage.getItem(LocalStorage.token));
@@ -30,9 +31,6 @@ export class AuthService {
       return null;
     }
   });
-  readonly user = computed(() => this.claims()?.sub ?? null);
-  readonly userId = computed(() => this.claims()?.id ?? null);
-  readonly userRole = computed(() => this.claims()?.role ?? null);
 
   constructor() {
     effect(() => {
@@ -54,7 +52,7 @@ export class AuthService {
   }
 
   register(payload: RegisterPayload) {
-    return this.httpClient.post<ApiResponse<UserDto>>(ApiEndpoints.Auth.Register, payload).pipe(
+    return this.httpClient.post<ApiResponse<AuthenticationResponse>>(ApiEndpoints.Auth.Register, payload).pipe(
       map(res => {
         if (!res.status) {
           throw new Error(res.message ?? 'Registration failed');
@@ -84,7 +82,7 @@ export class AuthService {
     this.token.set(null);
     this.router.navigate(['login'], {replaceUrl: true})
       .catch((err: unknown) => {
-        console.error('Navigation failed', err)
+        console.error('Navigation failed', err);
       });
   }
 }
