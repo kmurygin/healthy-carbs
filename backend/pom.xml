@@ -27,7 +27,7 @@
         <lombok.version>1.18.42</lombok.version>
         <postgres.version>42.7.9</postgres.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <liquibase.version>5.0.1</liquibase.version>
+        <liquibase.version>4.33.0</liquibase.version>
         <junit.jupiter.version>6.1.0-M1</junit.jupiter.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <spotbugs.version>4.9.8</spotbugs.version>
