@@ -1,0 +1,117 @@
+name: Deploy to Google Cloud Platform
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: ${{ secrets.GCP_REGION }}
+  GAR_REPO: ${{ secrets.GCP_GAR_REPO }}
+  BACKEND_IMAGE_NAME: healthy-carbs-backend
+
+jobs:
+  deploy-backend:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          token_format: 'access_token'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Artifact Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGION }}-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.GAR_REPO }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.GAR_REPO }}/${{ env.BACKEND_IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.BACKEND_IMAGE_NAME }} \
+            --image=${{ env.GAR_REPO }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }} \
+            --platform=managed \
+            --region=${{ env.REGION }} \
+            --allow-unauthenticated \
+            --memory=1Gi \
+            --cpu=1 \
+            --add-cloudsql-instances=${{ env.PROJECT_ID }}:${{ env.REGION }}:healthy-carbs-db \
+            --set-env-vars=SPRING_PROFILES_ACTIVE=prod \
+            --set-env-vars=SPRING_CLOUD_GCP_SQL_INSTANCE_CONNECTION_NAME=${{ env.PROJECT_ID }}:${{ env.REGION }}:healthy-carbs-db \
+            --set-env-vars=SPRING_CLOUD_GCP_SQL_DATABASE_NAME=healthycarbs \
+            --set-env-vars=SPRING_DATASOURCE_USERNAME=postgres \
+            --set-secrets=SPRING_DATASOURCE_PASSWORD=DB_PASSWORD:latest \
+            --set-secrets=JWT_SECRET_KEY=JWT_SECRET_KEY:latest \
+            --set-secrets=MAIL_HOST=MAIL_HOST:latest \
+            --set-secrets=MAIL_PORT=MAIL_PORT:latest \
+            --set-secrets=MAIL_USERNAME=MAIL_USERNAME:latest \
+            --set-secrets=MAIL_PASSWORD=MAIL_PASSWORD:latest \
+            --set-secrets=PAYU_BASE_URL=PAYU_BASE_URL:latest \
+            --set-secrets=PAYU_POS_ID=PAYU_POS_ID:latest \
+            --set-secrets=PAYU_CLIENT_ID=PAYU_CLIENT_ID:latest \
+            --set-secrets=PAYU_CLIENT_SECRET=PAYU_CLIENT_SECRET:latest \
+            --set-secrets=PAYU_SECOND_KEY=PAYU_SECOND_KEY:latest \
+            --set-secrets=PAYU_CONTINUE_URL=PAYU_CONTINUE_URL:latest \
+            --set-secrets=PAYU_NOTIFY_URL=PAYU_NOTIFY_URL:latest \
+            --set-secrets=PAYU_CURRENCY=PAYU_CURRENCY:latest \
+            --set-secrets=CORS_ALLOWED_ORIGINS=CORS_ALLOWED_ORIGINS:latest
+
+  deploy-frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Angular App
+        run: npm run build -- --configuration production
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy to Firebase
+        run: |
+          echo '${{ secrets.GCP_SA_KEY }}' > "$runner_temp/gcp_key.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$runner_temp/gcp_key.json"
+          firebase deploy --only hosting --project ${{ env.PROJECT_ID }}
