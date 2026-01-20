@@ -67,6 +67,7 @@ import {getButtonClasses} from "@features/auth/auth.util";
 export class PasswordRecoveryComponent {
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal('');
+  protected readonly getButtonClasses = getButtonClasses;
   private formBuilder = inject(NonNullableFormBuilder);
   form = this.formBuilder.group({
     username: ['', Validators.required]
@@ -100,6 +101,4 @@ export class PasswordRecoveryComponent {
       }
     });
   }
-
-  protected readonly getButtonClasses = getButtonClasses;
 }

@@ -31,20 +31,6 @@ interface MealPlanState {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MealPlanInfoComponent {
-  readonly dailyTotals = computed<DailyNutrientTotals>(() => {
-    const day = this.dailyPlan();
-    if (!day) return {calories: 0, carbs: 0, protein: 0, fat: 0};
-    return {
-      calories: Math.round(day.totalCalories),
-      carbs: Math.round(day.totalCarbs),
-      protein: Math.round(day.totalProtein),
-      fat: Math.round(day.totalFat)
-    };
-  });
-  protected readonly faChevronRight = faChevronRight;
-  private readonly mealPlanService = inject(MealPlanService);
-  private readonly dietaryProfileService = inject(DietaryProfileService);
-  readonly dietaryProfile = toSignal(this.dietaryProfileService.getProfile());
   readonly dailyTargets = computed<DailyNutrientTotals>(() => {
     const profile = this.dietaryProfile();
     if (!profile) return {calories: 0, carbs: 0, protein: 0, fat: 0};
@@ -55,6 +41,24 @@ export class MealPlanInfoComponent {
       fat: Math.round(profile.fatTarget)
     };
   });
+  readonly isLoading = computed(() => this.state().status === 'loading');
+  readonly isError = computed(() => this.state().status === 'error');
+  readonly dailyPlan = computed(() => this.state().data);
+  readonly dailyTotals = computed<DailyNutrientTotals>(() => {
+    const day = this.dailyPlan();
+    if (!day) return {calories: 0, carbs: 0, protein: 0, fat: 0};
+    return {
+      calories: Math.round(day.totalCalories),
+      carbs: Math.round(day.totalCarbs),
+      protein: Math.round(day.totalProtein),
+      fat: Math.round(day.totalFat)
+    };
+  });
+  readonly errorMessage = computed(() => this.state().error);
+  protected readonly faChevronRight = faChevronRight;
+  private readonly mealPlanService = inject(MealPlanService);
+  private readonly dietaryProfileService = inject(DietaryProfileService);
+  readonly dietaryProfile = toSignal(this.dietaryProfileService.getProfile());
   private readonly INITIAL_STATE: MealPlanState = {status: 'loading'};
   readonly state: Signal<MealPlanState> = toSignal(
     this.mealPlanService.getHistory().pipe(
@@ -89,10 +93,6 @@ export class MealPlanInfoComponent {
     ),
     {initialValue: this.INITIAL_STATE}
   );
-  readonly isLoading = computed(() => this.state().status === 'loading');
-  readonly isError = computed(() => this.state().status === 'error');
-  readonly dailyPlan = computed(() => this.state().data);
-  readonly errorMessage = computed(() => this.state().error);
 
   retry() {
     window.location.reload();

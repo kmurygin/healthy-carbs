@@ -14,9 +14,6 @@ import type {JwtClaims} from './jwtclaims';
 @Injectable({providedIn: 'root'})
 export class AuthService {
   readonly isLoggedIn = computed(() => !this.isTokenExpired());
-  readonly user = computed(() => this.claims()?.sub ?? null);
-  readonly userId = computed(() => this.claims()?.id ?? null);
-  readonly userRole = computed(() => this.claims()?.role ?? null);
   private readonly httpClient = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly token = signal<string | null>(localStorage.getItem(LocalStorage.token));
@@ -31,6 +28,9 @@ export class AuthService {
       return null;
     }
   });
+  readonly user = computed(() => this.claims()?.sub ?? null);
+  readonly userId = computed(() => this.claims()?.id ?? null);
+  readonly userRole = computed(() => this.claims()?.role ?? null);
 
   constructor() {
     effect(() => {
