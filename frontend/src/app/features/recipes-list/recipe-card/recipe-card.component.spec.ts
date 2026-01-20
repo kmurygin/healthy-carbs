@@ -1,7 +1,8 @@
-import type {ComponentFixture} from '@angular/core/testing';
-import {TestBed} from '@angular/core/testing';
+import {type ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
 
 import {RecipeCardComponent} from './recipe-card.component';
+import {createMockRecipe} from '@testing/test-data.util';
 
 describe('RecipeCardComponent', () => {
   let component: RecipeCardComponent;
@@ -9,12 +10,14 @@ describe('RecipeCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RecipeCardComponent]
+      imports: [RecipeCardComponent],
+      providers: [provideRouter([])]
     })
       .compileComponents();
 
     fixture = TestBed.createComponent(RecipeCardComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('recipe', createMockRecipe());
     fixture.detectChanges();
   });
 

@@ -14,6 +14,12 @@ describe('MeasurementChartCardComponent', () => {
 
     fixture = TestBed.createComponent(MeasurementChartCardComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('measurementType', {
+      key: 'weight',
+      label: 'Weight',
+      unit: 'kg'
+    });
+    fixture.componentRef.setInput('measurementHistory', []);
     fixture.detectChanges();
   });
 

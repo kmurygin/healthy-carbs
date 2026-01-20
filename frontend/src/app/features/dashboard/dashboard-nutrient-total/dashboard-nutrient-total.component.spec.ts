@@ -15,6 +15,12 @@ describe('DashboardNutrientTotalComponent', () => {
 
     fixture = TestBed.createComponent(DashboardNutrientTotalComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('total', 0);
+    fixture.componentRef.setInput('target', 100);
+    fixture.componentRef.setInput('percent', 0);
+    fixture.componentRef.setInput('unit', 'g');
+    fixture.componentRef.setInput('label', 'Test');
+    fixture.componentRef.setInput('iconClasses', 'fa-solid fa-test');
     fixture.detectChanges();
   });
 

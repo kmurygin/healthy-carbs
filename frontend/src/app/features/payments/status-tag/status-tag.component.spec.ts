@@ -15,6 +15,7 @@ describe('StatusTagComponent', () => {
 
     fixture = TestBed.createComponent(StatusTagComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('status', 'PENDING');
     fixture.detectChanges();
   });
 

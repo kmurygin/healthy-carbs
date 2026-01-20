@@ -15,6 +15,8 @@ describe('PageSizeSelectorComponent', () => {
 
     fixture = TestBed.createComponent(PageSizeSelectorComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('pageSize', 10);
+    fixture.componentRef.setInput('pageSizeOptions', [10, 20, 50]);
     fixture.detectChanges();
   });
 

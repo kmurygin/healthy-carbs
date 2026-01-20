@@ -14,6 +14,7 @@ describe('ClientMealplansComponent', () => {
 
     fixture = TestBed.createComponent(ClientMealPlansComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('clientId', 1);
     fixture.detectChanges();
   });
 

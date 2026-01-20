@@ -14,6 +14,9 @@ describe('DietaryProfileSelectInputComponent', () => {
 
     fixture = TestBed.createComponent(DietaryProfileSelectInputComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('id', 'test-id');
+    fixture.componentRef.setInput('label', 'Test Label');
+    fixture.componentRef.setInput('options', []);
     fixture.detectChanges();
   });
 

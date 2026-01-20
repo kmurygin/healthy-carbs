@@ -14,6 +14,8 @@ describe('DietaryProfileTextInputComponent', () => {
 
     fixture = TestBed.createComponent(DietaryProfileTextInputComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('id', 'test-id');
+    fixture.componentRef.setInput('label', 'Test Label');
     fixture.detectChanges();
   });
 

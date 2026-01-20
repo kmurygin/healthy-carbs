@@ -15,6 +15,9 @@ describe('RecipeCountInfoComponent', () => {
 
     fixture = TestBed.createComponent(RecipeCountInfoComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('startIndex', 0);
+    fixture.componentRef.setInput('endIndex', 9);
+    fixture.componentRef.setInput('totalRecipeCount', 100);
     fixture.detectChanges();
   });
 

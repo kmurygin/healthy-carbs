@@ -2,9 +2,10 @@ databaseChangeLog:
   - changeSet:
       id: 005
       author: kmurygin
+      validCheckSum: "9:4db0dd1491a4b831eb13c54ccd5d778f"
       changes:
         - sqlFile:
             path: ../sql/enums.sql
             relativeToChangelogFile: true
-            splitStatements: true
+            splitStatements: false
             stripComments: true

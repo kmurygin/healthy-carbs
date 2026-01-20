@@ -24,7 +24,7 @@ import {UserService} from "@core/services/user/user.service";
       </div>
 
       @if (isLoading()) {
-<!--        <app-loading-message message="Loading meal plans..."/>-->
+        <!--        <app-loading-message message="Loading meal plans..."/>-->
       } @else if (error()) {
         <app-error-message [message]="error()!"/>
       } @else if (mealPlans().length === 0) {

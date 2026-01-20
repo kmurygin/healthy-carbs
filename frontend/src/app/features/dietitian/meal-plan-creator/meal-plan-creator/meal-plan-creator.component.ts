@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {type CdkDragDrop, copyArrayItem, DragDropModule, transferArrayItem,} from '@angular/cdk/drag-drop';
 import {ActivatedRoute, Router} from '@angular/router';
 import {takeUntilDestroyed, toObservable, toSignal} from '@angular/core/rxjs-interop';
-import {catchError, filter, firstValueFrom, map, of, shareReplay, startWith, switchMap, take,} from 'rxjs';
+import {catchError, filter, firstValueFrom, map, of, startWith, switchMap, take,} from 'rxjs';
 import {PageSizeSelectorComponent} from '@features/recipes-list/page-size-selector/page-size-selector.component';
 import {PaginationControlsComponent} from '@features/recipes-list/pagination-controls/pagination-controls.component';
 import {DailyMealPlanTotalsComponent} from '@features/mealplan/daily-meal-plan-totals/daily-meal-plan-totals.component';
@@ -130,33 +130,6 @@ export class MealPlanCreatorComponent {
     return complete;
   });
   readonly recipesRefreshing = signal(false);
-  private readonly recipeService = inject(RecipeService);
-  private readonly mealPlanService = inject(MealPlanService);
-  private readonly dietitianService = inject(DietitianService);
-  private readonly activatedRoute = inject(ActivatedRoute);
-  readonly clientId = toSignal(
-    this.activatedRoute.paramMap.pipe(
-      map((routeParams) => {
-        const clientIdParam = routeParams.get('clientId');
-        return clientIdParam ? Number(clientIdParam) : null;
-      })
-    ),
-    {initialValue: null}
-  );
-  readonly dietaryProfile = toSignal(
-    toObservable(this.clientId).pipe(
-      filter(
-        (clientIdentifier): clientIdentifier is number =>
-          typeof clientIdentifier === 'number' && Number.isFinite(clientIdentifier)
-      ),
-      switchMap((clientIdentifier) =>
-        this.dietitianService.getClientDietaryProfile(clientIdentifier)
-      ),
-      startWith(null),
-      catchError(() => of(null))
-    ),
-    {initialValue: null}
-  );
   readonly targets = computed<DayMacros>(() => {
     const currentProfile = this.dietaryProfile();
     if (!currentProfile) return emptyMacros();
@@ -191,6 +164,33 @@ export class MealPlanCreatorComponent {
       {iconClass: 'fa-solid fa-fire', label: 'Target', value: `${normalizeNumber(profile.calorieTarget)} kcal`},
     ];
   });
+  private readonly recipeService = inject(RecipeService);
+  private readonly mealPlanService = inject(MealPlanService);
+  private readonly dietitianService = inject(DietitianService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  readonly clientId = toSignal(
+    this.activatedRoute.paramMap.pipe(
+      map((routeParams) => {
+        const clientIdParam = routeParams.get('clientId');
+        return clientIdParam ? Number(clientIdParam) : null;
+      })
+    ),
+    {initialValue: null}
+  );
+  readonly dietaryProfile = toSignal(
+    toObservable(this.clientId).pipe(
+      filter(
+        (clientIdentifier): clientIdentifier is number =>
+          typeof clientIdentifier === 'number' && Number.isFinite(clientIdentifier)
+      ),
+      switchMap((clientIdentifier) =>
+        this.dietitianService.getClientDietaryProfile(clientIdentifier)
+      ),
+      startWith(null),
+      catchError(() => of(null))
+    ),
+    {initialValue: null}
+  );
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
   private readonly notificationService = inject(NotificationService);
@@ -201,10 +201,6 @@ export class MealPlanCreatorComponent {
     page: this.pageNumber(),
     size: this.pageSize(),
   }));
-  private readonly recipesPageStream$ = toObservable(this.recipeSearchParams).pipe(
-    switchMap((searchParams) => this.recipeService.getAll(searchParams)),
-    shareReplay({bufferSize: 1, refCount: true})
-  );
   private readonly loadTriggerPx = 120;
   private readonly baseRecipeParams = computed(() => ({
     ...this.filters(),

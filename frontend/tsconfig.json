@@ -7,7 +7,8 @@
     "paths": {
       "@core/*": ["app/core/*"],
       "@features/*": ["app/features/*"],
-      "@shared/*": ["app/shared/*"]
+      "@shared/*": ["app/shared/*"],
+      "@testing/*": ["testing/*"]
     },
     "outDir": "./dist/out-tsc",
     "strict": true,

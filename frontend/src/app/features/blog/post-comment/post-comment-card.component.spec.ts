@@ -14,6 +14,17 @@ describe('PostCommentComponent', () => {
 
     fixture = TestBed.createComponent(PostCommentCardComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('comment', {
+      id: 1,
+      content: 'Test Comment',
+      createdAt: '2026-01-01',
+      author: {
+        id: 1,
+        firstName: 'Test',
+        lastName: 'User',
+        role: 'USER'
+      }
+    });
     fixture.detectChanges();
   });
 

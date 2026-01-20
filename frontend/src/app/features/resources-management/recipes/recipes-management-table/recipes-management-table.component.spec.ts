@@ -15,6 +15,7 @@ describe('RecipesManagementTableComponent', () => {
 
     fixture = TestBed.createComponent(RecipesManagementTableComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('recipes', []);
     fixture.detectChanges();
   });
 

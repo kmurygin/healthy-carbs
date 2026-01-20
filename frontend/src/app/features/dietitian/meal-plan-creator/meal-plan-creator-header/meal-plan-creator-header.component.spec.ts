@@ -14,6 +14,7 @@ describe('MealPlanCreatorHeaderComponent', () => {
 
     fixture = TestBed.createComponent(MealPlanCreatorHeaderComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('title', 'Test Title');
     fixture.detectChanges();
   });
 

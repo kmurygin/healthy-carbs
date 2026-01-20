@@ -1,5 +1,6 @@
 package org.kmurygin.healthycarbs.mealplan.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.mealplan.dto.CreateMealPlanRequest;
 import org.kmurygin.healthycarbs.mealplan.dto.MealPlanDTO;
@@ -63,7 +64,7 @@ public class MealPlanController {
 
     @PostMapping("/manual")
     public ResponseEntity<ApiResponse<MealPlanDTO>> createManualMealPlan(
-            @RequestBody CreateMealPlanRequest request
+            @RequestBody @Valid CreateMealPlanRequest request
     ) {
         MealPlan mealPlan = mealPlanService.createManualMealPlan(request);
         MealPlanDTO dto = mealPlanMapper.toDTO(mealPlan);
