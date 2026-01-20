@@ -15,6 +15,16 @@ describe('MealplanHistoryItemComponent', () => {
 
     fixture = TestBed.createComponent(MealPlanHistoryItemComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('mealPlanDay', {
+      id: 1,
+      dayOfWeek: 'MONDAY',
+      date: '2026-01-01',
+      recipes: [],
+      totalCalories: 500,
+      totalCarbs: 50,
+      totalProtein: 30,
+      totalFat: 20
+    });
     fixture.detectChanges();
   });
 

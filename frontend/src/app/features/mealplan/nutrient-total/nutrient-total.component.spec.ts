@@ -15,6 +15,16 @@ describe('NutrientTotalComponent', () => {
 
     fixture = TestBed.createComponent(NutrientTotalComponent);
     component = fixture.componentInstance;
+
+    fixture.componentRef.setInput('total', 50);
+    fixture.componentRef.setInput('target', 100);
+    fixture.componentRef.setInput('percent', 50);
+    fixture.componentRef.setInput('progressBarPercent', 50);
+    fixture.componentRef.setInput('unit', 'g');
+    fixture.componentRef.setInput('label', 'Protein');
+    fixture.componentRef.setInput('iconClasses', 'fa-solid fa-drumstick-bite');
+    fixture.componentRef.setInput('barColorClass', 'bg-blue-500');
+
     fixture.detectChanges();
   });
 

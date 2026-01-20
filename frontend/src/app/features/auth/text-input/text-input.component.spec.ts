@@ -14,6 +14,8 @@ describe('TextInputComponent', () => {
 
     fixture = TestBed.createComponent(TextInputComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('label', 'Test Label');
+    fixture.componentRef.setInput('id', 'test-id');
     fixture.detectChanges();
   });
 

@@ -15,6 +15,9 @@ describe('RecipeFilterComponent', () => {
 
     fixture = TestBed.createComponent(RecipeFilterComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('dietTypes', []);
+    fixture.componentRef.setInput('mealTypes', []);
+    fixture.componentRef.setInput('sortOptions', []);
     fixture.detectChanges();
   });
 

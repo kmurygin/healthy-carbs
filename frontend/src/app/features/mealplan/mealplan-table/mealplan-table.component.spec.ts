@@ -14,6 +14,7 @@ describe('MealplanTableComponent', () => {
 
     fixture = TestBed.createComponent(MealPlanTableComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('mealPlans', []);
     fixture.detectChanges();
   });
 

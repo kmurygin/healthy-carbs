@@ -1,5 +1,6 @@
 import type {ComponentFixture} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
 
 import {DashboardWeightChartComponent} from './dashboard-weight-chart.component';
 
@@ -9,12 +10,14 @@ describe('DashboardWeightChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DashboardWeightChartComponent]
+      imports: [DashboardWeightChartComponent],
+      providers: [provideRouter([])]
     })
       .compileComponents();
 
     fixture = TestBed.createComponent(DashboardWeightChartComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('weightHistory', []);
     fixture.detectChanges();
   });
 

@@ -15,6 +15,14 @@ describe('OfferCardComponent', () => {
 
     fixture = TestBed.createComponent(OfferCardComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('offer', {
+      id: '1',
+      title: 'Test Offer',
+      description: 'Test Description',
+      price: 100,
+      features: []
+    });
+    fixture.componentRef.setInput('orderId', '123');
     fixture.detectChanges();
   });
 

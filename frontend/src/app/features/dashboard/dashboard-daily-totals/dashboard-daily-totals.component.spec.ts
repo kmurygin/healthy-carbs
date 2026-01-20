@@ -15,6 +15,8 @@ describe('DashboardDailyTotalsComponent', () => {
 
     fixture = TestBed.createComponent(DashboardDailyTotalsComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('dailyTotals', {calories: 0, carbs: 0, protein: 0, fat: 0});
+    fixture.componentRef.setInput('dailyTargets', {calories: 0, carbs: 0, protein: 0, fat: 0});
     fixture.detectChanges();
   });
 

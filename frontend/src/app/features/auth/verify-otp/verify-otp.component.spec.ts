@@ -1,4 +1,5 @@
 import {type ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
 
 import {VerifyOtpComponent} from './verify-otp.component';
 
@@ -8,7 +9,8 @@ describe('VerifyOtpComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [VerifyOtpComponent]
+      imports: [VerifyOtpComponent],
+      providers: [provideRouter([])]
     })
       .compileComponents();
 

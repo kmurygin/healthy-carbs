@@ -15,6 +15,7 @@ describe('InfoMessageComponent', () => {
 
     fixture = TestBed.createComponent(InfoMessageComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('message', 'Test Info Message');
     fixture.detectChanges();
   });
 

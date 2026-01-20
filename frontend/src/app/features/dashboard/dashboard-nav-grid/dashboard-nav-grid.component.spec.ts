@@ -1,5 +1,6 @@
 import type {ComponentFixture} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing';
+import {provideRouter} from '@angular/router';
 
 import {DashboardNavGridComponent} from './dashboard-nav-grid.component';
 
@@ -9,7 +10,8 @@ describe('DashboardNavGridComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DashboardNavGridComponent]
+      imports: [DashboardNavGridComponent],
+      providers: [provideRouter([])]
     })
       .compileComponents();
 

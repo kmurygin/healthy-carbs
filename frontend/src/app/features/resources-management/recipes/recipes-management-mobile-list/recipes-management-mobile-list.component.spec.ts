@@ -15,6 +15,7 @@ describe('RecipesManagementMobileListComponent', () => {
 
     fixture = TestBed.createComponent(RecipesManagementMobileListComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('recipes', []);
     fixture.detectChanges();
   });
 

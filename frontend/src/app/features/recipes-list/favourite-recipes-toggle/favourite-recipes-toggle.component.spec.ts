@@ -15,6 +15,7 @@ describe('FavouriteRecipesToggleComponent', () => {
 
     fixture = TestBed.createComponent(FavouriteRecipesToggleComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('onlyFavourites', false);
     fixture.detectChanges();
   });
 
