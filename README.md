@@ -235,6 +235,8 @@ npm run lint
 
 > **Quick Setup:** For development, use `postgres` / `postgres` as database credentials.
 
+> **Important:** Never commit real secrets to version control.
+
 Create a `.env` file in the project root based on `.env.example`:
 
 ### Database Configuration
