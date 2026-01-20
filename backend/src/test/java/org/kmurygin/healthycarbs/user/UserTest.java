@@ -230,7 +230,7 @@ class UserTest {
                     .first()
                     .isInstanceOf(SimpleGrantedAuthority.class)
                     .extracting(GrantedAuthority::getAuthority)
-                    .isEqualTo("USER");
+                    .isEqualTo("ROLE_USER");
         }
 
         @Test
@@ -241,7 +241,7 @@ class UserTest {
 
             assertThat(authorities)
                     .extracting(GrantedAuthority::getAuthority)
-                    .containsExactly("ADMIN");
+                    .containsExactly("ROLE_ADMIN");
         }
 
         @Test
