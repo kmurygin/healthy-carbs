@@ -4,7 +4,7 @@ server:
 
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE}
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   cloud:
     gcp:
       sql:
@@ -99,4 +99,6 @@ spring:
       sql:
         enabled: false
       core:
+        enabled: false
+      secretmanager:
         enabled: false

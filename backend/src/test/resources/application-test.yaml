@@ -6,7 +6,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
     show-sql: true
   liquibase:
     enabled: true
@@ -16,7 +16,38 @@ spring:
     port: 1234
     username: test
     password: test
+  cloud:
+    gcp:
+      sql:
+        enabled: false
+      core:
+        enabled: false
+      secretmanager:
+        enabled: false
 application:
   security:
     jwt:
-      secret-key: test
+      secret-key: 2fBbjzfBV2CzLEeO2OOQUPQM/XK0GRE/IEHxsnPSqwI=
+  cors:
+    allowed-origins: http://localhost:3000
+
+payu:
+  base-url: http://localhost
+  pos-id: 123
+  client-id: 123
+  client-secret: secret
+  second-key: key
+  continue-url: http://localhost
+  notify-url: http://localhost
+  currency: PLN
+
+genetic-algorithm:
+  population-size: 10
+  max-generations: 10
+  mutation-rate: 0.1
+  target-fitness: 0.9
+  elite-count: 2
+  calories-weight: 0.25
+  carbs-weight: 0.25
+  protein-weight: 0.25
+  fat-weight: 0.25
