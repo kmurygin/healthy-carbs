@@ -14,10 +14,35 @@ describe('UserRoleTagComponent', () => {
 
     fixture = TestBed.createComponent(UserRoleTagComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  describe('Component Initialization', () => {
+    it('should create component instance successfully', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should display role badge when selectedRole is AUTHOR', () => {
+      fixture.componentRef.setInput('selectedRole', 'AUTHOR');
+      fixture.detectChanges();
+
+      const badge = fixture.nativeElement.querySelector('.text-indigo-800');
+      expect(badge).toBeTruthy();
+    });
+
+    it('should display role badge when selectedRole is DIETITIAN', () => {
+      fixture.componentRef.setInput('selectedRole', 'DIETITIAN');
+      fixture.detectChanges();
+
+      const badge = fixture.nativeElement.querySelector('.text-emerald-800');
+      expect(badge).toBeTruthy();
+    });
+
+    it('should display correct label text for role', () => {
+      fixture.componentRef.setInput('selectedRole', 'AUTHOR');
+      fixture.detectChanges();
+
+      const badgeText = fixture.nativeElement.textContent;
+      expect(badgeText).toContain('Author');
+    });
   });
 });

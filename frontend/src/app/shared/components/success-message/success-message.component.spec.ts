@@ -1,5 +1,4 @@
-import type {ComponentFixture} from '@angular/core/testing';
-import {TestBed} from '@angular/core/testing';
+import {type ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {SuccessMessageComponent} from './success-message.component';
 
@@ -15,10 +14,29 @@ describe('SuccessMessageComponent', () => {
 
     fixture = TestBed.createComponent(SuccessMessageComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  describe('Component Initialization', () => {
+    it('should create component instance successfully', () => {
+      fixture.componentRef.setInput('message', 'Test success message');
+      fixture.detectChanges();
+      expect(component).toBeTruthy();
+    });
+
+    it('should display success message text when message input is provided', () => {
+      const testMessage = 'Operation completed successfully';
+      fixture.componentRef.setInput('message', testMessage);
+      fixture.detectChanges();
+
+      const messageElement = fixture.nativeElement.textContent;
+      expect(messageElement).toContain(testMessage);
+    });
+
+    it('should handle empty message gracefully', () => {
+      fixture.componentRef.setInput('message', '');
+      fixture.detectChanges();
+
+      expect(component).toBeTruthy();
+    });
   });
 });
