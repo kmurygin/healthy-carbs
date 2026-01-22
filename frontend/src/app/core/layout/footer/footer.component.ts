@@ -12,4 +12,5 @@ import {RouterLink} from "@angular/router";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FooterComponent {
+  readonly isStatic = true;
 }

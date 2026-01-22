@@ -32,8 +32,9 @@ export class DietitianService implements OnDestroy {
   }
 
   getProfileImage(imageId: number): Observable<SafeUrl> {
-    if (this.safeUrls.has(imageId)) {
-      return of(this.safeUrls.get(imageId)!);
+    const cached = this.safeUrls.get(imageId);
+    if (cached) {
+      return of(cached);
     }
 
     return this.userService.getProfileImage(imageId).pipe(

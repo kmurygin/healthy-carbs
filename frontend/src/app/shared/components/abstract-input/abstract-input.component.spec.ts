@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {type ComponentFixture, TestBed} from '@angular/core/testing';
 import {AbstractInputComponent} from './abstract-input.component';
 import {NgControl} from '@angular/forms';
@@ -6,13 +6,13 @@ import {NgControl} from '@angular/forms';
 @Component({
   selector: 'app-test-input',
   template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
       provide: NgControl, useValue: {
         control: {
           statusChanges: {
-            subscribe: () => {
-            }
+            subscribe: jasmine.createSpy('subscribe')
           }
         }
       }

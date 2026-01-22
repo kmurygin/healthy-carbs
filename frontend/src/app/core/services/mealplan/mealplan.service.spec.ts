@@ -40,12 +40,12 @@ describe('MealPlanService', () => {
     httpMock.verify();
   });
 
-  it('should be created', () => {
+  it('service_whenInjected_shouldBeTruthy', () => {
     expect(service).toBeTruthy();
   });
 
   describe('generate', () => {
-    it('should POST to ApiEndpoints.MealPlan.Base and return plan on success', () => {
+    it('generate_whenSuccess_shouldPostAndReturnPlan', () => {
       service.generate().subscribe(plan => {
         expect(plan).toEqual(mockMealPlan);
       });
@@ -56,7 +56,7 @@ describe('MealPlanService', () => {
       req.flush({data: mockMealPlan});
     });
 
-    it('should throw error if response data is missing', () => {
+    it('generate_whenResponseDataMissing_shouldThrowError', () => {
       service.generate().subscribe({
         next: () => {
           fail('expected error');
@@ -72,10 +72,27 @@ describe('MealPlanService', () => {
       const req = httpMock.expectOne(ApiEndpoints.MealPlan.Base);
       req.flush({data: null});
     });
+
+    it('generate_whenResponseDataUndefined_shouldThrowError', () => {
+      service.generate().subscribe({
+        next: () => {
+          fail('expected error');
+        },
+        error: (err: unknown) => {
+          expect(err instanceof Error
+            ? err.message
+            : String(err))
+            .toContain('Failed to generate meal plan');
+        }
+      });
+
+      const req = httpMock.expectOne(ApiEndpoints.MealPlan.Base);
+      req.flush({data: undefined});
+    });
   });
 
   describe('getHistory', () => {
-    it('should GET from history endpoint and return array', () => {
+    it('getHistory_whenSuccess_shouldGetAndReturnArray', () => {
       const mockHistory = [mockMealPlan];
       service.getHistory().subscribe(history => {
         expect(history).toEqual(mockHistory);
@@ -86,7 +103,7 @@ describe('MealPlanService', () => {
       req.flush({data: mockHistory});
     });
 
-    it('should return empty array if data is null', () => {
+    it('getHistory_whenDataNull_shouldReturnEmptyArray', () => {
       service.getHistory().subscribe(history => {
         expect(history).toEqual([]);
       });
@@ -94,10 +111,19 @@ describe('MealPlanService', () => {
       const req = httpMock.expectOne(ApiEndpoints.MealPlan.Base + '/history');
       req.flush({data: null});
     });
+
+    it('getHistory_whenDataUndefined_shouldReturnEmptyArray', () => {
+      service.getHistory().subscribe(history => {
+        expect(history).toEqual([]);
+      });
+
+      const req = httpMock.expectOne(ApiEndpoints.MealPlan.Base + '/history');
+      req.flush({data: undefined});
+    });
   });
 
   describe('downloadPdf', () => {
-    it('should GET download endpoint with blob response type', () => {
+    it('downloadPdf_whenCalled_shouldGetBlob', () => {
       const mockBlob = new Blob(['PDF content'], {type: 'application/pdf'});
       service.downloadPdf(123).subscribe(blob => {
         expect(blob).toEqual(mockBlob);
@@ -111,7 +137,7 @@ describe('MealPlanService', () => {
   });
 
   describe('getById', () => {
-    it('should GET by ID and return plan', () => {
+    it('getById_whenFound_shouldGetAndReturnPlan', () => {
       service.getById(1).subscribe(plan => {
         expect(plan).toEqual(mockMealPlan);
       });
@@ -121,7 +147,7 @@ describe('MealPlanService', () => {
       req.flush({data: mockMealPlan});
     });
 
-    it('should throw error if not found (data null)', () => {
+    it('getById_whenDataNull_shouldThrowError', () => {
       service.getById(99).subscribe({
         next: () => {
           fail('expected error');
@@ -137,24 +163,29 @@ describe('MealPlanService', () => {
       const req = httpMock.expectOne(`${ApiEndpoints.MealPlan.Base}/99`);
       req.flush({data: null});
     });
+
+    it('getById_whenDataUndefined_shouldThrowError', () => {
+      service.getById(77).subscribe({
+        next: () => {
+          fail('expected error');
+        },
+        error: (err: unknown) => {
+          expect(err instanceof Error
+            ? err.message
+            : String(err))
+            .toContain('Meal plan with id 77 not found');
+        }
+      });
+
+      const req = httpMock.expectOne(`${ApiEndpoints.MealPlan.Base}/77`);
+      req.flush({data: undefined});
+    });
   });
 
   describe('createManual', () => {
-    it('should POST to manual endpoint and return plan', () => {
-      const request: CreateMealPlanRequest = {clientId: 1, startDate: '2026-01-01', days: []};
-      service.createManual(request).subscribe(plan => {
-        expect(plan).toEqual(mockMealPlan);
-      });
-
-      const req = httpMock.expectOne(`${ApiEndpoints.MealPlan.Base}/manual`);
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(request);
-      req.flush({data: mockMealPlan});
-    });
-
-    it('should throw error if creation fails', () => {
-      const request: CreateMealPlanRequest = {clientId: 1, startDate: '2026-01-01', days: []};
-      service.createManual(request).subscribe({
+    const createManualRequest: CreateMealPlanRequest = {clientId: 1, startDate: '2026-01-01', days: []};
+    const expectCreateManualError = (): void => {
+      service.createManual(createManualRequest).subscribe({
         next: () => {
           fail('should have failed');
         },
@@ -165,9 +196,29 @@ describe('MealPlanService', () => {
             .toBe('Failed to create meal plan');
         }
       });
+    };
+
+    it('createManual_whenSuccess_shouldPostAndReturnPlan', () => {
+      service.createManual(createManualRequest).subscribe(plan => {
+        expect(plan).toEqual(mockMealPlan);
+      });
 
       const req = httpMock.expectOne(`${ApiEndpoints.MealPlan.Base}/manual`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(createManualRequest);
+      req.flush({data: mockMealPlan});
+    });
+
+    it('createManual_whenDataNull_shouldThrowError', () => {
+      expectCreateManualError();
+      const req = httpMock.expectOne(`${ApiEndpoints.MealPlan.Base}/manual`);
       req.flush({data: null});
+    });
+
+    it('createManual_whenDataUndefined_shouldThrowError', () => {
+      expectCreateManualError();
+      const req = httpMock.expectOne(`${ApiEndpoints.MealPlan.Base}/manual`);
+      req.flush({data: undefined});
     });
   });
 });

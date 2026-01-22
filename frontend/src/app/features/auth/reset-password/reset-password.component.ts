@@ -85,13 +85,14 @@ export class ResetPasswordComponent implements OnInit {
   private router = inject(Router);
 
   ngOnInit() {
-    const state = history.state as ResetPasswordState;
-    if (!state.username || !state.otp) {
+    const username = (history.state as ResetPasswordState | null | undefined)?.username;
+    const otp = (history.state as ResetPasswordState | null | undefined)?.otp;
+    if (!username || !otp) {
       void this.router.navigate(['/verify-otp']);
       return;
     }
-    this.username = state.username;
-    this.otp = state.otp;
+    this.username = username;
+    this.otp = otp;
   }
 
   onSubmit() {

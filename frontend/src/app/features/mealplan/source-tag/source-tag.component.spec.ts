@@ -20,11 +20,11 @@ describe('SourceTagComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('component_whenCreated_shouldBeTruthy', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should compute styles correctly', () => {
+  it('styles_whenSourceChanges_shouldUpdateLabelAndIcon', () => {
     fixture.componentRef.setInput('source', MealPlanSource.GENERATED);
     fixture.detectChanges();
     expect(component.styles().label).toBe('Generated');

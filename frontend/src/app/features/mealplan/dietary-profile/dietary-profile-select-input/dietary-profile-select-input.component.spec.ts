@@ -20,7 +20,18 @@ describe('DietaryProfileSelectInputComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('component_whenCreated_shouldBeTruthy', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('onSelectChange_whenCalled_shouldUpdateValueAndEmit', () => {
+    const changeSpy = jasmine.createSpy('change');
+    component.registerOnChange(changeSpy);
+
+    const event = {target: {value: 'TEST'}} as unknown as Event;
+    component.onSelectChange(event);
+
+    expect(component.value()).toBe('TEST');
+    expect(changeSpy).toHaveBeenCalledWith('TEST');
   });
 });

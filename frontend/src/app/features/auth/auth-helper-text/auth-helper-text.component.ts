@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {RouterLink} from "@angular/router";
 
 @Component({
@@ -6,6 +6,7 @@ import {RouterLink} from "@angular/router";
   imports: [
     RouterLink
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mt-8 pt-6 border-t border-gray-200 text-center">
       <p class="text-sm text-gray-600">

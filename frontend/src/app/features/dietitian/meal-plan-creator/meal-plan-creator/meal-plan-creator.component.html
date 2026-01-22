@@ -218,7 +218,9 @@
                       [class.pointer-events-none]="!selectedRecipeForPlacement()"
                       class="absolute inset-0 rounded-xl"
                       type="button"
-                    ></button>
+                    >
+                      <span class="sr-only">Place recipe</span>
+                    </button>
 
                     @if (day.slots[mealType].length === 0) {
                       <div class="flex h-full items-center justify-center text-xs text-gray-400">
@@ -301,7 +303,9 @@
                     [class.pointer-events-none]="!selectedRecipeForPlacement()"
                     class="absolute inset-0 rounded-xl"
                     type="button"
-                  ></button>
+                  >
+                    <span class="sr-only">Place recipe</span>
+                  </button>
 
                   @if (day.slots[mealType].length === 0) {
                     <div class="flex h-full items-center justify-center text-xs text-gray-400">

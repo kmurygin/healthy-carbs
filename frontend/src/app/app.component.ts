@@ -19,4 +19,5 @@ import {ToastContainerComponent} from "@shared/components/toast-container/toast-
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
+  readonly isStatic = true;
 }

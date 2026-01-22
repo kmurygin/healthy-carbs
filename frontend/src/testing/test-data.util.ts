@@ -4,6 +4,8 @@ import type {RecipeIngredientDto} from '@core/models/dto/recipe-ingredient.dto';
 import type {IngredientDto} from '@core/models/dto/ingredient.dto';
 import type {MealPlanDayDto} from '@core/models/dto/mealplan-day.dto';
 import type {MealPlanDto} from '@core/models/dto/mealplan.dto';
+import type {ShoppingList} from '@core/models/dto/shopping-list.dto';
+import type {DietaryProfileDto} from '@core/models/dto/dietaryprofile.dto';
 import {DietType} from '@core/models/enum/diet-type.enum';
 import {MealType} from '@core/models/enum/meal-type.enum';
 import {UserRole} from '@core/models/enum/user-role.enum';
@@ -116,4 +118,43 @@ export function createMockMealPlan(overrides?: Partial<MealPlanDto>): MealPlanDt
     source: MealPlanSource.GENERATED
   };
   return {...base, ...overrides};
+}
+
+export function createMockDietaryProfile(overrides?: Partial<DietaryProfileDto>): DietaryProfileDto {
+  const base: DietaryProfileDto = {
+    id: 1,
+    user: REGULAR_TEST_USER,
+    calorieTarget: 2000,
+    proteinTarget: 150,
+    fatTarget: 70,
+    carbsTarget: 200,
+    weight: 70,
+    height: 175,
+    age: 30,
+    gender: 'MALE',
+    dietGoal: 'MAINTENANCE',
+    dietType: 'BALANCED',
+    activityLevel: 'MODERATE'
+  };
+  return {...base, ...overrides};
+}
+
+export function createMockShoppingList(): ShoppingList {
+  return {
+    items: {
+      [IngredientCategory.GRAINS]: [],
+      [IngredientCategory.MEAT]: [],
+      [IngredientCategory.VEGETABLES]: [],
+      [IngredientCategory.FRUITS]: [],
+      [IngredientCategory.FISH]: [],
+      [IngredientCategory.DAIRY]: [],
+      [IngredientCategory.LEGUMES]: [],
+      [IngredientCategory.NUTS_AND_SEEDS]: [],
+      [IngredientCategory.OIL_AND_FATS]: [],
+      [IngredientCategory.SPICES]: [],
+      [IngredientCategory.SWEETS]: [],
+      [IngredientCategory.BEVERAGES]: [],
+      [IngredientCategory.OTHER]: []
+    }
+  };
 }

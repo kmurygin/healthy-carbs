@@ -123,7 +123,7 @@ export class DietaryProfileFormComponent {
       autocomplete: 'off',
       options: this.activityLevelOptions.map((option: FormOption<ActivityLevel>) => ({
         ...option,
-        description: ActivityLevelDescriptionMap[option.value as ActivityLevel]
+        description: ActivityLevelDescriptionMap[option.value]
       }))
     },
   ];

@@ -11,5 +11,5 @@ import {NgOptimizedImage} from "@angular/common";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ErrorComponent {
-
+  readonly isStatic = true;
 }

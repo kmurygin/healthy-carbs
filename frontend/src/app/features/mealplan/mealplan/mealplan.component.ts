@@ -1,5 +1,5 @@
-import type {Signal, WritableSignal} from '@angular/core';
-import {afterNextRender, ChangeDetectionStrategy, Component, computed, inject, signal,} from '@angular/core';
+import type {OnInit, Signal, WritableSignal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
 import {CommonModule, TitleCasePipe} from '@angular/common';
 import type {Observable} from 'rxjs';
 import {firstValueFrom, map} from 'rxjs';
@@ -41,7 +41,7 @@ import {setError} from "@shared/utils";
   templateUrl: './mealplan.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MealPlanComponent {
+export class MealPlanComponent implements OnInit {
   readonly loading = signal(true);
   readonly downloadingMealPlanPdf = signal(false);
   readonly downloadingShoppingListPdf = signal(false);
@@ -119,12 +119,10 @@ export class MealPlanComponent {
     };
   });
 
-  constructor() {
-    afterNextRender(() => {
-      this.fetchMealPlanData().catch((error: unknown) => {
-        console.error(error);
-      });
-    })
+  ngOnInit(): void {
+    this.fetchMealPlanData().catch((error: unknown) => {
+      console.error(error);
+    });
   }
 
   async onGenerate(): Promise<void> {

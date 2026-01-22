@@ -13,6 +13,7 @@ export abstract class AbstractManagementComponent<T> {
   readonly isLoading = signal(false);
   readonly isFormOpen = signal(false);
   readonly selectedId = signal<number | null>(null);
+  protected readonly currentItem = signal<T | null>(null);
   protected readonly confirmationService = inject(ConfirmationService);
   protected readonly notificationService = inject(NotificationService);
   protected readonly destroyRef = inject(DestroyRef);
@@ -34,6 +35,10 @@ export abstract class AbstractManagementComponent<T> {
   closeForm(): void {
     this.isFormOpen.set(false);
     this.selectedId.set(null);
+  }
+
+  protected setCurrentItem(item: T | null): void {
+    this.currentItem.set(item);
   }
 
   onSaveSuccess(message: string): void {

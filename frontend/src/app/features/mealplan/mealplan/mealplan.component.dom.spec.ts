@@ -1,0 +1,223 @@
+import type {ComponentFixture} from '@angular/core/testing';
+import {fakeAsync, tick} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import type {MealPlanComponent} from './mealplan.component';
+import type {DebugElement} from '@angular/core';
+import type {ParamMap} from '@angular/router';
+import {convertToParamMap} from '@angular/router';
+import type {ReplaySubject} from 'rxjs';
+import {of} from 'rxjs';
+import type {ShoppingList} from '@core/models/dto/shopping-list.dto';
+import type {MealPlanDto} from '@core/models/dto/mealplan.dto';
+import type {MealPlanDayDto} from '@core/models/dto/mealplan-day.dto';
+import type {MealPlanService} from '@core/services/mealplan/mealplan.service';
+import type {ShoppingListService} from '@core/services/shopping-list/shopping-list.service';
+import {
+  createMockDietaryProfile,
+  createMockMealPlan,
+  createMockMealPlanDay,
+  createMockShoppingList,
+  REGULAR_TEST_USER
+} from '@testing/test-data.util';
+import {setupMealPlanComponentTest} from '@testing/mealplan-component-test.util';
+import {IngredientCategory} from '@core/models/enum/ingredient-category.enum';
+
+describe('MealPlanComponent DOM Integration', () => {
+  let component: MealPlanComponent;
+  let fixture: ComponentFixture<MealPlanComponent>;
+  let mealPlanServiceSpy: jasmine.SpyObj<MealPlanService>;
+  let shoppingListServiceSpy: jasmine.SpyObj<ShoppingListService>;
+  let routeParamMapSubject: ReplaySubject<ParamMap>;
+
+  let mockMealPlan: MealPlanDto;
+  let mockShoppingList: ShoppingList;
+
+  beforeEach(async () => {
+    mockMealPlan = createMockMealPlan({
+      id: 123,
+      days: [createMockMealPlanDay({id: 1})]
+    });
+    const baseShoppingItems = createMockShoppingList().items;
+    const mockShoppingItems: ShoppingList['items'] = {
+      ...baseShoppingItems,
+      [IngredientCategory.FRUITS]: [{name: 'Apple', totalQuantity: 1, unit: 'kg', isBought: false}]
+    };
+    mockShoppingList = {items: mockShoppingItems};
+
+    const setup = await setupMealPlanComponentTest();
+
+    fixture = setup.fixture;
+    component = setup.component;
+    routeParamMapSubject = setup.routeParamMapSubject;
+    mealPlanServiceSpy = setup.mealPlanServiceSpy;
+    shoppingListServiceSpy = setup.shoppingListServiceSpy;
+
+    const mockProfile = createMockDietaryProfile({user: REGULAR_TEST_USER});
+    setup.dietaryProfileServiceSpy.getProfile.and.returnValue(of(mockProfile));
+    mealPlanServiceSpy.getHistory.and.returnValue(of([]));
+    mealPlanServiceSpy.getById.and.returnValue(of(mockMealPlan));
+    mealPlanServiceSpy.generate.and.returnValue(of(mockMealPlan));
+    mealPlanServiceSpy.downloadPdf.and.returnValue(of(new Blob([''], {type: 'application/pdf'})));
+    shoppingListServiceSpy.getShoppingList.and.returnValue(of(mockShoppingList));
+    shoppingListServiceSpy.downloadPdf.and.returnValue(of(new Blob([''], {type: 'application/pdf'})));
+  });
+
+  const getByTestId = (testId: string): DebugElement | null => {
+    return fixture.debugElement.query(By.css(`[data-testid="${testId}"]`));
+  };
+
+  const setupLoadedState = () => {
+    component.loading.set(false);
+    component.plan.set(mockMealPlan);
+    component.shoppingList.set(mockShoppingList);
+    component.errorMessage.set(null);
+    fixture.detectChanges();
+  };
+
+  const triggerInit = (params: Record<string, string> = {}): void => {
+    routeParamMapSubject.next(convertToParamMap(params));
+    fixture.detectChanges();
+  };
+
+  describe('Loading & Error States', () => {
+    it('template_whenLoading_shouldShowLoadingMessage', () => {
+      component.loading.set(true);
+      fixture.detectChanges();
+
+      expect(getByTestId('loading-message')).toBeTruthy();
+      expect(getByTestId('daily-totals')).toBeNull();
+    });
+
+    it('template_whenErrorMessagePresent_shouldShowError', () => {
+      component.loading.set(false);
+      component.errorMessage.set('Test Error');
+      fixture.detectChanges();
+
+      const errorEl = getByTestId('error-message');
+      expect(errorEl).toBeTruthy();
+      const errorText = (errorEl?.nativeElement as HTMLElement | null)?.textContent ?? '';
+      expect(errorText).toContain('Test Error');
+    });
+  });
+
+  describe('Content Rendering', () => {
+    beforeEach(setupLoadedState);
+
+    it('template_whenPlanLoaded_shouldRenderMainSections', () => {
+      expect(getByTestId('daily-totals'))
+        .withContext('Daily totals should be visible')
+        .toBeTruthy();
+      expect(getByTestId('shopping-list'))
+        .withContext('Shopping list should be visible')
+        .toBeTruthy();
+      expect(getByTestId('btn-generate'))
+        .withContext('Generate button should be visible for latest plan')
+        .toBeTruthy();
+      expect(getByTestId('btn-download-shopping-list'))
+        .withContext('Download shopping list button should be visible')
+        .toBeTruthy();
+      expect(getByTestId('btn-download-meal-plan'))
+        .withContext('Download meal plan button should be visible')
+        .toBeTruthy();
+    });
+
+    it('template_whenPlanLoaded_shouldRenderDayTabs', () => {
+      mockMealPlan.days.forEach((day: MealPlanDayDto, index: number) => {
+        const tab = getByTestId(`day-tab-${index}`);
+        expect(tab)
+          .withContext(`Tab for index ${index} should exist`)
+          .toBeTruthy();
+      });
+    });
+  });
+
+  describe('Interactions', () => {
+    beforeEach(setupLoadedState);
+
+    it('selectDay_whenTabClicked_shouldUpdateSelectedDay', () => {
+      const dayIndex = 0;
+      const tab = getByTestId(`day-tab-${dayIndex}`);
+
+      expect(tab).toBeTruthy();
+      tab!.triggerEventHandler('click', null);
+      fixture.detectChanges();
+
+      expect(component.selectedDayIndex()).toBe(dayIndex);
+      const tabElement = tab?.nativeElement as HTMLElement | null;
+      expect(tabElement?.getAttribute('aria-selected')).toBe('true');
+    });
+
+    it('downloadMealPlan_whenButtonClicked_shouldCallService', () => {
+      const btn = getByTestId('btn-download-meal-plan');
+      expect(btn).toBeTruthy();
+
+      btn!.triggerEventHandler('click', null);
+
+      expect(mealPlanServiceSpy.downloadPdf).toHaveBeenCalledWith(mockMealPlan.id);
+    });
+
+    it('downloadShoppingList_whenButtonClicked_shouldCallService', () => {
+      const btn = getByTestId('btn-download-shopping-list');
+      expect(btn).toBeTruthy();
+
+      btn!.triggerEventHandler('click', null);
+
+      expect(shoppingListServiceSpy.downloadPdf).toHaveBeenCalledWith(mockMealPlan.id);
+    });
+  });
+
+  it('route_whenIdProvided_shouldLoadPlanAndRender', fakeAsync(() => {
+    mealPlanServiceSpy.getById.and.returnValue(of(mockMealPlan));
+    shoppingListServiceSpy.getShoppingList.and.returnValue(of(mockShoppingList));
+
+    triggerInit({id: '123'});
+    tick();
+    fixture.detectChanges();
+
+    expect(mealPlanServiceSpy.getById).toHaveBeenCalledWith(123);
+    expect(getByTestId('daily-totals')).toBeTruthy();
+    expect(getByTestId('shopping-list')).toBeTruthy();
+  }));
+
+  describe('Pagination Interactions', () => {
+    const daysOfWeek = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'] as const;
+    const buildTwoWeekPlan = () => createMockMealPlan({
+      days: Array.from({length: 14}, (_, dayIndex) => createMockMealPlanDay({
+        id: dayIndex + 1,
+        dayOfWeek: daysOfWeek[dayIndex % daysOfWeek.length]
+      }))
+    });
+
+    it('nextWeek_whenClicked_shouldShowNextWeekDays', () => {
+      const twoWeekPlan = buildTwoWeekPlan();
+      component.plan.set(twoWeekPlan);
+      component.loading.set(false);
+      fixture.detectChanges();
+
+      const nextBtn = fixture.debugElement.query(By.css('button[aria-label="Next week"]'));
+      expect(nextBtn).toBeTruthy();
+      nextBtn.triggerEventHandler('click', null);
+      fixture.detectChanges();
+
+      expect(component.currentWeekIndex()).toBe(1);
+      expect(getByTestId('day-tab-7')).toBeTruthy();
+    });
+
+    it('nextWeek_whenAtLastWeek_shouldNotAdvance', () => {
+      const twoWeekPlan = buildTwoWeekPlan();
+      component.plan.set(twoWeekPlan);
+      component.loading.set(false);
+      component.currentWeekIndex.set(1);
+      fixture.detectChanges();
+
+      const nextBtn = fixture.debugElement.query(By.css('button[aria-label="Next week"]'));
+      expect(nextBtn).toBeTruthy();
+      expect(nextBtn.nativeElement).toBeTruthy();
+
+      nextBtn.triggerEventHandler('click', null);
+      fixture.detectChanges();
+
+      expect(component.currentWeekIndex()).toBe(1);
+    });
+  });
+});

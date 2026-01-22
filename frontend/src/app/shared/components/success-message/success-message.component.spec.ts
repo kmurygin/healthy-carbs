@@ -28,8 +28,8 @@ describe('SuccessMessageComponent', () => {
       fixture.componentRef.setInput('message', testMessage);
       fixture.detectChanges();
 
-      const messageElement = fixture.nativeElement.textContent;
-      expect(messageElement).toContain(testMessage);
+      const hostElement = fixture.nativeElement as HTMLElement;
+      expect(hostElement.textContent).toContain(testMessage);
     });
 
     it('should handle empty message gracefully', () => {

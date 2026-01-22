@@ -19,4 +19,5 @@ import {HowWorksComponent} from '@shared/components/how-works/how-works.componen
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IndexComponent {
+  readonly isStatic = true;
 }
