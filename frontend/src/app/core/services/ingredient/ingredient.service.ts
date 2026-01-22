@@ -26,8 +26,6 @@ export class IngredientService {
       .set('page', params.page)
       .set('size', params.size);
 
-    console.log(`Params: ${params.page} ${params.size}`);
-
     if (params.name != null) {
       httpParams = httpParams.set('name', params.name);
     }
@@ -38,18 +36,13 @@ export class IngredientService {
       httpParams = httpParams.set('onlyMine', 'true');
     }
 
-    console.log(`Params: ${params.name} Category: ${params.category}`);
-
     return this.httpClient
       .get<ApiResponse<Page<IngredientDto>>>(ApiEndpoints.Ingredients.Page, {
         params: httpParams
       })
       .pipe(
         map(resp => resp.data ?? null),
-        catchError((err: unknown) => {
-          console.error('API Error:', err);
-          return of(null);
-        })
+        catchError(() => of(null))
       );
   }
 
