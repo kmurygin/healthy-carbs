@@ -1,13 +1,13 @@
 // @ts-check
-import { defineConfig } from "eslint/config";
+import {defineConfig} from "eslint/config";
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import angular from "angular-eslint";
 import promise from "eslint-plugin-promise";
 import rxjs from "@smarttools/eslint-plugin-rxjs";
 
-import { fileURLToPath } from "node:url";
-import { dirname } from "node:path";
+import {fileURLToPath} from "node:url";
+import {dirname} from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -100,6 +100,15 @@ export default defineConfig(
       "rxjs/no-async-subscribe": "error",
       "rxjs/no-nested-subscribe": "error",
       "rxjs/no-redundant-notify": "error",
+    },
+  },
+
+  {
+    files: ["**/*.spec.ts"],
+    rules: {
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/unbound-method": "off",
     },
   },
 

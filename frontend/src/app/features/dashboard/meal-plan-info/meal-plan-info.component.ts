@@ -86,7 +86,7 @@ export class MealPlanInfoComponent {
 
       startWith<MealPlanState>(this.INITIAL_STATE),
 
-      catchError((err: unknown) => of<MealPlanState>({
+      catchError(() => of<MealPlanState>({
         status: 'error',
         error: ''
       }))
