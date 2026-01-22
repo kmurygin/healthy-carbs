@@ -2,7 +2,7 @@
   <section class="mx-auto max-w-7xl px-4 py-8">
     <div class="flex items-center gap-2 flex-wrap text-left">
       <h1
-        class="text-2xl font-bold tracking-tight text-gray-900 leading-tight break-words"
+        class="text-2xl font-bold tracking-tight text-gray-900 leading-tight wrap-break-word"
       >
         @if (plan(); as p) {
           Meal Plan for week {{ p.createdAt | date: 'longDate' }}
@@ -29,6 +29,7 @@
             [disabled]="loading()"
             class="rounded-xl border px-4 py-2 font-medium shadow disabled:opacity-60
             hover:bg-gray-50 transition-colors hover:cursor-pointer"
+            data-testid="btn-generate"
             type="button"
           >
             {{ loading() ? 'Generating…' : 'Generate meal plan' }}
@@ -44,6 +45,7 @@
             class="flex items-center gap-2 rounded-xl px-4 py-2 font-medium
             shadow disabled:opacity-60 bg-emerald-600 text-white hover:bg-emerald-700
             transition-colors hover:cursor-pointer"
+            data-testid="btn-download-shopping-list"
             title="Download shopping list as PDF"
             type="button"
           >
@@ -62,6 +64,7 @@
             class="flex items-center gap-2 rounded-xl px-4 py-2 font-medium
             shadow disabled:opacity-60 bg-emerald-600 text-white hover:bg-emerald-700
             transition-colors hover:cursor-pointer"
+            data-testid="btn-download-meal-plan"
             title="Download meal plan as PDF"
             type="button"
           >
@@ -76,7 +79,7 @@
     </div>
 
     @if (errorMessage()) {
-      <app-error-message [message]="errorMessage()!"></app-error-message>
+      <app-error-message [message]="errorMessage()!" data-testid="error-message"></app-error-message>
     }
     @if (!plan() && !loading() && !errorMessage()) {
       <p>
@@ -119,6 +122,7 @@
             (click)="selectDay(absoluteIndex)"
             [attr.aria-controls]="'day-panel-' + absoluteIndex"
             [attr.aria-selected]="selectedDayIndex() === absoluteIndex"
+            [attr.data-testid]="'day-tab-' + absoluteIndex"
             [class]="dayButtonClasses(absoluteIndex)"
             [id]="'day-tab-' + absoluteIndex"
             class="flex-1 whitespace-nowrap rounded-lg px-3 py-1.5
@@ -151,7 +155,7 @@
         [attr.aria-labelledby]="'day-tab-' + selectedDayIndex()"
         [id]="'day-panel-' + selectedDayIndex()"
         class="mt-8 grid grid-cols-1 gap-6
-      lg:grid-cols-[2.6fr_1.0fr] xl:grid-cols-[2.8fr_1.0fr]"
+        lg:grid-cols-[2.6fr_1.0fr] xl:grid-cols-[2.8fr_1.0fr]"
         role="tabpanel"
         tabindex="0"
       >
@@ -159,6 +163,7 @@
           <app-daily-meal-plan-totals
             [dailyTargets]="dailyTargets()"
             [dailyTotals]="dailyTotals()"
+            data-testid="daily-totals"
           />
 
           <app-daily-meal-plan
@@ -177,14 +182,15 @@
           [shoppingList]="shoppingList()"
           [updatingItemId]="updatingShoppingListItemId()"
           class="self-start"
+          data-testid="shopping-list"
         />
       </div>
     }
   </section>
 } @else {
   @if (loadingMessage()) {
-    <app-loading-message [message]="loadingMessage()"/>
+    <app-loading-message [message]="loadingMessage()" data-testid="loading-message"/>
   } @else {
-    <app-loading-message/>
+    <app-loading-message data-testid="loading-message"/>
   }
 }
