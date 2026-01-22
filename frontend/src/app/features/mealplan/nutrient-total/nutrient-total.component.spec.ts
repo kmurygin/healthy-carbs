@@ -28,7 +28,14 @@ describe('NutrientTotalComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('component_whenCreated_shouldBeTruthy', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('template_whenInputsProvided_shouldRenderLabelAndValues', () => {
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.textContent).toContain('Protein');
+    expect(element.textContent).toContain('50 g');
+    expect(element.textContent).toContain('50%');
   });
 });

@@ -4,24 +4,29 @@ import {TestBed} from '@angular/core/testing';
 import {MealPlanShoppingListComponent} from './meal-plan-shopping-list.component';
 import {IngredientCategory} from "@core/models/enum/ingredient-category.enum";
 import type {ShoppingList} from "@core/models/dto/shopping-list.dto";
+import {createMockShoppingList} from "@testing/test-data.util";
 
 describe('MealPlanShoppingListComponent', () => {
   let component: MealPlanShoppingListComponent;
   let fixture: ComponentFixture<MealPlanShoppingListComponent>;
 
-  const mockShoppingList: ShoppingList = {
-    items: {
-      [IngredientCategory.VEGETABLES]: [
-        {name: 'Carrot', totalQuantity: 2, unit: 'pcs', isBought: false},
-        {name: 'Onion', totalQuantity: 1, unit: 'kg', isBought: true}
-      ],
-      [IngredientCategory.FRUITS]: [
-        {name: 'Apple', totalQuantity: 5, unit: 'pcs', isBought: false}
-      ]
-    } as any
-  };
+  let mockShoppingList: ShoppingList;
 
   beforeEach(async () => {
+    const baseItems = createMockShoppingList().items;
+    mockShoppingList = {
+      items: {
+        ...baseItems,
+        [IngredientCategory.VEGETABLES]: [
+          {name: 'Carrot', totalQuantity: 2, unit: 'pcs', isBought: false},
+          {name: 'Onion', totalQuantity: 1, unit: 'kg', isBought: true}
+        ],
+        [IngredientCategory.FRUITS]: [
+          {name: 'Apple', totalQuantity: 5, unit: 'pcs', isBought: false}
+        ]
+      }
+    };
+
     await TestBed.configureTestingModule({
       imports: [MealPlanShoppingListComponent]
     })
@@ -33,11 +38,11 @@ describe('MealPlanShoppingListComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('component_whenCreated_shouldBeTruthy', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should transform DTO to display items', () => {
+  it('items_whenShoppingListProvided_shouldFlattenItems', () => {
     const items = component.items();
     expect(items.length).toBe(3);
 
@@ -47,7 +52,7 @@ describe('MealPlanShoppingListComponent', () => {
     expect(carrot?.quantity).toBe(2);
   });
 
-  it('should group items and sort categories', () => {
+  it('groupedItems_whenComputed_shouldSortCategories', () => {
     const grouped = component.groupedItems();
 
     expect(grouped.length).toBe(2);
@@ -55,7 +60,7 @@ describe('MealPlanShoppingListComponent', () => {
     expect(grouped[1][0]).toBe(IngredientCategory.VEGETABLES);
   });
 
-  it('should sort items within category alphabetically', () => {
+  it('groupedItems_whenComputed_shouldSortItemsWithinCategory', () => {
     const grouped = component.groupedItems();
     const vegGroup = grouped.find(group => group[0] === IngredientCategory.VEGETABLES);
 
@@ -65,7 +70,7 @@ describe('MealPlanShoppingListComponent', () => {
     expect(vegItems[1].name).toBe('Onion');
   });
 
-  it('should emit toggleItem event', () => {
+  it('toggleCheck_whenCalled_shouldEmitToggleItem', () => {
     spyOn(component.toggleItem, 'emit');
 
     const carrotDisplayItem = component.items().find(item => item.name === 'Carrot')!;
@@ -77,7 +82,7 @@ describe('MealPlanShoppingListComponent', () => {
     });
   });
 
-  it('should not emit if updating', () => {
+  it('toggleCheck_whenUpdating_shouldNotEmit', () => {
     spyOn(component.toggleItem, 'emit');
     fixture.componentRef.setInput('updatingItemId', 'VEGETABLES-Carrot');
     fixture.detectChanges();
@@ -88,7 +93,7 @@ describe('MealPlanShoppingListComponent', () => {
     expect(component.toggleItem.emit).not.toHaveBeenCalled();
   });
 
-  it('should toggle category visibility', () => {
+  it('toggleCategory_whenCalled_shouldToggleVisibility', () => {
     const category = IngredientCategory.VEGETABLES;
 
     expect(component.openCategories().has(category)).toBeTrue();

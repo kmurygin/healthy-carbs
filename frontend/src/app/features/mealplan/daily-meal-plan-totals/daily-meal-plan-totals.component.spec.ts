@@ -18,11 +18,11 @@ describe('DailyMealPlanTotalsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('component_whenCreated_shouldBeTruthy', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should calculate percentages correctly', () => {
+  it('percents_whenTotalsAndTargetsProvided_shouldCalculate', () => {
     fixture.componentRef.setInput('dailyTotals', {
       calories: 1000, carbs: 100, protein: 50, fat: 30
     });
@@ -38,7 +38,7 @@ describe('DailyMealPlanTotalsComponent', () => {
     expect(percents.fat).toBe(50);
   });
 
-  it('should restrict progress bar values to 0-100', () => {
+  it('progressBarPercents_whenOutOfRange_shouldClamp', () => {
     fixture.componentRef.setInput('dailyTotals', {
       calories: 3000, carbs: -10, protein: 50, fat: 30
     });
@@ -52,7 +52,7 @@ describe('DailyMealPlanTotalsComponent', () => {
     expect(progress.carbs).toBe(0);
   });
 
-  it('should handle zero division/targets gracefully', () => {
+  it('percents_whenTargetsZero_shouldReturnZero', () => {
     fixture.componentRef.setInput('dailyTotals', {
       calories: 100, carbs: 100, protein: 100, fat: 100
     });

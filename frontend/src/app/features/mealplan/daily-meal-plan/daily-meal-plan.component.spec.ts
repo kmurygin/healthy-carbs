@@ -10,22 +10,24 @@ describe('DailyMealPlanComponent', () => {
   let component: DailyMealPlanComponent;
   let fixture: ComponentFixture<DailyMealPlanComponent>;
 
-  const mockMealPlanDay: MealPlanDayDto = {
-    id: 1,
-    dayOfWeek: 'MONDAY',
-    date: '2026-01-01',
-    recipes: [
-      {id: 10, mealType: MealType.BREAKFAST, recipe: createMockRecipe({id: 100})},
-      {id: 11, mealType: MealType.LUNCH, recipe: createMockRecipe({id: 101})},
-      {id: 12, mealType: MealType.BREAKFAST, recipe: createMockRecipe({id: 102})}
-    ],
-    totalCalories: 2000,
-    totalCarbs: 250,
-    totalProtein: 150,
-    totalFat: 70
-  };
+  let mockMealPlanDay: MealPlanDayDto;
 
   beforeEach(async () => {
+    mockMealPlanDay = {
+      id: 1,
+      dayOfWeek: 'MONDAY',
+      date: '2026-01-01',
+      recipes: [
+        {id: 10, mealType: MealType.BREAKFAST, recipe: createMockRecipe({id: 100})},
+        {id: 11, mealType: MealType.LUNCH, recipe: createMockRecipe({id: 101})},
+        {id: 12, mealType: MealType.BREAKFAST, recipe: createMockRecipe({id: 102})}
+      ],
+      totalCalories: 2000,
+      totalCarbs: 250,
+      totalProtein: 150,
+      totalFat: 70
+    };
+
     await TestBed.configureTestingModule({
       imports: [DailyMealPlanComponent]
     })
@@ -37,11 +39,11 @@ describe('DailyMealPlanComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('component_whenCreated_shouldBeTruthy', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should group recipes by meal type', () => {
+  it('groupedByMealType_whenDailyPlanProvided_shouldGroupByMealType', () => {
     const groups = component.groupedByMealType();
     expect(groups.length).toBe(2);
 
@@ -55,13 +57,13 @@ describe('DailyMealPlanComponent', () => {
     expect(lunchGroup?.items.length).toBe(1);
   });
 
-  it('should return empty groups if no plan', () => {
+  it('groupedByMealType_whenDailyPlanMissing_shouldReturnEmpty', () => {
     fixture.componentRef.setInput('dailyPlan', null);
     fixture.detectChanges();
     expect(component.groupedByMealType()).toEqual([]);
   });
 
-  it('should emit toggleRecipe event', () => {
+  it('onToggleRecipe_whenCalled_shouldEmitToggleRecipe', () => {
     spyOn(component.toggleRecipe, 'emit');
     component.onToggleRecipe(123);
     expect(component.toggleRecipe.emit).toHaveBeenCalledWith(123);
