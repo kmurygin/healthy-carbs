@@ -11,7 +11,7 @@ import {ShoppingListService} from '@core/services/shopping-list/shopping-list.se
 import {DietaryProfileService} from '@core/services/dietary-profile/dietary-profile.service';
 import {createMockDietaryProfile, createMockMealPlan, createMockRecipe, createMockShoppingList} from '@testing/test-data.util';
 
-type MealPlanComponentTestSetup = {
+interface MealPlanComponentTestSetup {
   fixture: ComponentFixture<MealPlanComponent>;
   component: MealPlanComponent;
   routeParamMapSubject: ReplaySubject<ParamMap>;
@@ -20,21 +20,24 @@ type MealPlanComponentTestSetup = {
   recipeServiceSpy: jasmine.SpyObj<RecipeService>;
   shoppingListServiceSpy: jasmine.SpyObj<ShoppingListService>;
   dietaryProfileServiceSpy: jasmine.SpyObj<DietaryProfileService>;
-};
+}
 
 export async function setupMealPlanComponentTest(): Promise<MealPlanComponentTestSetup> {
-  const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+  const routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
   const routeParamMapSubject = new ReplaySubject<ParamMap>(1);
-  const mealPlanServiceSpy = jasmine.createSpyObj(
+  const mealPlanServiceSpy = jasmine.createSpyObj<MealPlanService>(
     'MealPlanService',
     ['generate', 'getHistory', 'getById', 'downloadPdf']
   );
-  const recipeServiceSpy = jasmine.createSpyObj('RecipeService', ['getById']);
-  const shoppingListServiceSpy = jasmine.createSpyObj(
+  const recipeServiceSpy = jasmine.createSpyObj<RecipeService>('RecipeService', ['getById']);
+  const shoppingListServiceSpy = jasmine.createSpyObj<ShoppingListService>(
     'ShoppingListService',
     ['getShoppingList', 'updateItemStatus', 'downloadPdf']
   );
-  const dietaryProfileServiceSpy = jasmine.createSpyObj('DietaryProfileService', ['getProfile']);
+  const dietaryProfileServiceSpy = jasmine.createSpyObj<DietaryProfileService>(
+    'DietaryProfileService',
+    ['getProfile']
+  );
 
   mealPlanServiceSpy.getHistory.and.callFake(() => of([]));
   mealPlanServiceSpy.getById.and.callFake(() => of(createMockMealPlan()));

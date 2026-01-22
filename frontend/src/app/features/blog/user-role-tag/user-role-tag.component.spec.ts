@@ -25,7 +25,8 @@ describe('UserRoleTagComponent', () => {
       fixture.componentRef.setInput('selectedRole', 'AUTHOR');
       fixture.detectChanges();
 
-      const badge = fixture.nativeElement.querySelector('.text-indigo-800');
+      const hostElement = fixture.nativeElement as HTMLElement;
+      const badge = hostElement.querySelector('.text-indigo-800');
       expect(badge).toBeTruthy();
     });
 
@@ -33,7 +34,8 @@ describe('UserRoleTagComponent', () => {
       fixture.componentRef.setInput('selectedRole', 'DIETITIAN');
       fixture.detectChanges();
 
-      const badge = fixture.nativeElement.querySelector('.text-emerald-800');
+      const hostElement = fixture.nativeElement as HTMLElement;
+      const badge = hostElement.querySelector('.text-emerald-800');
       expect(badge).toBeTruthy();
     });
 
@@ -41,8 +43,8 @@ describe('UserRoleTagComponent', () => {
       fixture.componentRef.setInput('selectedRole', 'AUTHOR');
       fixture.detectChanges();
 
-      const badgeText = fixture.nativeElement.textContent;
-      expect(badgeText).toContain('Author');
+      const hostElement = fixture.nativeElement as HTMLElement;
+      expect(hostElement.textContent).toContain('Author');
     });
   });
 });

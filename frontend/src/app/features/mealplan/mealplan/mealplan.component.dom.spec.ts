@@ -10,7 +10,6 @@ import {of} from 'rxjs';
 import type {ShoppingList} from '@core/models/dto/shopping-list.dto';
 import type {MealPlanDto} from '@core/models/dto/mealplan.dto';
 import type {MealPlanDayDto} from '@core/models/dto/mealplan-day.dto';
-import type {DietaryProfileDto} from '@core/models/dto/dietaryprofile.dto';
 import type {MealPlanService} from '@core/services/mealplan/mealplan.service';
 import type {ShoppingListService} from '@core/services/shopping-list/shopping-list.service';
 import {
@@ -53,7 +52,7 @@ describe('MealPlanComponent DOM Integration', () => {
     mealPlanServiceSpy = setup.mealPlanServiceSpy;
     shoppingListServiceSpy = setup.shoppingListServiceSpy;
 
-    const mockProfile = createMockDietaryProfile({user: REGULAR_TEST_USER}) as DietaryProfileDto;
+    const mockProfile = createMockDietaryProfile({user: REGULAR_TEST_USER});
     setup.dietaryProfileServiceSpy.getProfile.and.returnValue(of(mockProfile));
     mealPlanServiceSpy.getHistory.and.returnValue(of([]));
     mealPlanServiceSpy.getById.and.returnValue(of(mockMealPlan));
@@ -197,8 +196,7 @@ describe('MealPlanComponent DOM Integration', () => {
 
       const nextBtn = fixture.debugElement.query(By.css('button[aria-label="Next week"]'));
       expect(nextBtn).toBeTruthy();
-
-      nextBtn!.triggerEventHandler('click', null);
+      nextBtn.triggerEventHandler('click', null);
       fixture.detectChanges();
 
       expect(component.currentWeekIndex()).toBe(1);
@@ -214,9 +212,9 @@ describe('MealPlanComponent DOM Integration', () => {
 
       const nextBtn = fixture.debugElement.query(By.css('button[aria-label="Next week"]'));
       expect(nextBtn).toBeTruthy();
-      expect(nextBtn?.nativeElement as HTMLButtonElement).toBeTruthy();
+      expect(nextBtn.nativeElement).toBeTruthy();
 
-      nextBtn!.triggerEventHandler('click', null);
+      nextBtn.triggerEventHandler('click', null);
       fixture.detectChanges();
 
       expect(component.currentWeekIndex()).toBe(1);

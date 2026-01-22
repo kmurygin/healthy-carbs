@@ -30,8 +30,9 @@ export class HeaderComponent {
       this.menuOpen.set(false)
     });
 
-    if (this.authService.user()) {
-      this.fetchUserDetails(this.authService.user()!);
+    const username = this.authService.user();
+    if (username) {
+      this.fetchUserDetails(username);
     }
   }
 
@@ -73,8 +74,6 @@ export class HeaderComponent {
           this.setFallbackImage(data);
         }
       },
-      error: (error: unknown) => {
-      }
     });
   }
 

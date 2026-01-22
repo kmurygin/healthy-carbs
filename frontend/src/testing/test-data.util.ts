@@ -5,6 +5,7 @@ import type {IngredientDto} from '@core/models/dto/ingredient.dto';
 import type {MealPlanDayDto} from '@core/models/dto/mealplan-day.dto';
 import type {MealPlanDto} from '@core/models/dto/mealplan.dto';
 import type {ShoppingList} from '@core/models/dto/shopping-list.dto';
+import type {DietaryProfileDto} from '@core/models/dto/dietaryprofile.dto';
 import {DietType} from '@core/models/enum/diet-type.enum';
 import {MealType} from '@core/models/enum/meal-type.enum';
 import {UserRole} from '@core/models/enum/user-role.enum';
@@ -119,8 +120,8 @@ export function createMockMealPlan(overrides?: Partial<MealPlanDto>): MealPlanDt
   return {...base, ...overrides};
 }
 
-export function createMockDietaryProfile(overrides?: Partial<any>): any {
-  const base = {
+export function createMockDietaryProfile(overrides?: Partial<DietaryProfileDto>): DietaryProfileDto {
+  const base: DietaryProfileDto = {
     id: 1,
     user: REGULAR_TEST_USER,
     calorieTarget: 2000,

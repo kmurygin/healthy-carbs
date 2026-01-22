@@ -29,8 +29,8 @@ describe('ErrorMessageComponent', () => {
       fixture.componentRef.setInput('message', errorText);
       fixture.detectChanges();
 
-      const messageElement = fixture.nativeElement.textContent;
-      expect(messageElement).toContain(errorText);
+      const hostElement = fixture.nativeElement as HTMLElement;
+      expect(hostElement.textContent).toContain(errorText);
     });
 
     it('should handle empty error message gracefully', () => {
@@ -45,7 +45,8 @@ describe('ErrorMessageComponent', () => {
       fixture.componentRef.setInput('message', validationError);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.textContent).toContain(validationError);
+      const hostElement = fixture.nativeElement as HTMLElement;
+      expect(hostElement.textContent).toContain(validationError);
     });
 
     it('should display network error messages appropriately', () => {
@@ -53,7 +54,8 @@ describe('ErrorMessageComponent', () => {
       fixture.componentRef.setInput('message', networkError);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.textContent).toContain(networkError);
+      const hostElement = fixture.nativeElement as HTMLElement;
+      expect(hostElement.textContent).toContain(networkError);
     });
   });
 });

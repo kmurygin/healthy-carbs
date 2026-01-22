@@ -16,6 +16,7 @@ import {IngredientCategory} from '@core/models/enum/ingredient-category.enum';
 import {
   createMockMealPlan,
   createMockMealPlanDay,
+  createMockRecipe,
   createMockShoppingList,
   REGULAR_TEST_USER
 } from '@testing/test-data.util';
@@ -270,7 +271,7 @@ describe('MealPlanComponent', () => {
 
     it('onToggleRecipe_whenDetailsMissing_shouldFetchAndExpand', fakeAsync(() => {
       const recipeId = 101;
-      const mockRecipe = {id: recipeId, name: 'Test Recipe'} as any;
+      const mockRecipe = createMockRecipe({id: recipeId, name: 'Test Recipe'});
       recipeServiceSpy.getById.and.returnValue(of(mockRecipe));
 
       void component.onToggleRecipe(recipeId);
@@ -284,7 +285,7 @@ describe('MealPlanComponent', () => {
     it('onToggleRecipe_whenAlreadyExpanded_shouldCollapseWithoutRefetch', fakeAsync(() => {
       const recipeId = 101;
       component.expandedRecipeIds.set(new Set([recipeId]));
-      component.recipeDetails.set(new Map([[recipeId, {id: recipeId} as any]]));
+      component.recipeDetails.set(new Map([[recipeId, createMockRecipe({id: recipeId})]]));
 
       void component.onToggleRecipe(recipeId);
       tick();
