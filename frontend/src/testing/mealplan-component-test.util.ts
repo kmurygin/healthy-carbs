@@ -3,8 +3,8 @@ import {TestBed} from '@angular/core/testing';
 import type {ParamMap} from '@angular/router';
 import {ActivatedRoute, Router} from '@angular/router';
 import type {MockedObject} from 'vitest';
-import {of, ReplaySubject} from 'rxjs';
 import {vi} from 'vitest'
+import {of, ReplaySubject} from 'rxjs';
 
 import {MealPlanComponent} from '@features/mealplan/mealplan/mealplan.component';
 import {MealPlanService} from '@core/services/mealplan/mealplan.service';

@@ -1,8 +1,8 @@
 import type {MockedObject} from "vitest";
+import {vi} from 'vitest'
 import {signal} from '@angular/core';
 import {type ComponentFixture, TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
-import {vi} from 'vitest'
 import {BlogListComponent} from './blog-list.component';
 import type {BlogPost} from '@core/models/dto/blog.dto';
 import type {Page} from '@core/models/page.model';
