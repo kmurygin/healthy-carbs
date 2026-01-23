@@ -2,7 +2,7 @@ import {type ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter} from '@angular/router';
 import {PasswordRecoveryService} from '@core/services/password-recovery/password-recovery.service';
 import {NotificationService} from '@core/services/ui/notification.service';
-
+import {vi} from 'vitest'
 import {VerifyOtpComponent} from './verify-otp.component';
 
 describe('VerifyOtpComponent', () => {
@@ -10,7 +10,7 @@ describe('VerifyOtpComponent', () => {
   let fixture: ComponentFixture<VerifyOtpComponent>;
 
   beforeEach(async () => {
-    spyOnProperty(history, 'state', 'get').and.returnValue({username: 'test_user'});
+    vi.spyOn(history, 'state', 'get').mockReturnValue({username: 'test_user'});
 
     await TestBed.configureTestingModule({
       imports: [VerifyOtpComponent],
@@ -18,11 +18,16 @@ describe('VerifyOtpComponent', () => {
         provideRouter([]),
         {
           provide: PasswordRecoveryService,
-          useValue: jasmine.createSpyObj('PasswordRecoveryService', ['verifyOtp'])
+          useValue: {
+            verifyOtp: vi.fn().mockName("PasswordRecoveryService.verifyOtp")
+          }
         },
         {
           provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['success', 'error'])
+          useValue: {
+            success: vi.fn().mockName("NotificationService.success"),
+            error: vi.fn().mockName("NotificationService.error")
+          }
         }
       ]
     })

@@ -1,19 +1,23 @@
+import type {MockedObject} from "vitest";
 import type {ComponentFixture} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
-
+import {vi} from 'vitest'
 import {DietaryProfileFormComponent} from './dietary-profile-form.component';
 import {DietaryProfileService} from '@core/services/dietary-profile/dietary-profile.service';
 
 describe('DietaryProfileFormComponent', () => {
   let component: DietaryProfileFormComponent;
   let fixture: ComponentFixture<DietaryProfileFormComponent>;
-  let dietaryProfileServiceSpy: jasmine.SpyObj<DietaryProfileService>;
+  let dietaryProfileServiceSpy: MockedObject<Pick<DietaryProfileService, 'getProfile' | 'save'>>;
 
   beforeEach(async () => {
-    dietaryProfileServiceSpy = jasmine.createSpyObj('DietaryProfileService', ['getProfile', 'save']);
-    dietaryProfileServiceSpy.getProfile.and.returnValue(of(null));
-    dietaryProfileServiceSpy.save.and.returnValue(of(null));
+    dietaryProfileServiceSpy = {
+      getProfile: vi.fn().mockName("DietaryProfileService.getProfile"),
+      save: vi.fn().mockName("DietaryProfileService.save")
+    };
+    dietaryProfileServiceSpy.getProfile.mockReturnValue(of(null));
+    dietaryProfileServiceSpy.save.mockReturnValue(of(null));
 
     await TestBed.configureTestingModule({
       imports: [DietaryProfileFormComponent],

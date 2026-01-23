@@ -1,6 +1,6 @@
 import type {ComponentFixture} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing';
-
+import {vi} from 'vitest'
 import {DailyMealPlanComponent} from './daily-meal-plan.component';
 import type {MealPlanDayDto} from '@core/models/dto/mealplan-day.dto';
 import {MealType} from "@core/models/enum/meal-type.enum";
@@ -64,7 +64,7 @@ describe('DailyMealPlanComponent', () => {
   });
 
   it('onToggleRecipe_whenCalled_shouldEmitToggleRecipe', () => {
-    spyOn(component.toggleRecipe, 'emit');
+    vi.spyOn(component.toggleRecipe, 'emit');
     component.onToggleRecipe(123);
     expect(component.toggleRecipe.emit).toHaveBeenCalledWith(123);
   });

@@ -1,5 +1,6 @@
+import {type MockedObject, vi} from "vitest";
 import type {ComponentFixture} from '@angular/core/testing';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
 
 import {MealPlanHistoryComponent} from './mealplan-history.component';
@@ -10,11 +11,13 @@ import {provideRouter} from '@angular/router';
 describe('MealPlanHistoryComponent', () => {
   let component: MealPlanHistoryComponent;
   let fixture: ComponentFixture<MealPlanHistoryComponent>;
-  let mealPlanServiceSpy: jasmine.SpyObj<MealPlanService>;
+  let mealPlanServiceSpy: MockedObject<Pick<MealPlanService, 'getHistory'>>;
 
   beforeEach(async () => {
-    mealPlanServiceSpy = jasmine.createSpyObj('MealPlanService', ['getHistory']);
-    mealPlanServiceSpy.getHistory.and.returnValue(of([]));
+    mealPlanServiceSpy = {
+      getHistory: vi.fn().mockName("MealPlanService.getHistory")
+    };
+    mealPlanServiceSpy.getHistory.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [MealPlanHistoryComponent],
@@ -37,28 +40,24 @@ describe('MealPlanHistoryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('history_whenLoaded_shouldExposeMealPlans', fakeAsync(() => {
+  it('history_whenLoaded_shouldExposeMealPlans', () => {
     const plan = createMockMealPlan({id: 10});
-    mealPlanServiceSpy.getHistory.and.returnValue(of([plan]));
+    mealPlanServiceSpy.getHistory.mockReturnValue(of([plan]));
 
     createComponent();
-    tick();
 
-    expect(component.loading()).toBeFalse();
+    expect(component.loading()).toBe(false);
     expect(component.mealPlans()).toEqual([plan]);
     expect(component.errorMessage()).toBeNull();
-  }));
+  });
 
-  it('history_whenLoadFails_shouldExposeErrorMessage', fakeAsync(() => {
-    mealPlanServiceSpy.getHistory.and.returnValue(
-      throwError(() => new Error('Network error'))
-    );
+  it('history_whenLoadFails_shouldExposeErrorMessage', () => {
+    mealPlanServiceSpy.getHistory.mockReturnValue(throwError(() => new Error('Network error')));
 
     createComponent();
-    tick();
 
-    expect(component.loading()).toBeFalse();
+    expect(component.loading()).toBe(false);
     expect(component.mealPlans()).toEqual([]);
     expect(component.errorMessage()).toBe('Failed to load meal plan history.');
-  }));
+  });
 });

@@ -1,6 +1,6 @@
 import type {ComponentFixture} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing';
-
+import {vi} from 'vitest'
 import {MealPlanShoppingListComponent} from './meal-plan-shopping-list.component';
 import {IngredientCategory} from "@core/models/enum/ingredient-category.enum";
 import type {ShoppingList} from "@core/models/dto/shopping-list.dto";
@@ -71,7 +71,7 @@ describe('MealPlanShoppingListComponent', () => {
   });
 
   it('toggleCheck_whenCalled_shouldEmitToggleItem', () => {
-    spyOn(component.toggleItem, 'emit');
+    vi.spyOn(component.toggleItem, 'emit');
 
     const carrotDisplayItem = component.items().find(item => item.name === 'Carrot')!;
     component.toggleCheck(carrotDisplayItem);
@@ -83,7 +83,7 @@ describe('MealPlanShoppingListComponent', () => {
   });
 
   it('toggleCheck_whenUpdating_shouldNotEmit', () => {
-    spyOn(component.toggleItem, 'emit');
+    vi.spyOn(component.toggleItem, 'emit');
     fixture.componentRef.setInput('updatingItemId', 'VEGETABLES-Carrot');
     fixture.detectChanges();
 
@@ -96,12 +96,12 @@ describe('MealPlanShoppingListComponent', () => {
   it('toggleCategory_whenCalled_shouldToggleVisibility', () => {
     const category = IngredientCategory.VEGETABLES;
 
-    expect(component.openCategories().has(category)).toBeTrue();
+    expect(component.openCategories().has(category)).toBe(true);
 
     component.toggleCategory(category);
-    expect(component.openCategories().has(category)).toBeFalse();
+    expect(component.openCategories().has(category)).toBe(false);
 
     component.toggleCategory(category);
-    expect(component.openCategories().has(category)).toBeTrue();
+    expect(component.openCategories().has(category)).toBe(true);
   });
 });

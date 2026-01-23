@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {type ComponentFixture, TestBed} from '@angular/core/testing';
 import {AbstractInputComponent} from './abstract-input.component';
 import {NgControl} from '@angular/forms';
+import {vi} from 'vitest'
 
 @Component({
   selector: 'app-test-input',
@@ -12,7 +13,7 @@ import {NgControl} from '@angular/forms';
       provide: NgControl, useValue: {
         control: {
           statusChanges: {
-            subscribe: jasmine.createSpy('subscribe')
+            subscribe: vi.fn()
           }
         }
       }

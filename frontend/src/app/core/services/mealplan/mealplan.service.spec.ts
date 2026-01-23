@@ -59,7 +59,7 @@ describe('MealPlanService', () => {
     it('generate_whenResponseDataMissing_shouldThrowError', () => {
       service.generate().subscribe({
         next: () => {
-          fail('expected error');
+          throw new Error('expected error');
         },
         error: (err: unknown) => {
           expect(err instanceof Error
@@ -76,7 +76,7 @@ describe('MealPlanService', () => {
     it('generate_whenResponseDataUndefined_shouldThrowError', () => {
       service.generate().subscribe({
         next: () => {
-          fail('expected error');
+          throw new Error('expected error');
         },
         error: (err: unknown) => {
           expect(err instanceof Error
@@ -150,7 +150,7 @@ describe('MealPlanService', () => {
     it('getById_whenDataNull_shouldThrowError', () => {
       service.getById(99).subscribe({
         next: () => {
-          fail('expected error');
+          throw new Error('expected error');
         },
         error: (err: unknown) => {
           expect(err instanceof Error
@@ -167,7 +167,7 @@ describe('MealPlanService', () => {
     it('getById_whenDataUndefined_shouldThrowError', () => {
       service.getById(77).subscribe({
         next: () => {
-          fail('expected error');
+          throw new Error('expected error');
         },
         error: (err: unknown) => {
           expect(err instanceof Error
@@ -187,7 +187,7 @@ describe('MealPlanService', () => {
     const expectCreateManualError = (): void => {
       service.createManual(createManualRequest).subscribe({
         next: () => {
-          fail('should have failed');
+          throw new Error('should have failed');
         },
         error: (err: unknown) => {
           expect(err instanceof Error

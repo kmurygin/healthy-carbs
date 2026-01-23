@@ -57,8 +57,8 @@ describe('MealPlanHistoryItemComponent', () => {
   });
 
   it('toggleExpanded_whenCalled_shouldFlipState', () => {
-    expect(component.isExpanded()).toBeFalse();
+    expect(component.isExpanded()).toBe(false);
     component.toggleExpanded();
-    expect(component.isExpanded()).toBeTrue();
+    expect(component.isExpanded()).toBe(true);
   });
 });
