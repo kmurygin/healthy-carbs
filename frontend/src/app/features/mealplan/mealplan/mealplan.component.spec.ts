@@ -37,8 +37,7 @@ describe('MealPlanComponent', () => {
   let mockShoppingList: ShoppingList;
 
   beforeEach(async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {
-    });
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
     mockProfile = {
       id: 1,
       user: REGULAR_TEST_USER,

@@ -32,8 +32,7 @@ describe('BlogListComponent', () => {
       empty: true
     };
 
-    vi.spyOn(console, 'error').mockImplementation(() => {
-    });
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     blogServiceSpy = {
       getPosts: vi.fn().mockName("BlogService.getPosts"),

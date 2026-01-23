@@ -1,11 +1,10 @@
 import 'zone.js';
 import 'zone.js/testing';
 
-import {getTestBed} from '@angular/core/testing';
+import {getTestBed, TestBed} from '@angular/core/testing';
 import {BrowserTestingModule, platformBrowserTesting,} from '@angular/platform-browser/testing';
 
 declare global {
-  // eslint-disable-next-line no-var
   var __ng_test_env_initialized__: boolean | undefined;
 }
 
@@ -18,21 +17,21 @@ if (!globalThis.__ng_test_env_initialized__) {
   globalThis.__ng_test_env_initialized__ = true;
 }
 
-if (!window.matchMedia) {
+afterEach(() => {
+  TestBed.resetTestingModule();
+});
+
+if (!('matchMedia' in window)) {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: (query: string) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: () => {
-      },
-      removeListener: () => {
-      },
-      addEventListener: () => {
-      },
-      removeEventListener: () => {
-      },
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
       dispatchEvent: () => false,
     }),
   });
