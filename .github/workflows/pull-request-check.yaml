@@ -175,12 +175,22 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Tests
-        run: npm test -- --watch=false --browsers=ChromeHeadless
+      - name: Run Unit Tests
+        run: npm run test:unit
 
-      - name: Test Report
+      - name: Run DOM Tests
+        run: npm run test:dom
+
+      - name: Unit Test Report
         uses: dorny/test-reporter@v2
         with:
-          name: Frontend Tests
-          path: frontend/test-results/test-results.xml
+          name: Frontend Unit Tests
+          path: frontend/test-results/unit/junit.xml
+          reporter: java-junit
+
+      - name: DOM Test Report
+        uses: dorny/test-reporter@v2
+        with:
+          name: Frontend DOM Tests
+          path: frontend/test-results/dom/junit.xml
           reporter: java-junit
