@@ -138,6 +138,7 @@ describe('MealPlanComponent', () => {
 
       expect(mealPlanServiceSpy.getById).toHaveBeenCalledWith(123);
       expect(component.plan()).toEqual(mockMealPlan);
+      expect(shoppingListServiceSpy.getShoppingList).toHaveBeenCalledWith(mockMealPlan.id);
     });
     it('ngOnInit_whenHistoryEmpty_shouldLeavePlanUnset', async () => {
       mealPlanServiceSpy.getHistory.mockReturnValue(of([]));

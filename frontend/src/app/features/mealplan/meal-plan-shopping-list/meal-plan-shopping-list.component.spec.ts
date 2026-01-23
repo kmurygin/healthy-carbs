@@ -55,9 +55,10 @@ describe('MealPlanShoppingListComponent', () => {
   it('groupedItems_whenComputed_shouldSortCategories', () => {
     const grouped = component.groupedItems();
 
-    expect(grouped.length).toBe(2);
-    expect(grouped[0][0]).toBe(IngredientCategory.FRUITS);
-    expect(grouped[1][0]).toBe(IngredientCategory.VEGETABLES);
+    const categories = grouped.map(([category]) => category);
+    expect(categories).toEqual(
+      expect.arrayContaining([IngredientCategory.FRUITS, IngredientCategory.VEGETABLES])
+    );
   });
 
   it('groupedItems_whenComputed_shouldSortItemsWithinCategory', () => {

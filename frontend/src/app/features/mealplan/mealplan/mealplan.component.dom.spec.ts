@@ -169,6 +169,7 @@ describe('MealPlanComponent DOM Integration', () => {
     fixture.detectChanges();
 
     expect(mealPlanServiceSpy.getById).toHaveBeenCalledWith(123);
+    expect(shoppingListServiceSpy.getShoppingList).toHaveBeenCalledWith(mockMealPlan.id);
     expect(getByTestId('daily-totals')).toBeTruthy();
     expect(getByTestId('shopping-list')).toBeTruthy();
   });
