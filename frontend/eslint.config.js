@@ -105,6 +105,12 @@ export default defineConfig(
 
   {
     files: ["**/*.spec.ts"],
+    languageOptions: {
+      parserOptions: {
+        project: ["tsconfig.spec.json"],
+        tsconfigRootDir: __dirname,
+      },
+    },
     rules: {
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
