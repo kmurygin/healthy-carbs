@@ -2,7 +2,8 @@ import 'zone.js';
 import 'zone.js/testing';
 
 import {getTestBed, TestBed} from '@angular/core/testing';
-import {BrowserTestingModule, platformBrowserTesting,} from '@angular/platform-browser/testing';
+import {beforeEach} from 'vitest';
+import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 
 declare global {
   var __ng_test_env_initialized__: boolean | undefined;
@@ -12,12 +13,13 @@ if (!globalThis.__ng_test_env_initialized__) {
   getTestBed().initTestEnvironment(
     BrowserTestingModule,
     platformBrowserTesting(),
+    {teardown: {destroyAfterEach: true}}
   );
 
   globalThis.__ng_test_env_initialized__ = true;
 }
 
-afterEach(() => {
+beforeEach(() => {
   TestBed.resetTestingModule();
 });
 
