@@ -1,7 +1,8 @@
+import type {MockedObject} from "vitest";
+import {vi} from 'vitest'
 import {signal} from '@angular/core';
 import {type ComponentFixture, TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
-
 import {BlogListComponent} from './blog-list.component';
 import type {BlogPost} from '@core/models/dto/blog.dto';
 import type {Page} from '@core/models/page.model';
@@ -13,12 +14,12 @@ import {NotificationService} from '@core/services/ui/notification.service';
 describe('BlogListComponent', () => {
   let component: BlogListComponent;
   let fixture: ComponentFixture<BlogListComponent>;
-  let blogServiceSpy: jasmine.SpyObj<BlogService>;
+  let blogServiceSpy: MockedObject<Pick<BlogService, 'getPosts' | 'getPostImageUrl'>>;
 
   beforeEach(async () => {
     const authServiceStub: Pick<AuthService, 'claims'> = {claims: signal<JwtClaims | null>(null)};
     const notificationServiceStub: Pick<NotificationService, 'error'> = {
-      error: jasmine.createSpy('error')
+      error: vi.fn()
     };
     const mockPage: Page<BlogPost> = {
       content: [],
@@ -31,11 +32,14 @@ describe('BlogListComponent', () => {
       empty: true
     };
 
-    spyOn(console, 'error').and.stub();
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
-    blogServiceSpy = jasmine.createSpyObj('BlogService', ['getPosts', 'getPostImageUrl']);
-    blogServiceSpy.getPosts.and.returnValue(of(mockPage));
-    blogServiceSpy.getPostImageUrl.and.returnValue('/assets/placeholder.jpg');
+    blogServiceSpy = {
+      getPosts: vi.fn().mockName("BlogService.getPosts"),
+      getPostImageUrl: vi.fn().mockName("BlogService.getPostImageUrl")
+    };
+    blogServiceSpy.getPosts.mockReturnValue(of(mockPage));
+    blogServiceSpy.getPostImageUrl.mockReturnValue('/assets/placeholder.jpg');
 
     await TestBed.configureTestingModule({
       imports: [BlogListComponent],

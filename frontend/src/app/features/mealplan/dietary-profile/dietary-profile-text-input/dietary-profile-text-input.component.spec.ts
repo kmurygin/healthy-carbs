@@ -1,5 +1,5 @@
 import {type ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {vi} from 'vitest'
 import {DietaryProfileTextInputComponent} from './dietary-profile-text-input.component';
 
 describe('DietaryProfileTextInputComponent', () => {
@@ -24,7 +24,7 @@ describe('DietaryProfileTextInputComponent', () => {
   });
 
   it('onInputChange_whenCalled_shouldUpdateValueAndEmit', () => {
-    const changeSpy = jasmine.createSpy('change');
+    const changeSpy = vi.fn();
     component.registerOnChange(changeSpy);
 
     const event = {target: {value: '123'}} as unknown as Event;

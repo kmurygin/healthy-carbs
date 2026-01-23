@@ -1,5 +1,5 @@
+import {type MockedObject, vi} from "vitest";
 import type {ComponentFixture} from '@angular/core/testing';
-import {fakeAsync, tick} from '@angular/core/testing';
 import type {MealPlanComponent} from './mealplan.component';
 import type {MealPlanService} from '@core/services/mealplan/mealplan.service';
 import type {RecipeService} from '@core/services/recipe/recipe.service';
@@ -25,11 +25,11 @@ import {setupMealPlanComponentTest} from '@testing/mealplan-component-test.util'
 describe('MealPlanComponent', () => {
   let component: MealPlanComponent;
   let fixture: ComponentFixture<MealPlanComponent>;
-  let mealPlanServiceSpy: jasmine.SpyObj<MealPlanService>;
-  let recipeServiceSpy: jasmine.SpyObj<RecipeService>;
-  let shoppingListServiceSpy: jasmine.SpyObj<ShoppingListService>;
-  let dietaryProfileServiceSpy: jasmine.SpyObj<DietaryProfileService>;
-  let routerSpy: jasmine.SpyObj<Router>;
+  let mealPlanServiceSpy: MockedObject<Pick<MealPlanService, 'generate' | 'getHistory' | 'getById' | 'downloadPdf'>>;
+  let recipeServiceSpy: MockedObject<Pick<RecipeService, 'getById'>>;
+  let shoppingListServiceSpy: MockedObject<Pick<ShoppingListService, 'getShoppingList' | 'updateItemStatus' | 'downloadPdf'>>;
+  let dietaryProfileServiceSpy: MockedObject<Pick<DietaryProfileService, 'getProfile'>>;
+  let routerSpy: MockedObject<Pick<Router, 'navigate'>>;
   let routeParamMapSubject: ReplaySubject<ParamMap>;
 
   let mockProfile: DietaryProfileDto;
@@ -37,7 +37,7 @@ describe('MealPlanComponent', () => {
   let mockShoppingList: ShoppingList;
 
   beforeEach(async () => {
-    spyOn(console, 'error').and.stub();
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
     mockProfile = {
       id: 1,
       user: REGULAR_TEST_USER,
@@ -93,95 +93,95 @@ describe('MealPlanComponent', () => {
   });
 
   const mockHappyPathServices = (): void => {
-    dietaryProfileServiceSpy.getProfile.and.returnValue(of(mockProfile));
-    mealPlanServiceSpy.getHistory.and.returnValue(of([mockMealPlan]));
-    shoppingListServiceSpy.getShoppingList.and.returnValue(of(mockShoppingList));
+    dietaryProfileServiceSpy.getProfile.mockReturnValue(of(mockProfile));
+    mealPlanServiceSpy.getHistory.mockReturnValue(of([mockMealPlan]));
+    shoppingListServiceSpy.getShoppingList.mockReturnValue(of(mockShoppingList));
   };
 
-  const triggerNgOnInit = (params: Params = {}): void => {
+  const triggerNgOnInit = async (params: Params = {}): Promise<void> => {
     routeParamMapSubject.next(convertToParamMap(params));
+
     fixture.detectChanges();
+    await fixture.whenStable();
+
+    await Promise.resolve();
+    fixture.detectChanges();
+    await fixture.whenStable();
   };
 
-  const initHappyPath = (params: Params = {}): void => {
+
+  const initHappyPath = async (params: Params = {}): Promise<void> => {
     mockHappyPathServices();
-    triggerNgOnInit(params);
+    await triggerNgOnInit(params);
   };
 
   describe('ngOnInit', () => {
-    it('ngOnInit_whenProfileMissing_shouldNavigateToDietaryProfileForm', fakeAsync(() => {
-      dietaryProfileServiceSpy.getProfile.and.returnValue(of(null));
-      triggerNgOnInit({});
-      tick();
+    it('ngOnInit_whenProfileMissing_shouldNavigateToDietaryProfileForm', async () => {
+      dietaryProfileServiceSpy.getProfile.mockReturnValue(of(null));
+      await triggerNgOnInit({});
 
       expect(dietaryProfileServiceSpy.getProfile).toHaveBeenCalled();
       expect(routerSpy.navigate).toHaveBeenCalledWith(['/dietary-profile-form']);
-    }));
+    });
 
-    it('ngOnInit_whenNoIdInRoute_shouldCallGetHistoryAndLoadLatestPlan', fakeAsync(() => {
-      initHappyPath();
-      tick();
+    it('ngOnInit_whenNoIdInRoute_shouldCallGetHistoryAndLoadLatestPlan', async () => {
+      await initHappyPath();
 
       expect(mealPlanServiceSpy.getHistory).toHaveBeenCalled();
       expect(component.plan()).toEqual(mockMealPlan);
       expect(shoppingListServiceSpy.getShoppingList).toHaveBeenCalledWith(mockMealPlan.id);
-    }));
+    });
 
-    it('ngOnInit_whenIdInRoute_shouldCallGetByIdAndLoadSpecificPlan', fakeAsync(() => {
-      mealPlanServiceSpy.getById.and.returnValue(of(mockMealPlan));
-      initHappyPath({id: '123'});
-      tick();
+    it('ngOnInit_whenIdInRoute_shouldCallGetByIdAndLoadSpecificPlan', async () => {
+      mealPlanServiceSpy.getById.mockReturnValue(of(mockMealPlan));
+      await initHappyPath({id: '123'});
 
       expect(mealPlanServiceSpy.getById).toHaveBeenCalledWith(123);
       expect(component.plan()).toEqual(mockMealPlan);
-    }));
-    it('ngOnInit_whenHistoryEmpty_shouldLeavePlanUnset', fakeAsync(() => {
-      mealPlanServiceSpy.getHistory.and.returnValue(of([]));
-      dietaryProfileServiceSpy.getProfile.and.returnValue(of(mockProfile));
+      expect(shoppingListServiceSpy.getShoppingList).toHaveBeenCalledWith(mockMealPlan.id);
+    });
+    it('ngOnInit_whenHistoryEmpty_shouldLeavePlanUnset', async () => {
+      mealPlanServiceSpy.getHistory.mockReturnValue(of([]));
+      dietaryProfileServiceSpy.getProfile.mockReturnValue(of(mockProfile));
 
-      triggerNgOnInit({});
-      tick();
+      await triggerNgOnInit({});
 
       expect(component.plan()).toBeNull();
       expect(shoppingListServiceSpy.getShoppingList).not.toHaveBeenCalled();
-    }));
+    });
   });
 
   describe('onGenerate', () => {
-    beforeEach(() => {
-      initHappyPath();
+    beforeEach(async () => {
+      await initHappyPath();
     });
 
-    it('onGenerate_whenCalled_shouldSetLoadingAndCallGenerateService', fakeAsync(() => {
+    it('onGenerate_whenCalled_shouldSetLoadingAndCallGenerateService', async () => {
       const newPlan = {...mockMealPlan, id: 456};
-      mealPlanServiceSpy.generate.and.returnValue(of(newPlan));
-      shoppingListServiceSpy.getShoppingList.and.returnValue(of(mockShoppingList));
+      mealPlanServiceSpy.generate.mockReturnValue(of(newPlan));
+      shoppingListServiceSpy.getShoppingList.mockReturnValue(of(mockShoppingList));
 
-      void component.onGenerate();
-      expect(component.loading()).toBeTrue();
-
-      tick();
+      await component.onGenerate();
 
       expect(mealPlanServiceSpy.generate).toHaveBeenCalled();
       expect(component.plan()).toEqual(newPlan);
-      expect(component.loading()).toBeFalse();
-    }));
+      expect(component.loading()).toBe(false);
+    });
 
-    it('onGenerate_whenServiceFails_shouldSetErrorMessageAndStopLoading', fakeAsync(() => {
-      mealPlanServiceSpy.generate.and.returnValue(throwError(() => new Error('Failed to generate meal plan')));
+    it('onGenerate_whenServiceFails_shouldSetErrorMessageAndStopLoading', async () => {
+      mealPlanServiceSpy.generate.mockReturnValue(throwError(() => new Error('Failed to generate meal plan')));
 
-      void component.onGenerate();
-      tick();
+      await component.onGenerate();
 
       expect(component.errorMessage()).toContain('Failed to generate meal plan');
-      expect(component.loading()).toBeFalse();
-    }));
+      expect(component.loading()).toBe(false);
+    });
 
   });
 
   describe('selectDay', () => {
-    beforeEach(() => {
-      initHappyPath();
+    beforeEach(async () => {
+      await initHappyPath();
     });
 
     it('selectDay_whenCalledWithIndex_shouldUpdateSelectedDayIndex', () => {
@@ -191,56 +191,51 @@ describe('MealPlanComponent', () => {
   });
 
   describe('onDownloadMealPlanPdf', () => {
-    beforeEach(() => {
-      initHappyPath();
+    beforeEach(async () => {
+      await initHappyPath();
     });
 
-    it('onDownloadMealPlanPdf_whenCalledWithId_shouldCallDownloadPdfService', fakeAsync(() => {
+    it('onDownloadMealPlanPdf_whenCalledWithId_shouldCallDownloadPdfService', async () => {
       const mockBlob = new Blob(['pdf'], {type: 'application/pdf'});
-      mealPlanServiceSpy.downloadPdf.and.returnValue(of(mockBlob));
+      mealPlanServiceSpy.downloadPdf.mockReturnValue(of(mockBlob));
 
-      void component.onDownloadMealPlanPdf(123);
-      expect(component.downloadingMealPlanPdf()).toBeTrue();
-
-      tick();
+      await component.onDownloadMealPlanPdf(123);
 
       expect(mealPlanServiceSpy.downloadPdf).toHaveBeenCalledWith(123);
-      expect(component.downloadingMealPlanPdf()).toBeFalse();
-    }));
+      expect(component.downloadingMealPlanPdf()).toBe(false);
+    });
 
-    it('onDownloadMealPlanPdf_whenServiceFails_shouldSetErrorMessageAndStopLoading', fakeAsync(() => {
-      mealPlanServiceSpy.downloadPdf.and.returnValue(throwError(() => new Error('Download failed')));
+    it('onDownloadMealPlanPdf_whenServiceFails_shouldSetErrorMessageAndStopLoading', async () => {
+      mealPlanServiceSpy.downloadPdf.mockReturnValue(throwError(() => new Error('Download failed')));
 
-      void component.onDownloadMealPlanPdf(123);
-      tick();
+      await component.onDownloadMealPlanPdf(123);
 
       expect(component.errorMessage()).toContain('Download failed');
-      expect(component.downloadingMealPlanPdf()).toBeFalse();
-    }));
+      expect(component.downloadingMealPlanPdf()).toBe(false);
+    });
   });
 
   describe('onDownloadShoppingListPdf', () => {
-    beforeEach(() => {
-      initHappyPath();
+    beforeEach(async () => {
+      await initHappyPath();
     });
 
-    it('onDownloadShoppingListPdf_whenServiceFails_shouldSetErrorMessageAndStopLoading', fakeAsync(() => {
-      shoppingListServiceSpy.downloadPdf.and.returnValue(throwError(() => new Error('Download failed')));
+    it('onDownloadShoppingListPdf_whenServiceFails_shouldSetErrorMessageAndStopLoading', async () => {
+      shoppingListServiceSpy.downloadPdf.mockReturnValue(throwError(() => new Error('Download failed')));
 
-      void component.onDownloadShoppingListPdf(123);
-      tick();
+      await component.onDownloadShoppingListPdf(123);
 
       expect(component.errorMessage()).toContain('Download failed');
-      expect(component.downloadingShoppingListPdf()).toBeFalse();
-    }));
+      expect(component.downloadingShoppingListPdf()).toBe(false);
+    });
   });
 
   describe('onToggleShoppingListItem', () => {
-    beforeEach(() => {
-      initHappyPath();
+    beforeEach(async () => {
+      await initHappyPath();
     });
 
-    it('onToggleShoppingListItem_whenServiceFails_shouldRollbackAndSetError', fakeAsync(() => {
+    it('onToggleShoppingListItem_whenServiceFails_shouldRollbackAndSetError', async () => {
       const baseShoppingItems = createMockShoppingList().items;
       const initialShoppingItems: ShoppingList['items'] = {
         ...baseShoppingItems,
@@ -252,47 +247,44 @@ describe('MealPlanComponent', () => {
       component.plan.set(mockMealPlan);
       component.shoppingList.set(initialList);
 
-      shoppingListServiceSpy.updateItemStatus.and.returnValue(throwError(() => new Error('Update failed')));
+      shoppingListServiceSpy.updateItemStatus.mockReturnValue(throwError(() => new Error('Update failed')));
 
       const payload = {ingredientName: 'Apple', isBought: true};
-      void component.onToggleShoppingListItem(payload);
-      tick();
+      await component.onToggleShoppingListItem(payload);
 
       expect(component.shoppingList()).toEqual(initialList);
       expect(component.errorMessage()).toContain('Update failed');
       expect(component.updatingShoppingListItemId()).toBeNull();
-    }));
+    });
   });
 
   describe('onToggleRecipe', () => {
-    beforeEach(() => {
-      initHappyPath();
+    beforeEach(async () => {
+      await initHappyPath();
     });
 
-    it('onToggleRecipe_whenDetailsMissing_shouldFetchAndExpand', fakeAsync(() => {
+    it('onToggleRecipe_whenDetailsMissing_shouldFetchAndExpand', async () => {
       const recipeId = 101;
       const mockRecipe = createMockRecipe({id: recipeId, name: 'Test Recipe'});
-      recipeServiceSpy.getById.and.returnValue(of(mockRecipe));
+      recipeServiceSpy.getById.mockReturnValue(of(mockRecipe));
 
-      void component.onToggleRecipe(recipeId);
-      tick();
+      await component.onToggleRecipe(recipeId);
 
-      expect(component.expandedRecipeIds().has(recipeId)).toBeTrue();
+      expect(component.expandedRecipeIds().has(recipeId)).toBe(true);
       expect(recipeServiceSpy.getById).toHaveBeenCalledWith(recipeId);
       expect(component.recipeDetails().get(recipeId)).toEqual(mockRecipe);
-    }));
+    });
 
-    it('onToggleRecipe_whenAlreadyExpanded_shouldCollapseWithoutRefetch', fakeAsync(() => {
+    it('onToggleRecipe_whenAlreadyExpanded_shouldCollapseWithoutRefetch', async () => {
       const recipeId = 101;
       component.expandedRecipeIds.set(new Set([recipeId]));
       component.recipeDetails.set(new Map([[recipeId, createMockRecipe({id: recipeId})]]));
 
-      void component.onToggleRecipe(recipeId);
-      tick();
+      await component.onToggleRecipe(recipeId);
 
-      expect(component.expandedRecipeIds().has(recipeId)).toBeFalse();
+      expect(component.expandedRecipeIds().has(recipeId)).toBe(false);
       expect(recipeServiceSpy.getById).not.toHaveBeenCalled();
-    }));
+    });
   });
 
 });

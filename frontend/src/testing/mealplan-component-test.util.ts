@@ -2,6 +2,8 @@ import type {ComponentFixture} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing';
 import type {ParamMap} from '@angular/router';
 import {ActivatedRoute, Router} from '@angular/router';
+import type {MockedObject} from 'vitest';
+import {vi} from 'vitest'
 import {of, ReplaySubject} from 'rxjs';
 
 import {MealPlanComponent} from '@features/mealplan/mealplan/mealplan.component';
@@ -9,50 +11,67 @@ import {MealPlanService} from '@core/services/mealplan/mealplan.service';
 import {RecipeService} from '@core/services/recipe/recipe.service';
 import {ShoppingListService} from '@core/services/shopping-list/shopping-list.service';
 import {DietaryProfileService} from '@core/services/dietary-profile/dietary-profile.service';
-import {createMockDietaryProfile, createMockMealPlan, createMockRecipe, createMockShoppingList} from '@testing/test-data.util';
+import {
+  createMockDietaryProfile,
+  createMockMealPlan,
+  createMockRecipe,
+  createMockShoppingList
+} from '@testing/test-data.util';
+
+type RouterSpy = MockedObject<Pick<Router, 'navigate'>>;
+type MealPlanServiceSpy = MockedObject<Pick<MealPlanService, 'generate' | 'getHistory' | 'getById' | 'downloadPdf'>>;
+type RecipeServiceSpy = MockedObject<Pick<RecipeService, 'getById'>>;
+type ShoppingListServiceSpy = MockedObject<Pick<ShoppingListService, 'getShoppingList' | 'updateItemStatus' | 'downloadPdf'>>;
+type DietaryProfileServiceSpy = MockedObject<Pick<DietaryProfileService, 'getProfile'>>;
 
 interface MealPlanComponentTestSetup {
   fixture: ComponentFixture<MealPlanComponent>;
   component: MealPlanComponent;
   routeParamMapSubject: ReplaySubject<ParamMap>;
-  routerSpy: jasmine.SpyObj<Router>;
-  mealPlanServiceSpy: jasmine.SpyObj<MealPlanService>;
-  recipeServiceSpy: jasmine.SpyObj<RecipeService>;
-  shoppingListServiceSpy: jasmine.SpyObj<ShoppingListService>;
-  dietaryProfileServiceSpy: jasmine.SpyObj<DietaryProfileService>;
+  routerSpy: RouterSpy;
+  mealPlanServiceSpy: MealPlanServiceSpy;
+  recipeServiceSpy: RecipeServiceSpy;
+  shoppingListServiceSpy: ShoppingListServiceSpy;
+  dietaryProfileServiceSpy: DietaryProfileServiceSpy;
 }
 
 export async function setupMealPlanComponentTest(): Promise<MealPlanComponentTestSetup> {
-  const routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
+  const routerSpy: RouterSpy = {
+    navigate: vi.fn(),
+  };
   const routeParamMapSubject = new ReplaySubject<ParamMap>(1);
-  const mealPlanServiceSpy = jasmine.createSpyObj<MealPlanService>(
-    'MealPlanService',
-    ['generate', 'getHistory', 'getById', 'downloadPdf']
-  );
-  const recipeServiceSpy = jasmine.createSpyObj<RecipeService>('RecipeService', ['getById']);
-  const shoppingListServiceSpy = jasmine.createSpyObj<ShoppingListService>(
-    'ShoppingListService',
-    ['getShoppingList', 'updateItemStatus', 'downloadPdf']
-  );
-  const dietaryProfileServiceSpy = jasmine.createSpyObj<DietaryProfileService>(
-    'DietaryProfileService',
-    ['getProfile']
-  );
+  const mealPlanServiceSpy: MealPlanServiceSpy = {
+    generate: vi.fn(),
+    getHistory: vi.fn(),
+    getById: vi.fn(),
+    downloadPdf: vi.fn(),
+  };
+  const recipeServiceSpy: RecipeServiceSpy = {
+    getById: vi.fn(),
+  };
+  const shoppingListServiceSpy: ShoppingListServiceSpy = {
+    getShoppingList: vi.fn(),
+    updateItemStatus: vi.fn(),
+    downloadPdf: vi.fn(),
+  };
+  const dietaryProfileServiceSpy: DietaryProfileServiceSpy = {
+    getProfile: vi.fn(),
+  };
 
-  mealPlanServiceSpy.getHistory.and.callFake(() => of([]));
-  mealPlanServiceSpy.getById.and.callFake(() => of(createMockMealPlan()));
-  mealPlanServiceSpy.generate.and.callFake(() => of(createMockMealPlan()));
-  mealPlanServiceSpy.downloadPdf.and.callFake(
+  mealPlanServiceSpy.getHistory.mockImplementation(() => of([]));
+  mealPlanServiceSpy.getById.mockImplementation(() => of(createMockMealPlan()));
+  mealPlanServiceSpy.generate.mockImplementation(() => of(createMockMealPlan()));
+  mealPlanServiceSpy.downloadPdf.mockImplementation(
     () => of(new Blob([''], {type: 'application/pdf'}))
   );
 
-  recipeServiceSpy.getById.and.callFake(() => of(createMockRecipe()));
-  shoppingListServiceSpy.getShoppingList.and.callFake(() => of(createMockShoppingList()));
-  shoppingListServiceSpy.updateItemStatus.and.callFake(() => of(null));
-  shoppingListServiceSpy.downloadPdf.and.callFake(
+  recipeServiceSpy.getById.mockImplementation(() => of(createMockRecipe()));
+  shoppingListServiceSpy.getShoppingList.mockImplementation(() => of(createMockShoppingList()));
+  shoppingListServiceSpy.updateItemStatus.mockImplementation(() => of(null));
+  shoppingListServiceSpy.downloadPdf.mockImplementation(
     () => of(new Blob([''], {type: 'application/pdf'}))
   );
-  dietaryProfileServiceSpy.getProfile.and.callFake(() => of(createMockDietaryProfile()));
+  dietaryProfileServiceSpy.getProfile.mockImplementation(() => of(createMockDietaryProfile()));
 
   await TestBed.configureTestingModule({
     imports: [MealPlanComponent],

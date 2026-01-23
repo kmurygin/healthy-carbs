@@ -5,6 +5,7 @@ import {MealPlanHistoryItemComponent} from './meal-plan-history-item.component';
 import {MealType} from '@core/models/enum/meal-type.enum';
 import type {MealPlanDayDto} from '@core/models/dto/mealplan-day.dto';
 import {createMockRecipe} from '@testing/test-data.util';
+import {provideRouter} from "@angular/router";
 
 describe('MealPlanHistoryItemComponent', () => {
   let component: MealPlanHistoryItemComponent;
@@ -14,7 +15,10 @@ describe('MealPlanHistoryItemComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MealPlanHistoryItemComponent]
+      imports: [MealPlanHistoryItemComponent],
+      providers: [
+        provideRouter([])
+      ]
     })
       .compileComponents();
 
@@ -57,8 +61,8 @@ describe('MealPlanHistoryItemComponent', () => {
   });
 
   it('toggleExpanded_whenCalled_shouldFlipState', () => {
-    expect(component.isExpanded()).toBeFalse();
+    expect(component.isExpanded()).toBe(false);
     component.toggleExpanded();
-    expect(component.isExpanded()).toBeTrue();
+    expect(component.isExpanded()).toBe(true);
   });
 });

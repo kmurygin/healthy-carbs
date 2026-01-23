@@ -18,6 +18,9 @@
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "types": [
+      "vitest/globals"
+    ],
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,

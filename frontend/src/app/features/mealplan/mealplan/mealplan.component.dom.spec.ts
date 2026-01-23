@@ -1,5 +1,5 @@
+import type {MockedObject} from "vitest";
 import type {ComponentFixture} from '@angular/core/testing';
-import {fakeAsync, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import type {MealPlanComponent} from './mealplan.component';
 import type {DebugElement} from '@angular/core';
@@ -25,8 +25,8 @@ import {IngredientCategory} from '@core/models/enum/ingredient-category.enum';
 describe('MealPlanComponent DOM Integration', () => {
   let component: MealPlanComponent;
   let fixture: ComponentFixture<MealPlanComponent>;
-  let mealPlanServiceSpy: jasmine.SpyObj<MealPlanService>;
-  let shoppingListServiceSpy: jasmine.SpyObj<ShoppingListService>;
+  let mealPlanServiceSpy: MockedObject<Pick<MealPlanService, 'generate' | 'getHistory' | 'getById' | 'downloadPdf'>>;
+  let shoppingListServiceSpy: MockedObject<Pick<ShoppingListService, 'getShoppingList' | 'downloadPdf'>>;
   let routeParamMapSubject: ReplaySubject<ParamMap>;
 
   let mockMealPlan: MealPlanDto;
@@ -53,13 +53,13 @@ describe('MealPlanComponent DOM Integration', () => {
     shoppingListServiceSpy = setup.shoppingListServiceSpy;
 
     const mockProfile = createMockDietaryProfile({user: REGULAR_TEST_USER});
-    setup.dietaryProfileServiceSpy.getProfile.and.returnValue(of(mockProfile));
-    mealPlanServiceSpy.getHistory.and.returnValue(of([]));
-    mealPlanServiceSpy.getById.and.returnValue(of(mockMealPlan));
-    mealPlanServiceSpy.generate.and.returnValue(of(mockMealPlan));
-    mealPlanServiceSpy.downloadPdf.and.returnValue(of(new Blob([''], {type: 'application/pdf'})));
-    shoppingListServiceSpy.getShoppingList.and.returnValue(of(mockShoppingList));
-    shoppingListServiceSpy.downloadPdf.and.returnValue(of(new Blob([''], {type: 'application/pdf'})));
+    setup.dietaryProfileServiceSpy.getProfile.mockReturnValue(of(mockProfile));
+    mealPlanServiceSpy.getHistory.mockReturnValue(of([]));
+    mealPlanServiceSpy.getById.mockReturnValue(of(mockMealPlan));
+    mealPlanServiceSpy.generate.mockReturnValue(of(mockMealPlan));
+    mealPlanServiceSpy.downloadPdf.mockReturnValue(of(new Blob([''], {type: 'application/pdf'})));
+    shoppingListServiceSpy.getShoppingList.mockReturnValue(of(mockShoppingList));
+    shoppingListServiceSpy.downloadPdf.mockReturnValue(of(new Blob([''], {type: 'application/pdf'})));
   });
 
   const getByTestId = (testId: string): DebugElement | null => {
@@ -74,9 +74,16 @@ describe('MealPlanComponent DOM Integration', () => {
     fixture.detectChanges();
   };
 
-  const triggerInit = (params: Record<string, string> = {}): void => {
+  const triggerInit = async (params: Record<string, string> = {}): Promise<void> => {
     routeParamMapSubject.next(convertToParamMap(params));
     fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    for (let attempts = 0; attempts < 3 && component.loading(); attempts += 1) {
+      await fixture.whenStable();
+      fixture.detectChanges();
+    }
   };
 
   describe('Loading & Error States', () => {
@@ -104,29 +111,17 @@ describe('MealPlanComponent DOM Integration', () => {
     beforeEach(setupLoadedState);
 
     it('template_whenPlanLoaded_shouldRenderMainSections', () => {
-      expect(getByTestId('daily-totals'))
-        .withContext('Daily totals should be visible')
-        .toBeTruthy();
-      expect(getByTestId('shopping-list'))
-        .withContext('Shopping list should be visible')
-        .toBeTruthy();
-      expect(getByTestId('btn-generate'))
-        .withContext('Generate button should be visible for latest plan')
-        .toBeTruthy();
-      expect(getByTestId('btn-download-shopping-list'))
-        .withContext('Download shopping list button should be visible')
-        .toBeTruthy();
-      expect(getByTestId('btn-download-meal-plan'))
-        .withContext('Download meal plan button should be visible')
-        .toBeTruthy();
+      expect(getByTestId('daily-totals')).toBeTruthy();
+      expect(getByTestId('shopping-list')).toBeTruthy();
+      expect(getByTestId('btn-generate')).toBeTruthy();
+      expect(getByTestId('btn-download-shopping-list')).toBeTruthy();
+      expect(getByTestId('btn-download-meal-plan')).toBeTruthy();
     });
 
     it('template_whenPlanLoaded_shouldRenderDayTabs', () => {
       mockMealPlan.days.forEach((day: MealPlanDayDto, index: number) => {
         const tab = getByTestId(`day-tab-${index}`);
-        expect(tab)
-          .withContext(`Tab for index ${index} should exist`)
-          .toBeTruthy();
+        expect(tab).toBeTruthy();
       });
     });
   });
@@ -166,18 +161,18 @@ describe('MealPlanComponent DOM Integration', () => {
     });
   });
 
-  it('route_whenIdProvided_shouldLoadPlanAndRender', fakeAsync(() => {
-    mealPlanServiceSpy.getById.and.returnValue(of(mockMealPlan));
-    shoppingListServiceSpy.getShoppingList.and.returnValue(of(mockShoppingList));
+  it('route_whenIdProvided_shouldLoadPlanAndRender', async () => {
+    mealPlanServiceSpy.getById.mockReturnValue(of(mockMealPlan));
+    shoppingListServiceSpy.getShoppingList.mockReturnValue(of(mockShoppingList));
 
-    triggerInit({id: '123'});
-    tick();
+    await triggerInit({id: '123'});
     fixture.detectChanges();
 
     expect(mealPlanServiceSpy.getById).toHaveBeenCalledWith(123);
+    expect(shoppingListServiceSpy.getShoppingList).toHaveBeenCalledWith(mockMealPlan.id);
     expect(getByTestId('daily-totals')).toBeTruthy();
     expect(getByTestId('shopping-list')).toBeTruthy();
-  }));
+  });
 
   describe('Pagination Interactions', () => {
     const daysOfWeek = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'] as const;
