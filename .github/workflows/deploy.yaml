@@ -10,6 +10,8 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REGION: ${{ secrets.GCP_REGION }}
   GAR_REPO: ${{ secrets.GCP_GAR_REPO }}
+  GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
+  GCS_PUBLIC_URL_BASE: ${{ secrets.GCS_PUBLIC_URL_BASE }}
   BACKEND_IMAGE_NAME: healthy-carbs-backend
 
 jobs:
@@ -240,6 +242,8 @@ jobs:
             --memory=2Gi \
             --cpu=2 \
             --add-cloudsql-instances=${{ env.PROJECT_ID }}:${{ env.REGION }}:healthy-carbs-db \
+            --set-env-vars=GCS_BUCKET_NAME=${{ env.GCS_BUCKET_NAME }} \
+            --set-env-vars=GCS_PUBLIC_URL_BASE=${{ env.GCS_PUBLIC_URL_BASE }} \
             --set-env-vars=SPRING_PROFILES_ACTIVE=prod \
             --set-env-vars=SPRING_CLOUD_GCP_SQL_INSTANCE_CONNECTION_NAME=${{ env.PROJECT_ID }}:${{ env.REGION }}:healthy-carbs-db \
             --set-env-vars=SPRING_CLOUD_GCP_SQL_DATABASE_NAME=healthycarbs \
