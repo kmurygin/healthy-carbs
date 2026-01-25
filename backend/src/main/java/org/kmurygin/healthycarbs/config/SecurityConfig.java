@@ -48,6 +48,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/v1/payments/payu/notify").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/payments/payu/continue").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/blog/images/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/users/*/image").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/files/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

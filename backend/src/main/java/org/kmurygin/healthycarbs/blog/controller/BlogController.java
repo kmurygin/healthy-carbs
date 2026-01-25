@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.blog.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
@@ -23,13 +24,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/api/v1/blog")
 @RequiredArgsConstructor
@@ -131,8 +134,8 @@ public class BlogController {
     @PreAuthorize("@blogSecurity.hasEditPermissionsForPost(#id, principal)")
     public ResponseEntity<ApiResponse<Void>> uploadPostImage(
             @PathVariable Long id,
-            @RequestParam("file") MultipartFile file
-    ) throws IOException {
+            @NotNull @RequestParam("file") MultipartFile file
+    ) {
         blogService.uploadPostImage(id, file);
         return ApiResponses.success(
                 HttpStatus.OK, null, "Post image updated successfully"
@@ -140,12 +143,18 @@ public class BlogController {
     }
 
     @GetMapping("/images/{imageId}")
-    public ResponseEntity<byte[]> getPostImage(@PathVariable Long imageId) {
+    public ResponseEntity<Void> getPostImage(@PathVariable Long imageId) {
         BlogPostImage image = blogService.getPostImageById(imageId);
-        return ResponseEntity.ok()
+        if (image.getImageUrl() == null || image.getImageUrl().isBlank()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.status(HttpStatus.FOUND)
                 .cacheControl(CacheControl.maxAge(14, TimeUnit.DAYS))
-                .contentType(MediaType.parseMediaType(image.getContentType()))
-                .body(image.getImageData());
+                .location(UriComponentsBuilder.fromUriString(image.getImageUrl())
+                        .build()
+                        .encode()
+                        .toUri())
+                .build();
     }
 
 }
