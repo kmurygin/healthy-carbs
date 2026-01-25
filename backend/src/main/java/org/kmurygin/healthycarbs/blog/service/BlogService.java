@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.blog.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kmurygin.healthycarbs.blog.model.BlogComment;
 import org.kmurygin.healthycarbs.blog.model.BlogPost;
 import org.kmurygin.healthycarbs.blog.model.BlogPostImage;
@@ -8,6 +9,9 @@ import org.kmurygin.healthycarbs.blog.repository.BlogCommentRepository;
 import org.kmurygin.healthycarbs.blog.repository.BlogPostImageRepository;
 import org.kmurygin.healthycarbs.blog.repository.BlogPostRepository;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
+import org.kmurygin.healthycarbs.storage.StorageProperties;
+import org.kmurygin.healthycarbs.storage.StorageProvider;
+import org.kmurygin.healthycarbs.storage.StorageUploadResult;
 import org.kmurygin.healthycarbs.user.Role;
 import org.kmurygin.healthycarbs.user.User;
 import org.springframework.data.domain.Page;
@@ -15,18 +19,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class BlogService {
 
     private final BlogPostRepository blogPostRepository;
     private final BlogCommentRepository blogCommentRepository;
     private final BlogPostImageRepository blogPostImageRepository;
+    private final StorageProvider storageProvider;
+    private final StorageProperties storageProperties;
+    private final TransactionTemplate transactionTemplate;
 
     public Page<BlogPost> findAllPosts(Pageable pageable) {
         return blogPostRepository.findAllByOrderByCreatedAtDesc(pageable);
@@ -48,7 +56,18 @@ public class BlogService {
         BlogPost post = blogPostRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Blog post not found with id: " + id));
 
+        String imageKey = post.getImage() != null
+                ? post.getImage().getImageKey()
+                : null;
         blogPostRepository.delete(post);
+
+        if (StringUtils.hasText(imageKey)) {
+            try {
+                storageProvider.deleteFileByKey(imageKey);
+            } catch (Exception ex) {
+                log.error("Failed to delete blog post image from storage: {}", imageKey, ex);
+            }
+        }
     }
 
     @Transactional
@@ -89,17 +108,35 @@ public class BlogService {
         blogCommentRepository.delete(comment);
     }
 
-    @Transactional
-    public void uploadPostImage(Long postId, MultipartFile file) throws IOException {
+    public void uploadPostImage(Long postId, MultipartFile file) {
         BlogPost post = findPostById(postId);
 
-        BlogPostImage image = BlogPostImage.builder()
-                .contentType(file.getContentType())
-                .imageData(file.getBytes())
-                .build();
+        String oldImageKey = post.getImage() != null
+                ? post.getImage().getImageKey()
+                : null;
+        String folder = storageProperties.getBlogPostImagePrefix() + "/" + postId;
+        StorageUploadResult uploadResult = storageProvider.uploadFile(file, folder);
+        transactionTemplate.executeWithoutResult(status -> {
+            BlogPost retrievedPost = blogPostRepository.findById(postId)
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException("Blog post not found with id: " + postId)
+                    );
+            BlogPostImage image = BlogPostImage.builder()
+                    .contentType(uploadResult.contentType())
+                    .imageUrl(uploadResult.url())
+                    .imageKey(uploadResult.key())
+                    .build();
+            retrievedPost.setImage(image);
+            blogPostRepository.save(retrievedPost);
+        });
 
-        post.setImage(image);
-        blogPostRepository.save(post);
+        if (StringUtils.hasText(oldImageKey)) {
+            try {
+                storageProvider.deleteFileByKey(oldImageKey);
+            } catch (Exception ex) {
+                log.error("Failed to delete old post image: {}", oldImageKey, ex);
+            }
+        }
     }
 
     @Transactional

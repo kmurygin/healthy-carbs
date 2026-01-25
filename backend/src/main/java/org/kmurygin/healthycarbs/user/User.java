@@ -54,6 +54,9 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "recipe_id")
     )
     private Set<Recipe> favouriteRecipes = new HashSet<>();
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profile_image_id")
+    private UserProfileImage profileImage;
 
     public void addFavouriteRecipe(Recipe recipe) {
         if (favouriteRecipes == null) {
@@ -70,10 +73,6 @@ public class User implements UserDetails {
         this.favouriteRecipes.remove(recipe);
         recipe.getFavouritesUsers().remove(this);
     }
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "profile_image_id")
-    private UserProfileImage profileImage;
 
     public void setProfileImage(UserProfileImage image) {
         this.profileImage = image;
