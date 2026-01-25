@@ -10,5 +10,7 @@ public interface UserMapper {
     UserDTO toDTO(User user);
 
     @Mapping(target = "profileImage", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "favouriteRecipes", ignore = true)
     User toEntity(UserDTO dto);
 }

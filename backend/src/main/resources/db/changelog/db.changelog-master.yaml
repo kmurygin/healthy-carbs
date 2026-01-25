@@ -125,3 +125,9 @@ databaseChangeLog:
   - include:
       file: 2026-01-18-alter-recovery-token-length.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2026-01-24-move-images-to-storage.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2026-01-24-add-image-keys.yaml
+      relativeToChangelogFile: true

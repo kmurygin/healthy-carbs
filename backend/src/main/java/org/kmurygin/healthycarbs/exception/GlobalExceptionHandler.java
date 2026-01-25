@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.exception;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,14 +15,15 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -110,6 +112,27 @@ public class GlobalExceptionHandler {
             BadRequestException ex, HttpServletRequest req
     ) {
         return buildErrorResponse(ex.getMessage(), req, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(StorageException.class)
+    public ResponseEntity<ErrorResponse> storageException(
+            StorageException ex, HttpServletRequest req
+    ) {
+        logger.error("Storage error: {}", ex.getMessage(), ex);
+        return buildErrorResponse(ex.getMessage(), req, ex.getStatus());
+    }
+
+    @ExceptionHandler({
+            StorageAccessDeniedException.class,
+            StorageObjectNotFoundException.class,
+            StorageUnavailableException.class,
+            StorageValidationException.class
+    })
+    public ResponseEntity<ErrorResponse> storageSpecialized(
+            BaseException ex, HttpServletRequest req
+    ) {
+        logger.error("Storage error: {}", ex.getMessage(), ex);
+        return buildErrorResponse(ex.getMessage(), req, ex.getStatus());
     }
 
     @ExceptionHandler(Exception.class)

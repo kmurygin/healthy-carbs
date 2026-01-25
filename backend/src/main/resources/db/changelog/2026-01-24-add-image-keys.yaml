@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-01-24-user-profile-image-key
+      author: healthy-carbs
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE user_profile_images
+              ADD COLUMN image_key VARCHAR(1024);
+  - changeSet:
+      id: 2026-01-24-blog-post-image-key
+      author: healthy-carbs
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE blog_post_images
+              ADD COLUMN image_key VARCHAR(1024);

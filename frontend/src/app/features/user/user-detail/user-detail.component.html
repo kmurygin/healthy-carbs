@@ -9,10 +9,12 @@
         class="h-full w-full overflow-hidden rounded-full border-4 border-emerald-50 shadow-md bg-gray-100"
       >
         <img
-          [src]="profileImageSrc()"
+          [ngSrc]="displayImageSrc()"
           alt="User profile picture"
           class="h-full w-full object-cover"
           loading="eager"
+          width="128"
+          height="128"
         />
       </div>
 
@@ -20,6 +22,10 @@
         <div class="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 z-10">
           <i class="fa-solid fa-spinner fa-spin text-white text-2xl"></i>
         </div>
+      }
+
+      @if (isImageLoading()) {
+        <div class="absolute inset-0 rounded-full bg-gray-100 animate-pulse"></div>
       }
 
       <button
@@ -40,6 +46,7 @@
         #fileInput
         (change)="onFileSelected($event)"
         accept="image/png, image/jpeg, image/jpg"
+        aria-label="Select profile picture"
         class="hidden"
         type="file"
       />

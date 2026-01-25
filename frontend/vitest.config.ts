@@ -1,6 +1,7 @@
 import {defineConfig} from 'vitest/config';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import angular from '@analogjs/vite-plugin-angular';
+import {playwright} from "@vitest/browser-playwright";
 
 export default defineConfig({
   plugins: [
@@ -16,6 +17,13 @@ export default defineConfig({
     reporters: ['default', 'junit'],
     outputFile: {
       junit: 'test-results/unit/junit.xml',
+    },
+    browser: {
+      enabled: true,
+      provider: playwright(),
+      instances: [{browser: 'chromium'}],
+      screenshotDirectory: 'test-results/screenshots',
+      screenshotFailures: true,
     },
     coverage: {
       provider: 'v8',

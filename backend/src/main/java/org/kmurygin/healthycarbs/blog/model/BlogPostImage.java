@@ -3,8 +3,6 @@ package org.kmurygin.healthycarbs.blog.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "blog_post_images")
@@ -21,12 +19,12 @@ public class BlogPostImage {
 
     private String contentType;
 
-    @Lob
-    @JdbcTypeCode(SqlTypes.BINARY)
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "image_data", nullable = false)
+    @Column(name = "image_url", length = 1024)
+    private String imageUrl;
+
+    @Column(name = "image_key", length = 1024)
     @JsonIgnore
-    private byte[] imageData;
+    private String imageKey;
 
     @OneToOne(mappedBy = "image")
     @JsonIgnore

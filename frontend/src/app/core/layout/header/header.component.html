@@ -1,4 +1,4 @@
-<header class="fixed inset-x-0 top-0 z-50 w-full border-b border-gray-200 bg-white">
+<header>
   <nav
     aria-label="Primary"
     class="mx-auto flex max-w-7xl items-center justify-between p-4 sm:p-6 lg:px-4"
@@ -21,6 +21,7 @@
       (click)="openMenu(mobileMenu)"
       [attr.aria-expanded]="menuOpen() ? 'true' : 'false'"
       aria-controls="mobile-menu"
+      aria-label="Open menu"
       class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 lg:hidden
              focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 hover:cursor-pointer"
       type="button"
@@ -79,13 +80,19 @@
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
            routerLink="/user"
         >
-          <div class="h-7 w-7 overflow-hidden rounded-full border-2 border-emerald-800 shadow-md bg-gray-100">
+          <div class="relative h-7 w-7 overflow-hidden rounded-full border-2 border-emerald-800 shadow-md bg-gray-100">
             <img
-              [src]="profileImageSrc()"
+              [ngSrc]="displayImageSrc()"
               alt="User profile picture"
               class="h-full w-full object-cover"
               loading="eager"
+              width="28"
+              height="28"
+              priority
             />
+            @if (isImageLoading()) {
+              <div class="absolute inset-0 rounded-full bg-gray-100 animate-pulse"></div>
+            }
           </div>
           <span>{{ username }}</span>
         </a>

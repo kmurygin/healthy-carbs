@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.user;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
@@ -10,13 +11,15 @@ import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Validated
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -82,20 +85,26 @@ public class UserController {
     @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Void>> uploadProfileImage(
             @PathVariable Long id,
-            @RequestParam("file") MultipartFile file
-    ) throws IOException {
+            @NotNull @RequestParam("file") MultipartFile file
+    ) {
         userService.uploadProfileImage(id, file);
         return ApiResponses.success(
                 HttpStatus.OK, null, "Profile image updated successfully"
         );
     }
 
-    @GetMapping("/images/{imageId}")
-    public ResponseEntity<byte[]> getProfileImage(@PathVariable Long imageId) {
-        UserProfileImage image = userService.getProfileImageById(imageId);
+    @GetMapping("/{userId}/image")
+    public ResponseEntity<Void> getProfileImage(@PathVariable Long userId) {
+        UserProfileImage image = userService.getProfileImageByUserId(userId);
+        if (image == null || image.getImageUrl() == null || image.getImageUrl().isBlank()) {
+            return ResponseEntity.notFound().build();
+        }
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(image.getContentType()))
-                .body(image.getImageData());
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(UriComponentsBuilder.fromUriString(image.getImageUrl())
+                        .build()
+                        .encode()
+                        .toUri())
+                .build();
     }
 }

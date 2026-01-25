@@ -24,6 +24,8 @@ spring:
         enabled: false
       secretmanager:
         enabled: false
+      storage:
+        enabled: false
 application:
   security:
     jwt:
