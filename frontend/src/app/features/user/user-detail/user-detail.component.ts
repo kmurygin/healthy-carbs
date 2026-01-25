@@ -1,17 +1,17 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   type ElementRef,
   inject,
-  type OnDestroy,
+  Injector,
   type OnInit,
-  PLATFORM_ID,
   signal,
   viewChild
 } from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {CommonModule, isPlatformBrowser} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {finalize} from 'rxjs';
 import {UserService} from '@core/services/user/user.service';
 import {AuthService} from '@core/services/auth/auth.service';
@@ -21,19 +21,19 @@ import {setError, setErrorNotification} from "@shared/utils";
 import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
 import {InfoMessageComponent} from "@shared/components/info-message/info-message.component";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {ImagePreloadService} from '@core/services/image/image-preload.service';
 
 @Component({
   selector: 'app-user-detail',
-  imports: [CommonModule, ReactiveFormsModule, ErrorMessageComponent, InfoMessageComponent],
+  imports: [CommonModule, ReactiveFormsModule, ErrorMessageComponent, InfoMessageComponent, NgOptimizedImage],
   templateUrl: './user-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserDetailComponent implements OnInit, OnDestroy {
+export class UserDetailComponent implements OnInit {
   readonly errorMessage = signal<string>('');
   readonly infoMessage = signal<string>('');
   readonly isUploading = signal<boolean>(false);
   readonly user = signal<UserDto | null>(null);
-  readonly profileImageSrc = signal<string>('assets/default-avatar.png');
   readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
   private readonly formBuilder = inject(FormBuilder);
   readonly formGroup = this.formBuilder.nonNullable.group({
@@ -42,10 +42,19 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     email: ['', [Validators.required, Validators.email]]
   });
   private readonly userService = inject(UserService);
+  readonly profileImageSrc = computed(() =>
+    this.userService.currentUserImageUrl() ?? 'assets/default-avatar.png'
+  );
+  private readonly imagePreloadService = inject(ImagePreloadService);
+  private readonly injector = inject(Injector);
+  private readonly imageState = this.imagePreloadService.createPreloadedImage(
+    this.profileImageSrc,
+    {injector: this.injector},
+  );
+  readonly displayImageSrc = this.imageState.displaySrc;
+  readonly isImageLoading = this.imageState.isLoading;
   private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
-  private readonly platformId = inject(PLATFORM_ID);
-  private currentObjectUrl: string | null = null;
   private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
@@ -54,10 +63,6 @@ export class UserDetailComponent implements OnInit, OnDestroy {
     if (tokenUser) {
       this.fetchUserDetails(tokenUser);
     }
-  }
-
-  ngOnDestroy(): void {
-    this.revokeCurrentObjectUrl();
   }
 
   onFileSelected(event: Event): void {
@@ -86,7 +91,7 @@ export class UserDetailComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.notificationService.success('Profile picture updated successfully.');
-          this.fetchUserDetails(currentUser.username);
+          this.refreshUserDetails(currentUser.username);
         },
         error: (error: unknown) => {
           setErrorNotification(this.notificationService, error, 'Failed to upload image.');
@@ -128,21 +133,14 @@ export class UserDetailComponent implements OnInit, OnDestroy {
   }
 
   private fetchUserDetails(username: string): void {
-    this.userService.getUserByUsername(username)
+    this.userService.getCachedUserByUsername(username)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response) => {
-          const data = response.data;
+        next: (data) => {
           if (!data) return;
 
           this.user.set(data);
           this.formGroup.patchValue(data);
-
-          if (data.profileImageId) {
-            this.loadSecureImage(data.profileImageId, data);
-          } else {
-            this.setFallbackImage(data);
-          }
         },
         error: (error: unknown) => {
           setError(this.errorMessage, error, 'Failed to fetch user data')
@@ -150,34 +148,19 @@ export class UserDetailComponent implements OnInit, OnDestroy {
       });
   }
 
-  private loadSecureImage(imageId: number, user: UserDto): void {
-    this.userService.getProfileImage(imageId)
+  private refreshUserDetails(username: string): void {
+    this.userService.refreshUserByUsername(username)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (blob) => {
-          this.revokeCurrentObjectUrl();
-          this.currentObjectUrl = URL.createObjectURL(blob);
-
-          this.profileImageSrc.set(this.currentObjectUrl);
+        next: (data) => {
+          if (!data) return;
+          this.user.set(data);
+          this.formGroup.patchValue(data);
         },
         error: (error: unknown) => {
-          console.error('Failed to load secure image', error);
-          this.setFallbackImage(user);
+          setError(this.errorMessage, error, 'Failed to refresh user data')
         }
       });
-  }
-
-  private setFallbackImage(user: UserDto): void {
-    this.revokeCurrentObjectUrl();
-    const name = encodeURIComponent(`${user.firstName}+${user.lastName}`);
-    this.profileImageSrc.set(`https://ui-avatars.com/api/?name=${name}`);
-  }
-
-  private revokeCurrentObjectUrl(): void {
-    if (this.currentObjectUrl && isPlatformBrowser(this.platformId)) {
-      URL.revokeObjectURL(this.currentObjectUrl);
-      this.currentObjectUrl = null;
-    }
   }
 
   private resetFileInput(): void {

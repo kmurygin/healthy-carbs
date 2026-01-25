@@ -1,7 +1,6 @@
-import {inject, Injectable, type OnDestroy} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {DomSanitizer, type SafeUrl} from '@angular/platform-browser';
-import {map, type Observable, of} from 'rxjs';
+import {map, type Observable} from 'rxjs';
 import {type ApiResponse} from '../../models/api-response.model';
 import {type UserDto} from '../../models/dto/user.dto';
 import {type DietaryProfileDto} from '../../models/dto/dietaryprofile.dto';
@@ -11,13 +10,9 @@ import type {UserMeasurement} from '@core/services/user-measurement/user-measure
 import type {MealPlanDto} from "@core/models/dto/mealplan.dto";
 
 @Injectable({providedIn: 'root'})
-export class DietitianService implements OnDestroy {
+export class DietitianService {
   private readonly httpClient = inject(HttpClient);
   private readonly userService = inject(UserService);
-  private readonly sanitizer = inject(DomSanitizer);
-
-  private readonly objectUrls = new Map<number, string>();
-  private readonly safeUrls = new Map<number, SafeUrl>();
 
   getAllDietitians(): Observable<UserDto[]> {
     return this.httpClient
@@ -31,23 +26,8 @@ export class DietitianService implements OnDestroy {
       .pipe(map(() => undefined));
   }
 
-  getProfileImage(imageId: number): Observable<SafeUrl> {
-    const cached = this.safeUrls.get(imageId);
-    if (cached) {
-      return of(cached);
-    }
-
-    return this.userService.getProfileImage(imageId).pipe(
-      map((blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
-
-        this.objectUrls.set(imageId, objectUrl);
-        this.safeUrls.set(imageId, safeUrl);
-
-        return safeUrl;
-      })
-    );
+  getProfileImageUrl(userId: number, cacheKey?: number | string | null): string {
+    return this.userService.getProfileImageUrl(userId, cacheKey);
   }
 
   getMyClients(): Observable<UserDto[]> {
@@ -70,18 +50,6 @@ export class DietitianService implements OnDestroy {
         `${ApiEndpoints.Dietitian.Base}/clients/${clientId}/dietary-profile`
       )
       .pipe(map((resp) => resp.data ?? null));
-  }
-
-  cleanupProfileImages(): void {
-    for (const url of this.objectUrls.values()) {
-      URL.revokeObjectURL(url);
-    }
-    this.objectUrls.clear();
-    this.safeUrls.clear();
-  }
-
-  ngOnDestroy(): void {
-    this.cleanupProfileImages();
   }
 
   getClientMealPlans(clientId: number): Observable<MealPlanDto[]> {

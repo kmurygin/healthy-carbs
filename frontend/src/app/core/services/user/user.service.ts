@@ -1,9 +1,9 @@
-import {inject, Injectable} from '@angular/core';
+import {computed, inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import type {ApiResponse} from '../../models/api-response.model';
 import type {UserDto} from '../../models/dto/user.dto';
 import type {ChangePasswordPayload} from '../../models/payloads';
-import {map, type Observable} from "rxjs";
+import {map, type Observable, of} from "rxjs";
 import {ApiEndpoints} from "@core/constants/api-endpoints";
 
 @Injectable({
@@ -11,10 +11,44 @@ import {ApiEndpoints} from "@core/constants/api-endpoints";
 })
 export class UserService {
   private readonly httpClient = inject(HttpClient);
+  private readonly currentUser = signal<UserDto | null>(null);
+  readonly currentUserImageUrl = computed(() => {
+    const user = this.currentUser();
+    if (!user) return null;
+    if (user.profileImageId) {
+      return this.getProfileImageUrl(user.id, user.profileImageId);
+    }
+    return this.buildFallbackAvatar(user);
+  });
 
   getUserByUsername(username: string) {
     return this.httpClient.get<ApiResponse<UserDto>>(
       ApiEndpoints.User.GetByUsername + username
+    );
+  }
+
+  getCachedUserByUsername(username: string): Observable<UserDto | null> {
+    const cached = this.currentUser();
+    if (cached?.username === username) {
+      return of(cached);
+    }
+
+    return this.getUserByUsername(username).pipe(
+      map((response) => {
+        const user = response.data ?? null;
+        this.currentUser.set(user);
+        return user;
+      })
+    );
+  }
+
+  refreshUserByUsername(username: string): Observable<UserDto | null> {
+    return this.getUserByUsername(username).pipe(
+      map((response) => {
+        const user = response.data ?? null;
+        this.currentUser.set(user);
+        return user;
+      })
     );
   }
 
@@ -51,10 +85,16 @@ export class UserService {
       );
   }
 
-  getProfileImage(imageId: number): Observable<Blob> {
-    return this.httpClient.get(
-      `${ApiEndpoints.User.Base}images/${imageId}`,
-      {responseType: 'blob'}
-    );
+  getProfileImageUrl(userId: number, cacheKey?: number | string | null): string {
+    const baseUrl = `${ApiEndpoints.User.Base}${userId}/image`;
+    if (cacheKey == null) {
+      return baseUrl;
+    }
+    return `${baseUrl}?v=${encodeURIComponent(String(cacheKey))}`;
+  }
+
+  private buildFallbackAvatar(user: UserDto): string {
+    const name = encodeURIComponent(`${user.firstName}+${user.lastName}`);
+    return `https://ui-avatars.com/api/?name=${name}`;
   }
 }

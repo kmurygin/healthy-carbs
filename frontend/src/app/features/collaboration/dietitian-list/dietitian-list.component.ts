@@ -1,8 +1,7 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {type SafeUrl} from '@angular/platform-browser';
-import {EMPTY, from} from 'rxjs';
-import {catchError, filter, finalize, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {EMPTY} from 'rxjs';
+import {catchError, filter, finalize, switchMap, tap} from 'rxjs/operators';
 
 import {DietitianService} from '@core/services/dietitian/dietitian.service';
 import {type UserDto} from '@core/models/dto/user.dto';
@@ -21,7 +20,7 @@ export class DietitianListComponent {
   readonly dietitians = signal<readonly UserDto[]>([]);
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
-  readonly profileImageMap = signal(new Map<number, SafeUrl | string>());
+  readonly profileImageMap = signal(new Map<number, string>());
   readonly pendingCollaborationIds = signal<ReadonlySet<number>>(new Set());
 
   private readonly destroyRef = inject(DestroyRef);
@@ -30,14 +29,10 @@ export class DietitianListComponent {
   private readonly notificationService = inject(NotificationService);
 
   constructor() {
-    this.destroyRef.onDestroy(() => {
-      this.dietitianService.cleanupProfileImages();
-    });
-
     this.loadDietitians();
   }
 
-  getProfileImage(userId: number): SafeUrl | string {
+  getProfileImage(userId: number): string {
     return this.profileImageMap().get(userId) ?? 'assets/default-avatar.png';
   }
 
@@ -90,19 +85,16 @@ export class DietitianListComponent {
             this.setProfileImage(user.id, generateUiAvatarsUrl(user.firstName, user.lastName));
           }
         }),
-        switchMap((users) =>
-          from(users).pipe(
-            mergeMap((user) => {
-              if (!user.profileImageId) return EMPTY;
-              return this.dietitianService.getProfileImage(user.profileImageId).pipe(
-                tap((safeUrl) => {
-                  this.setProfileImage(user.id, safeUrl)
-                }),
-                catchError(() => EMPTY)
-              );
-            }, 6)
-          )
-        ),
+        switchMap((users) => {
+          for (const user of users) {
+            if (!user.profileImageId) continue;
+            this.setProfileImage(
+              user.id,
+              this.dietitianService.getProfileImageUrl(user.id, user.profileImageId)
+            );
+          }
+          return EMPTY;
+        }),
         finalize(() => {
           this.isLoading.set(false)
         }),
@@ -117,7 +109,7 @@ export class DietitianListComponent {
       .subscribe();
   }
 
-  private setProfileImage(userId: number, url: SafeUrl | string): void {
+  private setProfileImage(userId: number, url: string): void {
     this.profileImageMap.update((current) => {
       const next = new Map(current);
       next.set(userId, url);

@@ -8,7 +8,6 @@ import {faChartLine, faHistory, faUtensils,} from '@fortawesome/free-solid-svg-i
 import {DietitianService} from '@core/services/dietitian/dietitian.service';
 import {type UserDto} from '@core/models/dto/user.dto';
 import {getInitials} from '@features/collaboration/collaboration.utils';
-import type {SafeUrl} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-client-card',
@@ -18,7 +17,7 @@ import type {SafeUrl} from "@angular/platform-browser";
 })
 export class ClientCardComponent {
   readonly client = input.required<UserDto>();
-  readonly profileImageUrl = input<SafeUrl | string | undefined>(undefined);
+  readonly profileImageUrl = input<string | undefined>(undefined);
   readonly faUtensils = faUtensils;
   readonly faHistory = faHistory;
   readonly faChartLine = faChartLine;
