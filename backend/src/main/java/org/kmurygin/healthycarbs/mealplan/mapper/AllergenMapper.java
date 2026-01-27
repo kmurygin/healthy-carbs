@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface AllergenMapper {
-    AllergenDTO toDTO(Object entity);
+    AllergenDTO toDTO(Allergen allergen);
 
     Allergen toEntity(AllergenDTO dto);
 }

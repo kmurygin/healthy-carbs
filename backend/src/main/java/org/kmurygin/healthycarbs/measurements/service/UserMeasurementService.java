@@ -11,7 +11,7 @@ import org.kmurygin.healthycarbs.measurements.repository.UserMeasurementReposito
 import org.kmurygin.healthycarbs.user.User;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -28,7 +28,7 @@ public class UserMeasurementService {
         User currentUser = authenticationService.getCurrentUser();
 
         measurement.setUser(currentUser);
-        measurement.setDate(LocalDateTime.now());
+        measurement.setDate(Instant.now());
 
         userMeasurementRepository.save(measurement);
 

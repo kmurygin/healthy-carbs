@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.kmurygin.healthycarbs.user.dto.UserDTO;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -16,7 +16,7 @@ public class BlogPostDTO {
     private String content;
     private String summary;
     private UserDTO author;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
     private List<BlogCommentDTO> comments;
     private Long imageId;
 }

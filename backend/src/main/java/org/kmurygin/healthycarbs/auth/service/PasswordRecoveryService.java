@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Service
@@ -42,7 +43,7 @@ public class PasswordRecoveryService {
         String otp = generateSecureOtp();
         String encodedOtp = passwordEncoder.encode(otp);
 
-        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(15);
+        Instant expiryDate = Instant.now().plus(15, ChronoUnit.MINUTES);
 
         PasswordRecoveryToken recoveryToken = tokenRepository.findByUser(user)
                 .map(existingToken -> {
@@ -76,7 +77,7 @@ public class PasswordRecoveryService {
             throw new InvalidOtpException("Invalid OTP code provided.");
         }
 
-        if (recoveryToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+        if (recoveryToken.getExpiryDate().isBefore(Instant.now())) {
             throw new InvalidOtpException("OTP code has expired.");
         }
     }

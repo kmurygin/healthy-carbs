@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.kmurygin.healthycarbs.user.User;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -34,5 +34,5 @@ public class UserMeasurement {
     private Double calfCircumference;
 
     @Column(nullable = false)
-    private LocalDateTime date;
+    private Instant date;
 }

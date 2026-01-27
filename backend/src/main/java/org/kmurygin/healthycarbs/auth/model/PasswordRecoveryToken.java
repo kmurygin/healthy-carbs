@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.kmurygin.healthycarbs.user.User;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -23,7 +23,7 @@ public class PasswordRecoveryToken {
     private String token;
 
     @Column(nullable = false)
-    private LocalDateTime expiryDate;
+    private Instant expiryDate;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
