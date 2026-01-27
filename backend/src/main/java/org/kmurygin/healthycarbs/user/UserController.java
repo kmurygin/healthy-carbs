@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.user;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.user.dto.ChangeRoleRequest;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UserDTO;
@@ -70,6 +71,21 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ApiResponses.success(HttpStatus.NO_CONTENT, null, "User deleted");
+    }
+
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<ApiResponse<UserDTO>> changeUserRole(
+            @PathVariable Long id,
+            @Valid @RequestBody ChangeRoleRequest request
+    ) {
+        User updatedUser = userService.changeUserRole(id, request.getRole());
+        return ApiResponses.success(HttpStatus.OK, userMapper.toDTO(updatedUser), "User role updated successfully");
+    }
+
+    @PatchMapping("/{id}/toggle-active")
+    public ResponseEntity<ApiResponse<UserDTO>> toggleUserActiveStatus(@PathVariable Long id) {
+        User updatedUser = userService.toggleUserActiveStatus(id);
+        return ApiResponses.success(HttpStatus.OK, userMapper.toDTO(updatedUser), "User status updated successfully");
     }
 
     @PostMapping("/change-password")

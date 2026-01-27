@@ -247,4 +247,45 @@ public class UserService {
         return user.getProfileImage();
     }
 
+    @Transactional
+    public User changeUserRole(Long userId, Role newRole) {
+        User currentUser = getCurrentUser();
+        if (currentUser == null || currentUser.getRole() != Role.ADMIN) {
+            throw new AccessDeniedException("Only admins can change user roles.");
+        }
+
+        if (currentUser.getId().equals(userId)) {
+            throw new IllegalArgumentException("You cannot change your own role.");
+        }
+
+        if (newRole == Role.ADMIN) {
+            throw new IllegalArgumentException("Cannot assign ADMIN role. Only system administrators can create admins.");
+        }
+
+        User user = getUserOrThrow(userId);
+
+        if (user.getRole() == Role.ADMIN) {
+            throw new IllegalArgumentException("Cannot change role of an admin user.");
+        }
+
+        user.setRole(newRole);
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public User toggleUserActiveStatus(Long userId) {
+        User currentUser = getCurrentUser();
+        if (currentUser == null || currentUser.getRole() != Role.ADMIN) {
+            throw new AccessDeniedException("Only admins can change user active status.");
+        }
+
+        if (currentUser.getId().equals(userId)) {
+            throw new IllegalArgumentException("You cannot deactivate your own account.");
+        }
+
+        User user = getUserOrThrow(userId);
+        user.setIsActive(!Boolean.TRUE.equals(user.getIsActive()));
+        return userRepository.save(user);
+    }
+
 }

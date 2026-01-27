@@ -20,7 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,8 +46,8 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         User user = User.builder()
-                .firstName(request.getFirstname())
-                .lastName(request.getLastname())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -65,7 +67,15 @@ public class AuthenticationService {
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
+    @Transactional
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        User user = repository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
+
+        if (!Boolean.TRUE.equals(user.getIsActive())) {
+            throw new UnauthorizedException("Account is deactivated. Please contact an administrator.");
+        }
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -79,8 +89,8 @@ public class AuthenticationService {
             throw new UnauthorizedException("User not found with the provided username");
         }
 
-        User user = repository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new UnauthorizedException("User not found"));
+        user.setLastLoginAt(Instant.now());
+        repository.save(user);
 
         String jwtToken = jwtService.generateToken(getExtraClaims(user), user);
 
