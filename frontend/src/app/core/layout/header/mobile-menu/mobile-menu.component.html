@@ -1,0 +1,116 @@
+@if (isOpen()) {
+  <div
+    (click)="onBackdropClick($event)"
+    [class.backdrop-enter]="!isClosing()"
+    [class.backdrop-leave]="isClosing()"
+    aria-hidden="true"
+    class="fixed inset-0 z-40 bg-black/20 lg:hidden"
+  ></div>
+
+  <div
+    [cdkTrapFocusAutoCapture]="true"
+    [class.panel-enter]="!isClosing()"
+    [class.panel-leave]="isClosing()"
+    aria-label="Mobile navigation menu"
+    aria-modal="true"
+    cdkTrapFocus
+    class="fixed inset-y-0 right-0 z-50 h-full w-full max-w-[58.333%] sm:max-w-sm
+      overflow-y-auto bg-white p-6 shadow-xl ring-1 ring-gray-900/10 lg:hidden"
+    id="mobile-menu"
+    role="dialog"
+  >
+    <div class="flex justify-end">
+      <button
+        (click)="close()"
+        aria-label="Close menu"
+        cdkFocusInitial
+        class="-m-2.5 rounded-md p-2.5 text-gray-700 focus:outline-none focus-visible:ring-2
+        focus-visible:ring-emerald-600 hover:cursor-pointer"
+        type="button"
+      >
+        <i aria-hidden="true" class="fa-solid fa-xmark text-2xl"></i>
+      </button>
+    </div>
+
+    <nav class="mt-8 flow-root">
+      <div class="-my-2 divide-y divide-gray-500/10">
+        <div class="space-y-2 py-6">
+          @if (!isLoggedIn()) {
+            <a
+              class="menu-item"
+              routerLink="/login"
+              routerLinkActive="bg-emerald-50 text-emerald-800"
+            >
+              <i aria-hidden="true" class="fa-solid fa-right-to-bracket fa-fw text-xl"></i>
+              <span>Log in</span>
+            </a>
+
+            <a
+              class="menu-item"
+              routerLink="/register"
+              routerLinkActive="bg-emerald-50 text-emerald-800"
+            >
+              <i aria-hidden="true" class="fa-solid fa-user-plus fa-fw text-xl"></i>
+              <span>Register</span>
+            </a>
+          } @else {
+            <a
+              class="menu-item"
+              routerLink="/user"
+              routerLinkActive="bg-emerald-50 text-emerald-800"
+            >
+              <div
+                class="relative h-8 w-8 overflow-hidden rounded-full
+                border-2 border-emerald-800 shadow-md bg-gray-100"
+              >
+                <img
+                  [alt]="'Profile picture of ' + username()"
+                  [ngSrc]="displayImageSrc()"
+                  class="h-full w-full object-cover"
+                  height="32"
+                  loading="lazy"
+                  width="32"
+                />
+                @if (isImageLoading()) {
+                  <div class="absolute inset-0 rounded-full bg-gray-100 animate-pulse"></div>
+                }
+              </div>
+              <span>{{ username() }}</span>
+            </a>
+            <button
+              (click)="onLogout()"
+              class="menu-item-button"
+            >
+              <i aria-hidden="true" class="fa-solid fa-right-from-bracket fa-fw text-xl"></i>
+              <span>Logout</span>
+            </button>
+          }
+        </div>
+
+        <div class="space-y-2 py-6">
+          @if (isAdminOrDietitian()) {
+            <a
+              class="menu-item"
+              routerLink="/admin"
+              routerLinkActive="bg-emerald-50 text-emerald-800"
+            >
+              <i aria-hidden="true" class="fa-solid fa-shield-halved fa-fw text-xl"></i>
+              <span>{{ userRole() === UserRole.ADMIN ? 'Admin' : 'Dietitian' }} Panel</span>
+            </a>
+          }
+          @for (item of navItems(); track item.path) {
+            <a
+              [routerLink]="item.path"
+              class="menu-item"
+              routerLinkActive="bg-emerald-50 text-emerald-800"
+            >
+              <i [class]="'fa-solid fa-fw text-xl ' + item.icon" aria-hidden="true"></i>
+              <span>{{ item.label }}</span>
+            </a>
+          }
+        </div>
+
+      </div>
+    </nav>
+  </div>
+}

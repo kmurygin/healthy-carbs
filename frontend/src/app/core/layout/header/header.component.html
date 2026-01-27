@@ -1,105 +1,100 @@
 <header>
-  <nav
-    aria-label="Primary"
-    class="mx-auto flex max-w-7xl items-center justify-between p-4 sm:p-6 lg:px-4"
-  >
-
-    <a [routerLink]="['/']"
-       class="group inline-flex items-center gap-2
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded-md"
+  <nav aria-label="Primary" class="mx-auto flex max-w-7xl items-center justify-between p-4 sm:p-6 lg:px-4">
+    <a
+      [routerLink]="['/']"
+      class="group inline-flex items-center gap-2
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded-md"
     >
-      <h1
+      <span
         class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight
-             text-emerald-900 transition-colors duration-200 group-hover:text-gray-800"
+        text-emerald-900 transition-colors duration-200 group-hover:text-gray-800"
       >
         Healthy <span class="text-emerald-600 group-hover:text-gray-800 ">Carbs</span>
-      </h1>
+      </span>
       <span class="sr-only">Homepage</span>
     </a>
 
     <button
-      (click)="openMenu(mobileMenu)"
+      (click)="openMenu()"
       [attr.aria-expanded]="menuOpen() ? 'true' : 'false'"
       aria-controls="mobile-menu"
       aria-label="Open menu"
       class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 lg:hidden
-             focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 hover:cursor-pointer"
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 hover:cursor-pointer"
       type="button"
     >
       <i aria-hidden="true" class="fa-solid fa-bars text-2xl"></i>
     </button>
 
     <div class="hidden lg:flex lg:items-center lg:gap-x-10">
-      <a
-        class="text-sm font-semibold text-gray-900 hover:text-emerald-800
-               focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
-        routerLink="/features"
-      >
-        Features
-      </a>
+      @for (item of navItems; track item.path) {
+        <a
+          [routerLink]="item.path"
+          class="text-sm font-semibold text-gray-900 hover:text-emerald-800
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+          routerLinkActive="text-emerald-700 font-bold"
+        >
+          {{ item.label }}
+        </a>
+      }
 
-      <a
-        class="text-sm font-semibold text-gray-900 hover:text-emerald-800
-               focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
-        routerLink="/blog"
-      >
-        Blog
-      </a>
-
-      <a
-        class="text-sm font-semibold text-gray-900 hover:text-emerald-800
-               focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
-        routerLink="/offers"
-      >
-        Offers
-      </a>
-
-      <a
-        class="text-sm font-semibold text-gray-900 hover:text-emerald-800
-               focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
-        routerLink="/about-us"
-      >
-        About us
-      </a>
-
-      @if (!isLoggedIn) {
-        <a class="text-sm font-semibold text-gray-900 hover:text-emerald-800
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
-           routerLink="/login"
+      @if (!isLoggedIn()) {
+        <a
+          class="text-sm font-semibold text-gray-900 hover:text-emerald-800
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+          routerLink="/login"
+          routerLinkActive="text-emerald-700 font-bold"
         >
           Sign in
         </a>
-        <a class="text-sm font-semibold text-emerald-800 hover:text-emerald-700
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
-           routerLink="/register"
+        <a
+          class="text-sm font-semibold text-emerald-800 hover:text-emerald-700
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+          routerLink="/register"
+          routerLinkActive="text-emerald-700 font-bold"
         >
           Sign up
         </a>
       } @else {
-        <a class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-800 hover:text-emerald-700
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
-           routerLink="/user"
+        @if (isAdminOrDietitian()) {
+          <a
+            class="text-sm font-semibold text-gray-900 hover:text-emerald-800
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+            routerLink="/admin"
+            routerLinkActive="text-emerald-700 font-bold"
+          >
+            {{ userRole() === UserRole.ADMIN ? 'Admin' : 'Dietitian' }} Panel
+          </a>
+        }
+        <a
+          class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-800 hover:text-emerald-700
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+          routerLink="/user"
+          routerLinkActive="text-emerald-700 font-bold"
         >
-          <div class="relative h-7 w-7 overflow-hidden rounded-full border-2 border-emerald-800 shadow-md bg-gray-100">
+          <div
+            class="relative h-7 w-7 overflow-hidden rounded-full border-2 border-emerald-800 shadow-md bg-gray-100"
+          >
             <img
+              [alt]="'Profile picture of ' + username()"
               [ngSrc]="displayImageSrc()"
-              alt="User profile picture"
               class="h-full w-full object-cover"
-              loading="eager"
-              width="28"
               height="28"
-              priority
+              loading="lazy"
+              width="28"
             />
             @if (isImageLoading()) {
               <div class="absolute inset-0 rounded-full bg-gray-100 animate-pulse"></div>
             }
           </div>
-          <span>{{ username }}</span>
+          <span>{{ username() }}</span>
         </a>
-        <button (click)="logout()"
-                class="text-sm font-semibold text-gray-900 hover:text-emerald-800
-                       focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded
-                       hover:cursor-pointer"
+        <button
+          (click)="logout()"
+          class="text-sm font-semibold text-gray-900 hover:text-emerald-800
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded
+          hover:cursor-pointer"
+          type="button"
         >
           Logout
         </button>
@@ -108,124 +103,16 @@
 
   </nav>
 
-  <dialog
+  <app-mobile-menu
     #mobileMenu
-    (click)="closeMenu(mobileMenu)"
-    (keydown.enter)="closeMenu(mobileMenu)"
-    (keydown.space)="closeMenu(mobileMenu)"
-    aria-label="Close menu by clicking outside"
-    class="backdrop:bg-black/20 lg:hidden"
-    id="mobile-menu"
-    role="button"
-    tabindex="0"
-  >
-    <div class="fixed inset-0 z-50 flex justify-end">
-      <div
-        class="h-full w-full max-w-7/12 overflow-y-auto
-        bg-white p-6 shadow-xl ring-1 ring-gray-900/10"
-      >
-        <div class="flex justify-end">
-          <button
-            (click)="closeMenu(mobileMenu)"
-            aria-label="Close menu"
-            class="-m-2.5 rounded-md p-2.5 text-gray-700 focus:outline-none focus-visible:ring-2
-            focus-visible:ring-emerald-600 hover:cursor-pointer"
-            type="button"
-          >
-            <i aria-hidden="true" class="fa-solid fa-xmark text-2xl"></i>
-          </button>
-        </div>
-
-        <nav class="mt-8 flow-root">
-          <div class="-my-2 divide-y divide-gray-500/10">
-            <div class="space-y-2 py-6">
-              @if (!isLoggedIn) {
-                <a
-                  (click)="closeMenu(mobileMenu)"
-                  class="flex items-center gap-x-4 rounded-lg px-3 py-2 text-lg
-                  font-medium text-gray-900 hover:bg-emerald-50 hover:text-emerald-800"
-                  routerLink="/login"
-                >
-                  <i aria-hidden="true" class="fa-solid fa-right-to-bracket fa-fw text-xl"></i>
-                  <span>Log in</span>
-                </a>
-
-                <a
-                  (click)="closeMenu(mobileMenu)"
-                  class="flex items-center gap-x-4 rounded-lg px-3 py-2 text-lg font-medium
-                  text-gray-900 hover:bg-emerald-50 hover:text-emerald-800"
-                  routerLink="/register"
-                >
-                  <i aria-hidden="true" class="fa-solid fa-user-plus fa-fw text-xl"></i>
-                  <span>Register</span>
-                </a>
-              } @else {
-                <a
-                  (click)="closeMenu(mobileMenu)"
-                  class="flex items-center gap-x-4 rounded-lg px-3 py-2 text-lg font-medium
-                  text-gray-900 hover:bg-emerald-50 hover:text-emerald-800"
-                  routerLink="/user"
-                >
-                  <i aria-hidden="true" class="fa-solid fa-circle-user fa-fw text-xl"></i>
-                  <span>{{ username }}</span>
-                </a>
-                <button
-                  (click)="logout()"
-                  class="flex w-full items-center gap-x-4 rounded-lg px-3 py-2 text-left
-                  text-lg font-medium text-gray-900 hover:bg-emerald-50 hover:text-emerald-800
-                  hover:cursor-pointer"
-                >
-                  <i aria-hidden="true" class="fa-solid fa-right-from-bracket fa-fw text-xl"></i>
-                  <span>Logout</span>
-                </button>
-              }
-            </div>
-
-            <div class="space-y-2 py-6">
-              <a
-                (click)="closeMenu(mobileMenu)"
-                class="flex items-center gap-x-4 rounded-lg px-3 py-2 text-lg font-medium
-                text-gray-900 hover:bg-emerald-50 hover:text-emerald-800"
-                routerLink="/features"
-              >
-                <i aria-hidden="true" class="fa-solid fa-layer-group fa-fw text-xl"></i>
-                <span>Features</span>
-              </a>
-
-              <a
-                (click)="closeMenu(mobileMenu)"
-                class="flex items-center gap-x-4 rounded-lg px-3 py-2 text-lg font-medium
-                text-gray-900 hover:bg-emerald-50 hover:text-emerald-800"
-                routerLink="/blog"
-              >
-                <i aria-hidden="true" class="fa-solid fa-blog fa-fw text-xl"></i>
-                <span>Blog</span>
-              </a>
-
-              <a
-                (click)="closeMenu(mobileMenu)"
-                class="flex items-center gap-x-4 rounded-lg px-3 py-2 text-lg font-medium
-                text-gray-900 hover:bg-emerald-50 hover:text-emerald-800"
-                routerLink="/offers"
-              >
-                <i aria-hidden="true" class="fa-solid fa-tags fa-fw text-xl"></i>
-                <span>Offers</span>
-              </a>
-
-              <a
-                (click)="closeMenu(mobileMenu)"
-                class="flex items-center gap-x-4 rounded-lg px-3 py-2 text-lg font-medium
-                text-gray-900 hover:bg-emerald-50 hover:text-emerald-800"
-                routerLink="/about-us"
-              >
-                <i aria-hidden="true" class="fa-solid fa-circle-info fa-fw text-xl"></i>
-                <span>About us</span>
-              </a>
-            </div>
-
-          </div>
-        </nav>
-      </div>
-    </div>
-  </dialog>
+    (logoutRequested)="logout()"
+    (menuClosed)="onMenuClosed()"
+    [displayImageSrc]="displayImageSrc()"
+    [isAdminOrDietitian]="isAdminOrDietitian()"
+    [isImageLoading]="isImageLoading()"
+    [isLoggedIn]="isLoggedIn()"
+    [navItems]="navItems"
+    [userRole]="userRole()"
+    [username]="username()"
+  />
 </header>
