@@ -1,0 +1,62 @@
+<div class="min-h-screen bg-gray-50/50 p-6 lg:p-10">
+  <div class="max-w-7xl mx-auto">
+
+    <header class="mb-10">
+      <div class="flex flex-col gap-1">
+        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+          Admin Dashboard
+        </h1>
+        <p class="text-lg text-gray-500">
+          Welcome,
+          <span class="font-semibold text-emerald-600">{{ username() }}</span>
+        </p>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      @for (item of dashboardMenuItems(); track item.route) {
+        <a
+          [routerLink]="item.route"
+          class="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm
+          ring-1 ring-gray-900/5 transition-all hover:-translate-y-1 hover:shadow-md"
+        >
+          <div class="flex items-start justify-between mb-6">
+            <div
+              class="relative flex h-14 w-14 items-center justify-center rounded-2xl
+              text-black transition-colors duration-200"
+            >
+              <fa-icon [icon]="item.icon" class="text-2xl text-current"></fa-icon>
+            </div>
+
+            <span
+              class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5
+              text-xs font-medium text-emerald-600 ring-1 ring-inset ring-emerald-500/10"
+            >
+              {{ item.category }}
+            </span>
+          </div>
+
+          <div>
+            <h3
+              class="text-lg font-bold text-gray-900 group-hover:text-emerald-600 transition-colors"
+            >
+              {{ item.title }}
+            </h3>
+            <p class="mt-2 text-sm leading-6 text-gray-500">
+              {{ item.description }}
+            </p>
+          </div>
+
+          <div
+            class="absolute bottom-6 right-6 opacity-0 -translate-x-2 transition-all duration-300
+            group-hover:opacity-100 group-hover:translate-x-0"
+          >
+            <fa-icon [icon]="arrowIcon" class="text-gray-400 text-lg"></fa-icon>
+          </div>
+        </a>
+      }
+
+    </div>
+  </div>
+</div>
