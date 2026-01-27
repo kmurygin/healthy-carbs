@@ -8,4 +8,7 @@ export interface UserDto {
   email: string;
   profileImageId: number | null;
   role: UserRole;
+  createdAt: string | null;
+  lastLoginAt: string | null;
+  isActive: boolean;
 }

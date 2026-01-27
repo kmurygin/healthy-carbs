@@ -14,6 +14,7 @@ export const ApiEndpoints = {
 
   User: {
     Base: getUrl('users/'),
+    GetAll: getUrl('users'),
     GetByUsername: getUrl('users/username/'),
     ChangePassword: getUrl('users/change-password'),
   },
@@ -58,6 +59,10 @@ export const ApiEndpoints = {
 
   Measurements: {
     Base: getUrl('measurements'),
+  },
+
+  Allergens: {
+    Base: getUrl('allergens'),
   },
 
   Dietitian: {
