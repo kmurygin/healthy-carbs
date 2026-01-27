@@ -37,8 +37,7 @@ class UserTest {
                     () -> assertThat(user.getLastName()).isEqualTo("userLastName"),
                     () -> assertThat(user.getEmail()).isEqualTo("user@user.com"),
                     () -> assertThat(user.getPassword()).isEqualTo("encodedPassword"),
-                    () -> assertThat(user.getRole()).isEqualTo(Role.USER)
-            );
+                    () -> assertThat(user.getRole()).isEqualTo(Role.USER));
         }
 
         @Test
@@ -60,8 +59,7 @@ class UserTest {
                     () -> assertThat(newUser.getLastName()).isEqualTo("Kacprowski"),
                     () -> assertThat(newUser.getEmail()).isEqualTo("kacper@kacprowski.pl"),
                     () -> assertThat(newUser.getPassword()).isEqualTo("hasloKacpra"),
-                    () -> assertThat(newUser.getRole()).isEqualTo(Role.ADMIN)
-            );
+                    () -> assertThat(newUser.getRole()).isEqualTo(Role.ADMIN));
         }
 
         @Test
@@ -71,7 +69,6 @@ class UserTest {
             assertThat(user.getUsername()).isEqualTo("kacper.kacprowski");
         }
     }
-
 
     @Nested
     @DisplayName("Constructors")
@@ -90,8 +87,7 @@ class UserTest {
             assertAll(
                     () -> assertThat(testUser.getId()).isEqualTo(12L),
                     () -> assertThat(testUser.getUsername()).isEqualTo("Marian"),
-                    () -> assertThat(testUser.getRole()).isEqualTo(Role.USER)
-            );
+                    () -> assertThat(testUser.getRole()).isEqualTo(Role.USER));
         }
 
         @Test
@@ -105,9 +101,12 @@ class UserTest {
                     "jan@kowalski.com",
                     "Jankowalski22$",
                     Role.ADMIN,
+                    null,
+                    null,
+                    true,
+                    null,
                     new java.util.HashSet<>(),
-                    null
-            );
+                    null);
 
             assertAll(
                     () -> assertThat(testUser.getId()).isEqualTo(30L),
@@ -116,11 +115,9 @@ class UserTest {
                     () -> assertThat(testUser.getLastName()).isEqualTo("Kowalski"),
                     () -> assertThat(testUser.getEmail()).isEqualTo("jan@kowalski.com"),
                     () -> assertThat(testUser.getPassword()).isEqualTo("Jankowalski22$"),
-                    () -> assertThat(testUser.getRole()).isEqualTo(Role.ADMIN)
-            );
+                    () -> assertThat(testUser.getRole()).isEqualTo(Role.ADMIN));
         }
     }
-
 
     @Nested
     @DisplayName("Builder")
@@ -146,8 +143,7 @@ class UserTest {
                     () -> assertThat(testUser.getLastName()).isEqualTo("Kowalska"),
                     () -> assertThat(testUser.getEmail()).isEqualTo("anna.kowalska22@ania.com"),
                     () -> assertThat(testUser.getPassword()).isEqualTo("helloThere2&&"),
-                    () -> assertThat(testUser.getRole()).isEqualTo(Role.USER)
-            );
+                    () -> assertThat(testUser.getRole()).isEqualTo(Role.USER));
         }
 
         @Test
@@ -164,7 +160,6 @@ class UserTest {
             assertThat(testUser.getEmail()).isNull();
         }
     }
-
 
     @Nested
     @DisplayName("Equals")
@@ -199,7 +194,6 @@ class UserTest {
         }
     }
 
-
     @Nested
     @DisplayName("ToString")
     class ToStringTests {
@@ -214,7 +208,6 @@ class UserTest {
                     .doesNotContain("encodedPassword");
         }
     }
-
 
     @Nested
     @DisplayName("UserDetails Implementation")
@@ -251,8 +244,7 @@ class UserTest {
                     () -> assertThat(user.isAccountNonExpired()).isTrue(),
                     () -> assertThat(user.isAccountNonLocked()).isTrue(),
                     () -> assertThat(user.isCredentialsNonExpired()).isTrue(),
-                    () -> assertThat(user.isEnabled()).isTrue()
-            );
+                    () -> assertThat(user.isEnabled()).isTrue());
         }
 
         @Test
@@ -261,7 +253,6 @@ class UserTest {
             assertThat(user.getUsername()).isEqualTo("userUsername");
         }
     }
-
 
     @Nested
     @DisplayName("Defensive/negative checks")
