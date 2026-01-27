@@ -82,6 +82,7 @@ export class RecipesManagementComponent extends AbstractManagementComponent<Reci
   );
   private readonly authService = inject(AuthService);
   readonly currentUserId = this.authService.userId();
+  readonly isAdmin = computed(() => this.authService.userRole() === 'ADMIN');
   private readonly searchParams = signal<RecipeSearchParams>({
     page: INITIAL_PAGE_INDEX,
     size: DEFAULT_PAGE_SIZE,

@@ -74,6 +74,7 @@ export class IngredientsManagementComponent extends AbstractManagementComponent<
   private readonly ingredientService = inject(IngredientService);
   private readonly authService = inject(AuthService);
   readonly currentUserId = this.authService.userId;
+  readonly isAdmin = computed(() => this.authService.userRole() === 'ADMIN');
   private readonly pageIndex = signal(INITIAL_PAGE_INDEX);
   private readonly refreshTrigger$ = new Subject<void>();
   private readonly currentFilters = signal<IngredientFilters>({name: '', category: null, onlyMine: false});

@@ -20,6 +20,12 @@ export const DIETITIAN_ROUTES: Routes = [
     title: 'Ingredients'
   },
   {
+    path: 'allergens',
+    loadComponent: () => import('@features/resources-management/allergens/allergens-management/allergens-management.component')
+      .then(m => m.AllergensManagementComponent),
+    title: 'Allergens'
+  },
+  {
     path: 'clients',
     loadComponent: () => import('@features/dietitian/clients/client-list/client-list.component')
       .then(m => m.ClientListComponent),

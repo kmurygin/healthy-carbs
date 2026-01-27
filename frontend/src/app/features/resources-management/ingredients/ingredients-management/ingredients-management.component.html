@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-7xl px-4 py-8 bg-white">
+<div class="mx-auto max-w-7xl px-4 py-8">
 
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
     <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Ingredient Inventory</h2>
@@ -43,6 +43,7 @@
         (delete)="deleteItem($event)"
         (edit)="openEdit($event)"
         [currentUserId]="currentUserId()"
+        [isAdmin]="isAdmin()"
         [ingredients]="ingredients()"
       ></app-ingredients-management-mobile-list>
 
@@ -51,6 +52,7 @@
           (delete)="deleteItem($event)"
           (edit)="openEdit($event)"
           [currentUserId]="currentUserId()"
+          [isAdmin]="isAdmin()"
           [ingredients]="ingredients()"
         ></app-ingredients-management-table>
       </div>

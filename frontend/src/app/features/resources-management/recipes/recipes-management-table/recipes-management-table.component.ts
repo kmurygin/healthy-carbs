@@ -13,6 +13,7 @@ import type {RecipeDto} from '@core/models/dto/recipe.dto';
 export class RecipesManagementTableComponent {
   readonly recipes = input.required<readonly RecipeDto[]>();
   readonly currentUserId = input<number | null>(null);
+  readonly isAdmin = input<boolean>(false);
 
   readonly edit = output<number>();
   readonly delete = output<number>();
@@ -25,7 +26,7 @@ export class RecipesManagementTableComponent {
     fire: faFire
   };
 
-  isOwner(recipe: RecipeDto): boolean {
-    return recipe.author?.id === this.currentUserId();
+  canModify(recipe: RecipeDto): boolean {
+    return this.isAdmin() || recipe.author?.id === this.currentUserId();
   }
 }

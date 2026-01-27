@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-7xl px-4 py-8 min-h-screen bg-white">
+<div class="mx-auto max-w-7xl px-4 py-8 min-h-screen">
 
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
     <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Recipe Management</h2>
@@ -47,6 +47,7 @@
       (delete)="deleteItem($event)"
       (edit)="openEdit($event)"
       [currentUserId]="currentUserId"
+      [isAdmin]="isAdmin()"
       [recipes]="recipes()"
     ></app-recipes-management-mobile-list>
 
@@ -54,6 +55,7 @@
       (delete)="deleteItem($event)"
       (edit)="openEdit($event)"
       [currentUserId]="currentUserId"
+      [isAdmin]="isAdmin()"
       [recipes]="recipes()"
     ></app-recipes-management-table>
 

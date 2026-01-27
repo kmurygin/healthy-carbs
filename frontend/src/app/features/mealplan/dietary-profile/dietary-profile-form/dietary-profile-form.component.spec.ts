@@ -5,24 +5,32 @@ import {TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
 import {DietaryProfileFormComponent} from './dietary-profile-form.component';
 import {DietaryProfileService} from '@core/services/dietary-profile/dietary-profile.service';
+import {AllergenService} from '@core/services/allergen/allergen.service';
 
 describe('DietaryProfileFormComponent', () => {
   let component: DietaryProfileFormComponent;
   let fixture: ComponentFixture<DietaryProfileFormComponent>;
   let dietaryProfileServiceSpy: MockedObject<Pick<DietaryProfileService, 'getProfile' | 'save'>>;
+  let allergenServiceSpy: MockedObject<Pick<AllergenService, 'getAll'>>;
 
   beforeEach(async () => {
     dietaryProfileServiceSpy = {
       getProfile: vi.fn().mockName("DietaryProfileService.getProfile"),
       save: vi.fn().mockName("DietaryProfileService.save")
     };
+    allergenServiceSpy = {
+      getAll: vi.fn().mockName("AllergenService.getAll")
+    };
+
     dietaryProfileServiceSpy.getProfile.mockReturnValue(of(null));
     dietaryProfileServiceSpy.save.mockReturnValue(of(null));
+    allergenServiceSpy.getAll.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [DietaryProfileFormComponent],
       providers: [
-        {provide: DietaryProfileService, useValue: dietaryProfileServiceSpy}
+        {provide: DietaryProfileService, useValue: dietaryProfileServiceSpy},
+        {provide: AllergenService, useValue: allergenServiceSpy}
       ]
     })
       .compileComponents();

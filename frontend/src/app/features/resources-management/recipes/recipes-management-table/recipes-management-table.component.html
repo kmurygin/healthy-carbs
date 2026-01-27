@@ -89,9 +89,9 @@
           <td class="px-6 py-4 text-right">
             <div class="flex items-center justify-end gap-2">
               <button
-                (click)="isOwner(recipe) && edit.emit(recipe.id)"
-                [class.opacity-30]="!isOwner(recipe)"
-                [disabled]="!isOwner(recipe)"
+                (click)="canModify(recipe) && edit.emit(recipe.id)"
+                [class.opacity-30]="!canModify(recipe)"
+                [disabled]="!canModify(recipe)"
                 class="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50
                     rounded-lg transition-colors disabled:cursor-not-allowed cursor-pointer"
                 title="Edit recipe"
@@ -99,9 +99,9 @@
                 <fa-icon [icon]="icons.pen" class="text-sm"></fa-icon>
               </button>
               <button
-                (click)="isOwner(recipe) && delete.emit(recipe.id)"
-                [class.opacity-30]="!isOwner(recipe)"
-                [disabled]="!isOwner(recipe)"
+                (click)="canModify(recipe) && delete.emit(recipe.id)"
+                [class.opacity-30]="!canModify(recipe)"
+                [disabled]="!canModify(recipe)"
                 class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50
                     rounded-lg transition-colors disabled:cursor-not-allowed cursor-pointer"
                 title="Delete recipe"
