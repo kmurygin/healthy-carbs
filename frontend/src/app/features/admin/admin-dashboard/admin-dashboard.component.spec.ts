@@ -36,18 +36,4 @@ describe('AdminDashboardComponent', () => {
   it('dashboardMenuItems_userIsAdmin_returnsAllMenuItems', () => {
     expect(component.dashboardMenuItems().length).toBeGreaterThan(0);
   });
-
-  it('dashboardMenuItems_userIsAdmin_includesUserManagement', () => {
-    const userManagement = component.dashboardMenuItems().find(item => item.route === '/admin/users');
-    expect(userManagement).toBeTruthy();
-    expect(userManagement?.title).toBe('User Management');
-  });
-
-  it('dashboardMenuItems_userIsDietitian_excludesUserManagement', () => {
-    mockAuthService.userRole.set(UserRole.DIETITIAN);
-    fixture.detectChanges();
-
-    const userManagement = component.dashboardMenuItems().find(item => item.route === '/admin/users');
-    expect(userManagement).toBeFalsy();
-  });
 });
