@@ -20,7 +20,10 @@ export const DEFAULT_TEST_USER: UserDto = {
   role: UserRole.DIETITIAN,
   firstName: 'Tom',
   lastName: 'Riddle',
-  profileImageId: null
+  profileImageId: null,
+  createdAt: '2026-01-01T00:00:00Z',
+  lastLoginAt: '2026-01-01T00:00:00Z',
+  isActive: true
 };
 
 export const REGULAR_TEST_USER: UserDto = {
@@ -30,7 +33,10 @@ export const REGULAR_TEST_USER: UserDto = {
   role: UserRole.USER,
   firstName: 'Test',
   lastName: 'User',
-  profileImageId: null
+  profileImageId: null,
+  createdAt: '2026-01-01T00:00:00Z',
+  lastLoginAt: '2026-01-01T00:00:00Z',
+  isActive: true
 };
 
 export const TEST_DATE = '2026-01-01';
