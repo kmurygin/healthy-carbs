@@ -1,9 +1,20 @@
 version: "1.0"
 
+projectFolderName: frontend
+
 profile:
   name: qodana.recommended
 
 linter: jetbrains/qodana-js:2025.2
+
+exclude:
+  - name: All
+    paths:
+      - "dist"
+      - "node_modules"
+      - "**/*.spec.ts"
+      - "test-results"
+      - "coverage"
 
 include:
   - name: Eslint
