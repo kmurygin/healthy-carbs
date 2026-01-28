@@ -44,11 +44,6 @@ include:
   - name: ThymeleafVariablesResolveInspection
   - name: ThymeleafMessagesResolveInspection
 
-plugins:
-  - id: com.haulmont.jpabuddy
-  - id: org.mapstruct.intelli
-  - id: CheckDependencyVulnerabilities
-
 failureConditions:
   severityThresholds:
     any: 50
