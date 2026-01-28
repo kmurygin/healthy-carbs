@@ -79,6 +79,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - name: 'Qodana Scan (Backend)'
         uses: JetBrains/qodana-action@v2025.2
@@ -180,6 +181,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - name: 'Qodana Scan (Frontend)'
         uses: JetBrains/qodana-action@v2025.2
