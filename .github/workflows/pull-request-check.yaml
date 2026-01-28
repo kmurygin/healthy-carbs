@@ -85,6 +85,7 @@ jobs:
         uses: JetBrains/qodana-action@v2025.2
         with:
           args: --project-dir,backend
+          pr-mode: false
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_BACKEND }}
           QODANA_ENDPOINT: 'https://qodana.cloud'
@@ -187,6 +188,7 @@ jobs:
         uses: JetBrains/qodana-action@v2025.2
         with:
           args: --project-dir,frontend
+          pr-mode: false
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_FRONTEND }}
           QODANA_ENDPOINT: 'https://qodana.cloud'

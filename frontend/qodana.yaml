@@ -1,7 +1,5 @@
 version: "1.0"
 
-projectFolderName: frontend
-
 profile:
   name: qodana.recommended
 
