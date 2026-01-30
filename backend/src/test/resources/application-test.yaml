@@ -32,6 +32,9 @@ application:
       secret-key: 2fBbjzfBV2CzLEeO2OOQUPQM/XK0GRE/IEHxsnPSqwI=
   cors:
     allowed-origins: http://localhost:3000
+  storage:
+    user-profile-image-prefix: profile-images
+    blog-post-image-prefix: blog-images
 
 payu:
   base-url: http://localhost
