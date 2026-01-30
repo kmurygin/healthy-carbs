@@ -8,9 +8,9 @@ import org.kmurygin.healthycarbs.mealplan.service.MealPlanService;
 import org.kmurygin.healthycarbs.offers.offer.Offer;
 import org.kmurygin.healthycarbs.offers.offer.OfferService;
 import org.kmurygin.healthycarbs.payments.model.Order;
-import org.kmurygin.healthycarbs.user.Role;
-import org.kmurygin.healthycarbs.user.User;
-import org.kmurygin.healthycarbs.user.UserService;
+import org.kmurygin.healthycarbs.user.model.Role;
+import org.kmurygin.healthycarbs.user.model.User;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

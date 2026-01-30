@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.kmurygin.healthycarbs.payments.dto.PaymentStatus;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 
 import java.util.Objects;
 

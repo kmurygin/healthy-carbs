@@ -2,7 +2,7 @@ package org.kmurygin.healthycarbs.auth.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 
 import java.time.Instant;
 

@@ -1,6 +1,7 @@
-package org.kmurygin.healthycarbs.user;
+package org.kmurygin.healthycarbs.user.mapper;
 
 import org.kmurygin.healthycarbs.user.dto.UserDTO;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

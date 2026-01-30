@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.payments.config.PayuProperties;
 import org.kmurygin.healthycarbs.payments.dto.*;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

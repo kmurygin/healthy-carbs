@@ -8,7 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 
 import java.time.Instant;
 import java.util.*;

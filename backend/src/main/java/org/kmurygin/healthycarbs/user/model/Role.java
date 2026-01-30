@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.user;
+package org.kmurygin.healthycarbs.user.model;
 
 public enum Role {
     USER,

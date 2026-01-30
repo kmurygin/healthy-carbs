@@ -5,7 +5,7 @@ import org.kmurygin.healthycarbs.blog.dto.BlogPostDTO;
 import org.kmurygin.healthycarbs.blog.dto.CreateBlogPostRequest;
 import org.kmurygin.healthycarbs.blog.model.BlogComment;
 import org.kmurygin.healthycarbs.blog.model.BlogPost;
-import org.kmurygin.healthycarbs.user.UserMapper;
+import org.kmurygin.healthycarbs.user.mapper.UserMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

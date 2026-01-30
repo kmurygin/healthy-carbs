@@ -1,7 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.repository;
 
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

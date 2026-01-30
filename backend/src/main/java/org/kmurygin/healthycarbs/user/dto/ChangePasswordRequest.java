@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.user;
+package org.kmurygin.healthycarbs.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

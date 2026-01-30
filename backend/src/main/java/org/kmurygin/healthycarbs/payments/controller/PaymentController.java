@@ -3,7 +3,7 @@ package org.kmurygin.healthycarbs.payments.controller;
 import lombok.AllArgsConstructor;
 import org.kmurygin.healthycarbs.payments.dto.PaymentSummaryDTO;
 import org.kmurygin.healthycarbs.payments.service.PaymentSummaryService;
-import org.kmurygin.healthycarbs.user.UserService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.slf4j.Logger;

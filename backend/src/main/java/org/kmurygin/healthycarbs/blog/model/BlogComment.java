@@ -3,7 +3,7 @@ package org.kmurygin.healthycarbs.blog.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 
 import java.time.Instant;
 

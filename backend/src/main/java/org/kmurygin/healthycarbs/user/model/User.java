@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.user;
+package org.kmurygin.healthycarbs.user.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

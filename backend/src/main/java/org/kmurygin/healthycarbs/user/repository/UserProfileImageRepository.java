@@ -1,5 +1,6 @@
-package org.kmurygin.healthycarbs.user;
+package org.kmurygin.healthycarbs.user.repository;
 
+import org.kmurygin.healthycarbs.user.model.UserProfileImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -2,7 +2,7 @@ package org.kmurygin.healthycarbs.dietitian.collaboration;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 
 import java.time.OffsetDateTime;
 

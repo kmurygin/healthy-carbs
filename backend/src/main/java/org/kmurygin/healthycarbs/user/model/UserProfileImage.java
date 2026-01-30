@@ -1,4 +1,4 @@
-package org.kmurygin.healthycarbs.user;
+package org.kmurygin.healthycarbs.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

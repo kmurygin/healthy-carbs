@@ -7,7 +7,7 @@ import org.kmurygin.healthycarbs.payments.dto.OrderResponse;
 import org.kmurygin.healthycarbs.payments.dto.PaymentStatus;
 import org.kmurygin.healthycarbs.payments.model.Order;
 import org.kmurygin.healthycarbs.payments.repository.OrderRepository;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
