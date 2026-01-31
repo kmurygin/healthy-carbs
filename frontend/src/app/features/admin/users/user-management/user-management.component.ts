@@ -4,7 +4,7 @@ import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {catchError, filter, map, of, startWith, switchMap} from 'rxjs';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {faArrowLeft, faExclamationCircle, faSpinner, faUsers} from '@fortawesome/free-solid-svg-icons';
-import {UserService} from '@core/services/user/user.service';
+import {UserAdminService} from '@core/services/user/user-admin.service';
 import {AuthService} from '@core/services/auth/auth.service';
 import type {UserDto} from '@core/models/dto/user.dto';
 import {UserRole} from '@core/models/enum/user-role.enum';
@@ -40,13 +40,13 @@ export class UserManagementComponent extends AbstractManagementComponent<UserDto
     warn: faExclamationCircle
   };
   private readonly refreshTrigger = signal(0);
-  private readonly userService = inject(UserService);
+  private readonly userAdminService = inject(UserAdminService);
   private readonly authService = inject(AuthService);
   private readonly currentUserId = this.authService.userId;
 
   private readonly state = toSignal(
     toObservable(this.refreshTrigger).pipe(
-      switchMap(() => this.userService.getAllUsers().pipe(
+      switchMap(() => this.userAdminService.getAllUsers().pipe(
         map(users => ({users, loading: false, error: null})),
         catchError((err: unknown) => {
           console.error('User load error:', err);
@@ -103,7 +103,7 @@ export class UserManagementComponent extends AbstractManagementComponent<UserDto
       type: 'danger'
     }).pipe(
       filter(confirmed => confirmed),
-      switchMap(() => this.userService.deleteUser(user.id))
+      switchMap(() => this.userAdminService.deleteUser(user.id))
     ).subscribe({
       next: () => {
         this.notificationService.success(`User "${user.username}" deleted successfully`);
@@ -124,7 +124,7 @@ export class UserManagementComponent extends AbstractManagementComponent<UserDto
       type: 'info'
     }).pipe(
       filter(confirmed => confirmed),
-      switchMap(() => this.userService.changeUserRole(user.id, newRole))
+      switchMap(() => this.userAdminService.changeUserRole(user.id, newRole))
     ).subscribe({
       next: () => {
         this.notificationService.success(`Role updated for ${user.username}.`);
@@ -148,7 +148,7 @@ export class UserManagementComponent extends AbstractManagementComponent<UserDto
       type: user.isActive ? 'danger' : 'info'
     }).pipe(
       filter(confirmed => confirmed),
-      switchMap(() => this.userService.toggleUserActiveStatus(user.id))
+      switchMap(() => this.userAdminService.toggleUserActiveStatus(user.id))
     ).subscribe({
       next: (updatedUser) => {
         this.notificationService.success(`Account ${updatedUser.isActive ? 'activated' : 'deactivated'}.`);

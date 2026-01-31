@@ -29,7 +29,6 @@ describe('UserDetailsModalComponent', () => {
     fixture = TestBed.createComponent(UserDetailsModalComponent);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('user', mockUser);
-    fixture.componentRef.setInput('profileImageUrl', 'https://example.com/image.png');
     fixture.detectChanges();
   });
 

@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, signal} from '@angular/core';
+import {NgOptimizedImage} from '@angular/common';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {EMPTY} from 'rxjs';
 import {catchError, filter, finalize, switchMap, tap} from 'rxjs/operators';
@@ -12,7 +13,7 @@ import {generateUiAvatarsUrl} from "@features/collaboration/collaboration.utils"
 
 @Component({
   selector: 'app-dietitian-list',
-  imports: [],
+  imports: [NgOptimizedImage],
   templateUrl: './dietitian-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -14,9 +14,15 @@ export const ApiEndpoints = {
 
   User: {
     Base: getUrl('users/'),
-    GetAll: getUrl('users'),
     GetByUsername: getUrl('users/username/'),
     ChangePassword: getUrl('users/change-password'),
+  },
+
+  Admin: {
+    Users: {
+      Base: getUrl('admin/users/'),
+      GetAll: getUrl('admin/users'),
+    },
   },
 
   MealPlan: {

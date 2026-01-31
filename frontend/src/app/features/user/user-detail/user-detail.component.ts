@@ -14,6 +14,7 @@ import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {finalize} from 'rxjs';
 import {UserService} from '@core/services/user/user.service';
+import {UserProfileImageService} from '@core/services/user/user-profile-image.service';
 import {AuthService} from '@core/services/auth/auth.service';
 import {NotificationService} from '@core/services/ui/notification.service';
 import type {UserDto} from '@core/models/dto/user.dto';
@@ -45,6 +46,7 @@ export class UserDetailComponent implements OnInit {
   readonly profileImageSrc = computed(() =>
     this.userService.currentUserImageUrl() ?? 'assets/default-avatar.png'
   );
+  private readonly userProfileImageService = inject(UserProfileImageService);
   private readonly imagePreloadService = inject(ImagePreloadService);
   private readonly injector = inject(Injector);
   private readonly imageState = this.imagePreloadService.createPreloadedImage(
@@ -83,7 +85,7 @@ export class UserDetailComponent implements OnInit {
     this.isUploading.set(true);
     this.errorMessage.set('');
 
-    this.userService.uploadProfileImage(currentUser.id, file)
+    this.userProfileImageService.uploadProfileImage(currentUser.id, file)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .pipe(finalize(() => {
         this.isUploading.set(false)

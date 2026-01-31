@@ -35,6 +35,10 @@ import {NotificationService} from '@core/services/ui/notification.service';
 export class HeaderComponent {
   readonly menuOpen = signal(false);
   readonly navItems = NAV_ITEMS;
+  readonly isAdminOrDietitian = computed(() => {
+    const role = this.userRole();
+    return role === UserRole.ADMIN || role === UserRole.DIETITIAN;
+  });
   protected readonly UserRole = UserRole;
   private readonly mobileMenu = viewChild<MobileMenuComponent>('mobileMenu');
   private readonly userService = inject(UserService);
@@ -45,10 +49,6 @@ export class HeaderComponent {
   readonly username = this.authService.user;
   readonly isLoggedIn = computed(() => this.authService.isLoggedIn());
   readonly userRole = computed(() => this.authService.userRole() as UserRole | null);
-  readonly isAdminOrDietitian = computed(() => {
-    const role = this.userRole();
-    return role === UserRole.ADMIN || role === UserRole.DIETITIAN;
-  });
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly notificationService = inject(NotificationService);

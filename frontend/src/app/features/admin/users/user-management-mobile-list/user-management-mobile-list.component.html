@@ -12,7 +12,7 @@
           />
           <div>
             <h3 class="font-semibold text-gray-900">{{ user.firstName }} {{ user.lastName }}</h3>
-            <p class="text-xs text-gray-500">@{{ user.username }}</p>
+            <p class="text-xs text-gray-500">{{ user.username }}</p>
           </div>
         </div>
         <span [class]="user.isActive | userStatusBadge">

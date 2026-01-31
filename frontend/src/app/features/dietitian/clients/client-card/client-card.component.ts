@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, computed, inject, input,} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {RouterLink} from '@angular/router';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {catchError, filter, of, startWith, switchMap} from 'rxjs';
@@ -11,7 +11,7 @@ import {getInitials} from '@features/collaboration/collaboration.utils';
 
 @Component({
   selector: 'app-client-card',
-  imports: [CommonModule, RouterLink, FaIconComponent],
+  imports: [CommonModule, RouterLink, FaIconComponent, NgOptimizedImage],
   templateUrl: './client-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
