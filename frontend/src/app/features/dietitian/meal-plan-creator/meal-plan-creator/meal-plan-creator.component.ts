@@ -196,11 +196,6 @@ export class MealPlanCreatorComponent {
   private readonly notificationService = inject(NotificationService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly recipeSearchParams = computed<RecipeSearchParams>(() => ({
-    ...this.filters(),
-    page: this.pageNumber(),
-    size: this.pageSize(),
-  }));
   private readonly loadTriggerPx = 120;
   private readonly baseRecipeParams = computed(() => ({
     ...this.filters(),
