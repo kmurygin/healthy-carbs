@@ -21,6 +21,7 @@ import org.kmurygin.healthycarbs.mealplan.model.DietaryProfile;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRepository;
+import org.kmurygin.healthycarbs.user.UserTestUtils;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.service.UserService;
 import org.mockito.ArgumentCaptor;
@@ -111,7 +112,7 @@ class MealPlanServiceUnitTest {
 
     @Test
     void generateMealPlan_shouldBuildWeekAndSumTotals_andPublishEvent() {
-        User user = User.builder().id(1L).build();
+        User user = UserTestUtils.createTestUser(1L, "user");
 
         Genome dayGenome = new Genome();
         dayGenome.setGenes(List.of(Recipe.builder().calories(500.0).carbs(10.0).protein(20.0).fat(5.0).build()));
@@ -145,7 +146,7 @@ class MealPlanServiceUnitTest {
 
     @Test
     void getMealPlansHistory_shouldReturnPlansForCurrentUser() {
-        User user = User.builder().id(1L).build();
+        User user = UserTestUtils.createTestUser(1L, "user");
         when(authenticationService.getCurrentUser()).thenReturn(user);
         when(mealPlanRepository.findByUser(user)).thenReturn(List.of(new MealPlan(), new MealPlan()));
 
@@ -157,7 +158,7 @@ class MealPlanServiceUnitTest {
 
     @Test
     void findById_shouldThrowNotFound_whenMissing() {
-        User user = User.builder().id(1L).username("user").build();
+        User user = UserTestUtils.createTestUser(1L, "user");
         when(authenticationService.getCurrentUser()).thenReturn(user);
         when(mealPlanRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -167,8 +168,8 @@ class MealPlanServiceUnitTest {
 
     @Test
     void findById_shouldThrowForbidden_whenNotOwned() {
-        User current = User.builder().id(1L).username("currentUser").build();
-        User owner = User.builder().id(2L).username("owner").build();
+        User current = UserTestUtils.createTestUser(1L, "currentUser");
+        User owner = UserTestUtils.createTestUser(2L, "owner");
 
         MealPlan plan = new MealPlan();
         plan.setId(10L);
@@ -183,7 +184,7 @@ class MealPlanServiceUnitTest {
 
     @Test
     void findById_shouldReturnMealPlan_whenOwned() {
-        User current = User.builder().id(1L).username("currentUser").build();
+        User current = UserTestUtils.createTestUser(1L, "currentUser");
 
         MealPlan plan = new MealPlan();
         plan.setId(10L);
@@ -199,11 +200,10 @@ class MealPlanServiceUnitTest {
 
     @Test
     void createManualMealPlan_shouldCreateForCreator_whenClientIdNull_andSendEmail_andPublishEvent() {
-        User creator = User.builder()
-                .id(1L).username("dietitian")
-                .firstName("Dietitian").lastName("Test")
-                .email("creator@test.com")
-                .build();
+        User creator = UserTestUtils.createTestUser(1L, "dietitian");
+        creator.setFirstName("Dietitian");
+        creator.setLastName("Test");
+        creator.setEmail("creator@test.com");
 
         when(authenticationService.getCurrentUser()).thenReturn(creator);
 
@@ -250,16 +250,13 @@ class MealPlanServiceUnitTest {
 
     @Test
     void createManualMealPlan_shouldCreateForClient_whenClientIdProvided() {
-        User dietitian = User.builder()
-                .id(1L).username("dietitian")
-                .firstName("Dietitian").lastName("Test")
-                .email("dietitian@test.com")
-                .build();
+        User dietitian = UserTestUtils.createTestUser(1L, "dietitian");
+        dietitian.setFirstName("Dietitian");
+        dietitian.setLastName("Test");
+        dietitian.setEmail("dietitian@test.com");
 
-        User client = User.builder()
-                .id(2L).username("client")
-                .email("client@test.com")
-                .build();
+        User client = UserTestUtils.createTestUser(2L, "client");
+        client.setEmail("client@test.com");
 
         when(authenticationService.getCurrentUser()).thenReturn(dietitian);
         when(userService.getUserById(2L)).thenReturn(Optional.of(client));
@@ -291,8 +288,8 @@ class MealPlanServiceUnitTest {
 
     @Test
     void getDietitianMealPlansForClient_shouldReturnMatchedPlans() {
-        User dietitian = User.builder().id(1L).username("dietitian").build();
-        User client = User.builder().id(2L).username("client").build();
+        User dietitian = UserTestUtils.createTestUser(1L, "dietitian");
+        User client = UserTestUtils.createTestUser(2L, "client");
 
         when(authenticationService.getCurrentUser()).thenReturn(dietitian);
         when(userService.getUserById(2L)).thenReturn(Optional.of(client));
@@ -308,7 +305,7 @@ class MealPlanServiceUnitTest {
 
     @Test
     void getDietitianMealPlansForClient_shouldThrowNotFound_whenClientMissing() {
-        User dietitian = User.builder().id(1L).username("dietitian").build();
+        User dietitian = UserTestUtils.createTestUser(1L, "dietitian");
         when(authenticationService.getCurrentUser()).thenReturn(dietitian);
         when(userService.getUserById(999L)).thenReturn(Optional.empty());
 
