@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.model.Allergen;
 import org.kmurygin.healthycarbs.mealplan.repository.AllergenRepository;
-import org.kmurygin.healthycarbs.user.Role;
-import org.kmurygin.healthycarbs.user.User;
-import org.kmurygin.healthycarbs.user.UserService;
+import org.kmurygin.healthycarbs.user.model.Role;
+import org.kmurygin.healthycarbs.user.model.User;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

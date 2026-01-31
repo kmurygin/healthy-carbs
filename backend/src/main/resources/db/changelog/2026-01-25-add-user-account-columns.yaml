@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-user-account-columns
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE users
+              ADD COLUMN created_at TIMESTAMP DEFAULT NOW(),
+              ADD COLUMN last_login_at TIMESTAMP,
+              ADD COLUMN is_active BOOLEAN DEFAULT TRUE NOT NULL;

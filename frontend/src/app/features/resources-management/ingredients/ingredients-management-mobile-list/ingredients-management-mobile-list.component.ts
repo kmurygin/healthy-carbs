@@ -16,6 +16,7 @@ import {formatEnum} from "@shared/utils";
 export class IngredientsManagementMobileListComponent {
   readonly ingredients = input.required<readonly IngredientDto[]>();
   readonly currentUserId = input<number | null>(null);
+  readonly isAdmin = input<boolean>(false);
 
   readonly edit = output<number>();
   readonly delete = output<number>();
@@ -29,8 +30,8 @@ export class IngredientsManagementMobileListComponent {
   };
   protected readonly formatEnum = formatEnum;
 
-  isOwner(ingredient: IngredientDto): boolean {
-    return ingredient.author?.id === this.currentUserId();
+  canModify(ingredient: IngredientDto): boolean {
+    return this.isAdmin() || ingredient.author?.id === this.currentUserId();
   }
 
   iconFor(category: IngredientCategory): string {

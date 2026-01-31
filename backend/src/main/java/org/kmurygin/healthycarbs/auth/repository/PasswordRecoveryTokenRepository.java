@@ -1,7 +1,7 @@
 package org.kmurygin.healthycarbs.auth.repository;
 
 import org.kmurygin.healthycarbs.auth.model.PasswordRecoveryToken;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

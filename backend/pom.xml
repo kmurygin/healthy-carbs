@@ -20,7 +20,7 @@
     <name>healthy-carbs</name>
 
     <properties>
-        <java.version>22</java.version>
+        <java.version>21</java.version>
 
         <springdoc.version>2.3.0</springdoc.version>
         <jjwt.version>0.12.3</jjwt.version>
@@ -299,6 +299,37 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${versions-maven-plugin.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+
+                <configuration>
+                    <includes>
+                        <include>**/controller/**</include>
+                        <include>**/service/**</include>
+                        <include>**/repository/**</include>
+                    </includes>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>

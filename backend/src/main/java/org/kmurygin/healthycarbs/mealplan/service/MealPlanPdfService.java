@@ -7,7 +7,7 @@ import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlanDay;
 import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRepository;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;

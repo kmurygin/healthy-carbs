@@ -29,9 +29,9 @@
 
       <div class="flex items-center justify-end gap-3 mt-4 border-t border-gray-100 pt-3">
         <button
-          (click)="isOwner(recipe) && edit.emit(recipe.id)"
-          [class.opacity-50]="!isOwner(recipe)"
-          [disabled]="!isOwner(recipe)"
+          (click)="canModify(recipe) && edit.emit(recipe.id)"
+          [class.opacity-50]="!canModify(recipe)"
+          [disabled]="!canModify(recipe)"
           class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
           text-gray-700 hover:bg-gray-50 hover:text-emerald-700 transition-colors
           disabled:cursor-not-allowed hover:cursor-pointer"
@@ -40,9 +40,9 @@
           Edit
         </button>
         <button
-          (click)="isOwner(recipe) && delete.emit(recipe.id)"
-          [class.opacity-50]="!isOwner(recipe)"
-          [disabled]="!isOwner(recipe)"
+          (click)="canModify(recipe) && delete.emit(recipe.id)"
+          [class.opacity-50]="!canModify(recipe)"
+          [disabled]="!canModify(recipe)"
           class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
           text-red-600 hover:bg-red-50 transition-colors disabled:cursor-not-allowed hover:cursor-pointer"
         >

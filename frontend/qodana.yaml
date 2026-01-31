@@ -5,12 +5,19 @@ profile:
 
 linter: jetbrains/qodana-js:2025.2
 
+exclude:
+  - name: All
+    paths:
+      - "dist"
+      - "node_modules"
+      - "**/*.spec.ts"
+      - "test-results"
+      - "coverage"
+
 include:
   - name: Eslint
 
-bootstrap: |
-  corepack enable || true
-  pnpm -v >/dev/null 2>&1 && pnpm install --frozen-lockfile || (npm ci || npm i)
+bootstrap: npm ci --legacy-peer-deps
 
 failureConditions:
   severityThresholds:

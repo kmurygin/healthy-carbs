@@ -3,7 +3,7 @@ package org.kmurygin.healthycarbs.mealplan.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 
 import java.util.Objects;
 

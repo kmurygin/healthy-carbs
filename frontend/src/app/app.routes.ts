@@ -2,6 +2,7 @@ import type {Routes} from '@angular/router';
 import {authGuard} from '@core/guards/auth.guard';
 import {guestGuard} from '@core/guards/guest.guard';
 import {dietitianGuard} from "@core/guards/dietitian.guard";
+import {adminGuard} from "@core/guards/admin.guard";
 
 export const routes: Routes = [
   {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
@@ -95,6 +96,12 @@ export const routes: Routes = [
     canActivate: [dietitianGuard],
     loadChildren: () => import('./features/dietitian/dietitian.routes')
       .then(m => m.DIETITIAN_ROUTES)
+  },
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    loadChildren: () => import('./features/admin/admin.routes')
+      .then(m => m.ADMIN_ROUTES)
   },
   {
     path: 'user-measurements',

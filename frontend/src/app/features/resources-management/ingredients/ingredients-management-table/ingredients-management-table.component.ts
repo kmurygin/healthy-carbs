@@ -101,22 +101,22 @@ import {formatEnum} from "@shared/utils";
               <td class="px-6 py-4 text-right">
                 <div class="flex items-center justify-end gap-2">
                   <button
-                    (click)="isOwner(ingredient) && edit.emit(ingredient.id)"
-                    [class.opacity-30]="!isOwner(ingredient)"
-                    [disabled]="!isOwner(ingredient)"
+                    (click)="canModify(ingredient) && edit.emit(ingredient.id)"
+                    [class.opacity-30]="!canModify(ingredient)"
+                    [disabled]="!canModify(ingredient)"
                     class="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50
                     rounded-lg transition-colors disabled:cursor-not-allowed cursor-pointer"
-                    title="Edit recipe"
+                    title="Edit ingredient"
                   >
                     <fa-icon [icon]="icons.pen" class="text-sm"></fa-icon>
                   </button>
                   <button
-                    (click)="isOwner(ingredient) && delete.emit(ingredient.id)"
-                    [class.opacity-30]="!isOwner(ingredient)"
-                    [disabled]="!isOwner(ingredient)"
+                    (click)="canModify(ingredient) && delete.emit(ingredient.id)"
+                    [class.opacity-30]="!canModify(ingredient)"
+                    [disabled]="!canModify(ingredient)"
                     class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50
                     rounded-lg transition-colors disabled:cursor-not-allowed cursor-pointer"
-                    title="Delete recipe"
+                    title="Delete ingredient"
                   >
                     <fa-icon [icon]="icons.trash" class="text-sm"></fa-icon>
                   </button>
@@ -133,6 +133,7 @@ import {formatEnum} from "@shared/utils";
 export class IngredientsManagementTableComponent {
   readonly ingredients = input.required<readonly IngredientDto[]>();
   readonly currentUserId = input<number | null>(null);
+  readonly isAdmin = input<boolean>(false);
   readonly edit = output<number>();
   readonly delete = output<number>();
   protected readonly icons = {
@@ -156,7 +157,7 @@ export class IngredientsManagementTableComponent {
     return CategoryIconMap[IngredientCategory.OTHER];
   }
 
-  isOwner(ingredient: IngredientDto): boolean {
-    return ingredient.author?.id === this.currentUserId();
+  canModify(ingredient: IngredientDto): boolean {
+    return this.isAdmin() || ingredient.author?.id === this.currentUserId();
   }
 }

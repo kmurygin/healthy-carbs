@@ -1,0 +1,64 @@
+<div class="mx-auto max-w-3xl px-4 py-8">
+
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Allergens Management</h2>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm ring-1 ring-gray-900/5 p-4 mb-6">
+    <div class="flex flex-col sm:flex-row gap-4 items-center">
+      <app-allergen-filter (searchChange)="handleSearch($event)" class="flex-1 w-full"/>
+
+      <button
+        (click)="openCreate()"
+        class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold
+        text-white shadow-sm hover:bg-emerald-700 transition-all hover:cursor-pointer
+        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 sm:w-auto w-full"
+      >
+        <fa-icon [icon]="icons.plus"></fa-icon>
+        Add New Allergen
+      </button>
+    </div>
+  </div>
+
+  @if (isDataLoading()) {
+    <div class="flex flex-col items-center justify-center gap-3 p-12 text-gray-500">
+      <fa-icon [icon]="icons.spinner" class="text-3xl text-emerald-600 animate-spin"></fa-icon>
+      <p class="font-medium animate-pulse">Loading allergens...</p>
+    </div>
+  } @else if (error()) {
+    <div class="p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 flex items-center gap-3">
+      <fa-icon [icon]="icons.warn"></fa-icon>
+      {{ error() }}
+    </div>
+  } @else if (totalElements() === 0) {
+    <div class="flex flex-col items-center justify-center gap-3 p-16 text-gray-400
+      bg-white rounded-2xl border border-gray-200 border-dashed">
+      <fa-icon [icon]="icons.shield" class="text-4xl mb-2"></fa-icon>
+      <p class="text-lg font-medium text-gray-600">No allergens found.</p>
+      <p class="text-sm">Start by creating your first allergen!</p>
+    </div>
+  } @else {
+    <app-allergens-management-mobile-list
+      (delete)="deleteItem($event.id)"
+      [allergens]="filteredAllergens()"
+    ></app-allergens-management-mobile-list>
+
+    <app-allergens-management-table
+      (delete)="deleteItem($event.id)"
+      [allergens]="filteredAllergens()"
+    ></app-allergens-management-table>
+
+    <div class="mt-6 px-4 py-3 bg-white rounded-xl shadow-sm ring-1 ring-gray-900/5">
+      <p class="text-sm text-gray-500">
+        Showing {{ filteredAllergens().length }} of {{ totalElements() }} allergens
+      </p>
+    </div>
+  }
+
+  @if (isFormOpen()) {
+    <app-allergens-management-form
+      (closeOutputEmitter)="closeForm()"
+      (savedOutputEmitter)="onSaveSuccess('Allergen saved successfully')"
+    ></app-allergens-management-form>
+  }
+</div>

@@ -6,7 +6,7 @@ import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
 public class RecipeSpecification {

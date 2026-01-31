@@ -3,9 +3,9 @@ package org.kmurygin.healthycarbs.blog.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,5 +31,5 @@ public class BlogComment {
     private User author;
 
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }

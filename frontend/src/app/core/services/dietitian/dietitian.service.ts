@@ -5,14 +5,14 @@ import {type ApiResponse} from '../../models/api-response.model';
 import {type UserDto} from '../../models/dto/user.dto';
 import {type DietaryProfileDto} from '../../models/dto/dietaryprofile.dto';
 import {ApiEndpoints} from '@core/constants/api-endpoints';
-import {UserService} from '@core/services/user/user.service';
+import {UserProfileImageService} from '@core/services/user/user-profile-image.service';
 import type {UserMeasurement} from '@core/services/user-measurement/user-measurement.service';
 import type {MealPlanDto} from "@core/models/dto/mealplan.dto";
 
 @Injectable({providedIn: 'root'})
 export class DietitianService {
   private readonly httpClient = inject(HttpClient);
-  private readonly userService = inject(UserService);
+  private readonly userProfileImageService = inject(UserProfileImageService);
 
   getAllDietitians(): Observable<UserDto[]> {
     return this.httpClient
@@ -27,7 +27,7 @@ export class DietitianService {
   }
 
   getProfileImageUrl(userId: number, cacheKey?: number | string | null): string {
-    return this.userService.getProfileImageUrl(userId, cacheKey);
+    return this.userProfileImageService.getProfileImageUrl(userId, cacheKey);
   }
 
   getMyClients(): Observable<UserDto[]> {

@@ -8,10 +8,10 @@ import org.kmurygin.healthycarbs.mealplan.service.DietaryProfileService;
 import org.kmurygin.healthycarbs.measurements.mapper.UserMeasurementMapper;
 import org.kmurygin.healthycarbs.measurements.model.UserMeasurement;
 import org.kmurygin.healthycarbs.measurements.repository.UserMeasurementRepository;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -28,7 +28,7 @@ public class UserMeasurementService {
         User currentUser = authenticationService.getCurrentUser();
 
         measurement.setUser(currentUser);
-        measurement.setDate(LocalDateTime.now());
+        measurement.setDate(Instant.now());
 
         userMeasurementRepository.save(measurement);
 

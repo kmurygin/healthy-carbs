@@ -1,9 +1,9 @@
 package org.kmurygin.healthycarbs.measurements.dto;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record UserMeasurementDTO(
-        LocalDateTime date,
+        Instant date,
         Double weight,
         Double waistCircumference,
         Double hipCircumference,

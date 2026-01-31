@@ -13,6 +13,7 @@ import type {RecipeDto} from '@core/models/dto/recipe.dto';
 export class RecipesManagementMobileListComponent {
   readonly recipes = input.required<readonly RecipeDto[]>();
   readonly currentUserId = input<number | null>(null);
+  readonly isAdmin = input<boolean>(false);
 
   readonly edit = output<number>();
   readonly delete = output<number>();
@@ -23,7 +24,7 @@ export class RecipesManagementMobileListComponent {
     trash: faTrash
   };
 
-  isOwner(recipe: RecipeDto): boolean {
-    return recipe.author?.id === this.currentUserId();
+  canModify(recipe: RecipeDto): boolean {
+    return this.isAdmin() || recipe.author?.id === this.currentUserId();
   }
 }

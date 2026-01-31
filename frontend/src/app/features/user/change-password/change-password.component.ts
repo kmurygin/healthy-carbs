@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import type {FormControl, FormGroup} from '@angular/forms';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {UserService} from '@core/services/user/user.service';
+import {UserPasswordService} from '@core/services/user/user-password.service';
 
 type ChangePasswordForm = FormGroup<{
   oldPassword: FormControl<string>;
@@ -27,7 +27,7 @@ export class ChangePasswordComponent {
     oldPassword: ['', Validators.required],
     newPassword: ['', Validators.required],
   });
-  private readonly userService = inject(UserService);
+  private readonly userPasswordService = inject(UserPasswordService);
 
   get formControl() {
     return this.form.controls;
@@ -38,7 +38,7 @@ export class ChangePasswordComponent {
     this.errorMessage.set('');
     this.infoMessage.set('');
 
-    this.userService.changePassword(this.form.getRawValue()).subscribe({
+    this.userPasswordService.changePassword(this.form.getRawValue()).subscribe({
       next: (res) => {
         this.infoMessage.set(res.message ?? 'Password updated successfully.');
         this.form.reset();

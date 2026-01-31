@@ -3,8 +3,8 @@ package org.kmurygin.healthycarbs.blog;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.blog.model.BlogPost;
 import org.kmurygin.healthycarbs.blog.service.BlogService;
-import org.kmurygin.healthycarbs.user.Role;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.Role;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.stereotype.Component;
 
 @Component("blogSecurity")

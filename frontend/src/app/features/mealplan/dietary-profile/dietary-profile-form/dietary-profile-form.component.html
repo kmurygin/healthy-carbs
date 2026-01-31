@@ -92,10 +92,10 @@
           <legend class="text-lg font-semibold">Allergies</legend>
           <p class="mt-1 text-sm text-gray-600">Select any known allergies.</p>
           <div class="mt-4 grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-6">
-            @for (allergy of allergies; track allergy) {
-              @let isSelected = selectedAllergies().has(allergy);
+            @for (allergen of availableAllergens(); track allergen.id) {
+              @let isSelected = selectedAllergies().has(allergen.name);
               <button
-                (click)="toggleAllergy(allergy)"
+                (click)="toggleAllergy(allergen.name)"
                 [attr.aria-checked]="isSelected"
                 [class.bg-emerald-600]="isSelected"
                 [class.bg-white]="!isSelected"
@@ -110,7 +110,7 @@
                 role="checkbox"
                 type="button"
               >
-                <span class="truncate text-sm">{{ allergy }}</span>
+                <span class="truncate text-sm">{{ allergen.name }}</span>
                 @if (isSelected) {
                   <i aria-hidden="true" class="fa-solid fa-check h-4 w-4"></i>
                 }

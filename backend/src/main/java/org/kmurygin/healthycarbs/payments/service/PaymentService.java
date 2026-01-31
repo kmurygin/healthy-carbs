@@ -9,7 +9,7 @@ import org.kmurygin.healthycarbs.payments.model.Order;
 import org.kmurygin.healthycarbs.payments.model.Payment;
 import org.kmurygin.healthycarbs.payments.repository.OrderRepository;
 import org.kmurygin.healthycarbs.payments.repository.PaymentRepository;
-import org.kmurygin.healthycarbs.user.UserService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

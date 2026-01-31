@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-01-25-convert-timestamps-to-timestamptz
+      author: kmurygin
+      validCheckSum: "9:b1280329b4a7734f77a59da6117479a6"
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE blog_posts 
+                ALTER COLUMN created_at TYPE TIMESTAMPTZ USING created_at AT TIME ZONE 'UTC',
+                ALTER COLUMN updated_at TYPE TIMESTAMPTZ USING updated_at AT TIME ZONE 'UTC';
+              
+              ALTER TABLE blog_comments 
+                ALTER COLUMN created_at TYPE TIMESTAMPTZ USING created_at AT TIME ZONE 'UTC';
+              
+              ALTER TABLE users 
+                ALTER COLUMN created_at TYPE TIMESTAMPTZ USING created_at AT TIME ZONE 'UTC',
+                ALTER COLUMN last_login_at TYPE TIMESTAMPTZ USING last_login_at AT TIME ZONE 'UTC',
+                ALTER COLUMN updated_at TYPE TIMESTAMPTZ USING updated_at AT TIME ZONE 'UTC';
+              
+              ALTER TABLE recipes 
+                ALTER COLUMN created_at TYPE TIMESTAMPTZ USING created_at AT TIME ZONE 'UTC',
+                ALTER COLUMN updated_at TYPE TIMESTAMPTZ USING updated_at AT TIME ZONE 'UTC';
+              
+              ALTER TABLE ingredients 
+                ALTER COLUMN created_at TYPE TIMESTAMPTZ USING created_at AT TIME ZONE 'UTC',
+                ALTER COLUMN updated_at TYPE TIMESTAMPTZ USING updated_at AT TIME ZONE 'UTC';
+              
+              ALTER TABLE meal_plans 
+                ALTER COLUMN updated_at TYPE TIMESTAMPTZ USING updated_at AT TIME ZONE 'UTC';
+              
+              ALTER TABLE user_measurements 
+                ALTER COLUMN date TYPE TIMESTAMPTZ USING date AT TIME ZONE 'UTC';
+
+              ALTER TABLE password_recovery_tokens 
+                ALTER COLUMN expiry_date TYPE TIMESTAMPTZ USING expiry_date AT TIME ZONE 'UTC';

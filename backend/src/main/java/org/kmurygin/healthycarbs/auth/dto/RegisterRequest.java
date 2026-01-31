@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
 
     @NotBlank(message = "Username must not be blank")
     private String username;

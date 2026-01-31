@@ -71,18 +71,18 @@
 
         <div class="flex items-center gap-2">
           <button
-            (click)="isOwner(ingredient) && edit.emit(ingredient.id)"
-            [class.opacity-30]="!isOwner(ingredient)"
-            [disabled]="!isOwner(ingredient)"
+            (click)="canModify(ingredient) && edit.emit(ingredient.id)"
+            [class.opacity-30]="!canModify(ingredient)"
+            [disabled]="!canModify(ingredient)"
             class="p-2 text-gray-400 hover:text-emerald-600
             hover:bg-emerald-50 rounded-lg transition-colors"
           >
             <fa-icon [icon]="icons.pen"></fa-icon>
           </button>
           <button
-            (click)="isOwner(ingredient) && delete.emit(ingredient.id)"
-            [class.opacity-30]="!isOwner(ingredient)"
-            [disabled]="!isOwner(ingredient)"
+            (click)="canModify(ingredient) && delete.emit(ingredient.id)"
+            [class.opacity-30]="!canModify(ingredient)"
+            [disabled]="!canModify(ingredient)"
             class="p-2 text-gray-400 hover:text-red-600
             hover:bg-red-50 rounded-lg transition-colors"
           >

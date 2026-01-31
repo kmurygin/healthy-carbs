@@ -23,9 +23,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final String BEARER_PREFIX = "Bearer ";
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-    private static final String BEARER_PREFIX = "Bearer ";
 
     @Override
     protected void doFilterInternal(

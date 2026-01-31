@@ -12,11 +12,12 @@ import org.kmurygin.healthycarbs.mealplan.service.DietaryProfileService;
 import org.kmurygin.healthycarbs.mealplan.service.MealPlanService;
 import org.kmurygin.healthycarbs.measurements.dto.UserMeasurementDTO;
 import org.kmurygin.healthycarbs.measurements.mapper.UserMeasurementMapper;
-import org.kmurygin.healthycarbs.user.Role;
-import org.kmurygin.healthycarbs.user.User;
-import org.kmurygin.healthycarbs.user.UserMapper;
-import org.kmurygin.healthycarbs.user.UserService;
 import org.kmurygin.healthycarbs.user.dto.UserDTO;
+import org.kmurygin.healthycarbs.user.mapper.UserMapper;
+import org.kmurygin.healthycarbs.user.model.Role;
+import org.kmurygin.healthycarbs.user.model.User;
+import org.kmurygin.healthycarbs.user.service.UserAdminService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ import java.util.List;
 public class DietitianController {
 
     private final UserService userService;
+    private final UserAdminService userAdminService;
     private final CollaborationService collaborationService;
     private final DietaryProfileService dietaryProfileService;
     private final UserMeasurementMapper measurementMapper;
@@ -41,7 +43,7 @@ public class DietitianController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserDTO>>> getAllDietitians() {
-        List<UserDTO> dietitians = userService.findAllByRole(Role.DIETITIAN)
+        List<UserDTO> dietitians = userAdminService.findAllByRole(Role.DIETITIAN)
                 .stream()
                 .map(userMapper::toDTO)
                 .toList();
@@ -62,8 +64,7 @@ public class DietitianController {
     @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     @GetMapping("/clients/{clientId}/measurements")
     public ResponseEntity<ApiResponse<List<UserMeasurementDTO>>> getClientMeasurements(
-            @PathVariable Long clientId
-    ) {
+            @PathVariable Long clientId) {
         User dietitian = userService.getCurrentUser();
         List<UserMeasurementDTO> measurements = collaborationService.getClientMeasurements(dietitian, clientId)
                 .stream()
@@ -75,8 +76,7 @@ public class DietitianController {
     @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     @GetMapping("/clients/{clientId}/dietary-profile")
     public ResponseEntity<ApiResponse<DietaryProfileDTO>> getClientDietaryProfile(
-            @PathVariable Long clientId
-    ) {
+            @PathVariable Long clientId) {
         User dietitian = userService.getCurrentUser();
 
         boolean hasAccess = collaborationService.getActiveClients(dietitian).stream()
@@ -101,8 +101,7 @@ public class DietitianController {
     @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     @GetMapping("/clients/{clientId}/meal-plans")
     public ResponseEntity<ApiResponse<List<MealPlanDTO>>> getClientMealPlans(
-            @PathVariable Long clientId
-    ) {
+            @PathVariable Long clientId) {
         User dietitian = userService.getCurrentUser();
 
         boolean hasAccess = collaborationService.getActiveClients(dietitian).stream()

@@ -1,7 +1,7 @@
 package org.kmurygin.healthycarbs.config;
 
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.user.UserRepository;
+import org.kmurygin.healthycarbs.user.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

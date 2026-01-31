@@ -18,6 +18,13 @@ export const ApiEndpoints = {
     ChangePassword: getUrl('users/change-password'),
   },
 
+  Admin: {
+    Users: {
+      Base: getUrl('admin/users/'),
+      GetAll: getUrl('admin/users'),
+    },
+  },
+
   MealPlan: {
     UserProfile: getUrl('meal-plan/userprofile'),
     Base: getUrl('mealplan'),
@@ -58,6 +65,10 @@ export const ApiEndpoints = {
 
   Measurements: {
     Base: getUrl('measurements'),
+  },
+
+  Allergens: {
+    Base: getUrl('allergens'),
   },
 
   Dietitian: {

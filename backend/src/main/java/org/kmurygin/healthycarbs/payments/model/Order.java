@@ -3,7 +3,7 @@ package org.kmurygin.healthycarbs.payments.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
-import org.kmurygin.healthycarbs.user.User;
+import org.kmurygin.healthycarbs.user.model.User;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;

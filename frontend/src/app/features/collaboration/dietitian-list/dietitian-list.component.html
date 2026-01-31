@@ -24,12 +24,12 @@
           <div class="p-6 flex flex-col items-center">
             <div class="relative mb-4 h-24 w-24 overflow-hidden rounded-full border-4 border-emerald-50">
               <img
-                [attr.alt]="'Profile picture of ' + dietitian.firstName + ' ' + dietitian.lastName"
-                [src]="getProfileImage(dietitian.id)"
+                [alt]="'Profile picture of ' + dietitian.firstName + ' ' + dietitian.lastName"
+                [ngSrc]="getProfileImage(dietitian.id)"
                 class="h-full w-full object-cover"
-                decoding="async"
-                loading="lazy"
-                referrerpolicy="no-referrer"
+                height="96"
+                priority
+                width="96"
               />
             </div>
 

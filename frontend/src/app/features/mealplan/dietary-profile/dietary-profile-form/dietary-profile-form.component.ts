@@ -5,12 +5,13 @@ import type {DietaryProfilePayload} from "@core/models/payloads/dietaryprofile.p
 import {DietGoal} from "@core/models/enum/diet-goal.enum";
 import {DietType} from "@core/models/enum/diet-type.enum";
 import {ActivityLevel} from "@core/models/enum/activity-level.enum";
-import {Allergy} from "@core/models/enum/allergy.enum";
 import {firstValueFrom} from 'rxjs';
 import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
 import {SuccessMessageComponent} from "@shared/components/success-message/success-message.component";
 import {type FormOption, getFormOptionsFromEnum} from "@shared/form-option";
 import {ActivityLevelDescriptionMap} from "@core/constants/activity-level-description.map";
+import {AllergenService} from "@core/services/allergen/allergen.service";
+import type {AllergenDto} from "@core/models/dto/allergen.dto";
 import {
   DietaryProfileTextInputComponent,
 } from "@features/mealplan/dietary-profile/dietary-profile-text-input/dietary-profile-text-input.component";
@@ -43,13 +44,14 @@ export class DietaryProfileFormComponent {
   readonly submitted = signal(false);
   readonly formError = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
-  readonly selectedAllergies = signal<Set<Allergy>>(new Set());
+  readonly selectedAllergies = signal<Set<string>>(new Set());
+  readonly availableAllergens = signal<AllergenDto[]>([]);
 
   readonly goals = getFormOptionsFromEnum(DietGoal);
   readonly diets = getFormOptionsFromEnum(DietType);
   readonly activityLevelOptions = getFormOptionsFromEnum(ActivityLevel);
   readonly genderOptions = getFormOptionsFromEnum(Gender);
-  readonly allergies = Object.values(Allergy);
+
   readonly personalInformationFields: DietaryFieldConfig[] = [
     {
       key: 'age',
@@ -156,18 +158,20 @@ export class DietaryProfileFormComponent {
     activityLevel: this.formBuilder.control<ActivityLevel | ''>('', [
       Validators.required
     ]),
-    allergies: this.formBuilder.control<Allergy[]>([]),
+    allergies: this.formBuilder.control<string[]>([]),
   });
   private readonly profileService = inject(DietaryProfileService);
+  private readonly allergenService = inject(AllergenService);
 
   constructor() {
     this.loadProfile();
+    this.loadAllergens();
     effect(() => {
       this.formGroup.controls.allergies.setValue([...this.selectedAllergies()]);
     });
   }
 
-  toggleAllergy(allergy: Allergy) {
+  toggleAllergy(allergy: string) {
     this.selectedAllergies.update((prev) => {
       const next = new Set(prev);
       if (next.has(allergy)) {
@@ -224,6 +228,17 @@ export class DietaryProfileFormComponent {
     this.selectedAllergies.set(new Set());
     this.submitted.set(false);
     this.formError.set(null);
+  }
+
+  private loadAllergens(): void {
+    this.allergenService.getAll().subscribe({
+      next: (data) => {
+        this.availableAllergens.set(data);
+      },
+      error: (err: unknown) => {
+        console.error('Failed to load allergens', err);
+      }
+    });
   }
 
   private loadProfile(): void {

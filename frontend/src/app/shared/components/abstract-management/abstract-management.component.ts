@@ -37,14 +37,14 @@ export abstract class AbstractManagementComponent<T> {
     this.selectedId.set(null);
   }
 
-  protected setCurrentItem(item: T | null): void {
-    this.currentItem.set(item);
-  }
-
   onSaveSuccess(message: string): void {
     this.notificationService.success(message);
     this.closeForm();
     this.reloadData();
+  }
+
+  protected setCurrentItem(item: T | null): void {
+    this.currentItem.set(item);
   }
 
   protected confirmAndDelete(id: number, contentName: string, deleteObservable$: Observable<unknown>) {

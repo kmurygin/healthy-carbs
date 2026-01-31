@@ -1,13 +1,13 @@
 package org.kmurygin.healthycarbs.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.kmurygin.healthycarbs.user.Role;
+import lombok.*;
+import org.kmurygin.healthycarbs.user.model.Role;
+
+import java.time.Instant;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
@@ -18,4 +18,7 @@ public class UserDTO {
     private String email;
     private Role role;
     private Long profileImageId;
+    private Instant createdAt;
+    private Instant lastLoginAt;
+    private Boolean isActive;
 }

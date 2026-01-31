@@ -131,3 +131,12 @@ databaseChangeLog:
   - include:
       file: 2026-01-24-add-image-keys.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2026-01-25-add-user-account-columns.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2026-01-25-add-audit-columns.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2026-01-25-convert-timestamps-to-timestamptz.yaml
+      relativeToChangelogFile: true

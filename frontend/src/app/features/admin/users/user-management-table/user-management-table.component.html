@@ -1,0 +1,90 @@
+<div class="hidden md:block overflow-hidden rounded-2xl border border-gray-200 shadow-sm bg-white">
+  <table class="min-w-full text-sm text-left">
+    <thead class="bg-gray-50 text-gray-600 border-b border-gray-200">
+    <tr>
+      <th class="px-6 py-4 font-medium">User</th>
+      <th class="px-6 py-4 font-medium">Email</th>
+      <th class="px-6 py-4 font-medium text-center">Status</th>
+      <th class="px-6 py-4 font-medium text-center">Role</th>
+      <th class="px-6 py-4 font-medium text-right">Actions</th>
+    </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      @for (user of users(); track user.id) {
+        <tr class="hover:bg-gray-50/80 transition-colors">
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <img
+                [ngSrc]="user | profileImageUrl"
+                alt="Profile"
+                class="h-10 w-10 rounded-full object-cover"
+                height="40"
+                width="40"/>
+              <div>
+                <div class="font-semibold text-gray-900">
+                  {{ user.firstName }} {{ user.lastName }}
+                </div>
+                <div class="text-gray-500 text-xs">{{ user.username }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="text-gray-900">{{ user.email }}</div>
+          </td>
+          <td class="px-6 py-4 text-center">
+          <span [class]="user.isActive | userStatusBadge">
+            {{ user.isActive ? 'Active' : 'Inactive' }}
+          </span>
+          </td>
+          <td class="px-6 py-4 text-center">
+            <div class="relative group inline-block">
+              <select
+                (change)="onRoleSelect(user, $event)"
+                [class]="user.role | userRoleBadge"
+                [disabled]="user.role === UserRole.ADMIN"
+                [value]="user.role"
+                aria-label="Change user role"
+                class="hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                @if (user.role === UserRole.ADMIN) {
+                  <option [value]="UserRole.ADMIN">Admin</option>
+                }
+                @for (role of assignableRoles(); track role) {
+                  <option [value]="role">{{ role | titlecase }}</option>
+                }
+              </select>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button
+                (click)="viewDetails.emit(user)"
+                class="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50
+              rounded-lg transition-colors cursor-pointer"
+                title="View details"
+              >
+                <fa-icon [icon]="icons.info" class="text-sm"></fa-icon>
+              </button>
+              <button
+                (click)="toggleActive.emit(user)"
+                [ngClass]="getToggleActiveClasses(user.isActive)"
+                [title]="user.isActive ? 'Deactivate user' : 'Activate user'"
+                class="p-2 text-gray-400 rounded-lg transition-colors cursor-pointer"
+              >
+                <fa-icon [icon]="user.isActive ? icons.deactivate : icons.activate" class="text-sm"></fa-icon>
+              </button>
+              <button
+                (click)="delete.emit(user)"
+                class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50
+              rounded-lg transition-colors cursor-pointer"
+                title="Delete user"
+              >
+                <fa-icon [icon]="icons.trash" class="text-sm"></fa-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
