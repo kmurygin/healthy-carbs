@@ -1,14 +1,14 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { HttpClient, HttpStatusCode, provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { signal } from '@angular/core';
-import type { MockedObject } from 'vitest';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {TestBed} from '@angular/core/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {HttpClient, HttpStatusCode, provideHttpClient, withInterceptors} from '@angular/common/http';
+import {Router} from '@angular/router';
+import {signal} from '@angular/core';
+import type {MockedObject} from 'vitest';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
-import { httpInterceptor } from './http.interceptor';
-import { AuthService } from '../services/auth/auth.service';
-import { environment } from '../../../environments/environment';
+import {httpInterceptor} from './http.interceptor';
+import {AuthService} from '../services/auth/auth.service';
+import {environment} from '../../../environments/environment';
 
 describe('httpInterceptor', () => {
   let httpClient: HttpClient;
@@ -34,8 +34,8 @@ describe('httpInterceptor', () => {
       providers: [
         provideHttpClient(withInterceptors([httpInterceptor])),
         provideHttpClientTesting(),
-        { provide: AuthService, useValue: authServiceMock },
-        { provide: Router, useValue: routerMock },
+        {provide: AuthService, useValue: authServiceMock},
+        {provide: Router, useValue: routerMock},
       ],
     });
 
@@ -93,16 +93,16 @@ describe('httpInterceptor', () => {
 
     const req = httpMock.expectOne(`${apiUrl}/test`);
     req.flush(
-      { message: 'Unauthorized' },
-      { status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized' }
+      {message: 'Unauthorized'},
+      {status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized'}
     );
 
     // retry(2) means 3 total attempts
     for (let i = 0; i < 2; i++) {
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
-        { message: 'Unauthorized' },
-        { status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized' }
+        {message: 'Unauthorized'},
+        {status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized'}
       );
     }
 
@@ -120,15 +120,15 @@ describe('httpInterceptor', () => {
 
     const req = httpMock.expectOne(loginUrl);
     req.flush(
-      { message: 'Bad credentials' },
-      { status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized' }
+      {message: 'Bad credentials'},
+      {status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized'}
     );
 
     for (let i = 0; i < 2; i++) {
       const retryReq = httpMock.expectOne(loginUrl);
       retryReq.flush(
-        { message: 'Bad credentials' },
-        { status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized' }
+        {message: 'Bad credentials'},
+        {status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized'}
       );
     }
 
@@ -144,15 +144,15 @@ describe('httpInterceptor', () => {
 
     const req = httpMock.expectOne(`${apiUrl}/test`);
     req.flush(
-      { message: '' },
-      { status: HttpStatusCode.Forbidden, statusText: 'Forbidden' }
+      {message: ''},
+      {status: HttpStatusCode.Forbidden, statusText: 'Forbidden'}
     );
 
     for (let i = 0; i < 2; i++) {
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
-        { message: '' },
-        { status: HttpStatusCode.Forbidden, statusText: 'Forbidden' }
+        {message: ''},
+        {status: HttpStatusCode.Forbidden, statusText: 'Forbidden'}
       );
     }
   });
@@ -165,15 +165,15 @@ describe('httpInterceptor', () => {
 
     const req = httpMock.expectOne(`${apiUrl}/test`);
     req.flush(
-      { message: 'Not found' },
-      { status: HttpStatusCode.NotFound, statusText: 'Not Found' }
+      {message: 'Not found'},
+      {status: HttpStatusCode.NotFound, statusText: 'Not Found'}
     );
 
     for (let i = 0; i < 2; i++) {
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
-        { message: 'Not found' },
-        { status: HttpStatusCode.NotFound, statusText: 'Not Found' }
+        {message: 'Not found'},
+        {status: HttpStatusCode.NotFound, statusText: 'Not Found'}
       );
     }
 
@@ -190,15 +190,15 @@ describe('httpInterceptor', () => {
 
     const req = httpMock.expectOne(`${apiUrl}/test`);
     req.flush(
-      { message: 'Validation failed', fieldErrors: { email: 'Invalid email' } },
-      { status: HttpStatusCode.BadRequest, statusText: 'Bad Request' }
+      {message: 'Validation failed', fieldErrors: {email: 'Invalid email'}},
+      {status: HttpStatusCode.BadRequest, statusText: 'Bad Request'}
     );
 
     for (let i = 0; i < 2; i++) {
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
-        { message: 'Validation failed', fieldErrors: { email: 'Invalid email' } },
-        { status: HttpStatusCode.BadRequest, statusText: 'Bad Request' }
+        {message: 'Validation failed', fieldErrors: {email: 'Invalid email'}},
+        {status: HttpStatusCode.BadRequest, statusText: 'Bad Request'}
       );
     }
   });
@@ -212,15 +212,15 @@ describe('httpInterceptor', () => {
 
     const req = httpMock.expectOne(`${apiUrl}/test`);
     req.flush(
-      { message: 'Error occurred', details: ['Detail A'] },
-      { status: HttpStatusCode.BadRequest, statusText: 'Bad Request' }
+      {message: 'Error occurred', details: ['Detail A']},
+      {status: HttpStatusCode.BadRequest, statusText: 'Bad Request'}
     );
 
     for (let i = 0; i < 2; i++) {
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
-        { message: 'Error occurred', details: ['Detail A'] },
-        { status: HttpStatusCode.BadRequest, statusText: 'Bad Request' }
+        {message: 'Error occurred', details: ['Detail A']},
+        {status: HttpStatusCode.BadRequest, statusText: 'Bad Request'}
       );
     }
   });
@@ -234,21 +234,21 @@ describe('httpInterceptor', () => {
 
     const req = httpMock.expectOne(`${apiUrl}/test`);
     req.flush(
-      { message: '' },
-      { status: HttpStatusCode.InternalServerError, statusText: 'Internal Server Error' }
+      {message: ''},
+      {status: HttpStatusCode.InternalServerError, statusText: 'Internal Server Error'}
     );
 
     for (let i = 0; i < 2; i++) {
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
-        { message: '' },
-        { status: HttpStatusCode.InternalServerError, statusText: 'Internal Server Error' }
+        {message: ''},
+        {status: HttpStatusCode.InternalServerError, statusText: 'Internal Server Error'}
       );
     }
   });
 
   it('httpInterceptor_whenSuccessfulRequest_shouldPassThrough', () => {
-    const mockData = { result: 'ok' };
+    const mockData = {result: 'ok'};
     httpClient.get(`${apiUrl}/test`).subscribe((data) => {
       expect(data).toEqual(mockData);
     });
