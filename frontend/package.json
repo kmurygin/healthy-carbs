@@ -9,7 +9,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:unit": "vitest run -c vitest.unit.config.ts",
-    "pretest:dom": "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install chromium chromium-headless-shell && npx playwright-core install chromium chromium-headless-shell",
+    "pretest:dom": "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright-core install chromium chromium-headless-shell",
     "test:dom": "PLAYWRIGHT_BROWSERS_PATH=0 vitest run -c vitest.browser.config.ts",
     "analyze-bundle": "ng build --configuration=analyze-bundle && source-map-explorer dist/**/*.js --no-border-checks",
     "lint": "ng lint"
