@@ -1,11 +1,11 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import {TestBed} from '@angular/core/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient} from '@angular/common/http';
+import {afterEach, beforeEach, describe, expect, it} from 'vitest';
 
-import { BlogService } from './blog.service';
-import { ApiEndpoints } from '@core/constants/api-endpoints';
-import type { CreateBlogPostRequest } from '@core/models/dto/blog.dto';
+import {BlogService} from './blog.service';
+import {ApiEndpoints} from '@core/constants/api-endpoints';
+import type {CreateBlogPostRequest} from '@core/models/dto/blog.dto';
 
 describe('BlogService', () => {
   let service: BlogService;
@@ -29,7 +29,9 @@ describe('BlogService', () => {
     httpMock = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => { httpMock.verify(); });
+  afterEach(() => {
+    httpMock.verify();
+  });
 
   it('service_whenInjected_shouldBeTruthy', () => {
     expect(service).toBeTruthy();
@@ -56,7 +58,7 @@ describe('BlogService', () => {
       expect(req.request.method).toBe('GET');
       expect(req.request.params.get('page')).toBe('0');
       expect(req.request.params.get('size')).toBe('6');
-      req.flush({ data: mockPage });
+      req.flush({data: mockPage});
     });
 
     it('getPosts_whenDataNull_shouldReturnNull', () => {
@@ -65,7 +67,7 @@ describe('BlogService', () => {
       });
 
       const req = httpMock.expectOne((r) => r.url === ApiEndpoints.Blog.Base);
-      req.flush({ data: null });
+      req.flush({data: null});
     });
   });
 
@@ -77,7 +79,7 @@ describe('BlogService', () => {
 
       const req = httpMock.expectOne(ApiEndpoints.Blog.Post(1));
       expect(req.request.method).toBe('GET');
-      req.flush({ data: mockPost });
+      req.flush({data: mockPost});
     });
 
     it('getPostById_whenDataNull_shouldReturnNull', () => {
@@ -86,13 +88,13 @@ describe('BlogService', () => {
       });
 
       const req = httpMock.expectOne(ApiEndpoints.Blog.Post(1));
-      req.flush({ data: null });
+      req.flush({data: null});
     });
   });
 
   describe('createPost', () => {
     it('createPost_whenSuccess_shouldReturnPost', () => {
-      const createReq: CreateBlogPostRequest = { title: 'New', summary: 'Summary', content: 'New content' };
+      const createReq: CreateBlogPostRequest = {title: 'New', summary: 'Summary', content: 'New content'};
 
       service.createPost(createReq).subscribe((post) => {
         expect(post).toEqual(mockPost);
@@ -101,7 +103,7 @@ describe('BlogService', () => {
       const req = httpMock.expectOne(ApiEndpoints.Blog.Base);
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(createReq);
-      req.flush({ data: mockPost });
+      req.flush({data: mockPost});
     });
 
     it('createPost_whenDataNull_shouldReturnNull', () => {
@@ -112,13 +114,13 @@ describe('BlogService', () => {
       });
 
       const req = httpMock.expectOne(ApiEndpoints.Blog.Base);
-      req.flush({ data: null });
+      req.flush({data: null});
     });
   });
 
   describe('updatePost', () => {
     it('updatePost_whenSuccess_shouldReturnUpdatedPost', () => {
-      const updateReq: CreateBlogPostRequest = { title: 'Updated', summary: 'Summary', content: 'Updated content' };
+      const updateReq: CreateBlogPostRequest = {title: 'Updated', summary: 'Summary', content: 'Updated content'};
 
       service.updatePost(1, updateReq).subscribe((post) => {
         expect(post).toEqual(mockPost);
@@ -126,7 +128,7 @@ describe('BlogService', () => {
 
       const req = httpMock.expectOne(ApiEndpoints.Blog.Post(1));
       expect(req.request.method).toBe('PUT');
-      req.flush({ data: mockPost });
+      req.flush({data: mockPost});
     });
 
     it('updatePost_whenDataNull_shouldReturnNull', () => {
@@ -137,7 +139,7 @@ describe('BlogService', () => {
       });
 
       const req = httpMock.expectOne(ApiEndpoints.Blog.Post(1));
-      req.flush({ data: null });
+      req.flush({data: null});
     });
   });
 
@@ -155,15 +157,15 @@ describe('BlogService', () => {
 
   describe('addComment', () => {
     it('addComment_whenSuccess_shouldReturnComment', () => {
-      const mockComment = { id: 1, content: 'Nice', author: null, createdAt: '2026-01-01' };
+      const mockComment = {id: 1, content: 'Nice', author: null, createdAt: '2026-01-01'};
 
-      service.addComment(1, { content: 'Nice' }).subscribe((comment) => {
+      service.addComment(1, {content: 'Nice'}).subscribe((comment) => {
         expect(comment).toEqual(mockComment);
       });
 
       const req = httpMock.expectOne(ApiEndpoints.Blog.AddComment(1));
       expect(req.request.method).toBe('POST');
-      req.flush({ data: mockComment });
+      req.flush({data: mockComment});
     });
   });
 
@@ -181,7 +183,7 @@ describe('BlogService', () => {
 
   describe('uploadPostImage', () => {
     it('uploadPostImage_whenSuccess_shouldPostFormData', () => {
-      const file = new File(['img'], 'test.png', { type: 'image/png' });
+      const file = new File(['img'], 'test.png', {type: 'image/png'});
 
       service.uploadPostImage(1, file).subscribe((result) => {
         expect(result).toBeUndefined();
