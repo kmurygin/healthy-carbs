@@ -31,6 +31,13 @@ export class UserMeasurementsComponent {
 
   readonly showForm = signal(false);
   readonly editingMeasurement = signal<UserMeasurement | null>(null);
+  private readonly measurementService = inject(UserMeasurementService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly refreshTrigger = signal(0);
+  readonly historyData = toSignal(
+    toObservable(this.refreshTrigger).pipe(switchMap(() => this.measurementService.getAllHistory())),
+    {initialValue: [] as UserMeasurement[]}
+  );
   readonly latestMeasurement = computed<UserMeasurement | null>(() => {
     const userMeasurements: UserMeasurement[] = this.historyData() ?? [];
     if (userMeasurements.length === 0) return null;
@@ -43,13 +50,6 @@ export class UserMeasurementsComponent {
     }
     return latest;
   });
-  private readonly measurementService = inject(UserMeasurementService);
-  private readonly notificationService = inject(NotificationService);
-  private readonly refreshTrigger = signal(0);
-  readonly historyData = toSignal(
-    toObservable(this.refreshTrigger).pipe(switchMap(() => this.measurementService.getAllHistory())),
-    {initialValue: [] as UserMeasurement[]}
-  );
 
   openAddForm(): void {
     this.editingMeasurement.set(null);

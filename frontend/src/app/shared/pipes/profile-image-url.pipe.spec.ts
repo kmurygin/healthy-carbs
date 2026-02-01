@@ -22,7 +22,7 @@ describe('ProfileImageUrlPipe', () => {
 
   it('transform_whenProfileImageIdIsUndefined_shouldReturnAvatarUrl', () => {
     const user = {id: 1, firstName: 'John', lastName: 'Doe', profileImageId: undefined};
-    // @ts-ignore
+    // @ts-expect-error testing with undefined profileImageId
     const result = pipe.transform(user);
     expect(result).toContain('ui-avatars.com');
     expect(result).toContain('John');

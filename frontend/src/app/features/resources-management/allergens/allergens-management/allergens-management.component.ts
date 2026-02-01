@@ -28,7 +28,6 @@ import {AllergensManagementFormComponent} from '../allergens-management-form/all
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AllergensManagementComponent extends AbstractManagementComponent<AllergenDto> {
-  readonly totalElements = computed(() => this.allAllergens().length);
   protected readonly icons = {
     spinner: faSpinner,
     plus: faPlus,
@@ -37,13 +36,6 @@ export class AllergensManagementComponent extends AbstractManagementComponent<Al
   };
   private readonly allergenService = inject(AllergenService);
   private readonly searchQuery = signal('');
-  readonly filteredAllergens = computed(() => {
-    const query = this.searchQuery().toLowerCase();
-    const allAllergens = this.allAllergens();
-
-    if (!query) return allAllergens;
-    return allAllergens.filter(a => a.name.toLowerCase().includes(query));
-  });
   private readonly refreshTrigger = signal(0);
   private readonly state = toSignal(
     toObservable(this.refreshTrigger).pipe(
@@ -63,6 +55,14 @@ export class AllergensManagementComponent extends AbstractManagementComponent<Al
     {initialValue: {allergens: [] as AllergenDto[], loading: true, error: null}}
   );
   readonly allAllergens = computed(() => this.state().allergens);
+  readonly totalElements = computed(() => this.allAllergens().length);
+  readonly filteredAllergens = computed(() => {
+    const query = this.searchQuery().toLowerCase();
+    const allAllergens = this.allAllergens();
+
+    if (!query) return allAllergens;
+    return allAllergens.filter(a => a.name.toLowerCase().includes(query));
+  });
   readonly isDataLoading = computed(() => this.state().loading);
   readonly error = computed(() => this.state().error);
 

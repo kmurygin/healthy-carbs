@@ -54,7 +54,7 @@ describe('DietaryProfileService', () => {
     });
 
     it('save_whenDataNull_shouldReturnNull', () => {
-      const invalidReq: DietaryProfilePayload = {} as any;
+      const invalidReq: DietaryProfilePayload = {} as unknown as DietaryProfilePayload;
       service.save(invalidReq).subscribe((profile) => {
         expect(profile).toBeNull();
       });
