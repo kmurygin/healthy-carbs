@@ -15,6 +15,7 @@ import org.kmurygin.healthycarbs.blog.service.BlogService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.storage.StorageProperties;
 import org.kmurygin.healthycarbs.storage.StorageProvider;
+import org.kmurygin.healthycarbs.storage.StorageUploadResult;
 import org.kmurygin.healthycarbs.user.UserTestUtils;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.mockito.Mock;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +34,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("BlogService Unit Tests")
@@ -367,6 +369,147 @@ class BlogServiceUnitTest {
 
             assertThatThrownBy(() -> blogService.deleteComment(999L, testUser))
                     .isInstanceOf(ResourceNotFoundException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("uploadPostImage")
+    class UploadPostImageTests {
+
+        @Test
+        @DisplayName("uploadPostImage_whenNoOldImage_shouldUploadAndSave")
+        void uploadPostImage_whenNoOldImage_shouldUploadAndSave() {
+            MultipartFile file = mock(MultipartFile.class);
+            StorageUploadResult uploadResult = new StorageUploadResult(
+                    "http://example.com/new.jpg", "blog-images/1/new.jpg", "image/jpeg");
+
+            when(blogPostRepository.findById(1L)).thenReturn(Optional.of(testPost));
+            when(storageProperties.getBlogPostImagePrefix()).thenReturn("blog-images");
+            when(storageProvider.uploadFile(any(), eq("blog-images/1"))).thenReturn(uploadResult);
+            doAnswer(inv -> {
+                java.util.function.Consumer<org.springframework.transaction.TransactionStatus> callback = inv.getArgument(0);
+                callback.accept(null);
+                return null;
+            }).when(transactionTemplate).executeWithoutResult(any());
+
+            blogService.uploadPostImage(1L, file);
+
+            verify(storageProvider).uploadFile(file, "blog-images/1");
+            verify(storageProvider, never()).deleteFileByKey(any());
+        }
+
+        @Test
+        @DisplayName("uploadPostImage_whenOldImageExists_shouldDeleteOldImage")
+        void uploadPostImage_whenOldImageExists_shouldDeleteOldImage() {
+            BlogPostImage oldImage = BlogPostImage.builder()
+                    .id(1L)
+                    .imageKey("blog-images/1/old.jpg")
+                    .imageUrl("http://example.com/old.jpg")
+                    .build();
+            testPost.setImage(oldImage);
+
+            MultipartFile file = mock(MultipartFile.class);
+            StorageUploadResult uploadResult = new StorageUploadResult(
+                    "http://example.com/new.jpg", "blog-images/1/new.jpg", "image/jpeg");
+
+            when(blogPostRepository.findById(1L)).thenReturn(Optional.of(testPost));
+            when(storageProperties.getBlogPostImagePrefix()).thenReturn("blog-images");
+            when(storageProvider.uploadFile(any(), eq("blog-images/1"))).thenReturn(uploadResult);
+            doAnswer(inv -> {
+                java.util.function.Consumer<org.springframework.transaction.TransactionStatus> callback = inv.getArgument(0);
+                callback.accept(null);
+                return null;
+            }).when(transactionTemplate).executeWithoutResult(any());
+
+            blogService.uploadPostImage(1L, file);
+
+            verify(storageProvider).deleteFileByKey("blog-images/1/old.jpg");
+        }
+
+        @Test
+        @DisplayName("uploadPostImage_whenOldImageDeleteFails_shouldNotThrow")
+        void uploadPostImage_whenOldImageDeleteFails_shouldNotThrow() {
+            BlogPostImage oldImage = BlogPostImage.builder()
+                    .id(1L)
+                    .imageKey("blog-images/1/old.jpg")
+                    .imageUrl("http://example.com/old.jpg")
+                    .build();
+            testPost.setImage(oldImage);
+
+            MultipartFile file = mock(MultipartFile.class);
+            StorageUploadResult uploadResult = new StorageUploadResult(
+                    "http://example.com/new.jpg", "blog-images/1/new.jpg", "image/jpeg");
+
+            when(blogPostRepository.findById(1L)).thenReturn(Optional.of(testPost));
+            when(storageProperties.getBlogPostImagePrefix()).thenReturn("blog-images");
+            when(storageProvider.uploadFile(any(), eq("blog-images/1"))).thenReturn(uploadResult);
+            doAnswer(inv -> {
+                java.util.function.Consumer<org.springframework.transaction.TransactionStatus> callback = inv.getArgument(0);
+                callback.accept(null);
+                return null;
+            }).when(transactionTemplate).executeWithoutResult(any());
+            doThrow(new RuntimeException("Storage error")).when(storageProvider).deleteFileByKey("blog-images/1/old.jpg");
+
+            blogService.uploadPostImage(1L, file);
+
+            verify(storageProvider).deleteFileByKey("blog-images/1/old.jpg");
+        }
+
+        @Test
+        @DisplayName("uploadPostImage_whenPostNotFound_shouldThrowResourceNotFound")
+        void uploadPostImage_whenPostNotFound_shouldThrowResourceNotFound() {
+            MultipartFile file = mock(MultipartFile.class);
+            when(blogPostRepository.findById(999L)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> blogService.uploadPostImage(999L, file))
+                    .isInstanceOf(ResourceNotFoundException.class);
+        }
+
+        @Test
+        @DisplayName("uploadPostImage_whenPostDeletedDuringTransaction_shouldThrowResourceNotFound")
+        void uploadPostImage_whenPostDeletedDuringTransaction_shouldThrowResourceNotFound() {
+            MultipartFile file = mock(MultipartFile.class);
+            StorageUploadResult uploadResult = new StorageUploadResult(
+                    "http://example.com/new.jpg", "blog-images/1/new.jpg", "image/jpeg");
+
+            when(blogPostRepository.findById(1L))
+                    .thenReturn(Optional.of(testPost))
+                    .thenReturn(Optional.empty());
+            when(storageProperties.getBlogPostImagePrefix()).thenReturn("blog-images");
+            when(storageProvider.uploadFile(any(), eq("blog-images/1"))).thenReturn(uploadResult);
+            doAnswer(inv -> {
+                java.util.function.Consumer<org.springframework.transaction.TransactionStatus> callback = inv.getArgument(0);
+                callback.accept(null);
+                return null;
+            }).when(transactionTemplate).executeWithoutResult(any());
+
+            assertThatThrownBy(() -> blogService.uploadPostImage(1L, file))
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessageContaining("Blog post not found");
+        }
+    }
+
+    @Nested
+    @DisplayName("deletePost edge cases")
+    class DeletePostEdgeCaseTests {
+
+        @Test
+        @DisplayName("deletePost_whenImageDeleteFails_shouldNotThrow")
+        void deletePost_whenImageDeleteFails_shouldNotThrow() {
+            BlogPostImage image = BlogPostImage.builder()
+                    .id(1L)
+                    .imageKey("blog-images/1/image.jpg")
+                    .imageUrl("https://example.com/image.jpg")
+                    .build();
+            testPost.setImage(image);
+
+            when(blogPostRepository.findById(1L)).thenReturn(Optional.of(testPost));
+            doThrow(new RuntimeException("Storage error")).when(storageProvider).deleteFileByKey("blog-images/1/image.jpg");
+
+            blogService.deletePost(1L);
+
+            verify(blogPostRepository).delete(testPost);
+            verify(storageProvider).deleteFileByKey("blog-images/1/image.jpg");
         }
     }
 

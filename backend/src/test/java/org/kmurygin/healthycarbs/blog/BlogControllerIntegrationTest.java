@@ -7,10 +7,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.kmurygin.healthycarbs.blog.dto.CreateBlogCommentRequest;
 import org.kmurygin.healthycarbs.blog.dto.CreateBlogPostRequest;
+import org.kmurygin.healthycarbs.blog.model.BlogComment;
 import org.kmurygin.healthycarbs.blog.model.BlogPost;
+import org.kmurygin.healthycarbs.blog.model.BlogPostImage;
+import org.kmurygin.healthycarbs.blog.repository.BlogCommentRepository;
+import org.kmurygin.healthycarbs.blog.repository.BlogPostImageRepository;
 import org.kmurygin.healthycarbs.blog.repository.BlogPostRepository;
 import org.kmurygin.healthycarbs.config.JwtService;
 import org.kmurygin.healthycarbs.storage.StorageProvider;
+import org.kmurygin.healthycarbs.storage.StorageUploadResult;
 import org.kmurygin.healthycarbs.user.UserTestUtils;
 import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
@@ -19,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -27,10 +33,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -41,18 +48,31 @@ class BlogControllerIntegrationTest {
 
     private static final String BASE_URL = "/api/v1/blog";
     private final String uniqueSuffix = String.valueOf(System.currentTimeMillis());
+
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper objectMapper;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private BlogPostRepository blogPostRepository;
+
+    @Autowired
+    private BlogCommentRepository blogCommentRepository;
+
+    @Autowired
+    private BlogPostImageRepository blogPostImageRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private JwtService jwtService;
+
     @MockitoBean
     private StorageProvider storageProvider;
     private User adminUser;
@@ -287,6 +307,144 @@ class BlogControllerIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isForbidden());
+        }
+    }
+
+    @Nested
+    @DisplayName("DELETE /blog/comments/{id}")
+    class DeleteCommentTests {
+
+        @Test
+        @DisplayName("deleteComment_whenCommentAuthor_shouldReturnNoContent")
+        void deleteComment_whenCommentAuthor_shouldReturnNoContent() throws Exception {
+            BlogComment comment = blogCommentRepository.save(BlogComment.builder()
+                    .content("Comment to delete")
+                    .post(testPost)
+                    .author(regularUser)
+                    .build());
+
+            mockMvc.perform(delete(BASE_URL + "/comments/{id}", comment.getId())
+                            .header("Authorization", "Bearer " + userToken)
+                            .with(csrf()))
+                    .andExpect(status().isNoContent());
+        }
+
+        @Test
+        @DisplayName("deleteComment_whenAdmin_shouldReturnNoContent")
+        void deleteComment_whenAdmin_shouldReturnNoContent() throws Exception {
+            BlogComment comment = blogCommentRepository.save(BlogComment.builder()
+                    .content("Comment to delete by admin")
+                    .post(testPost)
+                    .author(regularUser)
+                    .build());
+
+            mockMvc.perform(delete(BASE_URL + "/comments/{id}", comment.getId())
+                            .header("Authorization", "Bearer " + adminToken)
+                            .with(csrf()))
+                    .andExpect(status().isNoContent());
+        }
+
+        @Test
+        @DisplayName("deleteComment_whenCommentNotFound_shouldReturnNotFound")
+        void deleteComment_whenCommentNotFound_shouldReturnNotFound() throws Exception {
+            mockMvc.perform(delete(BASE_URL + "/comments/{id}", 999999L)
+                            .header("Authorization", "Bearer " + adminToken)
+                            .with(csrf()))
+                    .andExpect(status().isNotFound());
+        }
+    }
+
+    @Nested
+    @DisplayName("POST /blog/{id}/image")
+    class UploadPostImageTests {
+
+        @Test
+        @DisplayName("uploadPostImage_whenAuthor_shouldReturnOk")
+        void uploadPostImage_whenAuthor_shouldReturnOk() throws Exception {
+            when(storageProvider.uploadFile(any(), any())).thenReturn(
+                    new StorageUploadResult("https://example.com/img.jpg", "blog-images/1/img.jpg", "image/jpeg"));
+
+            MockMultipartFile file = new MockMultipartFile(
+                    "file", "test-image.jpg", "image/jpeg", "test image content".getBytes());
+
+            mockMvc.perform(multipart(BASE_URL + "/{id}/image", testPost.getId())
+                            .file(file)
+                            .header("Authorization", "Bearer " + dietitianToken)
+                            .with(csrf()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message", is("Post image updated successfully")));
+        }
+
+        @Test
+        @DisplayName("uploadPostImage_whenAdmin_shouldReturnOk")
+        void uploadPostImage_whenAdmin_shouldReturnOk() throws Exception {
+            when(storageProvider.uploadFile(any(), any())).thenReturn(
+                    new StorageUploadResult("https://example.com/img.jpg", "blog-images/1/img.jpg", "image/jpeg"));
+
+            MockMultipartFile file = new MockMultipartFile(
+                    "file", "test-image.jpg", "image/jpeg", "test image content".getBytes());
+
+            mockMvc.perform(multipart(BASE_URL + "/{id}/image", testPost.getId())
+                            .file(file)
+                            .header("Authorization", "Bearer " + adminToken)
+                            .with(csrf()))
+                    .andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /blog/images/{imageId}")
+    class GetPostImageTests {
+
+        @Test
+        @DisplayName("getPostImage_whenImageExists_shouldReturnRedirect")
+        void getPostImage_whenImageExists_shouldReturnRedirect() throws Exception {
+            BlogPostImage image = blogPostImageRepository.save(BlogPostImage.builder()
+                    .contentType("image/jpeg")
+                    .imageUrl("https://example.com/blog-image.jpg")
+                    .imageKey("blog-images/1/image.jpg")
+                    .build());
+
+            mockMvc.perform(get(BASE_URL + "/images/{imageId}", image.getId())
+                            .header("Authorization", "Bearer " + userToken))
+                    .andExpect(status().isFound())
+                    .andExpect(header().string("Location", "https://example.com/blog-image.jpg"));
+        }
+
+        @Test
+        @DisplayName("getPostImage_whenImageUrlIsNull_shouldReturnNotFound")
+        void getPostImage_whenImageUrlIsNull_shouldReturnNotFound() throws Exception {
+            BlogPostImage image = blogPostImageRepository.save(BlogPostImage.builder()
+                    .contentType("image/jpeg")
+                    .imageUrl(null)
+                    .imageKey("blog-images/1/image.jpg")
+                    .build());
+
+            mockMvc.perform(get(BASE_URL + "/images/{imageId}", image.getId())
+                            .header("Authorization", "Bearer " + userToken))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("getPostImage_whenImageUrlIsBlank_shouldReturnNotFound")
+        void getPostImage_whenImageUrlIsBlank_shouldReturnNotFound() throws Exception {
+            BlogPostImage image = blogPostImageRepository.save(BlogPostImage.builder()
+                    .contentType("image/jpeg")
+                    .imageUrl("")
+                    .imageKey("blog-images/1/image.jpg")
+                    .build());
+
+            mockMvc.perform(get(BASE_URL + "/images/{imageId}", image.getId())
+                            .header("Authorization", "Bearer " + userToken))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("getPostImage_whenImageNotFound_shouldReturnNotFound")
+        void getPostImage_whenImageNotFound_shouldReturnNotFound() throws Exception {
+            mockMvc.perform(get(BASE_URL + "/images/{imageId}", 999999L)
+                            .header("Authorization", "Bearer " + userToken))
+                    .andExpect(status().isNotFound());
         }
     }
 }
