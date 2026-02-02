@@ -20,4 +20,6 @@ public interface CollaborationRepository extends JpaRepository<Collaboration, Lo
 
     boolean existsByDietitianIdAndClientIdAndEndedAtIsNull(Long dietitianId, Long clientId);
 
+    List<Collaboration> findByClientAndEndedAtIsNull(User client);
+
 }

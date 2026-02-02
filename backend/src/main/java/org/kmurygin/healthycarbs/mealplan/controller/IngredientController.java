@@ -1,7 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.controller;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.mealplan.IngredientCategory;
 import org.kmurygin.healthycarbs.mealplan.dto.IngredientDTO;
 import org.kmurygin.healthycarbs.mealplan.mapper.IngredientMapper;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/ingredients")
 public class IngredientController {
@@ -50,7 +50,7 @@ public class IngredientController {
         Page<Ingredient> page = ingredientService.findAllPage(name, category, onlyMine, pageable);
         Page<IngredientDTO> dtoPage = page.map(ingredientMapper::toDTO);
 
-        return ApiResponses.success(toPaginatedResponse(dtoPage));
+        return ApiResponses.success(PaginatedResponse.from(dtoPage));
     }
 
     @GetMapping("/{id}")
@@ -92,16 +92,4 @@ public class IngredientController {
         return ApiResponses.success(HttpStatus.NO_CONTENT, null, "Ingredient deleted successfully");
     }
 
-    private PaginatedResponse<IngredientDTO> toPaginatedResponse(Page<IngredientDTO> page) {
-        return new PaginatedResponse<>(
-                page.getContent(),
-                page.getTotalPages(),
-                page.getTotalElements(),
-                page.getSize(),
-                page.getNumber(),
-                page.isFirst(),
-                page.isLast(),
-                page.isEmpty()
-        );
-    }
 }

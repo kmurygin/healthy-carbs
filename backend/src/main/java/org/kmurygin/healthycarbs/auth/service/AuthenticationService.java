@@ -41,7 +41,7 @@ public class AuthenticationService {
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof User user) {
             return user;
         }
-        return null;
+        throw new UnauthorizedException("No authenticated user found");
     }
 
     public AuthenticationResponse register(RegisterRequest request) {

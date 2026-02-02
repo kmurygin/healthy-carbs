@@ -90,11 +90,27 @@ public class DietitianController {
         return ApiResponses.success(dietaryProfileMapper.toDTO(profile));
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/my-collaborations")
+    public ResponseEntity<ApiResponse<List<Long>>> getMyCollaborations() {
+        User client = userService.getCurrentUser();
+        List<Long> dietitianIds = collaborationService.getActiveCollaborationDietitianIds(client);
+        return ApiResponses.success(dietitianIds);
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'DIETITIAN', 'ADMIN')")
     @PostMapping("/collaboration/{dietitianId}")
     public ResponseEntity<ApiResponse<Boolean>> establishCollaboration(@PathVariable Long dietitianId) {
         User client = userService.getCurrentUser();
         collaborationService.establishCollaboration(dietitianId, client.getId());
+        return ApiResponses.success(true);
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'DIETITIAN', 'ADMIN')")
+    @DeleteMapping("/collaboration/{dietitianId}")
+    public ResponseEntity<ApiResponse<Boolean>> cancelCollaboration(@PathVariable Long dietitianId) {
+        User client = userService.getCurrentUser();
+        collaborationService.cancelCollaboration(client, dietitianId);
         return ApiResponses.success(true);
     }
 
