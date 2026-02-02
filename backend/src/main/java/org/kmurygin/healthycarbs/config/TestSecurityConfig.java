@@ -38,6 +38,7 @@ public class TestSecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/v1/blog/images/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/users/*/image").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/files/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/diet-types").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

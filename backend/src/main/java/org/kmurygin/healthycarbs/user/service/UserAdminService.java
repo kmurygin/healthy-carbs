@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
@@ -32,18 +33,18 @@ public class UserAdminService {
         validateAdminAccess(currentUser);
 
         if (currentUser.getId().equals(userId)) {
-            throw new IllegalArgumentException("You cannot change your own role.");
+            throw new ForbiddenException("You cannot change your own role.");
         }
 
         if (newRole == Role.ADMIN) {
-            throw new IllegalArgumentException(
+            throw new ForbiddenException(
                     "Cannot assign ADMIN role. Only system administrators can create admins.");
         }
 
         User user = getUserOrThrow(userId);
 
         if (user.getRole() == Role.ADMIN) {
-            throw new IllegalArgumentException("Cannot change role of an admin user.");
+            throw new ForbiddenException("Cannot change role of an admin user.");
         }
 
         user.setRole(newRole);
@@ -55,7 +56,7 @@ public class UserAdminService {
         validateAdminAccess(currentUser);
 
         if (currentUser.getId().equals(userId)) {
-            throw new IllegalArgumentException("You cannot deactivate your own account.");
+            throw new ForbiddenException("You cannot deactivate your own account.");
         }
 
         User user = getUserOrThrow(userId);

@@ -12,6 +12,7 @@ import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/api/v1/admin/users")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserAdminController {
 
     private final UserAdminService userAdminService;
