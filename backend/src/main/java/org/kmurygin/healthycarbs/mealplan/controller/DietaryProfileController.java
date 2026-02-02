@@ -31,8 +31,8 @@ public class DietaryProfileController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<DietaryProfileDTO>> isCreated() {
-        DietaryProfile dietaryProfile = dietaryProfileService.isCreated();
+    public ResponseEntity<ApiResponse<DietaryProfileDTO>> getCurrentUserProfile() {
+        DietaryProfile dietaryProfile = dietaryProfileService.findCurrentUserProfile();
         if (dietaryProfile == null) {
             return ApiResponses.success(HttpStatus.NO_CONTENT, null, "Dietary profile not created yet");
         }

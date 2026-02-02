@@ -46,7 +46,8 @@ public class Recipe {
     private Double protein;
     private Double fat;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "diet_type_id")
     private DietType dietType;
 
     @Enumerated(EnumType.STRING)

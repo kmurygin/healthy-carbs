@@ -1,5 +1,6 @@
 package org.kmurygin.healthycarbs.mealplan.mapper;
 
+import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.mapstruct.*;
@@ -8,15 +9,20 @@ import java.util.Set;
 
 @Mapper(componentModel = "spring", uses = {RecipeIngredientMapper.class})
 public interface RecipeMapper {
+
+    @Mapping(target = "dietType", expression = "java(mapDietTypeToString(recipe.getDietType()))")
     RecipeDTO toDTO(Recipe recipe);
 
+    @Mapping(target = "dietType", ignore = true)
     Recipe toEntity(RecipeDTO dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "dietType", ignore = true)
     void updateFromEntity(Recipe source, @MappingTarget Recipe target);
 
     @Mapping(target = "isFavourite", expression = "java(isRecipeFavourite(recipe, favouriteRecipeIds))")
+    @Mapping(target = "dietType", expression = "java(mapDietTypeToString(recipe.getDietType()))")
     RecipeDTO toDTO(Recipe recipe, Set<Long> favouriteRecipeIds);
 
     default boolean isRecipeFavourite(Recipe recipe, Set<Long> favouriteRecipeIds) {
@@ -24,5 +30,9 @@ public interface RecipeMapper {
             return false;
         }
         return favouriteRecipeIds.contains(recipe.getId());
+    }
+
+    default String mapDietTypeToString(DietType dietType) {
+        return dietType != null ? dietType.getName() : null;
     }
 }

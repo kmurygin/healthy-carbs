@@ -1,0 +1,92 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-02-01-create-diet-types-table
+      author: kmurygin
+      changes:
+        - createTable:
+            tableName: diet_types
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: compatibility_level
+                  type: int
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 2026-02-01-seed-diet-types
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO diet_types (name, compatibility_level) VALUES
+                ('VEGAN', 1),
+                ('VEGETARIAN', 2),
+                ('STANDARD', 3);
+
+  - changeSet:
+      id: 2026-02-01-add-diet-type-id-to-recipes
+      author: kmurygin
+      changes:
+        - addColumn:
+            tableName: recipes
+            columns:
+              - column:
+                  name: diet_type_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_recipes_diet_type
+                    references: diet_types(id)
+
+  - changeSet:
+      id: 2026-02-01-add-diet-type-id-to-dietary-profile
+      author: kmurygin
+      changes:
+        - addColumn:
+            tableName: dietary_profile
+            columns:
+              - column:
+                  name: diet_type_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_dietary_profile_diet_type
+                    references: diet_types(id)
+
+  - changeSet:
+      id: 2026-02-01-migrate-diet-type-data
+      author: kmurygin
+      changes:
+        - sql:
+            sql: |
+              UPDATE recipes r
+              SET diet_type_id = dt.id
+              FROM diet_types dt
+              WHERE UPPER(r.diet_type) = UPPER(dt.name);
+
+              UPDATE dietary_profile dp
+              SET diet_type_id = dt.id
+              FROM diet_types dt
+              WHERE UPPER(dp.diet_type) = UPPER(dt.name);
+
+  - changeSet:
+      id: 2026-02-01-drop-old-diet-type-columns
+      author: kmurygin
+      changes:
+        - dropColumn:
+            tableName: recipes
+            columnName: diet_type
+        - dropColumn:
+            tableName: dietary_profile
+            columnName: diet_type

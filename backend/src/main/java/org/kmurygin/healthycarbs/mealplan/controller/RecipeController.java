@@ -3,7 +3,6 @@ package org.kmurygin.healthycarbs.mealplan.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
-import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
@@ -38,7 +37,7 @@ public class RecipeController {
     ResponseEntity<ApiResponse<PaginatedResponse<RecipeDTO>>> findAll(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String ingredient,
-            @RequestParam(required = false) DietType diet,
+            @RequestParam(required = false) String diet,
             @RequestParam(required = false) MealType meal,
             @RequestParam(required = false) Boolean onlyFavourites,
             Pageable pageable
@@ -52,7 +51,7 @@ public class RecipeController {
         Page<Recipe> page = recipeService.findAll(name, ingredient, diet, meal, userId, pageable);
         Page<RecipeDTO> recipeDtoPage = page.map(recipe -> recipeMapper.toDTO(recipe, favouriteIds));
 
-        PaginatedResponse<RecipeDTO> paginatedResponse = this.toPaginatedResponse(recipeDtoPage);
+        PaginatedResponse<RecipeDTO> paginatedResponse = PaginatedResponse.from(recipeDtoPage);
         return ApiResponses.success(paginatedResponse);
     }
 
@@ -68,7 +67,7 @@ public class RecipeController {
     public ResponseEntity<ApiResponse<RecipeDTO>> create(
             @Valid @RequestBody RecipeDTO recipeDTO
     ) {
-        Recipe recipe = recipeService.create(recipeMapper.toEntity(recipeDTO));
+        Recipe recipe = recipeService.create(recipeMapper.toEntity(recipeDTO), recipeDTO.getDietType());
         return ApiResponses.success(
                 HttpStatus.CREATED,
                 recipeMapper.toDTO(recipe),
@@ -83,7 +82,7 @@ public class RecipeController {
             @RequestBody RecipeDTO recipeDTO
     ) {
         recipeDTO.setId(id);
-        Recipe recipe = recipeService.update(id, recipeMapper.toEntity(recipeDTO));
+        Recipe recipe = recipeService.update(id, recipeMapper.toEntity(recipeDTO), recipeDTO.getDietType());
         return ApiResponses.success(recipeMapper.toDTO(recipe));
     }
 
@@ -130,24 +129,11 @@ public class RecipeController {
     @GetMapping("/random")
     public ResponseEntity<ApiResponse<RecipeDTO>> getRandom(
             @RequestParam MealType mealType,
-            @RequestParam DietType dietType
+            @RequestParam String dietType
     ) {
         Set<Long> favouriteIds = userService.getFavouriteRecipesIds();
         Recipe recipe = recipeService.findRandom(mealType, dietType);
         return ApiResponses.success(recipeMapper.toDTO(recipe, favouriteIds));
-    }
-
-    private PaginatedResponse<RecipeDTO> toPaginatedResponse(Page<RecipeDTO> recipeDtoPage) {
-        return new PaginatedResponse<>(
-                recipeDtoPage.getContent(),
-                recipeDtoPage.getTotalPages(),
-                recipeDtoPage.getTotalElements(),
-                recipeDtoPage.getSize(),
-                recipeDtoPage.getNumber(),
-                recipeDtoPage.isFirst(),
-                recipeDtoPage.isLast(),
-                recipeDtoPage.isEmpty()
-        );
     }
 
     @PostMapping("/{id}/favourite")

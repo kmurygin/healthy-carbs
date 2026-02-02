@@ -2,6 +2,7 @@ package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.exception.BadRequestException;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.DietTypeUtil;
@@ -12,10 +13,7 @@ import org.kmurygin.healthycarbs.mealplan.mapper.RecipeMapper;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
-import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
-import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRecipeRepository;
-import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
-import org.kmurygin.healthycarbs.mealplan.repository.RecipeSpecification;
+import org.kmurygin.healthycarbs.mealplan.repository.*;
 import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.repository.UserRepository;
@@ -46,11 +44,13 @@ public class RecipeService {
     private final RecipeMapper recipeMapper;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final DietTypeUtil dietTypeUtil;
+    private final DietTypeRepository dietTypeRepository;
 
     public Page<Recipe> findAll(
             String name,
             String ingredient,
-            DietType dietType,
+            String dietTypeName,
             MealType mealType,
             Long userId,
             Pageable pageable
@@ -63,7 +63,9 @@ public class RecipeService {
         if (ingredient != null && !ingredient.trim().isEmpty()) {
             recipeSpecifications.add(RecipeSpecification.hasIngredient(ingredient));
         }
-        if (dietType != null) {
+        if (dietTypeName != null && !dietTypeName.trim().isEmpty()) {
+            DietType dietType = dietTypeRepository.findByName(dietTypeName)
+                    .orElseThrow(() -> new ResourceNotFoundException("DietType", "name", dietTypeName));
             recipeSpecifications.add(RecipeSpecification.hasDietType(dietType));
         }
         if (mealType != null) {
@@ -87,9 +89,10 @@ public class RecipeService {
     }
 
     @Transactional
-    public Recipe create(Recipe recipe) {
+    public Recipe create(Recipe recipe, String dietTypeName) {
         logger.info("Creating recipe: {}", recipe);
         recipe.setAuthor(userService.getCurrentUser());
+        resolveDietType(recipe, dietTypeName);
         if (recipe.getIngredients() != null) {
             recipe.getIngredients().forEach(ri -> ri.setRecipe(recipe));
         }
@@ -97,7 +100,7 @@ public class RecipeService {
     }
 
     @Transactional
-    public Recipe update(Long id, Recipe updatedRecipe) {
+    public Recipe update(Long id, Recipe updatedRecipe, String dietTypeName) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
         User currentUser = userService.getCurrentUser();
@@ -107,15 +110,24 @@ public class RecipeService {
             throw new AccessDeniedException("Recipe author is null");
         }
         if (!author.getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
-            throw new SecurityException("You are not authorized to update this recipe.");
+            throw new ForbiddenException("You are not authorized to update this recipe.");
         }
 
         recipeMapper.updateFromEntity(updatedRecipe, recipe);
+        resolveDietType(recipe, dietTypeName);
         if (recipe.getIngredients() != null) {
             recipe.getIngredients().forEach(ri -> ri.setRecipe(recipe));
         }
 
         return recipeRepository.save(recipe);
+    }
+
+    private void resolveDietType(Recipe recipe, String dietTypeName) {
+        if (dietTypeName != null && !dietTypeName.trim().isEmpty()) {
+            DietType dietType = dietTypeRepository.findByName(dietTypeName)
+                    .orElseThrow(() -> new ResourceNotFoundException("DietType", "name", dietTypeName));
+            recipe.setDietType(dietType);
+        }
     }
 
     public void deleteById(Long id) {
@@ -127,7 +139,7 @@ public class RecipeService {
             throw new AccessDeniedException("Recipe author is null");
         }
         if (!author.getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
-            throw new SecurityException("You are not authorized to delete this recipe.");
+            throw new ForbiddenException("You are not authorized to delete this recipe.");
         }
         if (mealPlanRecipeRepository.existsByRecipeId(id)) {
             throw new BadRequestException("Cannot delete recipe because it is used in one or more meal plans.");
@@ -173,7 +185,7 @@ public class RecipeService {
 
     @Transactional(readOnly = true)
     public Recipe findRandomForMealPlan(MealType mealType, DietType dietType) {
-        Set<DietType> compatibleDietTypes = DietTypeUtil.getCompatibleDietTypes(dietType);
+        Set<DietType> compatibleDietTypes = dietTypeUtil.getCompatibleDietTypes(dietType);
         List<Long> recipeIds = recipeRepository.findIdsByMealTypeAndDietTypes(mealType, compatibleDietTypes);
         if (recipeIds.isEmpty()) {
             throw new ResourceNotFoundException(
@@ -186,7 +198,9 @@ public class RecipeService {
     }
 
     @Transactional(readOnly = true)
-    public Recipe findRandom(MealType mealType, DietType dietType) {
+    public Recipe findRandom(MealType mealType, String dietTypeName) {
+        DietType dietType = dietTypeRepository.findByName(dietTypeName)
+                .orElseThrow(() -> new ResourceNotFoundException("DietType", "name", dietTypeName));
         List<Long> recipeIds = recipeRepository.findIdsByMealTypeAndDietType(mealType, dietType);
         if (recipeIds.isEmpty()) {
             throw new ResourceNotFoundException(

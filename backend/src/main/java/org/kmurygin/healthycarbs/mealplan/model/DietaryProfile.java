@@ -43,8 +43,8 @@ public class DietaryProfile {
     @Enumerated(EnumType.STRING)
     private DietGoal dietGoal;
 
-    @Column(name = "diet_type")
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "diet_type_id")
     private DietType dietType;
 
     @Column(name = "activity_level")
