@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-02-01-add-check-constraints
+      author: kmurygin
+      changes:
+        - sqlFile:
+            path: ../sql/check-constraints.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false

@@ -143,3 +143,12 @@ databaseChangeLog:
   - include:
       file: 2026-02-01-convert-diet-type-to-entity.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 2026-02-01-add-advanced-indexes.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2026-02-01-add-mpd-trigger.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 2026-02-01-add-check-constraints.yaml
+      relativeToChangelogFile: true
