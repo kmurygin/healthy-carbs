@@ -25,7 +25,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -56,9 +55,6 @@ class BlogServiceUnitTest {
     @Mock
     private StorageProperties storageProperties;
 
-    @Mock
-    private TransactionTemplate transactionTemplate;
-
     private BlogService blogService;
 
     private User testUser;
@@ -72,8 +68,7 @@ class BlogServiceUnitTest {
                 blogCommentRepository,
                 blogPostImageRepository,
                 storageProvider,
-                storageProperties,
-                transactionTemplate);
+                storageProperties);
 
         testUser = UserTestUtils.createTestUser(1L, "testuser");
 
@@ -386,15 +381,11 @@ class BlogServiceUnitTest {
             when(blogPostRepository.findById(1L)).thenReturn(Optional.of(testPost));
             when(storageProperties.getBlogPostImagePrefix()).thenReturn("blog-images");
             when(storageProvider.uploadFile(any(), eq("blog-images/1"))).thenReturn(uploadResult);
-            doAnswer(inv -> {
-                java.util.function.Consumer<org.springframework.transaction.TransactionStatus> callback = inv.getArgument(0);
-                callback.accept(null);
-                return null;
-            }).when(transactionTemplate).executeWithoutResult(any());
 
             blogService.uploadPostImage(1L, file);
 
             verify(storageProvider).uploadFile(file, "blog-images/1");
+            verify(blogPostRepository).save(testPost);
             verify(storageProvider, never()).deleteFileByKey(any());
         }
 
@@ -415,11 +406,6 @@ class BlogServiceUnitTest {
             when(blogPostRepository.findById(1L)).thenReturn(Optional.of(testPost));
             when(storageProperties.getBlogPostImagePrefix()).thenReturn("blog-images");
             when(storageProvider.uploadFile(any(), eq("blog-images/1"))).thenReturn(uploadResult);
-            doAnswer(inv -> {
-                java.util.function.Consumer<org.springframework.transaction.TransactionStatus> callback = inv.getArgument(0);
-                callback.accept(null);
-                return null;
-            }).when(transactionTemplate).executeWithoutResult(any());
 
             blogService.uploadPostImage(1L, file);
 
@@ -443,11 +429,6 @@ class BlogServiceUnitTest {
             when(blogPostRepository.findById(1L)).thenReturn(Optional.of(testPost));
             when(storageProperties.getBlogPostImagePrefix()).thenReturn("blog-images");
             when(storageProvider.uploadFile(any(), eq("blog-images/1"))).thenReturn(uploadResult);
-            doAnswer(inv -> {
-                java.util.function.Consumer<org.springframework.transaction.TransactionStatus> callback = inv.getArgument(0);
-                callback.accept(null);
-                return null;
-            }).when(transactionTemplate).executeWithoutResult(any());
             doThrow(new RuntimeException("Storage error")).when(storageProvider).deleteFileByKey("blog-images/1/old.jpg");
 
             blogService.uploadPostImage(1L, file);
@@ -463,29 +444,6 @@ class BlogServiceUnitTest {
 
             assertThatThrownBy(() -> blogService.uploadPostImage(999L, file))
                     .isInstanceOf(ResourceNotFoundException.class);
-        }
-
-        @Test
-        @DisplayName("uploadPostImage_whenPostDeletedDuringTransaction_shouldThrowResourceNotFound")
-        void uploadPostImage_whenPostDeletedDuringTransaction_shouldThrowResourceNotFound() {
-            MultipartFile file = mock(MultipartFile.class);
-            StorageUploadResult uploadResult = new StorageUploadResult(
-                    "http://example.com/new.jpg", "blog-images/1/new.jpg", "image/jpeg");
-
-            when(blogPostRepository.findById(1L))
-                    .thenReturn(Optional.of(testPost))
-                    .thenReturn(Optional.empty());
-            when(storageProperties.getBlogPostImagePrefix()).thenReturn("blog-images");
-            when(storageProvider.uploadFile(any(), eq("blog-images/1"))).thenReturn(uploadResult);
-            doAnswer(inv -> {
-                java.util.function.Consumer<org.springframework.transaction.TransactionStatus> callback = inv.getArgument(0);
-                callback.accept(null);
-                return null;
-            }).when(transactionTemplate).executeWithoutResult(any());
-
-            assertThatThrownBy(() -> blogService.uploadPostImage(1L, file))
-                    .isInstanceOf(ResourceNotFoundException.class)
-                    .hasMessageContaining("Blog post not found");
         }
     }
 
