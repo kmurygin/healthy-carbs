@@ -16,7 +16,7 @@ public class PayuConfig {
     WebClient webClient(PayuProperties properties) {
         return WebClient.builder()
                 .baseUrl(properties.baseUrl())
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.create()))
+                .clientConnector(new ReactorClientHttpConnector(HttpClient.create().followRedirect(false)))
                 .exchangeStrategies(ExchangeStrategies.builder()
                         .codecs(c -> c.defaultCodecs().maxInMemorySize(4 * 1024 * 1024))
                         .build())

@@ -1,11 +1,10 @@
 package org.kmurygin.healthycarbs.payments.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.payments.config.PayuProperties;
 import org.kmurygin.healthycarbs.payments.dto.*;
 import org.kmurygin.healthycarbs.user.model.User;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,7 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Component
 public class PayuClient {
 
@@ -31,12 +30,14 @@ public class PayuClient {
                 .contentType(MediaType.APPLICATION_JSON)
                 .headers(h -> h.setBearerAuth(tokenService.getAccessToken()))
                 .bodyValue(payload)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, resp ->
-                        resp.bodyToMono(String.class).flatMap(body ->
+                .exchangeToMono(response -> {
+                    if (response.statusCode().isError()) {
+                        return response.bodyToMono(String.class).flatMap(body ->
                                 Mono.error(new IllegalStateException(
-                                        "PayU create order error %s: %s".formatted(resp.statusCode(), body)))))
-                .bodyToMono(CreateOrderResponse.class)
+                                        "PayU create order error %s: %s".formatted(response.statusCode(), body))));
+                    }
+                    return response.bodyToMono(CreateOrderResponse.class);
+                })
                 .block();
     }
 

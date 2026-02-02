@@ -1,8 +1,11 @@
 package org.kmurygin.healthycarbs.payments.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.payments.config.PayuProperties;
 import org.kmurygin.healthycarbs.payments.dto.*;
 import org.kmurygin.healthycarbs.payments.model.Order;
 import org.kmurygin.healthycarbs.payments.service.OrderService;
@@ -19,16 +22,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/payments/payu")
 public class PayuController {
 
     private static final Logger logger = LoggerFactory.getLogger(PayuController.class);
+    private static final String SIGNATURE_HEADER = "OpenPayu-Signature";
+
+    private final ObjectMapper objectMapper;
     private final PaymentService paymentService;
     private final OrderService orderService;
     private final PayuClient payuClient;
     private final UserService userService;
+    private final PayuProperties payuProperties;
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<InitPaymentResponse>> create(
@@ -54,20 +68,72 @@ public class PayuController {
     @PostMapping("/notify")
     public ResponseEntity<ApiResponse<Void>> notify(
             @RequestHeader HttpHeaders headers,
-            @RequestBody JsonNode body
+            @RequestBody String rawBody
     ) {
-        JsonNode orderNode = body.get("order");
-        logger.info("[PayU]Payment notification: {}", body);
-        if (orderNode != null) {
+        verifySignature(headers, rawBody);
+
+        try {
+            JsonNode orderNode = objectMapper.readTree(rawBody).get("order");
+            if (orderNode == null) {
+                return ApiResponses.success(HttpStatus.OK, null, "OK");
+            }
+
             String extOrderId = orderNode.path("extOrderId").asText(null);
-            PaymentStatus status = PaymentStatus.valueOf(orderNode.path("status")
-                    .asText(String.valueOf(PaymentStatus.PENDING)));
-            logger.info("[PayU]Payment notification status: {}", status);
+            PaymentStatus status = PaymentStatus.valueOf(
+                    orderNode.path("status").asText(String.valueOf(PaymentStatus.PENDING)));
+
+            logger.info("[PayU] Payment notification — extOrderId: {}, status: {}", extOrderId, status);
+
             if (extOrderId != null) {
                 paymentService.updatePaymentStatus(extOrderId, status);
             }
+        } catch (JsonProcessingException e) {
+            logger.error("[PayU] Failed to parse notification body", e);
+            return ApiResponses.success(HttpStatus.BAD_REQUEST, null, "Invalid body");
         }
         return ApiResponses.success(HttpStatus.OK, null, "OK");
+    }
+
+    private void verifySignature(HttpHeaders headers, String body) {
+        String signatureHeader = headers.getFirst(SIGNATURE_HEADER);
+        if (signatureHeader == null || signatureHeader.isBlank()) {
+            throw new SecurityException("Missing PayU signature header");
+        }
+
+        Map<String, String> params = parseSignatureHeader(signatureHeader);
+        String incomingSignature = params.get("signature");
+        String algorithm = params.getOrDefault("algorithm", "MD5");
+
+        if (incomingSignature == null) {
+            throw new SecurityException("Invalid PayU signature header format");
+        }
+
+        String expectedSignature = computeHash(body + payuProperties.secondKey(), algorithm);
+
+        if (!MessageDigest.isEqual(
+                expectedSignature.getBytes(StandardCharsets.UTF_8),
+                incomingSignature.getBytes(StandardCharsets.UTF_8))) {
+            logger.warn("[PayU] Signature mismatch — expected: {}, incoming: {}", expectedSignature, incomingSignature);
+            throw new SecurityException("PayU signature verification failed");
+        }
+        logger.info("[PayU] Signature verified successfully");
+    }
+
+    private Map<String, String> parseSignatureHeader(String header) {
+        return java.util.Arrays.stream(header.split(";"))
+                .map(part -> part.split("=", 2))
+                .filter(kv -> kv.length == 2)
+                .collect(Collectors.toMap(kv -> kv[0].trim(), kv -> kv[1].trim()));
+    }
+
+    private String computeHash(String input, String algorithm) {
+        try {
+            byte[] digest = MessageDigest.getInstance(algorithm)
+                    .digest(input.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Unsupported hash algorithm: " + algorithm, e);
+        }
     }
 
     @GetMapping("/status/{localOrderId}")
