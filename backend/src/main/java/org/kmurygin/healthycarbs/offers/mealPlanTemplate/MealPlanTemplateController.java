@@ -1,19 +1,20 @@
 package org.kmurygin.healthycarbs.offers.mealPlanTemplate;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.mealplan.repository.MealPlanDayRepository;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/mealplan-templates")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MealPlanTemplateController {
 
     private final MealPlanTemplateService mealPlanTemplateService;
@@ -62,5 +63,16 @@ public class MealPlanTemplateController {
         mealPlanTemplateService.deleteById(id);
         return ApiResponses.success(HttpStatus.NO_CONTENT, null,
                 "Meal plan template has been deleted successfully");
+    }
+
+    @PostMapping("/{id}/share")
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> share(
+            @PathVariable Long id,
+            @Valid @RequestBody ShareMealPlanTemplateRequest request
+    ) {
+        mealPlanTemplateService.shareMealPlanWithClient(id, request.clientId());
+        return ApiResponses.success(HttpStatus.OK, null,
+                "Meal plan has been shared with the client successfully");
     }
 }

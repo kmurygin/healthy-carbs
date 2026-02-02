@@ -1,19 +1,22 @@
 package org.kmurygin.healthycarbs.offers.offer;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/offers")
 public class OfferController {
+
+    private static final String ADMIN_OR_DIETITIAN = "hasAnyRole('ADMIN', 'DIETITIAN')";
 
     private final OfferService offerService;
     private final OfferMapper offerMapper;
@@ -33,6 +36,7 @@ public class OfferController {
     }
 
     @PostMapping
+    @PreAuthorize(ADMIN_OR_DIETITIAN)
     public ResponseEntity<ApiResponse<OfferDTO>> create(@Valid @RequestBody OfferDTO offerDTO) {
         Offer offer = offerService.create(
                 offerMapper.toEntity(offerDTO),
@@ -46,6 +50,7 @@ public class OfferController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize(ADMIN_OR_DIETITIAN)
     public ResponseEntity<ApiResponse<OfferDTO>> update(
             @PathVariable Long id,
             @Valid @RequestBody OfferDTO offerDTO
@@ -59,6 +64,7 @@ public class OfferController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize(ADMIN_OR_DIETITIAN)
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         offerService.deleteById(id);
         return ApiResponses.success(

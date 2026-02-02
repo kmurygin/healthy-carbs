@@ -1,6 +1,6 @@
 package org.kmurygin.healthycarbs.payments.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.payments.config.PayuProperties;
 import org.kmurygin.healthycarbs.payments.dto.InitPaymentRequest;
 import org.kmurygin.healthycarbs.payments.dto.OrderResponse;
@@ -11,7 +11,7 @@ import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class OrderService {
 
