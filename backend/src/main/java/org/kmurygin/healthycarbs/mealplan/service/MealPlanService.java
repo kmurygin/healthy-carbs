@@ -50,6 +50,7 @@ public class MealPlanService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final UserService userService;
     private final EmailService emailService;
+    private final ShoppingListService shoppingListService;
 
     public MealPlanService(
             GeneticAlgorithm geneticAlgorithm,
@@ -61,7 +62,8 @@ public class MealPlanService {
             FitnessFactory fitnessFactory,
             ApplicationEventPublisher applicationEventPublisher,
             UserService userService,
-            EmailService emailService
+            EmailService emailService,
+            ShoppingListService shoppingListService
     ) {
         this.geneticAlgorithm = geneticAlgorithm;
         this.recipeService = recipeService;
@@ -73,6 +75,7 @@ public class MealPlanService {
         this.applicationEventPublisher = applicationEventPublisher;
         this.userService = userService;
         this.emailService = emailService;
+        this.shoppingListService = shoppingListService;
     }
 
     public MealPlan save(MealPlan mealPlan) {
@@ -136,7 +139,7 @@ public class MealPlanService {
 
     public List<MealPlan> getMealPlansHistory() {
         User user = authenticationService.getCurrentUser();
-        return mealPlanRepository.findByUser(user);
+        return mealPlanRepository.findByUserOrderByCreatedAtAsc(user);
     }
 
     public MealPlan findById(Long id) {
@@ -201,6 +204,43 @@ public class MealPlanService {
         return matchedMealPlans;
     }
 
+    @Transactional
+    public MealPlan updateMealPlan(Long id, CreateMealPlanRequest request) {
+        MealPlan mealPlan = mealPlanRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
+
+        if (!isAdminOrAuthor(id)) {
+            throw new ForbiddenException("You are not authorized to update this meal plan.");
+        }
+
+        LocalDate startDate = request.startDate() != null ? request.startDate() : LocalDate.now();
+
+        List<MealPlanDay> days = request.days().stream()
+                .map(dayDto -> createDayFromDto(dayDto, startDate))
+                .toList();
+
+        mealPlan.setDays(days);
+        updateWeeklyTotals(mealPlan);
+
+        MealPlan saved = mealPlanRepository.save(mealPlan);
+        shoppingListService.regenerateForMealPlan(saved);
+
+        return saved;
+    }
+
+    @Transactional
+    public void deleteMealPlan(Long id) {
+        MealPlan mealPlan = mealPlanRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
+
+        if (!isAdminOrAuthor(id)) {
+            throw new ForbiddenException("You are not authorized to delete this meal plan.");
+        }
+
+        shoppingListService.deleteByMealPlan(mealPlan);
+        mealPlanRepository.delete(mealPlan);
+    }
+
     private MealPlanDay createDayFromDto(ManualMealPlanDayDTO dayDto, LocalDate startDate) {
         MealPlanDay day = new MealPlanDay();
         LocalDate date = startDate.plusDays(dayDto.dayOffset());
@@ -263,5 +303,17 @@ public class MealPlanService {
         mealPlan.setTotalCarbs(totalCarbs);
         mealPlan.setTotalProtein(totalProtein);
         mealPlan.setTotalFat(totalFat);
+    }
+
+    private Boolean isAdminOrAuthor(Long id) {
+        User currentUser = authenticationService.getCurrentUser();
+        MealPlan mealPlan = mealPlanRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
+
+        boolean isAuthor = mealPlan.getAuthor() != null && Objects.equals(mealPlan.getAuthor().getId(), currentUser.getId());
+        boolean isAdmin = currentUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        return isAdmin || isAuthor;
     }
 }

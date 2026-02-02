@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,6 +70,26 @@ public class MealPlanController {
         MealPlan mealPlan = mealPlanService.createManualMealPlan(request);
         MealPlanDTO dto = mealPlanMapper.toDTO(mealPlan);
         return ApiResponses.success(HttpStatus.CREATED, dto, "Meal plan created successfully");
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIETITIAN','ADMIN')")
+    public ResponseEntity<ApiResponse<MealPlanDTO>> updateMealPlan(
+            @PathVariable Long id,
+            @RequestBody @Valid CreateMealPlanRequest request
+    ) {
+        MealPlan mealPlan = mealPlanService.updateMealPlan(id, request);
+        MealPlanDTO dto = mealPlanMapper.toDTO(mealPlan);
+        return ApiResponses.success(HttpStatus.OK, dto, "Meal plan updated successfully");
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIETITIAN','ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> deleteMealPlan(@PathVariable Long id) {
+        mealPlanService.deleteMealPlan(id);
+        return ApiResponses.success(
+                HttpStatus.NO_CONTENT, null, "Meal plan deleted successfully"
+        );
     }
 
 }
