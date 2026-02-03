@@ -81,11 +81,11 @@ class UserAdminControllerIntegrationTest {
         }
 
         @Test
-        @DisplayName("getAllUsers_whenNotAdmin_shouldReturnOkDueToMissingAuthorization")
-        void getAllUsers_whenNotAdmin_shouldReturnOkDueToMissingAuthorization() throws Exception {
+        @DisplayName("getAllUsers_whenNotAdmin_shouldReturnForbidden")
+        void getAllUsers_whenNotAdmin_shouldReturnForbidden() throws Exception {
             mockMvc.perform(get(BASE_URL)
                             .header("Authorization", "Bearer " + userToken))
-                    .andExpect(status().isOk());
+                    .andExpect(status().isForbidden());
         }
 
         @Test
@@ -140,8 +140,8 @@ class UserAdminControllerIntegrationTest {
         }
 
         @Test
-        @DisplayName("changeUserRole_whenChangingOwnRole_shouldReturnServerError")
-        void changeUserRole_whenChangingOwnRole_shouldReturnServerError() throws Exception {
+        @DisplayName("changeUserRole_whenChangingOwnRole_shouldReturnForbidden")
+        void changeUserRole_whenChangingOwnRole_shouldReturnForbidden() throws Exception {
             ChangeRoleRequest request = new ChangeRoleRequest(Role.USER);
 
             mockMvc.perform(patch(BASE_URL + "/{id}/role", adminUser.getId())
@@ -149,7 +149,7 @@ class UserAdminControllerIntegrationTest {
                             .with(csrf())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isInternalServerError());
+                    .andExpect(status().isForbidden());
         }
     }
 

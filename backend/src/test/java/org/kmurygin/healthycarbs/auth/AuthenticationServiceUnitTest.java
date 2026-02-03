@@ -97,23 +97,23 @@ class AuthenticationServiceUnitTest {
         }
 
         @Test
-        @DisplayName("getCurrentUser_whenNotAuthenticated_shouldReturnNull")
-        void getCurrentUser_whenNotAuthenticated_shouldReturnNull() {
+        @DisplayName("getCurrentUser_whenNotAuthenticated_shouldThrowUnauthorized")
+        void getCurrentUser_whenNotAuthenticated_shouldThrowUnauthorized() {
             SecurityContext securityContext = mock(SecurityContext.class);
             when(securityContext.getAuthentication()).thenReturn(null);
 
             SecurityContextHolder.setContext(securityContext);
 
-            User result = authenticationService.getCurrentUser();
-
-            assertThat(result).isNull();
+            assertThatThrownBy(() -> authenticationService.getCurrentUser())
+                    .isInstanceOf(UnauthorizedException.class)
+                    .hasMessageContaining("No authenticated user found");
 
             SecurityContextHolder.clearContext();
         }
 
         @Test
-        @DisplayName("getCurrentUser_whenPrincipalNotUser_shouldReturnNull")
-        void getCurrentUser_whenPrincipalNotUser_shouldReturnNull() {
+        @DisplayName("getCurrentUser_whenPrincipalNotUser_shouldThrowUnauthorized")
+        void getCurrentUser_whenPrincipalNotUser_shouldThrowUnauthorized() {
             SecurityContext securityContext = mock(SecurityContext.class);
             Authentication authentication = mock(Authentication.class);
 
@@ -123,9 +123,9 @@ class AuthenticationServiceUnitTest {
 
             SecurityContextHolder.setContext(securityContext);
 
-            User result = authenticationService.getCurrentUser();
-
-            assertThat(result).isNull();
+            assertThatThrownBy(() -> authenticationService.getCurrentUser())
+                    .isInstanceOf(UnauthorizedException.class)
+                    .hasMessageContaining("No authenticated user found");
 
             SecurityContextHolder.clearContext();
         }

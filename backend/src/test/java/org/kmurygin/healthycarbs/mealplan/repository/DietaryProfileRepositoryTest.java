@@ -33,7 +33,12 @@ class DietaryProfileRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private DietTypeRepository dietTypeRepository;
+
     private User savedUser;
+    private DietType standardDietType;
+    private DietType vegetarianDietType;
 
     @BeforeEach
     void setUp() {
@@ -42,6 +47,11 @@ class DietaryProfileRepositoryTest {
 
         savedUser = userRepository.save(UserTestUtils.createRegularUserForPersistence(
                 String.valueOf(System.currentTimeMillis())));
+
+        standardDietType = dietTypeRepository.findByName("STANDARD")
+                .orElseGet(() -> dietTypeRepository.save(DietType.builder().name("STANDARD").compatibilityLevel(1).build()));
+        vegetarianDietType = dietTypeRepository.findByName("VEGETARIAN")
+                .orElseGet(() -> dietTypeRepository.save(DietType.builder().name("VEGETARIAN").compatibilityLevel(2).build()));
     }
 
     @Nested
@@ -58,7 +68,7 @@ class DietaryProfileRepositoryTest {
                     .age(30)
                     .gender(Gender.MALE)
                     .dietGoal(DietGoal.MAINTAIN)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .activityLevel(ActivityLevel.MODERATE)
                     .calorieTarget(2000.0)
                     .carbsTarget(250.0)
@@ -94,7 +104,7 @@ class DietaryProfileRepositoryTest {
                     .age(30)
                     .gender(Gender.MALE)
                     .dietGoal(DietGoal.MAINTAIN)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .activityLevel(ActivityLevel.MODERATE)
                     .calorieTarget(2000.0)
                     .build());
@@ -106,7 +116,7 @@ class DietaryProfileRepositoryTest {
                     .age(25)
                     .gender(Gender.FEMALE)
                     .dietGoal(DietGoal.LOSE)
-                    .dietType(DietType.VEGETARIAN)
+                    .dietType(vegetarianDietType)
                     .activityLevel(ActivityLevel.HIGH)
                     .calorieTarget(1800.0)
                     .build());
@@ -132,7 +142,7 @@ class DietaryProfileRepositoryTest {
                     .age(30)
                     .gender(Gender.MALE)
                     .dietGoal(DietGoal.MAINTAIN)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .activityLevel(ActivityLevel.MODERATE)
                     .calorieTarget(2000.0)
                     .carbsTarget(250.0)
@@ -154,7 +164,7 @@ class DietaryProfileRepositoryTest {
                     .age(30)
                     .gender(Gender.MALE)
                     .dietGoal(DietGoal.MAINTAIN)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .activityLevel(ActivityLevel.MODERATE)
                     .calorieTarget(2000.0)
                     .build());
@@ -175,7 +185,7 @@ class DietaryProfileRepositoryTest {
                     .age(30)
                     .gender(Gender.MALE)
                     .dietGoal(DietGoal.MAINTAIN)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .activityLevel(ActivityLevel.MODERATE)
                     .calorieTarget(2000.0)
                     .build());
@@ -202,7 +212,7 @@ class DietaryProfileRepositoryTest {
                     .age(30)
                     .gender(Gender.MALE)
                     .dietGoal(DietGoal.MAINTAIN)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .activityLevel(ActivityLevel.MODERATE)
                     .calorieTarget(2000.0)
                     .build());
