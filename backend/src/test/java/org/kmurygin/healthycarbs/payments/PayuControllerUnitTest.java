@@ -1,6 +1,5 @@
 package org.kmurygin.healthycarbs.payments;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kmurygin.healthycarbs.payments.config.PayuProperties;
 import org.kmurygin.healthycarbs.payments.controller.PayuController;
 import org.kmurygin.healthycarbs.payments.dto.*;
 import org.kmurygin.healthycarbs.payments.model.Order;
@@ -43,12 +43,14 @@ class PayuControllerUnitTest {
     private PayuClient payuClient;
     @Mock
     private UserService userService;
+    @Mock
+    private PayuProperties payuProperties;
     private PayuController payuController;
     private User testUser;
 
     @BeforeEach
     void setUp() {
-        payuController = new PayuController(paymentService, orderService, payuClient, userService);
+        payuController = new PayuController(objectMapper, paymentService, orderService, payuClient, userService, payuProperties);
         testUser = UserTestUtils.createTestUser(1L, "testuser");
     }
 
@@ -96,13 +98,28 @@ class PayuControllerUnitTest {
 
         @Test
         @DisplayName("notify_withValidOrderNode_shouldUpdatePaymentStatus")
-        void notify_withValidOrderNode_shouldUpdatePaymentStatus() {
-            JsonNode body = objectMapper.createObjectNode()
-                    .set("order", objectMapper.createObjectNode()
-                            .put("extOrderId", "ORDER-123")
-                            .put("status", "COMPLETED"));
+        void notify_withValidOrderNode_shouldUpdatePaymentStatus() throws Exception {
+            String body = objectMapper.writeValueAsString(
+                    objectMapper.createObjectNode()
+                            .set("order", objectMapper.createObjectNode()
+                                    .put("extOrderId", "ORDER-123")
+                                    .put("status", "COMPLETED")));
 
-            ResponseEntity<ApiResponse<Void>> response = payuController.notify(new HttpHeaders(), body);
+            String secondKey = "test-secret";
+            when(payuProperties.secondKey()).thenReturn(secondKey);
+
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest((body + secondKey).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b));
+            }
+            String signature = sb.toString();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("OpenPayu-Signature", "signature=" + signature + ";algorithm=MD5");
+
+            ResponseEntity<ApiResponse<Void>> response = payuController.notify(headers, body);
 
             assertThat(response.getStatusCode().value()).isEqualTo(200);
             verify(paymentService).updatePaymentStatus("ORDER-123", PaymentStatus.COMPLETED);
@@ -110,11 +127,26 @@ class PayuControllerUnitTest {
 
         @Test
         @DisplayName("notify_withNullOrderNode_shouldNotCallUpdateStatus")
-        void notify_withNullOrderNode_shouldNotCallUpdateStatus() {
-            JsonNode body = objectMapper.createObjectNode()
-                    .put("someOtherField", "value");
+        void notify_withNullOrderNode_shouldNotCallUpdateStatus() throws Exception {
+            String body = objectMapper.writeValueAsString(
+                    objectMapper.createObjectNode()
+                            .put("someOtherField", "value"));
 
-            ResponseEntity<ApiResponse<Void>> response = payuController.notify(new HttpHeaders(), body);
+            String secondKey = "test-secret";
+            when(payuProperties.secondKey()).thenReturn(secondKey);
+
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest((body + secondKey).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b));
+            }
+            String signature = sb.toString();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("OpenPayu-Signature", "signature=" + signature + ";algorithm=MD5");
+
+            ResponseEntity<ApiResponse<Void>> response = payuController.notify(headers, body);
 
             assertThat(response.getStatusCode().value()).isEqualTo(200);
             verify(paymentService, never()).updatePaymentStatus(any(), any());
@@ -122,12 +154,27 @@ class PayuControllerUnitTest {
 
         @Test
         @DisplayName("notify_withNullExtOrderId_shouldNotCallUpdateStatus")
-        void notify_withNullExtOrderId_shouldNotCallUpdateStatus() {
-            JsonNode body = objectMapper.createObjectNode()
-                    .set("order", objectMapper.createObjectNode()
-                            .put("status", "COMPLETED"));
+        void notify_withNullExtOrderId_shouldNotCallUpdateStatus() throws Exception {
+            String body = objectMapper.writeValueAsString(
+                    objectMapper.createObjectNode()
+                            .set("order", objectMapper.createObjectNode()
+                                    .put("status", "COMPLETED")));
 
-            ResponseEntity<ApiResponse<Void>> response = payuController.notify(new HttpHeaders(), body);
+            String secondKey = "test-secret";
+            when(payuProperties.secondKey()).thenReturn(secondKey);
+
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest((body + secondKey).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b));
+            }
+            String signature = sb.toString();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("OpenPayu-Signature", "signature=" + signature + ";algorithm=MD5");
+
+            ResponseEntity<ApiResponse<Void>> response = payuController.notify(headers, body);
 
             assertThat(response.getStatusCode().value()).isEqualTo(200);
             verify(paymentService, never()).updatePaymentStatus(any(), any());

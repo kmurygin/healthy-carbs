@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kmurygin.healthycarbs.exception.BadRequestException;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.IngredientCategory;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
@@ -258,8 +259,8 @@ class IngredientServiceUnitTest {
         }
 
         @Test
-        @DisplayName("update_whenNotAuthorAndNotAdmin_shouldThrowSecurityException")
-        void update_whenNotAuthorAndNotAdmin_shouldThrowSecurityException() {
+        @DisplayName("update_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException")
+        void update_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException() {
             User otherUser = UserTestUtils.createTestUser(3L, "otheruser", Role.DIETITIAN);
             Ingredient updatedIngredient = Ingredient.builder()
                     .name("Unauthorized Update")
@@ -269,7 +270,7 @@ class IngredientServiceUnitTest {
             when(userService.getCurrentUser()).thenReturn(otherUser);
 
             assertThatThrownBy(() -> ingredientService.update(1L, updatedIngredient))
-                    .isInstanceOf(SecurityException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("not authorized");
         }
 
@@ -318,15 +319,15 @@ class IngredientServiceUnitTest {
         }
 
         @Test
-        @DisplayName("deleteById_whenNotAuthorAndNotAdmin_shouldThrowSecurityException")
-        void deleteById_whenNotAuthorAndNotAdmin_shouldThrowSecurityException() {
+        @DisplayName("deleteById_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException")
+        void deleteById_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException() {
             User otherUser = UserTestUtils.createTestUser(3L, "otheruser", Role.DIETITIAN);
 
             when(ingredientRepository.findById(1L)).thenReturn(Optional.of(testIngredient));
             when(userService.getCurrentUser()).thenReturn(otherUser);
 
             assertThatThrownBy(() -> ingredientService.deleteById(1L))
-                    .isInstanceOf(SecurityException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("not authorized");
         }
 

@@ -33,7 +33,13 @@ class RecipeRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private DietTypeRepository dietTypeRepository;
+
     private User savedUser;
+    private DietType standardDietType;
+    private DietType vegetarianDietType;
+    private DietType veganDietType;
 
     @BeforeEach
     void setUp() {
@@ -42,6 +48,13 @@ class RecipeRepositoryTest {
 
         savedUser = userRepository.save(UserTestUtils.createDietitianForPersistence(
                 String.valueOf(System.currentTimeMillis())));
+
+        standardDietType = dietTypeRepository.findByName("STANDARD")
+                .orElseGet(() -> dietTypeRepository.save(DietType.builder().name("STANDARD").compatibilityLevel(1).build()));
+        vegetarianDietType = dietTypeRepository.findByName("VEGETARIAN")
+                .orElseGet(() -> dietTypeRepository.save(DietType.builder().name("VEGETARIAN").compatibilityLevel(2).build()));
+        veganDietType = dietTypeRepository.findByName("VEGAN")
+                .orElseGet(() -> dietTypeRepository.save(DietType.builder().name("VEGAN").compatibilityLevel(3).build()));
     }
 
     @Nested
@@ -56,7 +69,7 @@ class RecipeRepositoryTest {
                     .description("Test description")
                     .instructions("Test instructions")
                     .mealType(MealType.BREAKFAST)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .author(savedUser)
                     .calories(300.0)
                     .carbs(40.0)
@@ -76,7 +89,7 @@ class RecipeRepositoryTest {
                     .description("Test description")
                     .instructions("Test instructions")
                     .mealType(MealType.LUNCH)
-                    .dietType(DietType.VEGETARIAN)
+                    .dietType(vegetarianDietType)
                     .author(savedUser)
                     .build());
 
@@ -102,7 +115,7 @@ class RecipeRepositoryTest {
                     .description("Test description")
                     .instructions("Test instructions")
                     .mealType(MealType.DINNER)
-                    .dietType(DietType.VEGAN)
+                    .dietType(veganDietType)
                     .author(savedUser)
                     .build());
 
@@ -120,7 +133,7 @@ class RecipeRepositoryTest {
                     .description("Description 1")
                     .instructions("Instructions 1")
                     .mealType(MealType.BREAKFAST)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .author(savedUser)
                     .build());
 
@@ -129,7 +142,7 @@ class RecipeRepositoryTest {
                     .description("Description 2")
                     .instructions("Instructions 2")
                     .mealType(MealType.LUNCH)
-                    .dietType(DietType.VEGETARIAN)
+                    .dietType(vegetarianDietType)
                     .author(savedUser)
                     .build());
 
@@ -151,7 +164,7 @@ class RecipeRepositoryTest {
                     .description("Description")
                     .instructions("Instructions")
                     .mealType(MealType.BREAKFAST)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .author(savedUser)
                     .build());
 
@@ -160,11 +173,11 @@ class RecipeRepositoryTest {
                     .description("Description")
                     .instructions("Instructions")
                     .mealType(MealType.LUNCH)
-                    .dietType(DietType.VEGAN)
+                    .dietType(veganDietType)
                     .author(savedUser)
                     .build());
 
-            List<Long> result = recipeRepository.findIdsByMealTypeAndDietType(MealType.BREAKFAST, DietType.STANDARD);
+            List<Long> result = recipeRepository.findIdsByMealTypeAndDietType(MealType.BREAKFAST, standardDietType);
 
             assertThat(result).hasSize(1);
             assertThat(result.get(0)).isEqualTo(recipe1.getId());
@@ -178,11 +191,11 @@ class RecipeRepositoryTest {
                     .description("Description")
                     .instructions("Instructions")
                     .mealType(MealType.LUNCH)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .author(savedUser)
                     .build());
 
-            List<Long> result = recipeRepository.findIdsByMealTypeAndDietType(MealType.DINNER, DietType.VEGAN);
+            List<Long> result = recipeRepository.findIdsByMealTypeAndDietType(MealType.DINNER, veganDietType);
 
             assertThat(result).isEmpty();
         }
@@ -200,7 +213,7 @@ class RecipeRepositoryTest {
                     .description("Description")
                     .instructions("Instructions")
                     .mealType(MealType.BREAKFAST)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .author(savedUser)
                     .build());
 
@@ -209,13 +222,13 @@ class RecipeRepositoryTest {
                     .description("Description")
                     .instructions("Instructions")
                     .mealType(MealType.BREAKFAST)
-                    .dietType(DietType.VEGETARIAN)
+                    .dietType(vegetarianDietType)
                     .author(savedUser)
                     .build());
 
             List<Long> result = recipeRepository.findIdsByMealTypeAndDietTypes(
                     MealType.BREAKFAST,
-                    Set.of(DietType.STANDARD, DietType.VEGETARIAN));
+                    Set.of(standardDietType, vegetarianDietType));
 
             assertThat(result).hasSize(2);
             assertThat(result).containsExactlyInAnyOrder(recipe1.getId(), recipe2.getId());
@@ -234,7 +247,7 @@ class RecipeRepositoryTest {
                     .description("Description")
                     .instructions("Instructions")
                     .mealType(MealType.LUNCH)
-                    .dietType(DietType.STANDARD)
+                    .dietType(standardDietType)
                     .author(savedUser)
                     .build());
 

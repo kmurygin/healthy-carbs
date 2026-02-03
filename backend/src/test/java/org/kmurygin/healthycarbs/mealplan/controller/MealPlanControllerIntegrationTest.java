@@ -13,6 +13,7 @@ import org.kmurygin.healthycarbs.mealplan.model.DietaryProfile;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlanDay;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
+import org.kmurygin.healthycarbs.mealplan.repository.DietTypeRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.DietaryProfileRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
@@ -63,6 +64,8 @@ class MealPlanControllerIntegrationTest {
     @Autowired
     private DietaryProfileRepository dietaryProfileRepository;
     @Autowired
+    private DietTypeRepository dietTypeRepository;
+    @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtService jwtService;
@@ -73,11 +76,15 @@ class MealPlanControllerIntegrationTest {
     private User clientUser;
     private MealPlan testMealPlan;
     private Recipe testRecipe;
+    private DietType standardDietType;
     private String userToken;
     private String dietitianToken;
 
     @BeforeEach
     void setUp() {
+        standardDietType = dietTypeRepository.findByName("STANDARD")
+                .orElseGet(() -> dietTypeRepository.save(DietType.builder().name("STANDARD").compatibilityLevel(1).build()));
+
         regularUser = userRepository.save(
                 UserTestUtils.createUserForPersistence("user_mealplan", uniqueSuffix,
                         org.kmurygin.healthycarbs.user.model.Role.USER, passwordEncoder));
@@ -97,7 +104,7 @@ class MealPlanControllerIntegrationTest {
                 .age(30)
                 .gender(Gender.MALE)
                 .dietGoal(DietGoal.MAINTAIN)
-                .dietType(DietType.STANDARD)
+                .dietType(standardDietType)
                 .activityLevel(ActivityLevel.MODERATE)
                 .calorieTarget(2000.0)
                 .carbsTarget(250.0)
@@ -110,7 +117,7 @@ class MealPlanControllerIntegrationTest {
                 .description("Test recipe description")
                 .instructions("Test instructions for cooking")
                 .mealType(MealType.BREAKFAST)
-                .dietType(DietType.STANDARD)
+                .dietType(standardDietType)
                 .calories(300.0)
                 .carbs(40.0)
                 .protein(15.0)

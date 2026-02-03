@@ -45,6 +45,9 @@ class RecipeSpecificationTest {
     private UserRepository userRepository;
 
     @Autowired
+    private DietTypeRepository dietTypeRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @MockitoBean
@@ -53,9 +56,16 @@ class RecipeSpecificationTest {
     private Recipe breakfastRecipe;
     private Recipe lunchRecipe;
     private User testUser;
+    private DietType standardDietType;
+    private DietType veganDietType;
 
     @BeforeEach
     void setUp() {
+        standardDietType = dietTypeRepository.findByName("STANDARD")
+                .orElseGet(() -> dietTypeRepository.save(DietType.builder().name("STANDARD").compatibilityLevel(1).build()));
+        veganDietType = dietTypeRepository.findByName("VEGAN")
+                .orElseGet(() -> dietTypeRepository.save(DietType.builder().name("VEGAN").compatibilityLevel(3).build()));
+
         testUser = userRepository.save(
                 UserTestUtils.createUserForPersistence("spec_user", uniqueSuffix, Role.DIETITIAN, passwordEncoder));
 
@@ -78,7 +88,7 @@ class RecipeSpecificationTest {
                 .description("A breakfast recipe")
                 .instructions("Cook it")
                 .mealType(MealType.BREAKFAST)
-                .dietType(DietType.STANDARD)
+                .dietType(standardDietType)
                 .calories(300.0)
                 .carbs(40.0)
                 .protein(15.0)
@@ -98,7 +108,7 @@ class RecipeSpecificationTest {
                 .description("A lunch recipe")
                 .instructions("Cook lunch")
                 .mealType(MealType.LUNCH)
-                .dietType(DietType.VEGAN)
+                .dietType(veganDietType)
                 .calories(500.0)
                 .carbs(60.0)
                 .protein(20.0)
@@ -161,10 +171,10 @@ class RecipeSpecificationTest {
         @Test
         @DisplayName("hasDietType_shouldFilterByDietType")
         void hasDietType_shouldFilterByDietType() {
-            Specification<Recipe> spec = RecipeSpecification.hasDietType(DietType.VEGAN);
+            Specification<Recipe> spec = RecipeSpecification.hasDietType(veganDietType);
             Page<Recipe> result = recipeRepository.findAll(spec, PageRequest.of(0, 100));
 
-            assertThat(result.getContent()).allMatch(r -> r.getDietType() == DietType.VEGAN);
+            assertThat(result.getContent()).allMatch(r -> r.getDietType().getName().equals("VEGAN"));
             assertThat(result.getContent()).extracting(Recipe::getName)
                     .anyMatch(name -> name.contains("Spec Lunch"));
         }
@@ -218,12 +228,12 @@ class RecipeSpecificationTest {
         void combinedSpec_shouldApplyMultipleFilters() {
             Specification<Recipe> spec = Specification
                     .where(RecipeSpecification.hasMealType(MealType.BREAKFAST))
-                    .and(RecipeSpecification.hasDietType(DietType.STANDARD));
+                    .and(RecipeSpecification.hasDietType(standardDietType));
 
             Page<Recipe> result = recipeRepository.findAll(spec, PageRequest.of(0, 100));
 
             assertThat(result.getContent()).allMatch(r ->
-                    r.getMealType() == MealType.BREAKFAST && r.getDietType() == DietType.STANDARD);
+                    r.getMealType() == MealType.BREAKFAST && r.getDietType().getName().equals("STANDARD"));
         }
     }
 }

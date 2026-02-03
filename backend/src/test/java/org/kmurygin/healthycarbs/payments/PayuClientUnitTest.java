@@ -88,9 +88,7 @@ class PayuClientUnitTest {
             when(requestBodySpec.contentType(any())).thenReturn(requestBodySpec);
             when(requestBodySpec.headers(any())).thenReturn(requestBodySpec);
             when(requestBodySpec.bodyValue(any())).thenReturn(requestHeadersSpec);
-            when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-            when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
-            when(responseSpec.bodyToMono(CreateOrderResponse.class)).thenReturn(Mono.just(expectedResponse));
+            when(requestHeadersSpec.exchangeToMono(any())).thenReturn(Mono.just(expectedResponse));
 
             CreateOrderResponse result = payuClient.createOrder(request, "192.168.1.1");
 
@@ -115,9 +113,7 @@ class PayuClientUnitTest {
             when(requestBodySpec.contentType(any())).thenReturn(requestBodySpec);
             when(requestBodySpec.headers(any())).thenReturn(requestBodySpec);
             when(requestBodySpec.bodyValue(any())).thenReturn(requestHeadersSpec);
-            when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-            when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
-            when(responseSpec.bodyToMono(CreateOrderResponse.class)).thenReturn(Mono.just(expectedResponse));
+            when(requestHeadersSpec.exchangeToMono(any())).thenReturn(Mono.just(expectedResponse));
 
             CreateOrderResponse result = payuClient.createOrder(request, null);
 
@@ -140,9 +136,7 @@ class PayuClientUnitTest {
             when(requestBodySpec.contentType(any())).thenReturn(requestBodySpec);
             when(requestBodySpec.headers(any())).thenReturn(requestBodySpec);
             when(requestBodySpec.bodyValue(any())).thenReturn(requestHeadersSpec);
-            when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-            when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
-            when(responseSpec.bodyToMono(CreateOrderResponse.class)).thenReturn(Mono.just(expectedResponse));
+            when(requestHeadersSpec.exchangeToMono(any())).thenReturn(Mono.just(expectedResponse));
 
             CreateOrderResponse result = payuClient.createOrder(request, "1.2.3.4");
 

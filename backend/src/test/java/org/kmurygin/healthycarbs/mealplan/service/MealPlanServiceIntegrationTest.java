@@ -73,6 +73,8 @@ class MealPlanServiceIntegrationTest {
     private EmailService emailService;
     @MockitoBean
     private UserService userService;
+    @MockitoBean
+    private ShoppingListService shoppingListService;
 
     private User persistedUser;
 
@@ -125,7 +127,7 @@ class MealPlanServiceIntegrationTest {
         User currentUser = authenticationService.getCurrentUser();
 
         when(dietaryProfileService.getByUserId(currentUser.getId()))
-                .thenReturn(DietaryProfile.builder().dietType(DietType.VEGAN).build());
+                .thenReturn(DietaryProfile.builder().dietType(DietType.builder().id(3L).name("VEGAN").compatibilityLevel(3).build()).build());
 
         when(fitnessFactory.createCalorieFitness(any())).thenReturn(mock(Fitness.class));
 
