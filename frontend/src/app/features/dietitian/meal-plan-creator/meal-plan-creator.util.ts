@@ -1,6 +1,8 @@
 import type {MealType} from "@core/models/enum/meal-type.enum";
 import type {RecipeDto} from "@core/models/dto/recipe.dto";
 
+export {formatEnum} from "@shared/utils";
+
 export type ProfileChip = Readonly<{
   iconClass: string;
   label: string;
@@ -61,17 +63,6 @@ export function emptyMacros(): DayMacros {
 
 export function normalizeNumber(value: number | null | undefined): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0;
-}
-
-export function formatEnum(value: string | null | undefined): string {
-  if (!value) return '—';
-  const withSpaces = value
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/[_-]+/g, ' ')
-    .trim()
-    .toLowerCase();
-
-  return withSpaces.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export function formatNumber(value: number | null | undefined, unit: string): string {

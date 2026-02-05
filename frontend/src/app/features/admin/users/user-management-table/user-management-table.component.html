@@ -50,7 +50,7 @@
                   <option [value]="UserRole.ADMIN">Admin</option>
                 }
                 @for (role of assignableRoles(); track role) {
-                  <option [value]="role">{{ role | titlecase }}</option>
+                  <option [selected]="role === user.role" [value]="role">{{ role | titlecase }}</option>
                 }
               </select>
             </div>

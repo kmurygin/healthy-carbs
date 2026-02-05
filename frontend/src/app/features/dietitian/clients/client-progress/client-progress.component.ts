@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {catchError, finalize, tap} from 'rxjs/operators';
-import {EMPTY, forkJoin, of} from 'rxjs';
+import {EMPTY, forkJoin} from 'rxjs';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {
   faArrowDown,
@@ -17,7 +17,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {DietitianService} from '@core/services/dietitian/dietitian.service';
 import type {UserMeasurement} from '@core/services/user-measurement/user-measurement.service';
-import type {DietaryProfileDto} from '@core/models/dto/dietaryprofile.dto';
+import type {DietaryProfileDto} from '@core/models/dto/dietary-profile.dto';
 import type {UserDto} from '@core/models/dto/user.dto';
 import {NotificationService} from '@core/services/ui/notification.service';
 import {setErrorNotification} from '@shared/utils';
@@ -176,7 +176,7 @@ export class ClientProgressComponent implements OnInit {
 
     forkJoin({
       measurements: this.dietitianService.getClientMeasurements(clientId),
-      profile: this.dietitianService.getClientDietaryProfile(clientId).pipe(catchError(() => of(null))),
+      profile: this.dietitianService.getClientDietaryProfile(clientId),
     })
       .pipe(
         tap(({measurements, profile}) => {
