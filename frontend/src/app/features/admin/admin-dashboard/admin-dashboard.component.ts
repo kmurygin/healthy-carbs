@@ -3,7 +3,15 @@ import {RouterLink} from '@angular/router';
 import {AuthService} from '@core/services/auth/auth.service';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import type {IconDefinition} from '@fortawesome/free-solid-svg-icons';
-import {faArrowRight, faBlog, faCarrot, faShieldAlt, faUsers, faUtensils} from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowRight,
+  faBlog,
+  faCarrot,
+  faLeaf,
+  faShieldAlt,
+  faUsers,
+  faUtensils
+} from '@fortawesome/free-solid-svg-icons';
 
 interface DashboardMenuItem {
   route: string;
@@ -20,11 +28,7 @@ interface DashboardMenuItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminDashboardComponent {
-  protected readonly arrowIcon = faArrowRight;
-  private readonly authService = inject(AuthService);
-  readonly username = computed(() => this.authService.user());
-
-  private readonly menuItems: readonly DashboardMenuItem[] = [
+  readonly dashboardMenuItems: readonly DashboardMenuItem[] = [
     {
       route: '/admin/users',
       category: 'Administration',
@@ -54,6 +58,13 @@ export class AdminDashboardComponent {
       icon: faShieldAlt
     },
     {
+      route: '/admin/diet-types',
+      category: 'Resources',
+      title: 'Diet Types',
+      description: 'Manage diet type definitions',
+      icon: faLeaf
+    },
+    {
       route: '/admin/blog',
       category: 'Content',
       title: 'Blog Posts',
@@ -61,8 +72,7 @@ export class AdminDashboardComponent {
       icon: faBlog
     }
   ];
-
-  readonly dashboardMenuItems = computed(() => {
-    return this.menuItems;
-  });
+  protected readonly arrowIcon = faArrowRight;
+  private readonly authService = inject(AuthService);
+  readonly username = computed(() => this.authService.user());
 }
