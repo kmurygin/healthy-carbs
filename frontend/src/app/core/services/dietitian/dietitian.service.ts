@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {map, type Observable} from 'rxjs';
 import {type ApiResponse} from '../../models/api-response.model';
 import {type UserDto} from '../../models/dto/user.dto';
-import {type DietaryProfileDto} from '../../models/dto/dietaryprofile.dto';
+import {type DietaryProfileDto} from '../../models/dto/dietary-profile.dto';
 import {ApiEndpoints} from '@core/constants/api-endpoints';
 import {UserProfileImageService} from '@core/services/user/user-profile-image.service';
 import type {UserMeasurement} from '@core/services/user-measurement/user-measurement.service';
@@ -24,6 +24,18 @@ export class DietitianService {
     return this.httpClient
       .post<ApiResponse<unknown>>(ApiEndpoints.Dietitian.Collaboration(dietitianId), {})
       .pipe(map(() => undefined));
+  }
+
+  cancelCollaboration(dietitianId: number): Observable<void> {
+    return this.httpClient
+      .delete<ApiResponse<unknown>>(ApiEndpoints.Dietitian.Collaboration(dietitianId))
+      .pipe(map(() => undefined));
+  }
+
+  getMyCollaborations(): Observable<number[]> {
+    return this.httpClient
+      .get<ApiResponse<number[]>>(ApiEndpoints.Dietitian.MyCollaborations)
+      .pipe(map((resp) => resp.data ?? []));
   }
 
   getProfileImageUrl(userId: number, cacheKey?: number | string | null): string {

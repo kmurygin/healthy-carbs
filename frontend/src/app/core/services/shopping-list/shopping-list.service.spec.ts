@@ -6,7 +6,7 @@ import {afterEach, beforeEach, describe, expect, it} from 'vitest';
 import {ShoppingListService} from './shopping-list.service';
 import {ApiEndpoints} from '@core/constants/api-endpoints';
 import {createMockShoppingList} from '@testing/test-data.util';
-import type {UpdateShoppingListItemPayload} from '@core/models/payloads/updateshoppinglistitem.payload';
+import type {UpdateShoppingListItemPayload} from '@core/models/payloads/update-shopping-list-item.payload';
 
 describe('ShoppingListService', () => {
   let service: ShoppingListService;

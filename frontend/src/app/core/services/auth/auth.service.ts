@@ -9,7 +9,7 @@ import type {RegisterPayload} from '../../models/payloads/register.payload';
 import type {ApiResponse} from '../../models/api-response.model';
 import type {LoginPayload} from '../../models/payloads/login.payload';
 import type {AuthenticationResponse} from '../../models/payloads';
-import type {JwtClaims} from './jwtclaims';
+import type {JwtClaims} from './jwt-claims';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {

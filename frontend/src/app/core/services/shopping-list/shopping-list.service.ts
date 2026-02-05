@@ -5,7 +5,7 @@ import {map} from 'rxjs';
 import type {ShoppingList} from '../../models/dto/shopping-list.dto';
 import {ApiEndpoints} from '../../constants/api-endpoints';
 import type {ApiResponse} from "../../models/api-response.model";
-import type {UpdateShoppingListItemPayload} from "../../models/payloads/updateshoppinglistitem.payload";
+import type {UpdateShoppingListItemPayload} from "../../models/payloads/update-shopping-list-item.payload";
 
 @Injectable({
   providedIn: 'root'

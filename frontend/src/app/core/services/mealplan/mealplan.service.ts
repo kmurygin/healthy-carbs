@@ -60,4 +60,19 @@ export class MealPlanService {
       }));
   }
 
+  update(id: number, request: CreateMealPlanRequest): Observable<MealPlanDto> {
+    return this.httpClient
+      .put<ApiResponse<MealPlanDto>>(`${ApiEndpoints.MealPlan.Base}/${id}`, request)
+      .pipe(map(resp => {
+        if (!resp.data) throw new Error('Failed to update meal plan');
+        return resp.data;
+      }));
+  }
+
+  delete(id: number): Observable<void> {
+    return this.httpClient
+      .delete<ApiResponse<void>>(`${ApiEndpoints.MealPlan.Base}/${id}`)
+      .pipe(map(() => undefined));
+  }
+
 }
