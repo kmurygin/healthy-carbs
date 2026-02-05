@@ -109,7 +109,7 @@ describe('UserMeasurementService', () => {
     });
 
     it('canAddMeasurement_whenLastMeasurementWithin24h_shouldReturnNotAllowed', () => {
-      const recentDate = new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString();
+      const recentDate = new Date(Date.now() - 60 * 60 * 1000).toISOString();
       const result = service.canAddMeasurement([{date: recentDate, weight: 70}]);
       expect(result.allowed).toBe(false);
       expect(result.remainingMs).toBeGreaterThan(0);
