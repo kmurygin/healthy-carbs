@@ -29,7 +29,7 @@ import {NotificationService} from '@core/services/ui/notification.service';
   templateUrl: './header.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'fixed inset-x-0 top-0 z-50 w-full border-b border-gray-200 bg-white'
+    class: 'fixed inset-x-0 top-0 z-50 w-full bg-white shadow-none sm:shadow-sm'
   }
 })
 export class HeaderComponent {

@@ -27,15 +27,17 @@
     </button>
 
     <div class="hidden lg:flex lg:items-center lg:gap-x-10">
-      @for (item of navItems; track item.path) {
-        <a
-          [routerLink]="item.path"
-          class="text-sm font-semibold text-gray-900 hover:text-emerald-800
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
-          routerLinkActive="text-emerald-700 font-bold"
-        >
-          {{ item.label }}
-        </a>
+      @if (isLoggedIn()) {
+        @for (item of navItems; track item.path) {
+          <a
+            [routerLink]="item.path"
+            class="text-sm font-semibold text-gray-900 hover:text-emerald-800
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 rounded"
+            routerLinkActive="text-emerald-700 font-bold"
+          >
+            {{ item.label }}
+          </a>
+        }
       }
 
       @if (!isLoggedIn()) {
