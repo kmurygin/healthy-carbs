@@ -106,7 +106,7 @@ export class RegisterComponent {
     password: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
     confirmPassword: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
   }, {
-    validators: passwordMatchValidator('newPassword', 'confirmPassword')
+    validators: passwordMatchValidator('password', 'confirmPassword')
   });
   private readonly notificationService = inject(NotificationService);
 

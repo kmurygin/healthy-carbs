@@ -1,7 +1,8 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, signal} from '@angular/core';
 import type {FormGroup} from '@angular/forms';
 import {FormBuilder, type FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AuthService} from '@core/services/auth/auth.service';
 import type {LoginPayload} from "@core/models/payloads/login.payload";
 import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
@@ -53,6 +54,7 @@ export class LoginComponent {
     }
   ];
   protected readonly getButtonClasses = getButtonClasses;
+  private readonly destroyRef = inject(DestroyRef);
   private readonly authService: AuthService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
   private readonly router: Router = inject(Router);
@@ -74,7 +76,7 @@ export class LoginComponent {
 
     const loginPayload: LoginPayload = this.form.getRawValue();
 
-    this.authService.login(loginPayload).subscribe({
+    this.authService.login(loginPayload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.notificationService.success('Successfully signed in.');
