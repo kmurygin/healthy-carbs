@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {faTrash} from '@fortawesome/free-solid-svg-icons';
+import {faPen, faTrash} from '@fortawesome/free-solid-svg-icons';
 import type {AllergenDto} from '@core/models/dto/allergen.dto';
 
 @Component({
@@ -17,14 +17,26 @@ import type {AllergenDto} from '@core/models/dto/allergen.dto';
           <div class="flex justify-between items-center">
             <h3 class="font-semibold text-gray-900">{{ allergen.name }}</h3>
 
-            <button
-              (click)="delete.emit(allergen)"
-              class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium
-            text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-            >
-              <fa-icon [icon]="icons.trash"></fa-icon>
-              Delete
-            </button>
+            @if (canModify(allergen)) {
+              <div class="flex gap-2">
+                <button
+                  (click)="edit.emit(allergen.id)"
+                  class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium
+                text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                >
+                  <fa-icon [icon]="icons.pen"></fa-icon>
+                  Edit
+                </button>
+                <button
+                  (click)="delete.emit(allergen)"
+                  class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium
+                text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                >
+                  <fa-icon [icon]="icons.trash"></fa-icon>
+                  Delete
+                </button>
+              </div>
+            }
           </div>
         </div>
       }
@@ -34,9 +46,19 @@ import type {AllergenDto} from '@core/models/dto/allergen.dto';
 })
 export class AllergensManagementMobileListComponent {
   readonly allergens = input.required<readonly AllergenDto[]>();
+  readonly currentUserId = input<number | null>(null);
+  readonly isAdmin = input(false);
   readonly delete = output<AllergenDto>();
+  readonly edit = output<number>();
 
   protected readonly icons = {
-    trash: faTrash
+    trash: faTrash,
+    pen: faPen
   };
+
+  canModify(allergen: AllergenDto): boolean {
+    if (this.isAdmin()) return true;
+    const userId = this.currentUserId();
+    return userId != null && allergen.author?.id === userId;
+  }
 }

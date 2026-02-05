@@ -137,4 +137,22 @@
       <app-info-message [message]="infoMessage()"></app-info-message>
     }
   </form>
+
+  <div class="mt-10 border-t border-red-200 pt-6">
+    <button
+      (click)="onDeleteAccount()"
+      [disabled]="isDeleting()"
+      class="w-full flex items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2
+             text-white text-sm font-medium transition hover:bg-red-700 disabled:opacity-50
+             disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+      type="button"
+    >
+      @if (isDeleting()) {
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Deleting...
+      } @else {
+        Delete Account
+      }
+    </button>
+  </div>
 </div>

@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {CategoryIconMap} from "@core/constants/category-icon.map";
 import type {ShoppingList} from "@core/models/dto/shopping-list.dto";
 import {IngredientCategory} from "@core/models/enum/ingredient-category.enum";
-import type {UpdateShoppingListItemPayload} from "@core/models/payloads/updateshoppinglistitem.payload";
+import type {UpdateShoppingListItemPayload} from "@core/models/payloads/update-shopping-list-item.payload";
 import {formatEnum} from "@shared/utils";
 
 type DisplayItem = Readonly<{

@@ -8,8 +8,8 @@ import {catchError, EMPTY, map, of, startWith, switchMap} from "rxjs";
 import type {Page} from "@core/models/page.model";
 import {RecipeCardComponent} from "../recipe-card/recipe-card.component";
 import type {RecipeSearchParams} from "@core/models/recipe-search.params";
-import {DietType} from "@core/models/enum/diet-type.enum";
 import {MealType} from "@core/models/enum/meal-type.enum";
+import {DietTypeService} from "@core/services/diet-type/diet-type.service";
 import {KeyboardKey} from "@shared/keyboard-key.enum";
 import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
 import {RecipeFilterComponent} from "../recipe-filter/recipe-filter.component";
@@ -18,7 +18,8 @@ import {RecipeCountInfoComponent} from "../recipe-count-info/recipe-count-info.c
 import {PageSizeSelectorComponent} from "../page-size-selector/page-size-selector.component";
 import {FavouriteRecipesToggleComponent} from "../favourite-recipes-toggle/favourite-recipes-toggle.component";
 import {InfoMessageComponent} from "@shared/components/info-message/info-message.component";
-import type {Option, RecipeFilters} from "@features/recipes-list/recipes-list.types";
+import type {RecipeFilters} from "@features/recipes-list/recipes-list.types";
+import {RECIPE_SORT_OPTIONS_WITH_POPULARITY} from "@shared/constants/recipe-sort-options";
 
 const DEFAULT_PAGE_SIZE = 6;
 const PAGE_SIZE_OPTIONS = [6, 9, 12];
@@ -67,9 +68,7 @@ export class RecipeListComponent {
   readonly pageSize = signal(DEFAULT_PAGE_SIZE);
   readonly onlyFavourites = signal(false);
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
-  readonly dietTypes = signal(Object.values(DietType));
   readonly mealTypes = signal(Object.values(MealType));
-
   readonly filters = signal<RecipeFilters>({
     name: '',
     ingredient: '',
@@ -77,18 +76,14 @@ export class RecipeListComponent {
     meal: '',
     sort: '',
   });
-
-  readonly sortOptions: Option[] = [
-    {value: '', label: 'Default'},
-    {value: 'favouritesCount,desc', label: 'Most Popular'},
-    {value: 'favouritesCount,asc', label: 'Least Popular'},
-    {value: 'name,asc', label: 'Name (A-Z)'},
-    {value: 'name,desc', label: 'Name (Z-A)'},
-    {value: 'calories,asc', label: 'Calories (Low to High)'},
-    {value: 'calories,desc', label: 'Calories (High to Low)'},
-  ];
+  readonly sortOptions = RECIPE_SORT_OPTIONS_WITH_POPULARITY;
   readonly startIndex = computed(() => (this.pageNumber() - INITIAL_PAGE_NUMBER) * this.pageSize());
   readonly endIndex = computed(() => this.startIndex() + this.pageItems().length);
+  private readonly dietTypeService = inject(DietTypeService);
+  readonly dietTypes = toSignal(
+    this.dietTypeService.getAll().pipe(map(types => types.map(t => t.name))),
+    {initialValue: [] as string[]}
+  );
   private readonly recipeService = inject(RecipeService);
   private readonly refetchTrigger = signal(0);
   private readonly recipeSearchParams = computed<RecipeSearchParams>(() => {

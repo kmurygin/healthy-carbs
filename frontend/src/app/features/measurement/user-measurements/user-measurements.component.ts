@@ -4,6 +4,7 @@ import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {switchMap} from 'rxjs';
 import {type UserMeasurement, UserMeasurementService,} from '@core/services/user-measurement/user-measurement.service';
 import {NotificationService} from '@core/services/ui/notification.service';
+import {DietaryProfileService} from '@core/services/dietary-profile/dietary-profile.service';
 import {MeasurementFormComponent} from '../measurement-form/measurement-form.component';
 import {
   MeasurementChartCardComponent,
@@ -31,8 +32,27 @@ export class UserMeasurementsComponent {
 
   readonly showForm = signal(false);
   readonly editingMeasurement = signal<UserMeasurement | null>(null);
+  readonly bmiCategory = computed<string | null>(() => {
+    const bmi = this.bmi();
+    if (bmi === null) return null;
+    if (bmi < 18.5) return 'Underweight';
+    if (bmi < 25) return 'Normal weight';
+    if (bmi < 30) return 'Overweight';
+    return 'Obese';
+  });
   private readonly measurementService = inject(UserMeasurementService);
   private readonly notificationService = inject(NotificationService);
+  private readonly dietaryProfileService = inject(DietaryProfileService);
+  readonly dietaryProfile = toSignal(this.dietaryProfileService.getProfile(), {initialValue: null});
+  readonly bmi = computed<number | null>(() => {
+    const profile = this.dietaryProfile();
+    const latest = this.latestMeasurement();
+    const weight = latest?.weight ?? profile?.weight;
+    const height = profile?.height;
+    if (!weight || !height || height === 0) return null;
+    const heightM = height / 100;
+    return Math.round((weight / (heightM * heightM)) * 10) / 10;
+  });
   private readonly refreshTrigger = signal(0);
   readonly historyData = toSignal(
     toObservable(this.refreshTrigger).pipe(switchMap(() => this.measurementService.getAllHistory())),

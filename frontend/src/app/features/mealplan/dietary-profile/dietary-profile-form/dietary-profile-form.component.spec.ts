@@ -57,6 +57,6 @@ describe('DietaryProfileFormComponent', () => {
 
   it('fields_whenInitialized_shouldExposeDefinitions', () => {
     expect(component.personalInformationFields.length).toBeGreaterThan(0);
-    expect(component.preferenceFields.length).toBeGreaterThan(0);
+    expect(component.preferenceFields().length).toBeGreaterThan(0);
   });
 });

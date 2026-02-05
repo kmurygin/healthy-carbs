@@ -40,12 +40,18 @@
   } @else {
     <app-allergens-management-mobile-list
       (delete)="deleteItem($event.id)"
+      (edit)="openEdit($event)"
       [allergens]="filteredAllergens()"
+      [currentUserId]="currentUserId()"
+      [isAdmin]="isAdmin()"
     ></app-allergens-management-mobile-list>
 
     <app-allergens-management-table
       (delete)="deleteItem($event.id)"
+      (edit)="openEdit($event)"
       [allergens]="filteredAllergens()"
+      [currentUserId]="currentUserId()"
+      [isAdmin]="isAdmin()"
     ></app-allergens-management-table>
 
     <div class="mt-6 px-4 py-3 bg-white rounded-xl shadow-sm ring-1 ring-gray-900/5">
@@ -59,6 +65,7 @@
     <app-allergens-management-form
       (closeOutputEmitter)="closeForm()"
       (savedOutputEmitter)="onSaveSuccess('Allergen saved successfully')"
+      [allergenId]="selectedId()"
     ></app-allergens-management-form>
   }
 </div>

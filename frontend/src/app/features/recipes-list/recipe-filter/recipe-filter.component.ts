@@ -3,7 +3,6 @@ import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input,
 import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import type {DietType} from '@core/models/enum/diet-type.enum';
 import type {MealType} from '@core/models/enum/meal-type.enum';
 import {formatEnum} from '@shared/utils';
 import type {Option, RecipeFilters} from "@features/recipes-list/recipes-list.types";
@@ -34,7 +33,7 @@ type Field = TextField | SelectField;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipeFilterComponent {
-  readonly dietTypes = input.required<DietType[]>();
+  readonly dietTypes = input.required<string[]>();
   readonly mealTypes = input.required<MealType[]>();
   readonly sortOptions = input.required<Option[]>();
   readonly debounceMs = input<number>(150);
@@ -101,7 +100,7 @@ export class RecipeFilterComponent {
     .group<RecipeFilters>({
       name: '',
       ingredient: '',
-      diet: '' as '' | DietType,
+      diet: '',
       meal: '' as '' | MealType,
       sort: '',
     });

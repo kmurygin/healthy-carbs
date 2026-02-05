@@ -8,7 +8,7 @@ import type {BlogPost} from '@core/models/dto/blog.dto';
 import type {Page} from '@core/models/page.model';
 import {BlogService} from '@core/services/blog/blog.service';
 import {AuthService} from '@core/services/auth/auth.service';
-import type {JwtClaims} from '@core/services/auth/jwtclaims';
+import type {JwtClaims} from '@core/services/auth/jwt-claims';
 import {NotificationService} from '@core/services/ui/notification.service';
 
 describe('BlogListComponent', () => {

@@ -5,6 +5,7 @@ import {catchError, map, of, startWith, switchMap} from 'rxjs';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {faExclamationCircle, faPlus, faShieldAlt, faSpinner} from '@fortawesome/free-solid-svg-icons';
 import {AllergenService} from '@core/services/allergen/allergen.service';
+import {AuthService} from '@core/services/auth/auth.service';
 import type {AllergenDto} from '@core/models/dto/allergen.dto';
 import {AbstractManagementComponent} from '@shared/components/abstract-management/abstract-management.component';
 import {AllergensManagementTableComponent} from '../allergens-management-table/allergens-management-table.component';
@@ -35,6 +36,9 @@ export class AllergensManagementComponent extends AbstractManagementComponent<Al
     warn: faExclamationCircle
   };
   private readonly allergenService = inject(AllergenService);
+  private readonly authService = inject(AuthService);
+  readonly currentUserId = computed(() => this.authService.userId() ?? null);
+  readonly isAdmin = computed(() => this.authService.userRole() === 'ADMIN');
   private readonly searchQuery = signal('');
   private readonly refreshTrigger = signal(0);
   private readonly state = toSignal(
