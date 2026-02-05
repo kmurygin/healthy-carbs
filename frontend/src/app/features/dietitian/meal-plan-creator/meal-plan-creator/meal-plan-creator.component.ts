@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {type CdkDragDrop, copyArrayItem, DragDropModule, transferArrayItem,} from '@angular/cdk/drag-drop';
 import {ActivatedRoute, Router} from '@angular/router';
 import {takeUntilDestroyed, toObservable, toSignal} from '@angular/core/rxjs-interop';
-import {catchError, filter, firstValueFrom, map, of, startWith, switchMap, take,} from 'rxjs';
+import {filter, firstValueFrom, map, startWith, switchMap, take,} from 'rxjs';
 import {PageSizeSelectorComponent} from '@features/recipes-list/page-size-selector/page-size-selector.component';
 import {PaginationControlsComponent} from '@features/recipes-list/pagination-controls/pagination-controls.component';
 import {DailyMealPlanTotalsComponent} from '@features/mealplan/daily-meal-plan-totals/daily-meal-plan-totals.component';
@@ -19,14 +19,17 @@ import {
 } from '@features/dietitian/meal-plan-creator/meal-plan-creator-placed-recipe-card/meal-plan-creator-placed-recipe-card.component';
 import {RecipeService} from '@core/services/recipe/recipe.service';
 import {MealPlanService} from '@core/services/mealplan/mealplan.service';
+import {MealPlanTemplateService} from '@core/services/meal-plan-template/meal-plan-template.service';
 import {DietitianService} from '@core/services/dietitian/dietitian.service';
 import {NotificationService} from '@core/services/ui/notification.service';
 import {ConfirmationService} from '@core/services/ui/confirmation.service';
 import type {RecipeDto} from '@core/models/dto/recipe.dto';
-import type {Option, RecipeFilters} from '@features/recipes-list/recipes-list.types';
+import type {MealPlanDto} from '@core/models/dto/mealplan.dto';
+import type {RecipeFilters} from '@features/recipes-list/recipes-list.types';
+import {RECIPE_SORT_OPTIONS_BASE} from '@shared/constants/recipe-sort-options';
 import type {RecipeSearchParams} from '@core/models/recipe-search.params';
-import {DietType} from '@core/models/enum/diet-type.enum';
 import {MealType} from '@core/models/enum/meal-type.enum';
+import {DietTypeService} from '@core/services/diet-type/diet-type.service';
 import {
   type CreateMealPlanRequest,
   type CreatorDay,
@@ -45,6 +48,9 @@ import {
 import {
   MealPlanCreatorHeaderComponent
 } from "@features/dietitian/meal-plan-creator/meal-plan-creator-header/meal-plan-creator-header.component";
+import {
+  ShareTemplateDialogComponent
+} from "@features/dietitian/meal-plan-creator/share-template-dialog/share-template-dialog.component";
 
 @Component({
   selector: 'app-meal-plan-creator',
@@ -59,21 +65,14 @@ import {
     MealPlanCreatorPlacedRecipeCardComponent,
     RecipeDetailsComponent,
     MealPlanCreatorHeaderComponent,
+    ShareTemplateDialogComponent,
   ],
   templateUrl: './meal-plan-creator.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MealPlanCreatorComponent {
-  readonly dietTypes = signal(Object.values(DietType));
   readonly mealTypes = signal(Object.values(MealType));
-
-  readonly sortOptions = signal<readonly Option[]>([
-    {label: 'Name (A–Z)', value: 'name,asc'},
-    {label: 'Name (Z–A)', value: 'name,desc'},
-    {label: 'Calories (Low → High)', value: 'calories,asc'},
-    {label: 'Calories (High → Low)', value: 'calories,desc'},
-  ]);
-
+  readonly sortOptions = signal(RECIPE_SORT_OPTIONS_BASE);
   readonly filters = signal<RecipeFilters>({
     name: '',
     ingredient: '',
@@ -81,7 +80,6 @@ export class MealPlanCreatorComponent {
     meal: '',
     sort: '',
   });
-
   readonly pageNumber = signal(0);
   readonly pageSize = signal(10);
   readonly pageSizeOptions = [10, 20, 50] as const;
@@ -93,9 +91,8 @@ export class MealPlanCreatorComponent {
   readonly selectedRecipeForPlacementId = computed(
     () => this.selectedRecipeForPlacement()?.id ?? null
   );
-
+  readonly isShareDialogOpen = signal(false);
   readonly isCoarsePointer = signal(false);
-
   readonly isPlanComplete = computed(() => {
     const currentDays = this.planDays();
     const availableMealTypes = this.mealTypes();
@@ -130,6 +127,15 @@ export class MealPlanCreatorComponent {
     return complete;
   });
   readonly recipesRefreshing = signal(false);
+  private readonly dietTypeService = inject(DietTypeService);
+  readonly dietTypes = toSignal(
+    this.dietTypeService.getAll().pipe(map(types => types.map(t => t.name))),
+    {initialValue: [] as string[]}
+  );
+  private readonly recipeService = inject(RecipeService);
+  private readonly mealPlanService = inject(MealPlanService);
+  private readonly mealPlanTemplateService = inject(MealPlanTemplateService);
+  private readonly dietitianService = inject(DietitianService);
   readonly targets = computed<DayMacros>(() => {
     const currentProfile = this.dietaryProfile();
     if (!currentProfile) return emptyMacros();
@@ -164,10 +170,16 @@ export class MealPlanCreatorComponent {
       {iconClass: 'fa-solid fa-fire', label: 'Target', value: `${normalizeNumber(profile.calorieTarget)} kcal`},
     ];
   });
-  private readonly recipeService = inject(RecipeService);
-  private readonly mealPlanService = inject(MealPlanService);
-  private readonly dietitianService = inject(DietitianService);
   private readonly activatedRoute = inject(ActivatedRoute);
+  readonly editPlanId = toSignal(
+    this.activatedRoute.queryParamMap.pipe(
+      map((queryParams) => {
+        const editId = queryParams.get('editPlanId');
+        return editId ? Number(editId) : null;
+      })
+    ),
+    {initialValue: null}
+  );
   readonly clientId = toSignal(
     this.activatedRoute.paramMap.pipe(
       map((routeParams) => {
@@ -186,8 +198,7 @@ export class MealPlanCreatorComponent {
       switchMap((clientIdentifier) =>
         this.dietitianService.getClientDietaryProfile(clientIdentifier)
       ),
-      startWith(null),
-      catchError(() => of(null))
+      startWith(null)
     ),
     {initialValue: null}
   );
@@ -209,6 +220,22 @@ export class MealPlanCreatorComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         void this.resetAndLoadRecipes();
+      });
+
+    toObservable(this.editPlanId)
+      .pipe(
+        filter((id): id is number => id !== null && Number.isFinite(id)),
+        switchMap((id) => this.mealPlanService.getById(id)),
+        take(1),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (plan) => {
+          this.loadExistingPlan(plan);
+        },
+        error: () => {
+          this.notificationService.error('Failed to load meal plan for editing.');
+        },
       });
   }
 
@@ -430,11 +457,46 @@ export class MealPlanCreatorComponent {
     };
 
     try {
-      await firstValueFrom(this.mealPlanService.createManual(requestPayload).pipe(take(1)));
-      this.notificationService.success('Meal plan saved successfully!', 3000);
+      const editId = this.editPlanId();
+      if (editId) {
+        await firstValueFrom(this.mealPlanService.update(editId, requestPayload).pipe(take(1)));
+        this.notificationService.success('Meal plan updated successfully!', 3000);
+      } else {
+        await firstValueFrom(this.mealPlanService.createManual(requestPayload).pipe(take(1)));
+        this.notificationService.success('Meal plan saved successfully!', 3000);
+      }
       await this.router.navigate(['/dietitian/clients']);
     } catch {
       this.notificationService.error('Failed to save the meal plan.', 3000);
+    }
+  }
+
+  openShareDialog(): void {
+    this.isShareDialogOpen.set(true);
+  }
+
+  closeShareDialog(): void {
+    this.isShareDialogOpen.set(false);
+  }
+
+  async shareTemplate(templateId: number): Promise<void> {
+    const currentClientId = this.clientId();
+    if (!currentClientId) {
+      this.notificationService.error('Missing client ID.', 3000);
+      this.isShareDialogOpen.set(false);
+      return;
+    }
+
+    try {
+      await firstValueFrom(
+        this.mealPlanTemplateService.share(templateId, currentClientId).pipe(take(1))
+      );
+      this.notificationService.success('Meal plan template shared successfully!', 3000);
+      this.isShareDialogOpen.set(false);
+      await this.router.navigate(['/dietitian/clients']);
+    } catch {
+      this.notificationService.error('Failed to share the template.', 3000);
+      this.isShareDialogOpen.set(false);
     }
   }
 
@@ -461,6 +523,41 @@ export class MealPlanCreatorComponent {
 
   toggleShowAllDays(): void {
     this.showAllDays.update(v => !v);
+  }
+
+  private loadExistingPlan(plan: MealPlanDto): void {
+    const mealTypes = this.mealTypes();
+
+    const creatorDays: CreatorDay[] = plan.days.map((day) => {
+      const date = new Date(day.date);
+      const slots = this.createEmptySlots();
+
+      for (const mealPlanRecipe of day.recipes) {
+        const mt = mealPlanRecipe.mealType;
+        if (mealTypes.includes(mt)) {
+          slots[mt] = [mealPlanRecipe.recipe];
+        }
+      }
+
+      const macros: DayMacros = {
+        calories: day.totalCalories,
+        carbs: day.totalCarbs,
+        protein: day.totalProtein,
+        fat: day.totalFat,
+      };
+
+      return {
+        date,
+        dayName: DAY_NAMES[date.getDay()],
+        slots,
+        macros,
+      };
+    });
+
+    if (creatorDays.length > 0) {
+      this.startDate.set(creatorDays[0].date);
+      this.planDays.set(creatorDays);
+    }
   }
 
   private initializePointerDetection(): void {

@@ -9,15 +9,16 @@ import {MealPlanShoppingListComponent} from '../meal-plan-shopping-list/meal-pla
 import {MealPlanService} from '@core/services/mealplan/mealplan.service';
 import {RecipeService} from '@core/services/recipe/recipe.service';
 import type {MealPlanDto} from '@core/models/dto/mealplan.dto';
+import {MealPlanSource} from '@core/models/enum/mealplan-source.enum';
 import type {RecipeDto} from '@core/models/dto/recipe.dto';
 import type {MealPlanDayDto} from '@core/models/dto/mealplan-day.dto';
 import {ShoppingListService} from '@core/services/shopping-list/shopping-list.service';
 import {ErrorMessageComponent} from '@shared/components/error-message/error-message.component';
 import {DietaryProfileService} from '@core/services/dietary-profile/dietary-profile.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import type {DietaryProfileDto} from '@core/models/dto/dietaryprofile.dto';
+import type {DietaryProfileDto} from '@core/models/dto/dietary-profile.dto';
 import type {ShoppingList} from '@core/models/dto/shopping-list.dto';
-import type {UpdateShoppingListItemPayload} from '@core/models/payloads/updateshoppinglistitem.payload';
+import type {UpdateShoppingListItemPayload} from '@core/models/payloads/update-shopping-list-item.payload';
 import type {IngredientCategory} from '@core/models/enum/ingredient-category.enum';
 import {LoadingMessageComponent} from '@shared/components/loading-message/loading-message.component';
 import {toSignal} from "@angular/core/rxjs-interop";
@@ -42,6 +43,7 @@ import {setError} from "@shared/utils";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MealPlanComponent implements OnInit {
+  private static readonly COOLDOWN_DAYS = 7;
   readonly loading = signal(true);
   readonly downloadingMealPlanPdf = signal(false);
   readonly downloadingShoppingListPdf = signal(false);
@@ -55,6 +57,22 @@ export class MealPlanComponent implements OnInit {
   readonly shoppingListError = signal<string | null>(null);
   readonly updatingShoppingListItemId = signal<string | null>(null);
   readonly loadingMessage = signal<string | null>(null);
+  readonly lastGeneratedAt = signal<Date | null>(null);
+  readonly canGenerate = computed(() => {
+    const lastDate = this.lastGeneratedAt();
+    if (!lastDate) return true;
+    const cooldownEnd = new Date(lastDate.getTime() + MealPlanComponent.COOLDOWN_DAYS * 24 * 60 * 60 * 1000);
+    return new Date() >= cooldownEnd;
+  });
+  readonly generateCooldownMessage = computed(() => {
+    const lastDate = this.lastGeneratedAt();
+    if (!lastDate) return null;
+    const cooldownEnd = new Date(lastDate.getTime() + MealPlanComponent.COOLDOWN_DAYS * 24 * 60 * 60 * 1000);
+    const now = new Date();
+    if (now >= cooldownEnd) return null;
+    const daysLeft = Math.ceil((cooldownEnd.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
+    return `You can generate a new plan in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`;
+  });
   readonly days: Signal<readonly MealPlanDayDto[]> = computed(
     () => this.plan()?.days ?? [],
   );
@@ -135,6 +153,7 @@ export class MealPlanComponent implements OnInit {
     try {
       const res = await firstValueFrom(this.mealPlanService.generate());
       this.plan.set(res);
+      this.lastGeneratedAt.set(new Date());
       this.selectedDayIndex.set(0);
       this.currentWeekIndex.set(0);
       await this.loadShoppingList(res.id);
@@ -255,11 +274,26 @@ export class MealPlanComponent implements OnInit {
       } else {
         await this.loadLatestPlan()
       }
+      await this.updateLastGeneratedDate();
     } catch (error: unknown) {
       setError(this.errorMessage, error, 'Failed to fetch meal plan. Please try again.');
       if (!this.mealPlanIdSignal()) {
         await this.router.navigate(['/dietary-profile-form']);
       }
+    }
+  }
+
+  private async updateLastGeneratedDate(): Promise<void> {
+    try {
+      const history = await firstValueFrom(this.mealPlanService.getHistory());
+      const generatedPlans = history
+        .filter(p => p.source === MealPlanSource.GENERATED)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      if (generatedPlans.length > 0) {
+        this.lastGeneratedAt.set(new Date(generatedPlans[0].createdAt));
+      }
+    } catch {
+      // Non-critical — cooldown check will default to allowing generation
     }
   }
 
@@ -285,41 +319,38 @@ export class MealPlanComponent implements OnInit {
   }
 
   private async loadLatestPlan(): Promise<void> {
+    await this.loadPlan(async () => {
+      const history = await firstValueFrom(this.mealPlanService.getHistory());
+      return history.length > 0 ? history[history.length - 1] : null;
+    }, 'Failed to load your latest meal plan.');
+  }
+
+  private async loadPlanById(id: number): Promise<void> {
+    await this.loadPlan(
+      () => firstValueFrom(this.mealPlanService.getById(id)),
+      'Failed to load meal plan details.',
+    );
+  }
+
+  private async loadPlan(
+    fetchPlan: () => Promise<MealPlanDto | null>,
+    errorMsg: string,
+  ): Promise<void> {
     this.loading.set(true);
     this.errorMessage.set(null);
 
     try {
-      const history = await firstValueFrom(this.mealPlanService.getHistory());
-      if (history.length > 0) {
-        const latest = history[history.length - 1];
-        this.plan.set(latest);
+      const plan = await fetchPlan();
+      if (plan) {
+        this.plan.set(plan);
         this.selectedDayIndex.set(0);
         this.currentWeekIndex.set(0);
         this.expandedRecipeIds.set(new Set());
         this.recipeDetails.set(new Map());
-        await this.loadShoppingList(latest.id);
+        await this.loadShoppingList(plan.id);
       }
     } catch (error: unknown) {
-      setError(this.errorMessage, error, 'Failed to load your latest meal plan.');
-    } finally {
-      this.loading.set(false);
-    }
-  }
-
-  private async loadPlanById(id: number): Promise<void> {
-    this.loading.set(true);
-    this.errorMessage.set(null);
-
-    try {
-      const plan = await firstValueFrom(this.mealPlanService.getById(id));
-      this.plan.set(plan);
-      this.selectedDayIndex.set(0);
-      this.currentWeekIndex.set(0);
-      this.expandedRecipeIds.set(new Set());
-      this.recipeDetails.set(new Map());
-      await this.loadShoppingList(plan.id);
-    } catch (error: unknown) {
-      setError(this.errorMessage, error, 'Failed to load meal plan details.');
+      setError(this.errorMessage, error, errorMsg);
     } finally {
       this.loading.set(false);
     }

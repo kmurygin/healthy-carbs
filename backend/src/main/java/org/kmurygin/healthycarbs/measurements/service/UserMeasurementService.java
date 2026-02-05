@@ -1,6 +1,5 @@
 package org.kmurygin.healthycarbs.measurements.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
@@ -10,6 +9,7 @@ import org.kmurygin.healthycarbs.measurements.model.UserMeasurement;
 import org.kmurygin.healthycarbs.measurements.repository.UserMeasurementRepository;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;

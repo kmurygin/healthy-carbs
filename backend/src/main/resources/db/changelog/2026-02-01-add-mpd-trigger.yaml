@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-02-01-add-mpd-trigger
+      author: kmurygin
+      changes:
+        - sqlFile:
+            path: ../sql/mpd-trigger.sql
+            relativeToChangelogFile: true
+            splitStatements: false
+            stripComments: false

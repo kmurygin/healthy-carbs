@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +33,6 @@ public class BlogService {
     private final BlogPostImageRepository blogPostImageRepository;
     private final StorageProvider storageProvider;
     private final StorageProperties storageProperties;
-    private final TransactionTemplate transactionTemplate;
 
     public Page<BlogPost> findAllPosts(Pageable pageable) {
         return blogPostRepository.findAllByOrderByCreatedAtDesc(pageable);
@@ -108,6 +106,7 @@ public class BlogService {
         blogCommentRepository.delete(comment);
     }
 
+    @Transactional
     public void uploadPostImage(Long postId, MultipartFile file) {
         BlogPost post = findPostById(postId);
 
@@ -116,19 +115,14 @@ public class BlogService {
                 : null;
         String folder = storageProperties.getBlogPostImagePrefix() + "/" + postId;
         StorageUploadResult uploadResult = storageProvider.uploadFile(file, folder);
-        transactionTemplate.executeWithoutResult(status -> {
-            BlogPost retrievedPost = blogPostRepository.findById(postId)
-                    .orElseThrow(
-                            () -> new ResourceNotFoundException("Blog post not found with id: " + postId)
-                    );
-            BlogPostImage image = BlogPostImage.builder()
-                    .contentType(uploadResult.contentType())
-                    .imageUrl(uploadResult.url())
-                    .imageKey(uploadResult.key())
-                    .build();
-            retrievedPost.setImage(image);
-            blogPostRepository.save(retrievedPost);
-        });
+
+        BlogPostImage image = BlogPostImage.builder()
+                .contentType(uploadResult.contentType())
+                .imageUrl(uploadResult.url())
+                .imageKey(uploadResult.key())
+                .build();
+        post.setImage(image);
+        blogPostRepository.save(post);
 
         if (StringUtils.hasText(oldImageKey)) {
             try {

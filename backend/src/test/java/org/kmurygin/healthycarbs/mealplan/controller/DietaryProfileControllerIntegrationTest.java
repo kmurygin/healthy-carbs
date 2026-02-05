@@ -12,6 +12,7 @@ import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.Gender;
 import org.kmurygin.healthycarbs.mealplan.dto.DietaryProfilePayload;
 import org.kmurygin.healthycarbs.mealplan.model.DietaryProfile;
+import org.kmurygin.healthycarbs.mealplan.repository.DietTypeRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.DietaryProfileRepository;
 import org.kmurygin.healthycarbs.storage.StorageProvider;
 import org.kmurygin.healthycarbs.user.UserTestUtils;
@@ -53,6 +54,8 @@ class DietaryProfileControllerIntegrationTest {
     @Autowired
     private DietaryProfileRepository dietaryProfileRepository;
     @Autowired
+    private DietTypeRepository dietTypeRepository;
+    @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtService jwtService;
@@ -61,11 +64,15 @@ class DietaryProfileControllerIntegrationTest {
     private User userWithProfile;
     private User userWithoutProfile;
     private DietaryProfile testProfile;
+    private DietType standardDietType;
     private String tokenWithProfile;
     private String tokenWithoutProfile;
 
     @BeforeEach
     void setUp() {
+        standardDietType = dietTypeRepository.findByName("STANDARD")
+                .orElseGet(() -> dietTypeRepository.save(DietType.builder().name("STANDARD").compatibilityLevel(1).build()));
+
         userWithProfile = userRepository.save(
                 UserTestUtils.createUserForPersistence("user_with_profile", uniqueSuffix, Role.USER, passwordEncoder));
 
@@ -79,7 +86,7 @@ class DietaryProfileControllerIntegrationTest {
                 .age(30)
                 .gender(Gender.MALE)
                 .dietGoal(DietGoal.MAINTAIN)
-                .dietType(DietType.STANDARD)
+                .dietType(standardDietType)
                 .activityLevel(ActivityLevel.MODERATE)
                 .calorieTarget(2000.0)
                 .carbsTarget(250.0)
@@ -98,7 +105,7 @@ class DietaryProfileControllerIntegrationTest {
         payload.setAge(25);
         payload.setGender(Gender.MALE);
         payload.setDietGoal(DietGoal.LOSE);
-        payload.setDietType(DietType.STANDARD);
+        payload.setDietType("STANDARD");
         payload.setActivityLevel(ActivityLevel.HIGH);
         return payload;
     }

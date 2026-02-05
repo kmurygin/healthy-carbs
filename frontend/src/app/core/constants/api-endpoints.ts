@@ -58,6 +58,10 @@ export const ApiEndpoints = {
     Base: getUrl('offers'),
   },
 
+  MealPlanTemplates: {
+    Base: getUrl('mealplan-templates'),
+  },
+
   Ingredients: {
     Base: getUrl('ingredients'),
     Page: getUrl('ingredients/page'),
@@ -74,6 +78,15 @@ export const ApiEndpoints = {
   Dietitian: {
     Base: getUrl('dietitian'),
     Collaboration: (dietitianId: number) => getUrl(`dietitian/collaboration/${dietitianId}`),
+    MyCollaborations: getUrl('dietitian/my-collaborations'),
+  },
+
+  Email: {
+    Contact: getUrl('mails/contact'),
+  },
+
+  DietTypes: {
+    Base: getUrl('diet-types'),
   },
 
   Blog: {

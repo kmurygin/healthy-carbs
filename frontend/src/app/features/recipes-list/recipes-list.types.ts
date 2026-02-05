@@ -1,10 +1,9 @@
-import type {DietType} from "@core/models/enum/diet-type.enum";
 import type {MealType} from "@core/models/enum/meal-type.enum";
 
 export interface RecipeFilters {
   name: string;
   ingredient: string;
-  diet: '' | DietType;
+  diet: string;
   meal: '' | MealType;
   sort: string;
 }

@@ -5,8 +5,7 @@ import type {IngredientDto} from '@core/models/dto/ingredient.dto';
 import type {MealPlanDayDto} from '@core/models/dto/mealplan-day.dto';
 import type {MealPlanDto} from '@core/models/dto/mealplan.dto';
 import type {ShoppingList} from '@core/models/dto/shopping-list.dto';
-import type {DietaryProfileDto} from '@core/models/dto/dietaryprofile.dto';
-import {DietType} from '@core/models/enum/diet-type.enum';
+import type {DietaryProfileDto} from '@core/models/dto/dietary-profile.dto';
 import {MealType} from '@core/models/enum/meal-type.enum';
 import {UserRole} from '@core/models/enum/user-role.enum';
 import {IngredientCategory} from '@core/models/enum/ingredient-category.enum';
@@ -88,7 +87,7 @@ export function createMockRecipe(overrides?: Partial<RecipeDto>): RecipeDto {
     protein: 20,
     fat: 15,
     carbs: 60,
-    dietType: DietType.VEGAN,
+    dietType: 'VEGAN',
     mealType: MealType.DINNER,
     isFavourite: false,
     favouritesCount: 0,

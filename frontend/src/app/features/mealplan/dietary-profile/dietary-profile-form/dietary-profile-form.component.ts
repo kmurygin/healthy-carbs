@@ -1,14 +1,16 @@
-import {ChangeDetectionStrategy, Component, effect, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, signal} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DietaryProfileService} from "@core/services/dietary-profile/dietary-profile.service";
 import type {DietaryProfilePayload} from "@core/models/payloads/dietaryprofile.payload";
 import {DietGoal} from "@core/models/enum/diet-goal.enum";
-import {DietType} from "@core/models/enum/diet-type.enum";
 import {ActivityLevel} from "@core/models/enum/activity-level.enum";
+import {DietTypeService} from "@core/services/diet-type/diet-type.service";
 import {firstValueFrom} from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
 import {SuccessMessageComponent} from "@shared/components/success-message/success-message.component";
 import {type FormOption, getFormOptionsFromEnum} from "@shared/form-option";
+import {formatEnum} from "@shared/utils";
 import {ActivityLevelDescriptionMap} from "@core/constants/activity-level-description.map";
 import {AllergenService} from "@core/services/allergen/allergen.service";
 import type {AllergenDto} from "@core/models/dto/allergen.dto";
@@ -48,10 +50,9 @@ export class DietaryProfileFormComponent {
   readonly availableAllergens = signal<AllergenDto[]>([]);
 
   readonly goals = getFormOptionsFromEnum(DietGoal);
-  readonly diets = getFormOptionsFromEnum(DietType);
+  readonly diets = signal<FormOption<string>[]>([]);
   readonly activityLevelOptions = getFormOptionsFromEnum(ActivityLevel);
   readonly genderOptions = getFormOptionsFromEnum(Gender);
-
   readonly personalInformationFields: DietaryFieldConfig[] = [
     {
       key: 'age',
@@ -97,7 +98,7 @@ export class DietaryProfileFormComponent {
       inputMode: 'decimal'
     },
   ];
-  readonly preferenceFields: DietaryFieldConfig[] = [
+  readonly preferenceFields = computed<DietaryFieldConfig[]>(() => [
     {
       key: 'goal',
       label: 'Dietary Goal',
@@ -114,7 +115,7 @@ export class DietaryProfileFormComponent {
       type: 'text',
       placeholder: '',
       autocomplete: 'off',
-      options: this.diets
+      options: this.diets()
     },
     {
       key: 'activityLevel',
@@ -128,7 +129,8 @@ export class DietaryProfileFormComponent {
         description: ActivityLevelDescriptionMap[option.value]
       }))
     },
-  ];
+  ]);
+  private readonly dietTypeService = inject(DietTypeService);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   readonly formGroup = this.formBuilder.group({
     age: this.formBuilder.control<number | null>(null, [
@@ -152,7 +154,7 @@ export class DietaryProfileFormComponent {
     goal: this.formBuilder.control<DietGoal | ''>('', [
       Validators.required
     ]),
-    dietaryPreference: this.formBuilder.control<DietType | ''>('', [
+    dietaryPreference: this.formBuilder.control('', [
       Validators.required
     ]),
     activityLevel: this.formBuilder.control<ActivityLevel | ''>('', [
@@ -162,10 +164,12 @@ export class DietaryProfileFormComponent {
   });
   private readonly profileService = inject(DietaryProfileService);
   private readonly allergenService = inject(AllergenService);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     this.loadProfile();
     this.loadAllergens();
+    this.loadDietTypes();
     effect(() => {
       this.formGroup.controls.allergies.setValue([...this.selectedAllergies()]);
     });
@@ -206,7 +210,7 @@ export class DietaryProfileFormComponent {
         height: formValue.height ?? 0,
         gender: formValue.gender as Gender,
         dietGoal: formValue.goal as DietGoal,
-        dietType: formValue.dietaryPreference as DietType,
+        dietType: formValue.dietaryPreference,
         activityLevel: formValue.activityLevel as ActivityLevel,
         allergies: formValue.allergies,
       };
@@ -230,8 +234,19 @@ export class DietaryProfileFormComponent {
     this.formError.set(null);
   }
 
+  private loadDietTypes(): void {
+    this.dietTypeService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (types) => {
+        this.diets.set(types.map(t => ({value: t.name, label: formatEnum(t.name)})));
+      },
+      error: (err: unknown) => {
+        console.error('Failed to load diet types', err);
+      }
+    });
+  }
+
   private loadAllergens(): void {
-    this.allergenService.getAll().subscribe({
+    this.allergenService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.availableAllergens.set(data);
       },
@@ -243,7 +258,7 @@ export class DietaryProfileFormComponent {
 
   private loadProfile(): void {
     this.isLoading.set(true);
-    this.profileService.getProfile().subscribe({
+    this.profileService.getProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (profile) => {
         this.profileExists.set(!!profile);
         this.isLoading.set(false);

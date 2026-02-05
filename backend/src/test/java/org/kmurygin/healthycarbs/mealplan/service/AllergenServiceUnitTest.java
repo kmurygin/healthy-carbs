@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.model.Allergen;
 import org.kmurygin.healthycarbs.mealplan.repository.AllergenRepository;
@@ -177,8 +178,8 @@ class AllergenServiceUnitTest {
         }
 
         @Test
-        @DisplayName("update_whenNotAuthorAndNotAdmin_shouldThrowSecurityException")
-        void update_whenNotAuthorAndNotAdmin_shouldThrowSecurityException() {
+        @DisplayName("update_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException")
+        void update_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException() {
             User otherUser = UserTestUtils.createTestUser(3L, "otheruser", Role.DIETITIAN);
             Allergen updatedAllergen = Allergen.builder()
                     .name("Unauthorized Update")
@@ -188,7 +189,7 @@ class AllergenServiceUnitTest {
             when(userService.getCurrentUser()).thenReturn(otherUser);
 
             assertThatThrownBy(() -> allergenService.update(1L, updatedAllergen))
-                    .isInstanceOf(SecurityException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("not authorized");
         }
 
@@ -213,6 +214,8 @@ class AllergenServiceUnitTest {
         @Test
         @DisplayName("deleteById_shouldCallRepositoryDelete")
         void deleteById_shouldCallRepositoryDelete() {
+            when(allergenRepository.findById(1L)).thenReturn(Optional.of(testAllergen));
+            when(userService.getCurrentUser()).thenReturn(testUser);
             doNothing().when(allergenRepository).deleteById(1L);
 
             allergenService.deleteById(1L);

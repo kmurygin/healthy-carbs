@@ -1,5 +1,6 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {RouterLink} from "@angular/router";
+import {AuthService} from '@core/services/auth/auth.service';
 
 @Component({
   selector: 'app-footer',
@@ -12,5 +13,6 @@ import {RouterLink} from "@angular/router";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FooterComponent {
-  readonly isStatic = true;
+  private readonly authService = inject(AuthService);
+  readonly isLoggedIn = computed(() => this.authService.isLoggedIn());
 }

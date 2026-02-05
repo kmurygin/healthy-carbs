@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.model.Allergen;
 import org.kmurygin.healthycarbs.mealplan.repository.AllergenRepository;
@@ -41,7 +42,7 @@ public class AllergenService {
         if (!allergen.getAuthor().getId().equals(currentUser.getId()) &&
                 currentUser.getRole() != Role.ADMIN
         ) {
-            throw new SecurityException("You are not authorized to update this allergen.");
+            throw new ForbiddenException("You are not authorized to update this allergen.");
         }
 
         allergen.setName(updatedAllergen.getName());
@@ -49,6 +50,15 @@ public class AllergenService {
     }
 
     public void deleteById(Long id) {
+        Allergen allergen = findById(id);
+        User currentUser = userService.getCurrentUser();
+
+        if (!allergen.getAuthor().getId().equals(currentUser.getId()) &&
+                currentUser.getRole() != Role.ADMIN
+        ) {
+            throw new ForbiddenException("You are not authorized to delete this allergen.");
+        }
+
         allergenRepository.deleteById(id);
     }
 

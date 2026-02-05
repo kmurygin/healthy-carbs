@@ -10,7 +10,7 @@ import {convertToParamMap} from '@angular/router';
 import type {ReplaySubject} from 'rxjs';
 import {of, throwError} from 'rxjs';
 import type {MealPlanDto} from '@core/models/dto/mealplan.dto';
-import type {DietaryProfileDto} from '@core/models/dto/dietaryprofile.dto';
+import type {DietaryProfileDto} from '@core/models/dto/dietary-profile.dto';
 import type {ShoppingList} from '@core/models/dto/shopping-list.dto';
 import {IngredientCategory} from '@core/models/enum/ingredient-category.enum';
 import {

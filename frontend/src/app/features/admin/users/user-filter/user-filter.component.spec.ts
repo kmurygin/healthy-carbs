@@ -1,5 +1,7 @@
 import type {ComponentFixture} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing';
+import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {UserFilterComponent} from './user-filter.component';
 
 describe('UserFilterComponent', () => {
@@ -8,7 +10,11 @@ describe('UserFilterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserFilterComponent]
+      imports: [UserFilterComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(UserFilterComponent);

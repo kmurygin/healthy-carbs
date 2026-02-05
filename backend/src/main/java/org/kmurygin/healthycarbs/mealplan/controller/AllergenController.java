@@ -9,6 +9,7 @@ import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class AllergenController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<AllergenDTO>> create(
             @RequestBody AllergenDTO allergenDTO
     ) {
@@ -48,6 +50,7 @@ public class AllergenController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<AllergenDTO>> update(
             @PathVariable Long id,
             @RequestBody AllergenDTO allergenDTO
@@ -58,6 +61,7 @@ public class AllergenController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         allergenService.deleteById(id);
         return ApiResponses.success(HttpStatus.NO_CONTENT, null, "Allergen deleted successfully");

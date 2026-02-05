@@ -3,7 +3,6 @@ import {CommonModule} from '@angular/common';
 import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {debounceTime, distinctUntilChanged, map, startWith, switchMap} from 'rxjs';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
-import type {DietType} from '@core/models/enum/diet-type.enum';
 import type {MealType} from '@core/models/enum/meal-type.enum';
 import type {Option, RecipeFilters} from '@features/recipes-list/recipes-list.types';
 import {formatEnum} from '@shared/utils';
@@ -11,7 +10,7 @@ import {formatEnum} from '@shared/utils';
 type FilterFormValue = Readonly<{
   name: string;
   ingredient: string;
-  diet: DietType | '';
+  diet: string;
   meal: MealType | '';
   sort: string;
 }>;
@@ -36,7 +35,7 @@ function isFilterFormIdentical(
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MealPlanRecipeFilterComponent {
-  readonly dietTypes = input.required<readonly DietType[]>();
+  readonly dietTypes = input.required<readonly string[]>();
   readonly mealTypes = input.required<readonly MealType[]>();
   readonly sortOptions = input.required<readonly Option[]>();
   readonly inputDelayMs = input(100);

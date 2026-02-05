@@ -61,6 +61,8 @@ class MealPlanServiceUnitTest {
     @Mock
     private EmailService emailService;
     @Mock
+    private ShoppingListService shoppingListService;
+    @Mock
     private Fitness fitness;
 
     private MealPlanService mealPlanService;
@@ -77,7 +79,8 @@ class MealPlanServiceUnitTest {
                 fitnessFactory,
                 eventPublisher,
                 userService,
-                emailService
+                emailService,
+                shoppingListService
         );
     }
 
@@ -123,7 +126,7 @@ class MealPlanServiceUnitTest {
 
         when(authenticationService.getCurrentUser()).thenReturn(user);
         when(dietaryProfileService.getByUserId(1L))
-                .thenReturn(DietaryProfile.builder().dietType(DietType.VEGAN).build());
+                .thenReturn(DietaryProfile.builder().dietType(DietType.builder().id(3L).name("VEGAN").compatibilityLevel(3).build()).build());
         when(fitnessFactory.createCalorieFitness(any())).thenReturn(fitness);
 
         when(geneticAlgorithm.run(any(), any(), any())).thenReturn(dayGenome);
@@ -148,12 +151,12 @@ class MealPlanServiceUnitTest {
     void getMealPlansHistory_shouldReturnPlansForCurrentUser() {
         User user = UserTestUtils.createTestUser(1L, "user");
         when(authenticationService.getCurrentUser()).thenReturn(user);
-        when(mealPlanRepository.findByUser(user)).thenReturn(List.of(new MealPlan(), new MealPlan()));
+        when(mealPlanRepository.findByUserOrderByCreatedAtAsc(user)).thenReturn(List.of(new MealPlan(), new MealPlan()));
 
         List<MealPlan> history = mealPlanService.getMealPlansHistory();
 
         assertThat(history).hasSize(2);
-        verify(mealPlanRepository).findByUser(user);
+        verify(mealPlanRepository).findByUserOrderByCreatedAtAsc(user);
     }
 
     @Test

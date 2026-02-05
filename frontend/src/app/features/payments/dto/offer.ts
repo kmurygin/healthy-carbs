@@ -8,4 +8,8 @@ export interface Offer {
   durationInDays: number;
   mealPlanTemplateId: number;
   mealPlanTemplateName: string;
+  mealPlanTemplateCalories: number | null;
+  mealPlanTemplateCarbs: number | null;
+  mealPlanTemplateProtein: number | null;
+  mealPlanTemplateFat: number | null;
 }

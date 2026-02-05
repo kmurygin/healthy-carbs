@@ -41,7 +41,16 @@ class PaymentServiceUnitTest {
     private MealPlanTemplateService mealPlanTemplateService;
 
     @Mock
+    private org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationService collaborationService;
+
+    @Mock
     private UserService userService;
+
+    @Mock
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private org.kmurygin.healthycarbs.offers.offer.OfferService offerService;
 
     private PaymentService paymentService;
 
@@ -55,7 +64,10 @@ class PaymentServiceUnitTest {
                 paymentRepository,
                 orderRepository,
                 mealPlanTemplateService,
-                userService
+                collaborationService,
+                userService,
+                eventPublisher,
+                offerService
         );
 
         testUser = UserTestUtils.createTestUser(1L, "testuser");

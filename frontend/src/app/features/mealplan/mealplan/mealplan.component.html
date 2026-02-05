@@ -22,19 +22,28 @@
       <div
         class="flex flex-wrap items-center gap-3 justify-start md:ml-auto md:justify-end"
       >
-        @if (!mealPlanIdSignal()) {
+        <div class="relative group">
           <button
             (click)="onGenerate()"
-            [attr.aria-busy]="loading()"
-            [disabled]="loading()"
-            class="rounded-xl border px-4 py-2 font-medium shadow disabled:opacity-60
-            hover:bg-gray-50 transition-colors hover:cursor-pointer"
+            [disabled]="!canGenerate() || loading()"
+            aria-label="Generate new meal plan"
+            class="flex items-center gap-2 rounded-xl px-4 py-2 font-medium
+            shadow disabled:opacity-60 bg-emerald-600 text-white hover:bg-emerald-700
+            transition-colors hover:cursor-pointer disabled:cursor-not-allowed"
             data-testid="btn-generate"
             type="button"
           >
-            {{ loading() ? 'Generating…' : 'Generate meal plan' }}
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            Generate New Plan
           </button>
-        }
+          @if (generateCooldownMessage()) {
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5
+              rounded-lg bg-gray-900 text-white text-xs whitespace-nowrap
+              opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              {{ generateCooldownMessage() }}
+            </div>
+          }
+        </div>
 
         @if (plan(); as plan) {
           <button
@@ -83,11 +92,7 @@
     }
     @if (!plan() && !loading() && !errorMessage()) {
       <p>
-        @if (!plan()) {
-          Meal plan not found or failed to load.
-        } @else {
-          Click “Generate meal plan” to create your personalized plan.
-        }
+        Meal plan not found or failed to load.
       </p>
     }
     @if (plan()) {

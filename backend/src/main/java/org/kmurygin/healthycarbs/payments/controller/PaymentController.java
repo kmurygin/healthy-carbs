@@ -1,6 +1,6 @@
 package org.kmurygin.healthycarbs.payments.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.payments.dto.PaymentSummaryDTO;
 import org.kmurygin.healthycarbs.payments.service.PaymentSummaryService;
 import org.kmurygin.healthycarbs.user.service.UserService;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/payments")
 public class PaymentController {

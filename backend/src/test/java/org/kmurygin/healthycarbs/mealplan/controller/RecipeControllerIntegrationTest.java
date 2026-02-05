@@ -13,6 +13,7 @@ import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
+import org.kmurygin.healthycarbs.mealplan.repository.DietTypeRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
 import org.kmurygin.healthycarbs.storage.StorageProvider;
@@ -56,6 +57,8 @@ class RecipeControllerIntegrationTest {
     @Autowired
     private IngredientRepository ingredientRepository;
     @Autowired
+    private DietTypeRepository dietTypeRepository;
+    @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtService jwtService;
@@ -66,12 +69,16 @@ class RecipeControllerIntegrationTest {
     private User regularUser;
     private Recipe testRecipe;
     private Ingredient testIngredient;
+    private DietType standardDietType;
     private String adminToken;
     private String dietitianToken;
     private String userToken;
 
     @BeforeEach
     void setUp() {
+        standardDietType = dietTypeRepository.findByName("STANDARD")
+                .orElseGet(() -> dietTypeRepository.save(DietType.builder().name("STANDARD").compatibilityLevel(1).build()));
+
         adminUser = userRepository.save(
                 UserTestUtils.createUserForPersistence("admin_recipe", uniqueSuffix, Role.ADMIN, passwordEncoder));
 
@@ -97,7 +104,7 @@ class RecipeControllerIntegrationTest {
                 .description("Test recipe description")
                 .instructions("Test instructions for cooking")
                 .mealType(MealType.BREAKFAST)
-                .dietType(DietType.STANDARD)
+                .dietType(standardDietType)
                 .calories(300.0)
                 .carbs(40.0)
                 .protein(15.0)
@@ -122,7 +129,7 @@ class RecipeControllerIntegrationTest {
         dto.setDescription("New recipe description");
         dto.setInstructions("New recipe instructions");
         dto.setMealType(MealType.LUNCH);
-        dto.setDietType(DietType.VEGAN);
+        dto.setDietType("VEGAN");
         dto.setCalories(400.0);
         dto.setCarbs(50.0);
         dto.setProtein(20.0);

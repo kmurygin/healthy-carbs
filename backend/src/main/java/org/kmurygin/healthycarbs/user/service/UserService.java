@@ -5,6 +5,7 @@ import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.exception.ResourceAlreadyExistsException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
+import org.kmurygin.healthycarbs.exception.UnauthorizedException;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
 import org.kmurygin.healthycarbs.user.model.Role;
@@ -136,6 +137,6 @@ public class UserService {
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof User user) {
             return user;
         }
-        return null;
+        throw new UnauthorizedException("No authenticated user found");
     }
 }

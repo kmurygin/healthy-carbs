@@ -32,6 +32,12 @@ export const ADMIN_ROUTES: Routes = [
     title: 'Allergens Management'
   },
   {
+    path: 'diet-types',
+    loadComponent: () => import('./diet-types/diet-types-management.component')
+      .then(m => m.DietTypesManagementComponent),
+    title: 'Diet Types Management'
+  },
+  {
     path: 'blog',
     loadComponent: () => import('@features/blog/blog-list/blog-list.component')
       .then(m => m.BlogListComponent),

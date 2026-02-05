@@ -3,7 +3,6 @@ package org.kmurygin.healthycarbs.mealplan.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.user.dto.UserDTO;
 
@@ -23,7 +22,7 @@ public class RecipeDTO {
     private Double protein;
     private Double fat;
     private MealType mealType;
-    private DietType dietType;
+    private String dietType;
     private Boolean isFavourite;
     private Long favouritesCount;
     private UserDTO author;

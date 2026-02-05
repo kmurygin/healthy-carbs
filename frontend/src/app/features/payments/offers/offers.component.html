@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
   @switch (viewState()) {
     @case ('ERROR') {
@@ -8,9 +8,9 @@
       <app-info-message message="No offers available."/>
     }
     @case ('LOADED') {
-      <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-end gap-8">
         @for (offer of offers(); track offer.id; let first = $first) {
-          <div [class]="offerCardClasses()">
+          <div [class.pt-4]="first" [class]="offerCardClasses()">
 
             <app-offer-card
               (paymentClicked)="onPaymentInitiated(offer)"

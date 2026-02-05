@@ -1,10 +1,12 @@
 <div>
   <app-meal-plan-creator-header
     (save)="savePlan()"
+    (shareTemplate)="openShareDialog()"
     (toggleLibrary)="toggleRecipeLibrary()"
     [canSave]="isPlanComplete()"
     [profileChips]="profileChips()"
     [showLibraryButton]="true"
+    [showShareButton]="!!clientId()"
     subtitle=""
     title="Meal Plan Creator"
   />
@@ -448,6 +450,13 @@
     <app-recipe-details
       (closeOutputEmitter)="closeRecipeDetails()"
       [recipe]="selectedRecipe()!"
+    />
+  }
+
+  @if (isShareDialogOpen()) {
+    <app-share-template-dialog
+      (closed)="closeShareDialog()"
+      (share)="shareTemplate($event)"
     />
   }
 </div>

@@ -34,6 +34,6 @@ describe('AdminDashboardComponent', () => {
   });
 
   it('dashboardMenuItems_userIsAdmin_returnsAllMenuItems', () => {
-    expect(component.dashboardMenuItems().length).toBeGreaterThan(0);
+    expect(component.dashboardMenuItems.length).toBeGreaterThan(0);
   });
 });

@@ -8,6 +8,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Slf4j
 @Component
@@ -15,21 +17,20 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class CollaborationEmailListener {
 
     private final EmailService emailService;
+    private final SpringTemplateEngine templateEngine;
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onCollaborationEstablished(CollaborationEstablishedEvent event) {
-        String subject = "Collaboration request";
-        String body = String.format(
-                "User %s has sent you a collaboration request.",
-                event.clientUsername()
-        );
+        Context context = new Context();
+        context.setVariable("clientUsername", event.clientUsername());
+        String htmlContent = templateEngine.process("collaboration-request", context);
 
         try {
             emailService.sendMail(new EmailDetails(
                     event.dietitianEmail(),
-                    body,
-                    subject
+                    htmlContent,
+                    "Collaboration request"
             ));
         } catch (Exception ex) {
             log.error("Failed to send collaboration email for collaborationId={}", event.collaborationId(), ex);

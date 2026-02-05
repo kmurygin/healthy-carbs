@@ -17,9 +17,26 @@ export class AllergenService {
       .pipe(map(resp => resp.data ?? []));
   }
 
+  getById(id: number): Observable<AllergenDto | null> {
+    return this.httpClient
+      .get<ApiResponse<AllergenDto>>(`${ApiEndpoints.Allergens.Base}/${id}`)
+      .pipe(map(resp => resp.data ?? null));
+  }
+
   create(name: string): Observable<AllergenDto> {
     return this.httpClient
       .post<ApiResponse<AllergenDto>>(ApiEndpoints.Allergens.Base, {name})
+      .pipe(map(resp => {
+        if (!resp.data) {
+          throw new Error('Allergen data is missing in response');
+        }
+        return resp.data;
+      }));
+  }
+
+  update(id: number, name: string): Observable<AllergenDto> {
+    return this.httpClient
+      .put<ApiResponse<AllergenDto>>(`${ApiEndpoints.Allergens.Base}/${id}`, {name})
       .pipe(map(resp => {
         if (!resp.data) {
           throw new Error('Allergen data is missing in response');

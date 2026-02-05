@@ -12,11 +12,12 @@ import {
 } from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
-import {finalize} from 'rxjs';
+import {filter, finalize, switchMap} from 'rxjs';
 import {UserService} from '@core/services/user/user.service';
 import {UserProfileImageService} from '@core/services/user/user-profile-image.service';
 import {AuthService} from '@core/services/auth/auth.service';
 import {NotificationService} from '@core/services/ui/notification.service';
+import {ConfirmationService} from '@core/services/ui/confirmation.service';
 import type {UserDto} from '@core/models/dto/user.dto';
 import {setError, setErrorNotification} from "@shared/utils";
 import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
@@ -36,6 +37,7 @@ export class UserDetailComponent implements OnInit {
   readonly isUploading = signal<boolean>(false);
   readonly user = signal<UserDto | null>(null);
   readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
+  readonly isDeleting = signal(false);
   private readonly formBuilder = inject(FormBuilder);
   readonly formGroup = this.formBuilder.nonNullable.group({
     firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z]+$/u)]],
@@ -57,6 +59,7 @@ export class UserDetailComponent implements OnInit {
   readonly isImageLoading = this.imageState.isLoading;
   private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
+  private readonly confirmationService = inject(ConfirmationService);
   private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
@@ -75,6 +78,13 @@ export class UserDetailComponent implements OnInit {
     const currentUser = this.user();
 
     if (!currentUser?.id) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      this.notificationService.error('Only JPEG, PNG, WebP, and GIF images are allowed.');
+      this.resetFileInput();
+      return;
+    }
 
     if (file.size > 5 * 1024 * 1024) {
       this.notificationService.error('Image size must be less than 5MB');
@@ -132,6 +142,34 @@ export class UserDetailComponent implements OnInit {
 
   triggerFileInput(): void {
     this.fileInput()?.nativeElement.click();
+  }
+
+  onDeleteAccount(): void {
+    const currentUser = this.user();
+    if (!currentUser) return;
+
+    this.confirmationService.confirm({
+      title: 'Delete Account',
+      message: 'Are you sure you want to delete your account? This action cannot be undone.',
+      type: 'danger'
+    }).pipe(
+      filter(confirmed => confirmed),
+      switchMap(() => {
+        this.isDeleting.set(true);
+        return this.userService.deleteUser(currentUser.id);
+      }),
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => {
+        this.isDeleting.set(false);
+      })
+    ).subscribe({
+      next: () => {
+        this.authService.logout();
+      },
+      error: (error: unknown) => {
+        setErrorNotification(this.notificationService, error, 'Failed to delete account');
+      }
+    });
   }
 
   private fetchUserDetails(username: string): void {

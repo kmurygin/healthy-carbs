@@ -50,18 +50,7 @@ public class BlogController {
         Page<BlogPost> page = blogService.findAllPosts(pageable);
         Page<BlogPostDTO> dtoPage = page.map(blogMapper::toPostDTO);
 
-        PaginatedResponse<BlogPostDTO> response = new PaginatedResponse<>(
-                dtoPage.getContent(),
-                dtoPage.getTotalPages(),
-                dtoPage.getTotalElements(),
-                dtoPage.getSize(),
-                dtoPage.getNumber(),
-                dtoPage.isFirst(),
-                dtoPage.isLast(),
-                dtoPage.isEmpty()
-        );
-
-        return ApiResponses.success(response);
+        return ApiResponses.success(PaginatedResponse.from(dtoPage));
     }
 
     @GetMapping("/{id}")

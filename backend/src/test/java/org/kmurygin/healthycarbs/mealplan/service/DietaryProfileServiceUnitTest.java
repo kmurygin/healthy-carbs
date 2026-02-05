@@ -35,6 +35,9 @@ class DietaryProfileServiceUnitTest {
     private DietaryProfileRepository dietaryProfileRepository;
 
     @Mock
+    private org.kmurygin.healthycarbs.mealplan.repository.DietTypeRepository dietTypeRepository;
+
+    @Mock
     private UserRepository userRepository;
 
     @Mock
@@ -44,15 +47,23 @@ class DietaryProfileServiceUnitTest {
 
     private User testUser;
     private DietaryProfile testProfile;
+    private DietType standardDietType;
 
     @BeforeEach
     void setUp() {
         dietaryProfileService = new DietaryProfileService(
                 dietaryProfileRepository,
+                dietTypeRepository,
                 userRepository,
                 authenticationService);
 
         testUser = UserTestUtils.createTestUser(1L, "testuser");
+
+        standardDietType = DietType.builder()
+                .id(1L)
+                .name("STANDARD")
+                .compatibilityLevel(1)
+                .build();
 
         testProfile = DietaryProfile.builder()
                 .id(1L)
@@ -62,7 +73,7 @@ class DietaryProfileServiceUnitTest {
                 .age(30)
                 .gender(Gender.MALE)
                 .dietGoal(DietGoal.MAINTAIN)
-                .dietType(DietType.STANDARD)
+                .dietType(standardDietType)
                 .activityLevel(ActivityLevel.MODERATE)
                 .calorieTarget(2000.0)
                 .carbsTarget(250.0)
@@ -84,11 +95,12 @@ class DietaryProfileServiceUnitTest {
             payload.setAge(30);
             payload.setGender(Gender.MALE);
             payload.setDietGoal(DietGoal.MAINTAIN);
-            payload.setDietType(DietType.STANDARD);
+            payload.setDietType("STANDARD");
             payload.setActivityLevel(ActivityLevel.MODERATE);
 
             when(authenticationService.getCurrentUser()).thenReturn(testUser);
             when(dietaryProfileRepository.findByUser(testUser)).thenReturn(null);
+            when(dietTypeRepository.findByName("STANDARD")).thenReturn(java.util.Optional.of(standardDietType));
             when(dietaryProfileRepository.save(any(DietaryProfile.class))).thenAnswer(i -> {
                 DietaryProfile p = i.getArgument(0);
                 p.setId(1L);
@@ -111,18 +123,25 @@ class DietaryProfileServiceUnitTest {
             payload.setAge(30);
             payload.setGender(Gender.MALE);
             payload.setDietGoal(DietGoal.LOSE);
-            payload.setDietType(DietType.VEGETARIAN);
+            payload.setDietType("VEGETARIAN");
             payload.setActivityLevel(ActivityLevel.HIGH);
+
+            DietType vegetarianDietType = DietType.builder()
+                    .id(2L)
+                    .name("VEGETARIAN")
+                    .compatibilityLevel(2)
+                    .build();
 
             when(authenticationService.getCurrentUser()).thenReturn(testUser);
             when(dietaryProfileRepository.findByUser(testUser)).thenReturn(testProfile);
+            when(dietTypeRepository.findByName("VEGETARIAN")).thenReturn(java.util.Optional.of(vegetarianDietType));
             when(dietaryProfileRepository.save(any(DietaryProfile.class))).thenAnswer(i -> i.getArgument(0));
 
             DietaryProfile result = dietaryProfileService.save(payload);
 
             assertThat(result.getWeight()).isEqualTo(75.0);
             assertThat(result.getDietGoal()).isEqualTo(DietGoal.LOSE);
-            assertThat(result.getDietType()).isEqualTo(DietType.VEGETARIAN);
+            assertThat(result.getDietType().getName()).isEqualTo("VEGETARIAN");
         }
 
         @Test
@@ -134,11 +153,12 @@ class DietaryProfileServiceUnitTest {
             payload.setAge(30);
             payload.setGender(Gender.MALE);
             payload.setDietGoal(DietGoal.MAINTAIN);
-            payload.setDietType(DietType.STANDARD);
+            payload.setDietType("STANDARD");
             payload.setActivityLevel(ActivityLevel.MODERATE);
 
             when(authenticationService.getCurrentUser()).thenReturn(testUser);
             when(dietaryProfileRepository.findByUser(testUser)).thenReturn(null);
+            when(dietTypeRepository.findByName("STANDARD")).thenReturn(java.util.Optional.of(standardDietType));
             when(dietaryProfileRepository.save(any(DietaryProfile.class))).thenAnswer(i -> i.getArgument(0));
 
             DietaryProfile result = dietaryProfileService.save(payload);
@@ -211,7 +231,7 @@ class DietaryProfileServiceUnitTest {
             when(authenticationService.getCurrentUser()).thenReturn(testUser);
             when(dietaryProfileRepository.findByUser(testUser)).thenReturn(testProfile);
 
-            DietaryProfile result = dietaryProfileService.isCreated();
+            DietaryProfile result = dietaryProfileService.findCurrentUserProfile();
 
             assertThat(result).isEqualTo(testProfile);
         }
@@ -222,7 +242,7 @@ class DietaryProfileServiceUnitTest {
             when(authenticationService.getCurrentUser()).thenReturn(testUser);
             when(dietaryProfileRepository.findByUser(testUser)).thenReturn(null);
 
-            DietaryProfile result = dietaryProfileService.isCreated();
+            DietaryProfile result = dietaryProfileService.findCurrentUserProfile();
 
             assertThat(result).isNull();
         }

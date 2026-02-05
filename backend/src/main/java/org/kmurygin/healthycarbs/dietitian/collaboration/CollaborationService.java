@@ -80,6 +80,25 @@ public class CollaborationService {
         ));
     }
 
+    public List<Long> getActiveCollaborationDietitianIds(User client) {
+        return collaborationRepository.findByClientAndEndedAtIsNull(client)
+                .stream()
+                .map(c -> c.getDietitian().getId())
+                .toList();
+    }
+
+    @Transactional
+    public void cancelCollaboration(User client, Long dietitianId) {
+        User dietitian = userService.getUserById(dietitianId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", dietitianId.toString()));
+
+        Collaboration link = collaborationRepository.findByDietitianAndClientAndEndedAtIsNull(dietitian, client)
+                .orElseThrow(() -> new ResourceNotFoundException("Active collaboration not found"));
+
+        link.terminate();
+        collaborationRepository.save(link);
+    }
+
     @Transactional
     public void terminateCollaboration(User dietitian, Long clientId) {
         User client = userService.getUserById(clientId)

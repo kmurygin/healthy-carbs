@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.exception.ResourceAlreadyExistsException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
+import org.kmurygin.healthycarbs.exception.UnauthorizedException;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
 import org.kmurygin.healthycarbs.user.model.Role;
@@ -322,16 +323,16 @@ class UserServiceUnitTest {
         }
 
         @Test
-        @DisplayName("getCurrentUser_whenNotAuthenticated_shouldReturnNull")
-        void getCurrentUser_whenNotAuthenticated_shouldReturnNull() {
+        @DisplayName("getCurrentUser_whenNotAuthenticated_shouldThrowUnauthorized")
+        void getCurrentUser_whenNotAuthenticated_shouldThrowUnauthorized() {
             SecurityContext securityContext = mock(SecurityContext.class);
             when(securityContext.getAuthentication()).thenReturn(null);
 
             SecurityContextHolder.setContext(securityContext);
 
-            User result = userService.getCurrentUser();
-
-            assertThat(result).isNull();
+            assertThatThrownBy(() -> userService.getCurrentUser())
+                    .isInstanceOf(UnauthorizedException.class)
+                    .hasMessageContaining("No authenticated user found");
 
             SecurityContextHolder.clearContext();
         }

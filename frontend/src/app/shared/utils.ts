@@ -1,12 +1,15 @@
-import {DietType} from "@core/models/enum/diet-type.enum";
 import type {WritableSignal} from "@angular/core";
 import type {NotificationService} from "@core/services/ui/notification.service";
 
-export function formatEnum(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[_-]/g, ' ')
-    .replace(/\b\w/g, char => char.toUpperCase());
+export function formatEnum(value: string | null | undefined): string {
+  if (!value) return '—';
+  const withSpaces = value
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .trim()
+    .toLowerCase();
+
+  return withSpaces.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 const baseClasses = 'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium';
@@ -19,24 +22,26 @@ const sizeClasses: Record<Size, string> = {
 }
 
 export function getDietTagClasses(
-  dietType: DietType | undefined,
+  dietType: string | undefined,
   size: Size = 'sm',
 ): string {
 
   const sizeCategory = sizeClasses[size];
-  switch (dietType) {
-    case DietType.VEGETARIAN:
-    case DietType.VEGAN:
+  const upper = dietType?.toUpperCase();
+  switch (upper) {
+    case 'VEGETARIAN':
+    case 'VEGAN':
       return `${baseClasses} ${sizeCategory} bg-emerald-100 text-emerald-800`;
     default:
       return `${baseClasses} ${sizeCategory} bg-orange-100 text-orange-800`;
   }
 }
 
-export function getDietTagIconClasses(dietType: DietType | undefined) {
-  switch (dietType) {
-    case DietType.VEGETARIAN:
-    case DietType.VEGAN:
+export function getDietTagIconClasses(dietType: string | undefined) {
+  const upper = dietType?.toUpperCase();
+  switch (upper) {
+    case 'VEGETARIAN':
+    case 'VEGAN':
       return 'fa-solid fa-leaf';
     default:
       return 'fa-solid fa-drumstick-bite';

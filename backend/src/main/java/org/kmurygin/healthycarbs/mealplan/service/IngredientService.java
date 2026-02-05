@@ -2,6 +2,7 @@ package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.exception.BadRequestException;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.IngredientCategory;
 import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
@@ -68,8 +69,17 @@ public class IngredientService {
         if (!ingredient.getAuthor().getId().equals(currentUser.getId()) &&
                 currentUser.getRole() != Role.ADMIN
         ) {
-            throw new SecurityException("You are not authorized to update this ingredient.");
+            throw new ForbiddenException("You are not authorized to update this ingredient.");
         }
+
+        ingredient.setName(updatedIngredient.getName());
+        ingredient.setUnit(updatedIngredient.getUnit());
+        ingredient.setCaloriesPerUnit(updatedIngredient.getCaloriesPerUnit());
+        ingredient.setCarbsPerUnit(updatedIngredient.getCarbsPerUnit());
+        ingredient.setProteinPerUnit(updatedIngredient.getProteinPerUnit());
+        ingredient.setFatPerUnit(updatedIngredient.getFatPerUnit());
+        ingredient.setCategory(updatedIngredient.getCategory());
+        ingredient.setAllergens(updatedIngredient.getAllergens());
 
         return ingredientRepository.save(ingredient);
     }
@@ -81,7 +91,7 @@ public class IngredientService {
         if (!ingredient.getAuthor().getId().equals(currentUser.getId()) &&
                 currentUser.getRole() != Role.ADMIN
         ) {
-            throw new SecurityException("You are not authorized to delete this ingredient.");
+            throw new ForbiddenException("You are not authorized to delete this ingredient.");
         }
         if (recipeIngredientRepository.existsByIngredientId(id)) {
             throw new BadRequestException("Cannot delete ingredient because it is used in one or more recipes.");

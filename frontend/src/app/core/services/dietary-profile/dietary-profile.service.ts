@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import type {DietaryProfileDto} from "../../models/dto/dietaryprofile.dto";
+import type {DietaryProfileDto} from "../../models/dto/dietary-profile.dto";
 import type {ApiResponse} from "../../models/api-response.model";
 import {HttpClient} from "@angular/common/http";
 import {ApiEndpoints} from "../../constants/api-endpoints";

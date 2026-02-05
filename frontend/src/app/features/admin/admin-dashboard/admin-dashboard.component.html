@@ -15,7 +15,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-      @for (item of dashboardMenuItems(); track item.route) {
+      @for (item of dashboardMenuItems; track item.route) {
         <a
           [routerLink]="item.route"
           class="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm

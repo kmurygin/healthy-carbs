@@ -67,6 +67,12 @@ export class UserService {
     );
   }
 
+  deleteUser(id: number): Observable<void> {
+    return this.httpClient
+      .delete(`${ApiEndpoints.User.Base}${id}`)
+      .pipe(map(() => undefined));
+  }
+
   private buildFallbackAvatar(user: UserDto): string {
     const name = encodeURIComponent(`${user.firstName}+${user.lastName}`);
     return `https://ui-avatars.com/api/?name=${name}`;

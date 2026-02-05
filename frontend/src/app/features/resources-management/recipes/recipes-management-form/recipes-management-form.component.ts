@@ -34,8 +34,8 @@ import {NotificationService} from '@core/services/ui/notification.service';
 import type {RecipeDto} from '@core/models/dto/recipe.dto';
 import type {IngredientDto} from '@core/models/dto/ingredient.dto';
 import type {RecipeIngredientDto} from '@core/models/dto/recipe-ingredient.dto';
-import {DietType} from '@core/models/enum/diet-type.enum';
 import {MealType} from '@core/models/enum/meal-type.enum';
+import {DietTypeService} from '@core/services/diet-type/diet-type.service';
 
 @Component({
   selector: 'app-recipe-form',
@@ -52,7 +52,7 @@ export class RecipesManagementFormComponent implements OnInit {
   readonly isLoading = signal(false);
   readonly isEditMode = computed(() => !!this.recipeId());
 
-  readonly dietTypes = Object.values(DietType);
+  readonly dietTypes = signal<string[]>([]);
   readonly mealTypes = Object.values(MealType);
   protected readonly icons = {
     times: faTimes,
@@ -65,6 +65,7 @@ export class RecipesManagementFormComponent implements OnInit {
     drumstick: faDrumstickBite,
     droplet: faBottleDroplet
   };
+  private readonly dietTypeService = inject(DietTypeService);
   private readonly recipeService = inject(RecipeService);
   private readonly notificationService = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
@@ -74,7 +75,7 @@ export class RecipesManagementFormComponent implements OnInit {
     name: ['', [Validators.required, Validators.minLength(3)]],
     description: [''],
     instructions: ['', Validators.required],
-    dietType: [DietType.STANDARD, Validators.required],
+    dietType: ['STANDARD', Validators.required],
     mealType: [MealType.BREAKFAST, Validators.required],
     calories: [{value: 0, disabled: true}, [Validators.required, Validators.min(0)]],
     carbs: [{value: 0, disabled: true}, [Validators.required, Validators.min(0)]],
@@ -84,6 +85,9 @@ export class RecipesManagementFormComponent implements OnInit {
   });
 
   constructor() {
+    this.dietTypeService.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(types => {
+      this.dietTypes.set(types.map(t => t.name));
+    });
     effect(() => {
       const id = this.recipeId();
       if (id) this.loadRecipeData(id);
@@ -148,11 +152,11 @@ export class RecipesManagementFormComponent implements OnInit {
       }));
 
     const recipeData: RecipeDto = {
-      id: currentRecipeId ?? (null as unknown as number),
+      id: currentRecipeId ?? 0,
       name: formValue.name ?? '',
       description: formValue.description ?? '',
       instructions: formValue.instructions ?? '',
-      dietType: formValue.dietType ?? DietType.STANDARD,
+      dietType: formValue.dietType ?? 'STANDARD',
       mealType: formValue.mealType ?? MealType.BREAKFAST,
       calories: formValue.calories ?? 0,
       carbs: formValue.carbs ?? 0,
@@ -168,7 +172,7 @@ export class RecipesManagementFormComponent implements OnInit {
       ? this.recipeService.update(currentRecipeId, recipeData)
       : this.recipeService.create(recipeData);
 
-    request$.subscribe({
+    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.savedOutputEmitter.emit();
         this.closeOutputEmitter.emit();

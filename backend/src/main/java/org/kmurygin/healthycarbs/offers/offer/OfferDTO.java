@@ -19,4 +19,8 @@ public class OfferDTO {
     private int durationInDays;
     private Long mealPlanTemplateId;
     private String mealPlanTemplateName;
+    private Double mealPlanTemplateCalories;
+    private Double mealPlanTemplateCarbs;
+    private Double mealPlanTemplateProtein;
+    private Double mealPlanTemplateFat;
 }

@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-02-01-add-advanced-indexes
+      author: kmurygin
+      validCheckSum: ANY
+      changes:
+        - sqlFile:
+            path: ../sql/advanced-indexes.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

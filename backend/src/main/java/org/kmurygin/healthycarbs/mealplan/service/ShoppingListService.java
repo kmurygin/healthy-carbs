@@ -78,6 +78,19 @@ public class ShoppingListService {
     }
 
     @Transactional
+    public void regenerateForMealPlan(MealPlan mealPlan) {
+        shoppingListRepository.findByMealPlan(mealPlan)
+                .ifPresent(shoppingListRepository::delete);
+        shoppingListRepository.flush();
+        createAndSaveShoppingList(mealPlan);
+    }
+
+    @Transactional
+    public void deleteByMealPlan(MealPlan mealPlan) {
+        shoppingListRepository.deleteByMealPlan(mealPlan);
+    }
+
+    @Transactional
     @EventListener
     public void handleMealPlanGeneratedEvent(MealPlanGeneratedEvent event) {
         logger.info("Meal plan generated event received: {}", event);

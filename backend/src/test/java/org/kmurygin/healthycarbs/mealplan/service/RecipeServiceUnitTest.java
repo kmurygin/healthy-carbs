@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kmurygin.healthycarbs.exception.BadRequestException;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealType;
@@ -64,11 +65,19 @@ class RecipeServiceUnitTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private org.kmurygin.healthycarbs.mealplan.DietTypeUtil dietTypeUtil;
+
+    @Mock
+    private org.kmurygin.healthycarbs.mealplan.repository.DietTypeRepository dietTypeRepository;
+
     private RecipeService recipeService;
 
     private User testUser;
     private User adminUser;
     private Recipe testRecipe;
+    private DietType standardDietType;
+    private DietType veganDietType;
 
     @BeforeEach
     void setUp() {
@@ -79,19 +88,33 @@ class RecipeServiceUnitTest {
                 recipeIngredientMapper,
                 recipeMapper,
                 userRepository,
-                userService);
+                userService,
+                dietTypeUtil,
+                dietTypeRepository);
 
         testUser = UserTestUtils.createTestUser(1L, "testuser", Role.DIETITIAN);
 
         adminUser = UserTestUtils.createAdmin();
         adminUser.setId(2L);
 
+        standardDietType = DietType.builder()
+                .id(1L)
+                .name("STANDARD")
+                .compatibilityLevel(1)
+                .build();
+
+        veganDietType = DietType.builder()
+                .id(3L)
+                .name("VEGAN")
+                .compatibilityLevel(3)
+                .build();
+
         testRecipe = Recipe.builder()
                 .id(1L)
                 .name("Test Recipe")
                 .description("Test description")
                 .mealType(MealType.BREAKFAST)
-                .dietType(DietType.STANDARD)
+                .dietType(standardDietType)
                 .author(testUser)
                 .ingredients(new ArrayList<>())
                 .build();
@@ -135,12 +158,13 @@ class RecipeServiceUnitTest {
             Pageable pageable = PageRequest.of(0, 10);
             Page<Recipe> expectedPage = new PageImpl<>(List.of(testRecipe));
 
+            when(dietTypeRepository.findByName("STANDARD")).thenReturn(java.util.Optional.of(standardDietType));
             when(recipeRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(expectedPage);
 
             Page<Recipe> result = recipeService.findAll(
                     "Test",
                     "Oats",
-                    DietType.STANDARD,
+                    "STANDARD",
                     MealType.BREAKFAST,
                     1L,
                     pageable);
@@ -184,17 +208,17 @@ class RecipeServiceUnitTest {
                     .name("New Recipe")
                     .description("New description")
                     .mealType(MealType.LUNCH)
-                    .dietType(DietType.VEGAN)
                     .build();
 
             when(userService.getCurrentUser()).thenReturn(testUser);
+            when(dietTypeRepository.findByName("VEGAN")).thenReturn(java.util.Optional.of(veganDietType));
             when(recipeRepository.save(any(Recipe.class))).thenAnswer(i -> {
                 Recipe r = i.getArgument(0);
                 r.setId(2L);
                 return r;
             });
 
-            Recipe result = recipeService.create(newRecipe);
+            Recipe result = recipeService.create(newRecipe, "VEGAN");
 
             assertThat(result.getAuthor()).isEqualTo(testUser);
             verify(recipeRepository).save(newRecipe);
@@ -217,7 +241,7 @@ class RecipeServiceUnitTest {
             when(userService.getCurrentUser()).thenReturn(testUser);
             when(recipeRepository.save(any(Recipe.class))).thenAnswer(i -> i.getArgument(0));
 
-            Recipe result = recipeService.update(1L, updatedDetails);
+            Recipe result = recipeService.update(1L, updatedDetails, null);
 
             verify(recipeMapper).updateFromEntity(updatedDetails, testRecipe);
             verify(recipeRepository).save(testRecipe);
@@ -234,22 +258,22 @@ class RecipeServiceUnitTest {
             when(userService.getCurrentUser()).thenReturn(adminUser);
             when(recipeRepository.save(any(Recipe.class))).thenAnswer(i -> i.getArgument(0));
 
-            recipeService.update(1L, updatedDetails);
+            recipeService.update(1L, updatedDetails, null);
 
             verify(recipeRepository).save(testRecipe);
         }
 
         @Test
-        @DisplayName("update_whenNotAuthorized_shouldThrowSecurityException")
-        void update_whenNotAuthorized_shouldThrowSecurityException() {
+        @DisplayName("update_whenNotAuthorized_shouldThrowForbiddenException")
+        void update_whenNotAuthorized_shouldThrowForbiddenException() {
             User otherUser = UserTestUtils.createTestUser(3L, "other");
             Recipe updatedDetails = Recipe.builder().name("Updated Name").build();
 
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
             when(userService.getCurrentUser()).thenReturn(otherUser);
 
-            assertThatThrownBy(() -> recipeService.update(1L, updatedDetails))
-                    .isInstanceOf(SecurityException.class)
+            assertThatThrownBy(() -> recipeService.update(1L, updatedDetails, null))
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("not authorized");
         }
 
@@ -258,7 +282,7 @@ class RecipeServiceUnitTest {
         void update_whenRecipeNotFound_shouldThrowResourceNotFound() {
             when(recipeRepository.findById(999L)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> recipeService.update(999L, testRecipe))
+            assertThatThrownBy(() -> recipeService.update(999L, testRecipe, null))
                     .isInstanceOf(ResourceNotFoundException.class);
         }
     }
@@ -304,15 +328,15 @@ class RecipeServiceUnitTest {
         }
 
         @Test
-        @DisplayName("deleteById_whenNotAuthorized_shouldThrowSecurityException")
-        void deleteById_whenNotAuthorized_shouldThrowSecurityException() {
+        @DisplayName("deleteById_whenNotAuthorized_shouldThrowForbiddenException")
+        void deleteById_whenNotAuthorized_shouldThrowForbiddenException() {
             User otherUser = UserTestUtils.createTestUser(3L, "other");
 
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
             when(userService.getCurrentUser()).thenReturn(otherUser);
 
             assertThatThrownBy(() -> recipeService.deleteById(1L))
-                    .isInstanceOf(SecurityException.class);
+                    .isInstanceOf(ForbiddenException.class);
         }
     }
 
@@ -389,11 +413,12 @@ class RecipeServiceUnitTest {
         @Test
         @DisplayName("findRandomForMealPlan_whenRecipesExist_shouldReturnRandomRecipe")
         void findRandomForMealPlan_whenRecipesExist_shouldReturnRandomRecipe() {
+            when(dietTypeUtil.getCompatibleDietTypes(standardDietType)).thenReturn(java.util.Set.of(standardDietType));
             when(recipeRepository.findIdsByMealTypeAndDietTypes(eq(MealType.BREAKFAST), any()))
                     .thenReturn(List.of(1L, 2L, 3L));
             when(recipeRepository.findByIdWithIngredients(any())).thenReturn(Optional.of(testRecipe));
 
-            Recipe result = recipeService.findRandomForMealPlan(MealType.BREAKFAST, DietType.STANDARD);
+            Recipe result = recipeService.findRandomForMealPlan(MealType.BREAKFAST, standardDietType);
 
             assertThat(result).isNotNull();
         }
@@ -401,10 +426,11 @@ class RecipeServiceUnitTest {
         @Test
         @DisplayName("findRandomForMealPlan_whenNoRecipes_shouldThrowResourceNotFound")
         void findRandomForMealPlan_whenNoRecipes_shouldThrowResourceNotFound() {
+            when(dietTypeUtil.getCompatibleDietTypes(veganDietType)).thenReturn(java.util.Set.of(veganDietType));
             when(recipeRepository.findIdsByMealTypeAndDietTypes(eq(MealType.BREAKFAST), any()))
                     .thenReturn(List.of());
 
-            assertThatThrownBy(() -> recipeService.findRandomForMealPlan(MealType.BREAKFAST, DietType.VEGAN))
+            assertThatThrownBy(() -> recipeService.findRandomForMealPlan(MealType.BREAKFAST, veganDietType))
                     .isInstanceOf(ResourceNotFoundException.class);
         }
     }

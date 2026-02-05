@@ -82,7 +82,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({OptimisticLockingFailureException.class, DataIntegrityViolationException.class})
     public ResponseEntity<ErrorResponse> conflict(RuntimeException ex, HttpServletRequest req) {
-        return buildErrorResponse("Conflict: " + ex.getMessage(), req, HttpStatus.CONFLICT);
+        logger.error("Data conflict at {}: {}", req.getRequestURI(), ex.getMessage(), ex);
+        return buildErrorResponse("A data conflict occurred. Please try again.", req, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -135,7 +136,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> unhandled(Exception ex, HttpServletRequest req) {
         logger.error("Unhandled exception at {}: {}", req.getRequestURI(), ex.getMessage(), ex);
-        return buildErrorResponse(ex.getMessage(), req, HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildErrorResponse("An internal server error occurred.", req, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private String generateTraceId() {

@@ -1,17 +1,18 @@
-import {ChangeDetectionStrategy, Component, computed, inject, input,} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, signal,} from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {RouterLink} from '@angular/router';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
-import {catchError, filter, of, startWith, switchMap} from 'rxjs';
+import {filter, startWith, switchMap} from 'rxjs';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
-import {faChartLine, faHistory, faUtensils,} from '@fortawesome/free-solid-svg-icons';
+import {faChartLine, faEnvelope, faHistory, faUtensils,} from '@fortawesome/free-solid-svg-icons';
 import {DietitianService} from '@core/services/dietitian/dietitian.service';
 import {type UserDto} from '@core/models/dto/user.dto';
 import {getInitials} from '@features/collaboration/collaboration.utils';
+import {ContactFormComponent} from '@shared/components/contact-form/contact-form.component';
 
 @Component({
   selector: 'app-client-card',
-  imports: [CommonModule, RouterLink, FaIconComponent, NgOptimizedImage],
+  imports: [CommonModule, RouterLink, FaIconComponent, NgOptimizedImage, ContactFormComponent],
   templateUrl: './client-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -21,6 +22,8 @@ export class ClientCardComponent {
   readonly faUtensils = faUtensils;
   readonly faHistory = faHistory;
   readonly faChartLine = faChartLine;
+  readonly faEnvelope = faEnvelope;
+  readonly showContactForm = signal(false);
   readonly clientId = computed(() => this.client().id);
   private readonly dietitianService = inject(DietitianService);
   readonly dietaryProfile = toSignal(
@@ -33,7 +36,6 @@ export class ClientCardComponent {
         this.dietitianService.getClientDietaryProfile(clientIdentifier),
       ),
       startWith(null),
-      catchError(() => of(null)),
     ),
     {initialValue: null},
   );

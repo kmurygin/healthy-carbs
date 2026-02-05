@@ -13,6 +13,9 @@ export class MealPlanCreatorHeaderComponent {
   readonly canSave = input<boolean>(false);
   readonly showLibraryButton = input<boolean>(false);
 
+  readonly showShareButton = input<boolean>(false);
+
   readonly toggleLibrary = output();
   readonly save = output();
+  readonly shareTemplate = output();
 }

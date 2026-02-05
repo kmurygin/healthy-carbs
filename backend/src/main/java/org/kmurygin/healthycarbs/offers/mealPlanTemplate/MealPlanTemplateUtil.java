@@ -6,8 +6,12 @@ import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlanDay;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlanRecipe;
 import org.kmurygin.healthycarbs.payments.model.Order;
+import org.kmurygin.healthycarbs.user.model.User;
 
 import java.nio.charset.StandardCharsets;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -37,6 +41,31 @@ public final class MealPlanTemplateUtil {
                 .totalProtein(template.getTotalProtein())
                 .totalFat(template.getTotalFat())
                 .source(MealPlanSource.PURCHASED)
+                .build();
+
+        plan.setDays(cloneDays(template.getDays(), plan));
+        return plan;
+    }
+
+    public static MealPlan createMealPlanFromTemplate(MealPlanTemplate template, User client, User author) {
+        if (template == null) {
+            throw new BadRequestException("MealPlanTemplate must not be null.");
+        }
+        if (template.getDays() == null || template.getDays().isEmpty()) {
+            throw new BadRequestException("MealPlanTemplate %d has no days.".formatted(template.getId()));
+        }
+        if (client == null) {
+            throw new BadRequestException("Client must not be null.");
+        }
+
+        MealPlan plan = MealPlan.builder()
+                .user(client)
+                .author(author)
+                .totalCalories(template.getTotalCalories())
+                .totalCarbs(template.getTotalCarbs())
+                .totalProtein(template.getTotalProtein())
+                .totalFat(template.getTotalFat())
+                .source(MealPlanSource.DIETITIAN)
                 .build();
 
         plan.setDays(cloneDays(template.getDays(), plan));
@@ -80,11 +109,14 @@ public final class MealPlanTemplateUtil {
         }
     }
 
-    private static List<MealPlanDay> cloneDays(List<MealPlanDay> templateDays, MealPlan parent) {
+    static List<MealPlanDay> cloneDays(List<MealPlanDay> templateDays, MealPlan parent) {
+        LocalDate monday = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         List<MealPlanDay> clonedDays = new ArrayList<>(templateDays.size());
         for (MealPlanDay templateDay : templateDays) {
+            LocalDate date = monday.with(TemporalAdjusters.nextOrSame(templateDay.getDayOfWeek()));
             MealPlanDay day = MealPlanDay.builder()
                     .dayOfWeek(templateDay.getDayOfWeek())
+                    .date(date)
                     .totalCalories(templateDay.getTotalCalories())
                     .totalCarbs(templateDay.getTotalCarbs())
                     .totalProtein(templateDay.getTotalProtein())

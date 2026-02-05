@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 import {RouterModule} from '@angular/router';
-import {OurMissionComponent} from '@shared/components/our-mission/our-mission.component';
 import {KeyFeaturesComponent} from '@shared/components/key-features/key-features.component';
 import {HowWorksComponent} from '@shared/components/how-works/how-works.component';
 
@@ -10,7 +9,6 @@ import {HowWorksComponent} from '@shared/components/how-works/how-works.componen
   standalone: true,
   imports: [
     RouterModule,
-    OurMissionComponent,
     KeyFeaturesComponent,
     HowWorksComponent
   ],

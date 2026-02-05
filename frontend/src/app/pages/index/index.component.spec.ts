@@ -1,5 +1,6 @@
 import type {ComponentFixture} from '@angular/core/testing';
 import {TestBed} from '@angular/core/testing';
+import {ActivatedRoute} from '@angular/router';
 
 import {IndexComponent} from './index.component';
 
@@ -9,7 +10,10 @@ describe('IndexComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [IndexComponent]
+      imports: [IndexComponent],
+      providers: [
+        {provide: ActivatedRoute, useValue: {}},
+      ],
     })
       .compileComponents();
 

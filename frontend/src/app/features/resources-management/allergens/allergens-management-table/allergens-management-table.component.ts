@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {faTrash} from '@fortawesome/free-solid-svg-icons';
+import {faPen, faTrash} from '@fortawesome/free-solid-svg-icons';
 import type {AllergenDto} from '@core/models/dto/allergen.dto';
 
 @Component({
@@ -23,13 +23,24 @@ import type {AllergenDto} from '@core/models/dto/allergen.dto';
                 <span class="font-medium text-gray-900">{{ allergen.name }}</span>
               </td>
               <td class="px-6 py-4 text-right">
-                <button
-                  (click)="delete.emit(allergen)"
-                  class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50
-            rounded-lg transition-colors cursor-pointer" title="Delete allergen"
-                >
-                  <fa-icon [icon]="icons.trash" class="text-sm"></fa-icon>
-                </button>
+                @if (canModify(allergen)) {
+                  <button
+                    (click)="edit.emit(allergen.id)"
+                    class="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50
+                    rounded-lg transition-colors cursor-pointer" title="Edit allergen"
+                  >
+                    <fa-icon [icon]="icons.pen" class="text-sm"></fa-icon>
+                  </button>
+                }
+                @if (canModify(allergen)) {
+                  <button
+                    (click)="delete.emit(allergen)"
+                    class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50
+                    rounded-lg transition-colors cursor-pointer" title="Delete allergen"
+                  >
+                    <fa-icon [icon]="icons.trash" class="text-sm"></fa-icon>
+                  </button>
+                }
               </td>
             </tr>
           }
@@ -41,9 +52,19 @@ import type {AllergenDto} from '@core/models/dto/allergen.dto';
 })
 export class AllergensManagementTableComponent {
   readonly allergens = input.required<readonly AllergenDto[]>();
+  readonly currentUserId = input<number | null>(null);
+  readonly isAdmin = input(false);
   readonly delete = output<AllergenDto>();
+  readonly edit = output<number>();
 
   protected readonly icons = {
-    trash: faTrash
+    trash: faTrash,
+    pen: faPen
   };
+
+  canModify(allergen: AllergenDto): boolean {
+    if (this.isAdmin()) return true;
+    const userId = this.currentUserId();
+    return userId != null && allergen.author?.id === userId;
+  }
 }

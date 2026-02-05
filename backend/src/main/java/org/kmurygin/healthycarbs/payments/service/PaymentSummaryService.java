@@ -1,6 +1,6 @@
 package org.kmurygin.healthycarbs.payments.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.payments.dto.PaymentSummaryDTO;
 import org.kmurygin.healthycarbs.payments.mapper.PaymentSummaryMapper;
 import org.kmurygin.healthycarbs.payments.repository.PaymentRepository;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class PaymentSummaryService {
     private final PaymentRepository paymentRepository;

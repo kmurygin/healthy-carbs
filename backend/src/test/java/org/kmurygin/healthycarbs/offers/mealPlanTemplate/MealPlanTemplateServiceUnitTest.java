@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kmurygin.healthycarbs.email.EmailService;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.service.MealPlanService;
 import org.kmurygin.healthycarbs.offers.offer.OfferService;
@@ -41,6 +43,12 @@ class MealPlanTemplateServiceUnitTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private EmailService emailService;
+
+    @Mock
+    private org.thymeleaf.spring6.SpringTemplateEngine templateEngine;
+
     private MealPlanTemplateService mealPlanTemplateService;
 
     private User authorUser;
@@ -54,7 +62,9 @@ class MealPlanTemplateServiceUnitTest {
                 mealPlanTemplateRepository,
                 mealPlanService,
                 offerService,
-                userService
+                userService,
+                emailService,
+                templateEngine
         );
 
         authorUser = UserTestUtils.createTestUser(1L, "author", Role.DIETITIAN);
@@ -211,8 +221,8 @@ class MealPlanTemplateServiceUnitTest {
         }
 
         @Test
-        @DisplayName("update_whenNotAuthorOrAdmin_shouldThrowSecurityException")
-        void update_whenNotAuthorOrAdmin_shouldThrowSecurityException() {
+        @DisplayName("update_whenNotAuthorOrAdmin_shouldThrowForbiddenException")
+        void update_whenNotAuthorOrAdmin_shouldThrowForbiddenException() {
             MealPlanTemplate updatedData = MealPlanTemplate.builder()
                     .name("Unauthorized Update")
                     .build();
@@ -221,7 +231,7 @@ class MealPlanTemplateServiceUnitTest {
             when(userService.getCurrentUser()).thenReturn(otherUser);
 
             assertThatThrownBy(() -> mealPlanTemplateService.update(1L, updatedData))
-                    .isInstanceOf(SecurityException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("not authorized");
         }
 
@@ -267,13 +277,13 @@ class MealPlanTemplateServiceUnitTest {
         }
 
         @Test
-        @DisplayName("deleteById_whenNotAuthorOrAdmin_shouldThrowSecurityException")
-        void deleteById_whenNotAuthorOrAdmin_shouldThrowSecurityException() {
+        @DisplayName("deleteById_whenNotAuthorOrAdmin_shouldThrowForbiddenException")
+        void deleteById_whenNotAuthorOrAdmin_shouldThrowForbiddenException() {
             when(mealPlanTemplateRepository.findById(1L)).thenReturn(Optional.of(testTemplate));
             when(userService.getCurrentUser()).thenReturn(otherUser);
 
             assertThatThrownBy(() -> mealPlanTemplateService.deleteById(1L))
-                    .isInstanceOf(SecurityException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("not authorized");
         }
 

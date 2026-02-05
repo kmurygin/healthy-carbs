@@ -29,11 +29,11 @@ export class KeyFeaturesComponent {
       imageUrl: 'assets/images/food_1.jpg',
       imageAlt: 'Personalized Meal Plans',
       bulletPoints: [
-        'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-        'Vestibulum auctor dapibus neque.',
-        'Nunc dignissim risus id metus.',
-        'Cras ornare tristique elit.',
-        'Vivamus vestibulum ntulla nec ante.'
+        'AI-powered algorithm generates balanced 7-day meal plans automatically.',
+        'Supports vegan, vegetarian, and standard diet types.',
+        'Accounts for your calorie targets, macros, and allergen restrictions.',
+        'Dietitians can also create custom plans manually for their clients.',
+        'Download your meal plan as a PDF for easy offline access.'
       ]
     },
     {
@@ -43,11 +43,11 @@ export class KeyFeaturesComponent {
       imageUrl: 'assets/images/food_2.jpg',
       imageAlt: 'Recipe Library',
       bulletPoints: [
-        'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-        'Aliquam tincidunt mauris eu risus.',
-        'Vestibulum auctor dapibus neque.',
-        'Cras ornare tristique elit.',
-        'Vivamus vestibulum ntulla nec ante.'
+        'Browse a growing library of healthy, carb-conscious recipes.',
+        'Filter by diet type, allergens, meal category, and more.',
+        'Each recipe includes full nutritional breakdown per serving.',
+        'Recipes are curated and managed by professional dietitians.',
+        'Automatic shopping list generation from your weekly meal plan.'
       ]
     },
     {
@@ -57,11 +57,11 @@ export class KeyFeaturesComponent {
       imageUrl: 'assets/images/food_3.jpg',
       imageAlt: 'Progress Tracking',
       bulletPoints: [
-        'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-        'Aliquam tincidunt mauris eu risus.',
-        'Vestibulum auctor dapibus neque.',
-        'Nunc dignissim risus id metus.',
-        'Cras ornare tristique elit.',
+        'Log your weight and body measurements over time.',
+        'Visualize your progress with interactive charts and graphs.',
+        'BMI calculation with automatic health category classification.',
+        'Set dietary profiles to keep your goals on track.',
+        'Your dietitian can monitor your measurements and adjust plans accordingly.'
       ]
     }
   ];

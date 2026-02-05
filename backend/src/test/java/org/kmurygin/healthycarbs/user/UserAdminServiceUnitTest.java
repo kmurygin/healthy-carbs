@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
@@ -130,29 +131,29 @@ class UserAdminServiceUnitTest {
         }
 
         @Test
-        @DisplayName("changeUserRole_whenSelfChange_shouldThrowIllegalArgument")
-        void changeUserRole_whenSelfChange_shouldThrowIllegalArgument() {
+        @DisplayName("changeUserRole_whenSelfChange_shouldThrowForbiddenException")
+        void changeUserRole_whenSelfChange_shouldThrowForbiddenException() {
             assertThatThrownBy(() -> userAdminService.changeUserRole(1L, Role.USER, adminUser))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("cannot change your own role");
         }
 
         @Test
-        @DisplayName("changeUserRole_whenAssigningAdmin_shouldThrowIllegalArgument")
-        void changeUserRole_whenAssigningAdmin_shouldThrowIllegalArgument() {
+        @DisplayName("changeUserRole_whenAssigningAdmin_shouldThrowForbiddenException")
+        void changeUserRole_whenAssigningAdmin_shouldThrowForbiddenException() {
             assertThatThrownBy(() -> userAdminService.changeUserRole(3L, Role.ADMIN, adminUser))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("Cannot assign ADMIN role");
         }
 
         @Test
-        @DisplayName("changeUserRole_whenTargetIsAdmin_shouldThrowIllegalArgument")
-        void changeUserRole_whenTargetIsAdmin_shouldThrowIllegalArgument() {
+        @DisplayName("changeUserRole_whenTargetIsAdmin_shouldThrowForbiddenException")
+        void changeUserRole_whenTargetIsAdmin_shouldThrowForbiddenException() {
             User anotherAdmin = createTestUser(5L, "admin2", Role.ADMIN);
             when(userRepository.findById(5L)).thenReturn(Optional.of(anotherAdmin));
 
             assertThatThrownBy(() -> userAdminService.changeUserRole(5L, Role.USER, adminUser))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("Cannot change role of an admin");
         }
 
@@ -203,10 +204,10 @@ class UserAdminServiceUnitTest {
         }
 
         @Test
-        @DisplayName("toggleUserActiveStatus_whenSelfToggle_shouldThrowIllegalArgument")
-        void toggleUserActiveStatus_whenSelfToggle_shouldThrowIllegalArgument() {
+        @DisplayName("toggleUserActiveStatus_whenSelfToggle_shouldThrowForbiddenException")
+        void toggleUserActiveStatus_whenSelfToggle_shouldThrowForbiddenException() {
             assertThatThrownBy(() -> userAdminService.toggleUserActiveStatus(1L, adminUser))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("cannot deactivate your own account");
         }
 

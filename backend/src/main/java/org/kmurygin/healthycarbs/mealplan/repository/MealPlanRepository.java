@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MealPlanRepository extends JpaRepository<MealPlan, Long> {
-    List<MealPlan> findByUser(User user);
+    List<MealPlan> findByUserOrderByCreatedAtAsc(User user);
 
     Optional<MealPlan> findByIdAndUser(Long id, User user);
 

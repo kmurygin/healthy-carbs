@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.storage.StorageProvider;
 import org.kmurygin.healthycarbs.user.model.Role;
@@ -96,7 +97,7 @@ class UserAdminServiceIntegrationTest {
         @DisplayName("changeUserRole_changingOwnRole_shouldThrow")
         void changeUserRole_changingOwnRole_shouldThrow() {
             assertThatThrownBy(() -> userAdminService.changeUserRole(adminUser.getId(), Role.USER, adminUser))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("cannot change your own role");
         }
     }
@@ -138,7 +139,7 @@ class UserAdminServiceIntegrationTest {
         @DisplayName("toggleUserActiveStatus_togglingOwnStatus_shouldThrow")
         void toggleUserActiveStatus_togglingOwnStatus_shouldThrow() {
             assertThatThrownBy(() -> userAdminService.toggleUserActiveStatus(adminUser.getId(), adminUser))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("cannot deactivate your own account");
         }
     }

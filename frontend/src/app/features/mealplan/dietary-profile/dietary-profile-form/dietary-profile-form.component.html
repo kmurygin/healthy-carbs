@@ -58,7 +58,7 @@
           <p class="mt-1 text-sm text-gray-600"></p>
 
           <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-            @for (field of preferenceFields; track field.key) {
+            @for (field of preferenceFields(); track field.key) {
               <div [class.md:col-span-2]="field.key === 'activityLevel'">
 
                 @if (field.controlType === 'input') {

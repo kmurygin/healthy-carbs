@@ -39,12 +39,9 @@ export class OffersComponent {
   });
 
   readonly offerCardClasses = computed(() => {
-    const baseClasses = `
-      bg-white rounded-xl overflow-hidden flex flex-col
-      h-full transition-all duration-300 ease-in-out shadow-md
-    `;
+    const baseClasses = 'flex flex-col h-full transition-all duration-300 ease-in-out';
     if (this.pendingOfferId() === null) {
-      return baseClasses + " hover:scale-105 hover:shadow-xl";
+      return baseClasses + ' hover:scale-[1.02] hover:shadow-lg';
     }
     return baseClasses;
   });

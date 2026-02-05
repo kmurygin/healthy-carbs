@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.util;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -18,4 +19,17 @@ public class PaginatedResponse<T> {
     private boolean first;
     private boolean last;
     private boolean empty;
+
+    public static <T> PaginatedResponse<T> from(Page<T> page) {
+        return new PaginatedResponse<>(
+                page.getContent(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.getSize(),
+                page.getNumber(),
+                page.isFirst(),
+                page.isLast(),
+                page.isEmpty()
+        );
+    }
 }

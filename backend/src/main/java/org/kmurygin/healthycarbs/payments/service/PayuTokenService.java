@@ -45,7 +45,9 @@ public class PayuTokenService {
                 .bodyToMono(AccessTokenResponse.class)
                 .block();
 
-        assert res != null;
+        if (res == null) {
+            throw new IllegalStateException("PayU token response was null");
+        }
         String t = res.accessToken();
         authToken.set(t);
         tokenExpiry = Instant.now().plusSeconds(res.expiresIn());

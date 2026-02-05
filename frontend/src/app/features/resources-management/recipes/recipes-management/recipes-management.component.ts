@@ -16,9 +16,10 @@ import type {RecipeDto} from '@core/models/dto/recipe.dto';
 import type {IngredientDto} from '@core/models/dto/ingredient.dto';
 import type {Page} from '@core/models/page.model';
 import type {RecipeSearchParams} from '@core/models/recipe-search.params';
-import {DietType} from '@core/models/enum/diet-type.enum';
 import {MealType} from '@core/models/enum/meal-type.enum';
-import type {Option, RecipeFilters} from '../../../recipes-list/recipes-list.types';
+import {DietTypeService} from '@core/services/diet-type/diet-type.service';
+import type {RecipeFilters} from '../../../recipes-list/recipes-list.types';
+import {RECIPE_SORT_OPTIONS_WITH_DEFAULT} from '@shared/constants/recipe-sort-options';
 import {
   RecipesManagementMobileListComponent
 } from "@features/resources-management/recipes/recipes-management-mobile-list/recipes-management-mobile-list.component";
@@ -49,24 +50,19 @@ const INITIAL_PAGE: Page<RecipeDto> = {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecipesManagementComponent extends AbstractManagementComponent<RecipeDto> {
-  readonly dietTypes = signal(Object.values(DietType));
   readonly mealTypes = signal(Object.values(MealType));
-
-  readonly sortOptions: Option[] = [
-    {value: '', label: 'Default'},
-    {value: 'name,asc', label: 'Name (A-Z)'},
-    {value: 'name,desc', label: 'Name (Z-A)'},
-    {value: 'calories,asc', label: 'Calories (Low to High)'},
-    {value: 'calories,desc', label: 'Calories (High to Low)'},
-  ];
-
+  readonly sortOptions = RECIPE_SORT_OPTIONS_WITH_DEFAULT;
   protected readonly icons = {
     spinner: faSpinner,
     plus: faPlus,
     utensils: faUtensils,
     warn: faExclamationCircle
   };
-
+  private readonly dietTypeService = inject(DietTypeService);
+  readonly dietTypes = toSignal(
+    this.dietTypeService.getAll().pipe(map(types => types.map(t => t.name))),
+    {initialValue: [] as string[]}
+  );
   private readonly recipeService = inject(RecipeService);
   private readonly ingredientService = inject(IngredientService);
   readonly cachedIngredients = toSignal(
