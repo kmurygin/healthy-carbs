@@ -1,4 +1,6 @@
 import {type ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
 
 import {DietitianListComponent} from './dietitian-list.component';
 
@@ -8,7 +10,11 @@ describe('DietitianListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DietitianListComponent]
+      imports: [DietitianListComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
     })
       .compileComponents();
 
