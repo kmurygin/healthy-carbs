@@ -2,8 +2,7 @@ package org.kmurygin.healthycarbs.email;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -11,10 +10,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
     private final JavaMailSender javaMailSender;
 
     @Value("${spring.mail.username}")
@@ -40,10 +39,9 @@ public class EmailServiceImpl implements EmailService {
             helper.setText(details.getMsgBody(), true);
 
             javaMailSender.send(mimeMessage);
-            logger.info("Email successfully sent to: {}", details.getRecipient());
 
         } catch (MessagingException e) {
-            logger.error(
+            log.error(
                     "Error occurred while sending email to: {}. Exception: {}",
                     details.getRecipient(),
                     e.getMessage(),
