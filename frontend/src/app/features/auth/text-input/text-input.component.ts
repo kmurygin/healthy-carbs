@@ -28,7 +28,7 @@ import {NgClass} from "@angular/common";
           'border-red-600 focus:ring-red-500 focus:border-red-500': hasError
         }"
         [attr.aria-invalid]="hasError"
-        [autocapitalize]="autocapitalize()"
+        [attr.autocapitalize]="autocapitalize()"
       />
 
       @if (hasError) {
