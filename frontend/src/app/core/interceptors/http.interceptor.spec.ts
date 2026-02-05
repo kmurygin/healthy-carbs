@@ -19,6 +19,8 @@ describe('httpInterceptor', () => {
   const apiUrl = environment.apiUrl;
 
   beforeEach(() => {
+    vi.useFakeTimers();
+
     authServiceMock = {
       isLoggedIn: signal(true),
       isTokenExpired: vi.fn().mockReturnValue(false),
@@ -45,6 +47,7 @@ describe('httpInterceptor', () => {
 
   afterEach(() => {
     httpMock.verify();
+    vi.useRealTimers();
   });
 
   it('httpInterceptor_whenApiCallAndLoggedIn_shouldAttachAuthorizationHeader', () => {
@@ -99,6 +102,7 @@ describe('httpInterceptor', () => {
 
     // retry(2) means 3 total attempts
     for (let i = 0; i < 2; i++) {
+      vi.advanceTimersByTime(500);
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
         {message: 'Unauthorized'},
@@ -118,19 +122,12 @@ describe('httpInterceptor', () => {
       },
     });
 
+    // POST requests are not retried
     const req = httpMock.expectOne(loginUrl);
     req.flush(
       {message: 'Bad credentials'},
       {status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized'}
     );
-
-    for (let i = 0; i < 2; i++) {
-      const retryReq = httpMock.expectOne(loginUrl);
-      retryReq.flush(
-        {message: 'Bad credentials'},
-        {status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized'}
-      );
-    }
 
     expect(authServiceMock.logout).not.toHaveBeenCalled();
   });
@@ -149,6 +146,7 @@ describe('httpInterceptor', () => {
     );
 
     for (let i = 0; i < 2; i++) {
+      vi.advanceTimersByTime(500);
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
         {message: ''},
@@ -170,6 +168,7 @@ describe('httpInterceptor', () => {
     );
 
     for (let i = 0; i < 2; i++) {
+      vi.advanceTimersByTime(500);
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
         {message: 'Not found'},
@@ -195,6 +194,7 @@ describe('httpInterceptor', () => {
     );
 
     for (let i = 0; i < 2; i++) {
+      vi.advanceTimersByTime(500);
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
         {message: 'Validation failed', fieldErrors: {email: 'Invalid email'}},
@@ -217,6 +217,7 @@ describe('httpInterceptor', () => {
     );
 
     for (let i = 0; i < 2; i++) {
+      vi.advanceTimersByTime(500);
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
         {message: 'Error occurred', details: ['Detail A']},
@@ -239,6 +240,7 @@ describe('httpInterceptor', () => {
     );
 
     for (let i = 0; i < 2; i++) {
+      vi.advanceTimersByTime(500);
       const retryReq = httpMock.expectOne(`${apiUrl}/test`);
       retryReq.flush(
         {message: ''},

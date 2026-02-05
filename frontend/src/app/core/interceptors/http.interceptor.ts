@@ -1,8 +1,7 @@
-import type {HttpErrorResponse, HttpInterceptorFn} from '@angular/common/http';
-import {HttpStatusCode} from '@angular/common/http';
+import {HttpErrorResponse, type HttpInterceptorFn, HttpStatusCode} from '@angular/common/http';
 import {inject} from '@angular/core';
 import type {Observable} from 'rxjs';
-import {catchError, from, retry, switchMap, throwError} from 'rxjs';
+import {catchError, from, retry, switchMap, throwError, timer} from 'rxjs';
 import {AuthService} from '../services/auth/auth.service';
 import {Router} from '@angular/router';
 import type {ErrorResponse} from '../models/error-response.model';
@@ -38,11 +37,19 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
     });
   }
 
-  return next(req).pipe(
-    retry(2),
-    catchError((error: unknown) =>
-      handleError(error as HttpErrorResponse, authService, router)
-    )
+  const response$ = next(req);
+
+  const safeResponse$ = req.method === 'GET'
+    ? response$.pipe(retry({count: 2, delay: () => timer(500)}))
+    : response$;
+
+  return safeResponse$.pipe(
+    catchError((error: unknown) => {
+      if (error instanceof HttpErrorResponse) {
+        return handleError(error, authService, router);
+      }
+      return throwError(() => error instanceof Error ? error : new Error('An unknown error occurred'));
+    })
   );
 };
 
@@ -51,12 +58,12 @@ const handleError = (
   authService: AuthService,
   router: Router
 ): Observable<never> => {
-  const errorResponse = error.error as ErrorResponse;
+  const errorResponse = error.error as ErrorResponse | null;
   let errorMessage = 'An unknown error occurred';
 
-  errorMessage = errorResponse.message ?? errorMessage;
+  errorMessage = errorResponse?.message ?? errorMessage;
 
-  if (errorResponse.fieldErrors && Object.keys(errorResponse.fieldErrors).length > 0) {
+  if (errorResponse?.fieldErrors && Object.keys(errorResponse.fieldErrors).length > 0) {
     errorMessage = '';
     const fields = Object.entries(errorResponse.fieldErrors)
       .map(([field, msg]) => `${field}: \n ${msg}`)
@@ -64,11 +71,11 @@ const handleError = (
     errorMessage += fields;
   }
 
-  if (errorResponse.details?.length) {
+  if (errorResponse?.details?.length) {
     errorMessage += ` | Details: ${errorResponse.details.join(', ')}`;
   }
 
-  if (errorResponse.traceId) {
+  if (errorResponse?.traceId) {
     console.warn(`[HTTP ERROR] Error traceId: ${errorResponse.traceId}`);
   }
 
