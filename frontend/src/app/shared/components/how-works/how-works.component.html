@@ -1,48 +1,59 @@
-<div class="how-it-works py-16 bg-white">
+<section class="bg-white py-20">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-    <h2 class="mb-12 text-center text-emerald-700 text-3xl font-bold md:text-4xl">
-      How does our meal plan generation work?
-    </h2>
+    <div class="text-center mb-14">
+      <span
+        class="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-700">
+        How It Works
+      </span>
+      <h2 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+        Three steps to a <span class="text-emerald-600">healthier you</span>
+      </h2>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+        Getting started is easy. Set up your profile, let our algorithm work its magic, and start eating better today.
+      </p>
+    </div>
 
-    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-      @for (step of steps; track step; let i = $index) {
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      @for (step of steps; track step.label; let i = $index) {
         <div
-          class="animate-fadeIn rounded-lg bg-gray-50 p-6 shadow transition
-                 duration-300 hover:scale-105 hover:shadow-lg"
+          class="group relative rounded-2xl bg-gray-50 p-6 ring-1 ring-gray-100
+                 transition-all duration-300 hover:shadow-lg hover:ring-emerald-200"
         >
-          <div
-            class="mx-auto mb-4 flex h-12 w-12 items-center justify-center
-                   rounded-full bg-emerald-600 text-lg font-semibold text-white"
-          >
-            {{ i + 1 }}
+          <div class="mb-5 flex items-center gap-3">
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-xl
+                     bg-emerald-600 text-sm font-bold text-white"
+            >
+              {{ i + 1 }}
+            </div>
+            <i [class]="step.icon + ' text-xl text-emerald-600'"></i>
           </div>
 
-          <h3 class="mb-2 text-center text-2xl font-medium text-gray-800">
+          <h3 class="text-lg font-bold text-gray-900">
             {{ step.label }}
           </h3>
 
-          <h4 class="mb-4 text-center text-xl font-medium text-gray-700">
+          <p class="mt-1 text-sm font-medium text-emerald-600">
             {{ step.title }}
-          </h4>
+          </p>
 
           <img
             [alt]="step.imageAlt"
             [ngSrc]="step.imageUrl"
             [title]="step.imageAlt"
-            class="mb-4 w-full h-40 rounded-lg object-cover shadow"
+            class="mt-4 w-full h-40 rounded-xl object-cover"
             height="200"
             ngOptimizedImage
             width="400"
           />
 
-          <p class="text-m text-gray-600">
+          <p class="mt-4 text-sm leading-6 text-gray-600">
             {{ step.description }}
           </p>
-
         </div>
       }
-
     </div>
+
   </div>
-</div>
+</section>
