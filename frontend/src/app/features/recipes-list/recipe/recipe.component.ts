@@ -95,6 +95,17 @@ export class RecipeComponent {
       .map(line => line.trim().replace(/^\d+\.\s*/, ''))
       .filter(line => line.length > 0);
   });
+  readonly allergens = computed(() => {
+    const ingredients = this.recipe()?.ingredients ?? [];
+    const seen = new Set<number>();
+    return ingredients
+      .flatMap(ri => ri.ingredient.allergens ?? [])
+      .filter(a => {
+        if (seen.has(a.id)) return false;
+        seen.add(a.id);
+        return true;
+      });
+  });
   readonly errorMessage = computed(() => this.state().error);
   readonly isLoading = computed(() => this.state().loading);
   private readonly idSignal = toSignal(
