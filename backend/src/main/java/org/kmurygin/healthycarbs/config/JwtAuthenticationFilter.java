@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -70,9 +71,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void authenticateIfValid(HttpServletRequest request, String jwt, String userEmail) {
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-        if (jwtService.isTokenValid(jwt, userDetails)) {
+        if (jwtService.isTokenValid(jwt, userDetails) && isAccountActive(userDetails)) {
             setSecurityContext(request, userDetails);
         }
+    }
+
+    private boolean isAccountActive(UserDetails userDetails) {
+        if (userDetails instanceof User user) {
+            return Boolean.TRUE.equals(user.getIsActive());
+        }
+        return true;
     }
 
     private void setSecurityContext(HttpServletRequest request, UserDetails userDetails) {
