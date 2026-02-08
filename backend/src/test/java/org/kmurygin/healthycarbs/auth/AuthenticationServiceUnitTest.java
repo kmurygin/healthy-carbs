@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.Optional;
 
@@ -56,6 +57,9 @@ class AuthenticationServiceUnitTest {
     @Mock
     private EmailService emailService;
 
+    @Mock
+    private SpringTemplateEngine templateEngine;
+
     private AuthenticationService authenticationService;
 
     private User testUser;
@@ -68,7 +72,8 @@ class AuthenticationServiceUnitTest {
                 jwtService,
                 authenticationManager,
                 userService,
-                emailService);
+                emailService,
+                templateEngine);
 
         testUser = UserTestUtils.createTestUser(1L, "testuser");
     }

@@ -21,6 +21,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -35,6 +37,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final EmailService emailService;
+    private final SpringTemplateEngine templateEngine;
 
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -56,10 +59,14 @@ public class AuthenticationService {
 
         userService.save(user);
 
+        Context context = new Context();
+        context.setVariable("username", user.getUsername());
+        String htmlContent = templateEngine.process("registration", context);
+
         emailService.sendMail(new EmailDetails(
                 user.getEmail(),
-                String.format("Thank you for registering, %s!", user.getUsername()),
-                "HealthyCarbs registration"
+                htmlContent,
+                "Welcome to HealthyCarbs"
         ));
 
         String jwtToken = jwtService.generateToken(getExtraClaims(user), user);
