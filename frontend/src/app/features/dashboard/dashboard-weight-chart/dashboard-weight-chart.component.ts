@@ -67,14 +67,14 @@ import type {UserMeasurement} from "@core/services/user-measurement/user-measure
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardWeightChartComponent {
-  readonly weightHistory = input.required<UserMeasurement[]>();
+  readonly weightHistory = input<UserMeasurement[] | null>();
 
-  readonly hasData = computed(() => this.weightHistory().length > 0);
-  readonly isLoading = computed(() => this.weightHistory().length === 0);
+  readonly isLoading = computed(() => this.weightHistory() === undefined);
+  readonly hasData = computed(() => (this.weightHistory()?.length ?? 0) > 0);
   readonly chartData = computed(() => {
     if (!this.hasData()) return null;
 
-    const seriesData = this.weightHistory().map(
+    const seriesData = this.weightHistory()!.map(
       item => [new Date(item.date).getTime(), item.weight]
     );
 
