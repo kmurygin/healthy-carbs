@@ -91,7 +91,7 @@ export class RecipeComponent {
   readonly instructionSteps = computed<string[]>(() => {
     const trimmedInstructions = this.recipe()?.instructions.trim() ?? '';
     return trimmedInstructions
-      .split(/\r?\n+/)
+      .split(/\r?\n+|\s+(?=\d+\.\s)/)
       .map(line => line.trim().replace(/^\d+\.\s*/, ''))
       .filter(line => line.length > 0);
   });
