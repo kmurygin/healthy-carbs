@@ -173,13 +173,14 @@ class UserServiceIntegrationTest {
     class DeleteUserTests {
 
         @Test
-        @DisplayName("deleteUser_whenUserExists_shouldRemove")
-        void deleteUser_whenUserExists_shouldRemove() {
+        @DisplayName("deleteUser_whenUserExists_shouldDeactivate")
+        void deleteUser_whenUserExists_shouldDeactivate() {
             Long userId = savedUser.getId();
 
             userService.deleteUser(userId);
 
-            assertThat(userRepository.findById(userId)).isEmpty();
+            User deactivated = userRepository.findById(userId).orElseThrow();
+            assertThat(deactivated.getIsActive()).isFalse();
         }
 
         @Test
