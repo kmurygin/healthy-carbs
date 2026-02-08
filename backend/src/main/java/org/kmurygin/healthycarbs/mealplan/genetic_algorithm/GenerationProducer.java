@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Component
@@ -34,7 +33,7 @@ public class GenerationProducer {
         List<Genome> nextGen = selectElite(currentPopulation, config.getEliteCount(), config.getPopulationSize());
 
         while (nextGen.size() < config.getPopulationSize()) {
-            Genome child = createOffspring(currentPopulation, crossover, mutate, selection, config, dietType, fitness);
+            Genome child = createOffspring(currentPopulation, crossover, mutate, selection, dietType, fitness);
             nextGen.add(child);
         }
 
@@ -54,7 +53,6 @@ public class GenerationProducer {
             Crossover crossover,
             Mutate mutate,
             Selection selection,
-            GeneticAlgorithmConfig config,
             DietType dietType,
             Fitness fitness) {
 
@@ -64,10 +62,7 @@ public class GenerationProducer {
 
         logger.debug("Created child from parents with fitness: {} and {}", parent1.getFitness(), parent2.getFitness());
 
-        if (ThreadLocalRandom.current().nextDouble() < config.getMutationRate()) {
-            mutate.mutate(child, dietType);
-            logger.debug("Mutated child genome.");
-        }
+        mutate.mutate(child, dietType);
 
         return evaluateChild(child, fitness);
     }

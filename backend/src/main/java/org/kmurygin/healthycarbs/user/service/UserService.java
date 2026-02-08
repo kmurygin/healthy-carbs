@@ -16,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 import java.util.Set;
@@ -74,15 +73,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
-        String imageKey = user.getProfileImage() != null ? user.getProfileImage().getImageKey() : null;
-        userRepository.delete(user);
-
-        if (StringUtils.hasText(imageKey)) {
-            profileImageService.deleteProfileImageByKey(imageKey);
-        }
+        user.setIsActive(false);
+        userRepository.save(user);
     }
 
     @Transactional

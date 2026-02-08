@@ -207,29 +207,14 @@ class UserServiceUnitTest {
     class DeleteUserTests {
 
         @Test
-        @DisplayName("deleteUser_whenUserExists_shouldDelete")
-        void deleteUser_whenUserExists_shouldDelete() {
+        @DisplayName("deleteUser_whenUserExists_shouldDeactivate")
+        void deleteUser_whenUserExists_shouldDeactivate() {
             when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
             userService.deleteUser(1L);
 
-            verify(userRepository).delete(testUser);
-        }
-
-        @Test
-        @DisplayName("deleteUser_whenUserHasProfileImage_shouldDeleteImage")
-        void deleteUser_whenUserHasProfileImage_shouldDeleteImage() {
-            UserProfileImage profileImage = UserProfileImage.builder()
-                    .imageKey("profile-images/1/image.jpg")
-                    .build();
-            testUser.setProfileImage(profileImage);
-
-            when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-
-            userService.deleteUser(1L);
-
-            verify(userRepository).delete(testUser);
-            verify(profileImageService).deleteProfileImageByKey("profile-images/1/image.jpg");
+            assertThat(testUser.getIsActive()).isFalse();
+            verify(userRepository).save(testUser);
         }
 
         @Test

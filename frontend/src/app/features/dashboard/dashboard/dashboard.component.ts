@@ -27,7 +27,7 @@ import {DashboardNavGridComponent} from '../dashboard-nav-grid/dashboard-nav-gri
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div class="lg:col-span-2 flex flex-col gap-6">
             <app-dashboard-weight-chart
-              [weightHistory]="weightHistory() ?? []">
+              [weightHistory]="weightHistory()">
             </app-dashboard-weight-chart>
             <app-dashboard-nav-grid></app-dashboard-nav-grid>
           </div>
@@ -57,7 +57,5 @@ export class DashboardComponent {
     return Number((latest.weight - prev.weight).toFixed(1));
   });
   private readonly measurementService = inject(UserMeasurementService);
-  readonly weightHistory = toSignal(this.measurementService.getAllHistory(), {
-    initialValue: []
-  });
+  readonly weightHistory = toSignal(this.measurementService.getAllHistory());
 }

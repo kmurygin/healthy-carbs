@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.dietitian.collaboration;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.measurements.model.UserMeasurement;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CollaborationService {
@@ -60,7 +62,8 @@ public class CollaborationService {
                 .existsByDietitianIdAndClientIdAndEndedAtIsNull(dietitianId, clientId);
 
         if (alreadyExists) {
-            throw new ForbiddenException("Collaboration already exists");
+            log.info("Collaboration between dietitian {} and client {} already exists, skipping", dietitianId, clientId);
+            return;
         }
 
         Collaboration saved = collaborationRepository.save(

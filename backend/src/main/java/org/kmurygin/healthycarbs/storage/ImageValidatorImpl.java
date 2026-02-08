@@ -56,7 +56,7 @@ public class ImageValidatorImpl implements ImageValidator {
     @Override
     public String extensionForContentType(String contentType) {
         if (contentType == null) {
-            throw new StorageValidationException("Invalid content type: " + contentType);
+            throw new StorageValidationException("Content type must not be null");
         }
         String preferredExtension = SupportedImageType.fromMimeType(contentType)
                 .map(SupportedImageType::getExtension)
