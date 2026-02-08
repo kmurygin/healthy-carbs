@@ -74,7 +74,7 @@ export class DashboardWeightChartComponent {
   readonly chartData = computed(() => {
     if (!this.hasData()) return null;
 
-    const seriesData = this.weightHistory()!.map(
+    const seriesData = (this.weightHistory() ?? []).map(
       item => [new Date(item.date).getTime(), item.weight]
     );
 
