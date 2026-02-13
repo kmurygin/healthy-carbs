@@ -16,11 +16,13 @@ public interface BlogMapper {
     BlogPostDTO toPostDTO(BlogPost blogPost);
 
     @Mapping(target = "image", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     BlogPost toPostEntity(BlogPostDTO blogPostDTO);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "comments", ignore = true)
     @Mapping(target = "image", ignore = true)
     BlogPost toPostEntity(CreateBlogPostRequest request);

@@ -11,5 +11,6 @@ public interface MealPlanDayMapper {
     @Mapping(target = "date", source = "date")
     MealPlanDayDTO toDto(MealPlanDay mealPlanDay);
 
+    @Mapping(target = "mealPlan", ignore = true)
     MealPlanDay toEntity(MealPlanDayDTO mealPlanDayDTO);
 }

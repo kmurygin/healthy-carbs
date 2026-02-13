@@ -16,6 +16,7 @@ public interface PaymentSummaryMapper {
     @Mapping(target = "currency", source = "order.currency")
     @Mapping(target = "status", source = "status")
     @Mapping(target = "createdAt", source = "order.createdAt")
+    @Mapping(target = "title", source = "order.description")
     PaymentSummaryDTO toDTO(Payment entity);
 
     List<PaymentSummaryDTO> toListDTO(List<Payment> entities);

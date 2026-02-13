@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface MealPlanTemplateMapper {
     @Mapping(target = "days", source = "dayIds", qualifiedByName = "mapIdsToMealPlanDays")
+    @Mapping(target = "author", ignore = true)
     MealPlanTemplate toEntity(
             MealPlanTemplateDTO dto,
             @Context MealPlanDayRepository mealPlanDayRepository
@@ -23,6 +24,7 @@ public interface MealPlanTemplateMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "author", ignore = true)
     @Mapping(target = "days", source = "dayIds", qualifiedByName = "mapIdsToMealPlanDays")
     void updateFromDTO(
             @MappingTarget MealPlanTemplate target,

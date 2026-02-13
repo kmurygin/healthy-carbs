@@ -19,6 +19,7 @@ public interface ShoppingListMapper {
 
     @Mapping(source = "ingredient.name", target = "name")
     @Mapping(source = "ingredient.unit", target = "unit")
+    @Mapping(target = "isBought", ignore = true)
     ShoppingListItemDTO shoppingListItemToDto(ShoppingListItem shoppingListItem);
 
     @AfterMapping
