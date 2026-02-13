@@ -70,6 +70,7 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("getUserById_whenUserExists_shouldReturnUserDTO")
         void getUserById_whenUserExists_shouldReturnUserDTO() {
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(userService.getUserById(1L)).thenReturn(Optional.of(testUser));
             when(userMapper.toDTO(testUser)).thenReturn(testUserDTO);
 
@@ -83,6 +84,8 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("getUserById_whenUserNotExists_shouldReturnNotFound")
         void getUserById_whenUserNotExists_shouldReturnNotFound() {
+            User admin = UserTestUtils.createAdmin();
+            when(userService.getCurrentUser()).thenReturn(admin);
             when(userService.getUserById(999L)).thenReturn(Optional.empty());
 
             ResponseEntity<?> response = userController.getUserById(999L);
@@ -98,6 +101,7 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("getUserByUsername_whenUserExists_shouldReturnUserDTO")
         void getUserByUsername_whenUserExists_shouldReturnUserDTO() {
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(userService.getUserByUsername("userUsername")).thenReturn(Optional.of(testUser));
             when(userMapper.toDTO(testUser)).thenReturn(testUserDTO);
 
@@ -109,6 +113,8 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("getUserByUsername_whenUserNotExists_shouldReturnNotFound")
         void getUserByUsername_whenUserNotExists_shouldReturnNotFound() {
+            User admin = UserTestUtils.createAdmin();
+            when(userService.getCurrentUser()).thenReturn(admin);
             when(userService.getUserByUsername("unknown")).thenReturn(Optional.empty());
 
             ResponseEntity<?> response = userController.getUserByUsername("unknown");
@@ -151,6 +157,7 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("updateUser_whenValidRequest_shouldReturnOk")
         void updateUser_whenValidRequest_shouldReturnOk() {
+            when(userService.getCurrentUser()).thenReturn(testUser);
             UpdateUserRequest request = UpdateUserRequest.builder()
                     .firstName("Updated")
                     .lastName("Name")
@@ -175,6 +182,7 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("deleteUser_whenUserExists_shouldReturnNoContent")
         void deleteUser_whenUserExists_shouldReturnNoContent() {
+            when(userService.getCurrentUser()).thenReturn(testUser);
             doNothing().when(userService).deleteUser(1L);
 
             ResponseEntity<?> response = userController.deleteUser(1L);
