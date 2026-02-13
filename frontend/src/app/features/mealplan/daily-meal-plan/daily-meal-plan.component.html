@@ -132,9 +132,11 @@
                               <i class="fa-solid fa-list-check text-gray-400"></i>
                               Instructions
                             </h5>
-                            <p class="mt-2 text-base text-gray-700 whitespace-pre-line">
-                              {{ details?.instructions }}
-                            </p>
+                            <ol class="list-decimal marker:text-emerald-700 ms-5 space-y-1 mt-2">
+                              @for (step of parseInstructions(details?.instructions); track $index) {
+                                <li class="text-gray-700 leading-relaxed">{{ step }}</li>
+                              }
+                            </ol>
                           </div>
                         }
                       </div>

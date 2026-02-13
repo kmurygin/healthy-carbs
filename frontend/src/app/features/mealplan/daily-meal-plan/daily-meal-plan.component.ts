@@ -4,7 +4,7 @@ import {CommonModule} from '@angular/common';
 import type {MealPlanDayDto} from '@core/models/dto/mealplan-day.dto';
 import type {MealPlanRecipeDto} from '@core/models/dto/mealplan-recipe.dto';
 import type {RecipeDto} from '@core/models/dto/recipe.dto';
-import {getDietTagClasses} from "@shared/utils";
+import {getDietTagClasses, parseInstructionSteps} from "@shared/utils";
 
 type MealGroup = Readonly<{ mealType: string; items: readonly MealPlanRecipeDto[] }>;
 type NutritionalInformation = Readonly<{ calories: number; carbs: number; protein: number; fat: number }>;
@@ -23,6 +23,7 @@ export class DailyMealPlanComponent {
   readonly toggleRecipe = output<number>();
 
   readonly dietTagClasses = getDietTagClasses;
+  readonly parseInstructions = parseInstructionSteps;
 
   readonly groupedByMealType: Signal<readonly MealGroup[]> = computed(() => {
     const plan = this.dailyPlan();

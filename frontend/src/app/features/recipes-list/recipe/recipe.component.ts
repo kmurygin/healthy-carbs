@@ -6,7 +6,7 @@ import type {RecipeDto} from "@core/models/dto/recipe.dto";
 import {catchError, EMPTY, map, of} from 'rxjs';
 import {toSignal} from "@angular/core/rxjs-interop";
 import {ErrorMessageComponent} from "@shared/components/error-message/error-message.component";
-import {formatEnum, getDietTagClasses, getDietTagIconClasses, getMealTagClasses} from "@shared/utils";
+import {formatEnum, getDietTagClasses, getDietTagIconClasses, getMealTagClasses, parseInstructionSteps} from "@shared/utils";
 import type {MacroInfo} from "@features/recipes-list/recipes-list.types";
 
 interface RecipeState {
@@ -88,18 +88,14 @@ export class RecipeComponent {
   readonly dietIconClasses = computed(() => {
     return getDietTagIconClasses(this.recipe()?.dietType);
   });
-  readonly instructionSteps = computed<string[]>(() => {
-    const trimmedInstructions = this.recipe()?.instructions.trim() ?? '';
-    return trimmedInstructions
-      .split(/\r?\n+|\s+(?=\d+\.\s)/)
-      .map(line => line.trim().replace(/^\d+\.\s*/, ''))
-      .filter(line => line.length > 0);
-  });
+  readonly instructionSteps = computed<string[]>(() =>
+    parseInstructionSteps(this.recipe()?.instructions)
+  );
   readonly allergens = computed(() => {
     const ingredients = this.recipe()?.ingredients ?? [];
     const seen = new Set<number>();
     return ingredients
-      .flatMap(ri => ri.ingredient.allergens ?? [])
+      .flatMap(ri => ri.ingredient.allergens)
       .filter(a => {
         if (seen.has(a.id)) return false;
         seen.add(a.id);
