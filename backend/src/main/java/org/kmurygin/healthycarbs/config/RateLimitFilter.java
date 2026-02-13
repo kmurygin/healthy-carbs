@@ -10,12 +10,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import org.springframework.context.annotation.Profile;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
+@Profile("!test")
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private static final int MAX_AUTH_REQUESTS_PER_WINDOW = 10;
