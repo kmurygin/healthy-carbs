@@ -14,6 +14,8 @@ import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlanDay;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.repository.DietTypeRepository;
+import org.kmurygin.healthycarbs.dietitian.collaboration.Collaboration;
+import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.DietaryProfileRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeRepository;
@@ -33,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +68,8 @@ class MealPlanControllerIntegrationTest {
     private DietaryProfileRepository dietaryProfileRepository;
     @Autowired
     private DietTypeRepository dietTypeRepository;
+    @Autowired
+    private CollaborationRepository collaborationRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -146,6 +151,12 @@ class MealPlanControllerIntegrationTest {
         day.setMealPlan(testMealPlan);
         day.addRecipe(testRecipe);
         testMealPlan = mealPlanRepository.save(testMealPlan);
+
+        collaborationRepository.save(Collaboration.builder()
+                .dietitian(dietitianUser)
+                .client(clientUser)
+                .startedAt(OffsetDateTime.now())
+                .build());
 
         userToken = jwtService.generateToken(regularUser);
         dietitianToken = jwtService.generateToken(dietitianUser);

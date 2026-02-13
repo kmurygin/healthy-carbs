@@ -1,7 +1,9 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.exception.ForbiddenException;
@@ -51,6 +53,7 @@ public class MealPlanService {
     private final UserService userService;
     private final EmailService emailService;
     private final ShoppingListService shoppingListService;
+    private final CollaborationService collaborationService;
 
     public MealPlanService(
             GeneticAlgorithm geneticAlgorithm,
@@ -63,7 +66,8 @@ public class MealPlanService {
             ApplicationEventPublisher applicationEventPublisher,
             UserService userService,
             EmailService emailService,
-            ShoppingListService shoppingListService
+            ShoppingListService shoppingListService,
+            CollaborationService collaborationService
     ) {
         this.geneticAlgorithm = geneticAlgorithm;
         this.recipeService = recipeService;
@@ -76,6 +80,7 @@ public class MealPlanService {
         this.userService = userService;
         this.emailService = emailService;
         this.shoppingListService = shoppingListService;
+        this.collaborationService = collaborationService;
     }
 
     public MealPlan save(MealPlan mealPlan) {
@@ -101,6 +106,7 @@ public class MealPlanService {
     private List<MealPlanDay> generateWeeklyDays(DietaryProfile profile, LocalDate startOfWeek) {
         Fitness fitness = fitnessFactory.createCalorieFitness(profile);
         DietType dietType = profile.getDietType();
+        Hibernate.initialize(dietType);
 
         List<CompletableFuture<MealPlanDay>> futures = Arrays.stream(DayOfWeek.values())
                 .map(dayOfWeek -> CompletableFuture.supplyAsync(() -> {
@@ -148,9 +154,7 @@ public class MealPlanService {
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
 
         if (!Objects.equals(mealPlan.getUser().getId(), user.getId())) {
-            throw new ForbiddenException(
-                    "MealPlan with id %d is not owned by user %s".formatted(id, user.getUsername())
-            );
+            throw new ForbiddenException("You are not authorized to access this meal plan.");
         }
 
         return mealPlan;
@@ -163,6 +167,15 @@ public class MealPlanService {
                 ? userService.getUserById(request.clientId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.clientId().toString()))
                 : creator;
+
+        if (request.clientId() != null && !request.clientId().equals(creator.getId())) {
+            List<User> activeClients = collaborationService.getActiveClients(creator);
+            boolean hasCollaboration = activeClients.stream()
+                    .anyMatch(c -> c.getId().equals(request.clientId()));
+            if (!hasCollaboration) {
+                throw new ForbiddenException("You do not have an active collaboration with this client.");
+            }
+        }
 
         MealPlan mealPlan = new MealPlan();
         mealPlan.setUser(client);

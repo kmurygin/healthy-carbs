@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.exception.ForbiddenException;
@@ -63,6 +64,8 @@ class MealPlanServiceUnitTest {
     @Mock
     private ShoppingListService shoppingListService;
     @Mock
+    private CollaborationService collaborationService;
+    @Mock
     private Fitness fitness;
 
     private MealPlanService mealPlanService;
@@ -80,7 +83,8 @@ class MealPlanServiceUnitTest {
                 eventPublisher,
                 userService,
                 emailService,
-                shoppingListService
+                shoppingListService,
+                collaborationService
         );
     }
 
@@ -182,7 +186,9 @@ class MealPlanServiceUnitTest {
         when(mealPlanRepository.findById(10L)).thenReturn(Optional.of(plan));
 
         assertThatThrownBy(() -> mealPlanService.findById(10L))
-                .isInstanceOf(ForbiddenException.class);
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessageContaining("not authorized")
+                .hasMessageNotContaining("currentUser");
     }
 
     @Test
@@ -263,6 +269,7 @@ class MealPlanServiceUnitTest {
 
         when(authenticationService.getCurrentUser()).thenReturn(dietitian);
         when(userService.getUserById(2L)).thenReturn(Optional.of(client));
+        when(collaborationService.getActiveClients(dietitian)).thenReturn(List.of(client));
 
         Recipe recipe1 = Recipe.builder().id(10L).calories(100.0).carbs(10.0).protein(5.0).fat(2.0).build();
         when(recipeService.findById(10L)).thenReturn(recipe1);
@@ -285,8 +292,34 @@ class MealPlanServiceUnitTest {
         assertThat(result.getDays()).hasSize(1);
         assertThat(result.getDays().getFirst().getDate()).isEqualTo(start.plusDays(2));
 
+        verify(collaborationService).getActiveClients(dietitian);
         verify(emailService).sendMail(any(EmailDetails.class));
         verify(eventPublisher).publishEvent(any(MealPlanGeneratedEvent.class));
+    }
+
+    @Test
+    void createManualMealPlan_shouldThrowForbidden_whenNoActiveCollaboration() {
+        User dietitian = UserTestUtils.createTestUser(1L, "dietitian");
+        dietitian.setFirstName("Dietitian");
+        dietitian.setLastName("Test");
+        dietitian.setEmail("dietitian@test.com");
+
+        User client = UserTestUtils.createTestUser(2L, "client");
+        client.setEmail("client@test.com");
+
+        when(authenticationService.getCurrentUser()).thenReturn(dietitian);
+        when(userService.getUserById(2L)).thenReturn(Optional.of(client));
+        when(collaborationService.getActiveClients(dietitian)).thenReturn(List.of());
+
+        CreateMealPlanRequest request = new CreateMealPlanRequest(
+                2L,
+                null,
+                List.of(new ManualMealPlanDayDTO(0, List.of(10L)))
+        );
+
+        assertThatThrownBy(() -> mealPlanService.createManualMealPlan(request))
+                .isInstanceOf(ForbiddenException.class)
+                .hasMessageContaining("active collaboration");
     }
 
     @Test
