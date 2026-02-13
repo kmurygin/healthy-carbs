@@ -1,4 +1,4 @@
-import {computed, effect, inject, Injectable, signal} from '@angular/core';
+import {computed, effect, inject, Injectable, isDevMode, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {jwtDecode} from 'jwt-decode';
@@ -24,7 +24,9 @@ export class AuthService {
     try {
       return jwtDecode<JwtClaims>(jwtToken);
     } catch (e) {
-      console.error('Failed to decode JWT token:', e);
+      if (isDevMode()) {
+        console.error('Failed to decode JWT token:', e);
+      }
       return null;
     }
   });
@@ -40,6 +42,9 @@ export class AuthService {
       } else {
         localStorage.removeItem(LocalStorage.token);
       }
+      if (isDevMode()) {
+        console.debug('[Auth] Token updated, logged in:', !this.isTokenExpired());
+      }
     });
   }
 
@@ -52,10 +57,16 @@ export class AuthService {
   }
 
   register(payload: RegisterPayload) {
+    if (isDevMode()) {
+      console.debug('[Auth] Register attempt for:', payload.email);
+    }
     return this.httpClient.post<ApiResponse<AuthenticationResponse>>(ApiEndpoints.Auth.Register, payload).pipe(
       map(res => {
         if (!res.status) {
           throw new Error(res.message ?? 'Registration failed');
+        }
+        if (isDevMode()) {
+          console.debug('[Auth] Registration successful for:', payload.email);
         }
         return res;
       })
@@ -63,6 +74,9 @@ export class AuthService {
   }
 
   login(payload: LoginPayload) {
+    if (isDevMode()) {
+      console.debug('[Auth] Login attempt for:', payload.username);
+    }
     return this.httpClient.post<ApiResponse<AuthenticationResponse>>(ApiEndpoints.Auth.Login, payload).pipe(
       map(res => {
         if (!res.status || !res.data?.token) {
@@ -73,12 +87,19 @@ export class AuthService {
       tap(res => {
         if (res.data?.token) {
           this.token.set(res.data.token);
+          if (isDevMode()) {
+            const claims = this.claims();
+            console.debug('[Auth] Login successful, role:', claims?.role, 'expires:', claims?.exp ? new Date(claims.exp * 1000).toLocaleTimeString() : 'unknown');
+          }
         }
       })
     );
   }
 
   logout(): void {
+    if (isDevMode()) {
+      console.debug('[Auth] Logout, user:', this.user());
+    }
     this.token.set(null);
     this.router.navigate(['login'], {replaceUrl: true})
       .catch((err: unknown) => {

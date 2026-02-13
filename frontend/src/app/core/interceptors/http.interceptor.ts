@@ -1,5 +1,5 @@
 import {HttpErrorResponse, type HttpInterceptorFn, HttpStatusCode} from '@angular/common/http';
-import {inject} from '@angular/core';
+import {inject, isDevMode} from '@angular/core';
 import type {Observable} from 'rxjs';
 import {catchError, from, retry, switchMap, throwError, timer} from 'rxjs';
 import {AuthService} from '../services/auth/auth.service';
@@ -24,8 +24,15 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
 
   const isTokenAttach = isApiCall(req.url) && authService.isLoggedIn();
 
+  if (isDevMode()) {
+    console.debug(`[HTTP] ${req.method} ${req.url}`, isTokenAttach ? '(authenticated)' : '(anonymous)');
+  }
+
   if (isTokenAttach) {
     if (authService.isTokenExpired()) {
+      if (isDevMode()) {
+        console.warn('[HTTP] Token expired, forcing logout');
+      }
       authService.logout();
       return throwError(() => new Error('Session expired. Please log in again.'));
     }
@@ -40,7 +47,12 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   const response$ = next(req);
 
   const safeResponse$ = req.method === 'GET'
-    ? response$.pipe(retry({count: 2, delay: () => timer(500)}))
+    ? response$.pipe(retry({count: 2, delay: (error, retryCount) => {
+        if (isDevMode()) {
+          console.warn(`[HTTP] Retry ${retryCount}/2 for GET ${req.url}`, error);
+        }
+        return timer(500);
+      }}))
     : response$;
 
   return safeResponse$.pipe(
@@ -75,8 +87,17 @@ const handleError = (
     errorMessage += ` | Details: ${errorResponse.details.join(', ')}`;
   }
 
-  if (errorResponse?.traceId) {
-    console.warn(`[HTTP ERROR] Error traceId: ${errorResponse.traceId}`);
+  if (isDevMode()) {
+    console.group(`[HTTP ERROR] ${error.status} ${error.statusText} — ${error.url}`);
+    if (errorResponse?.traceId) {
+      console.warn('Trace ID:', errorResponse.traceId);
+    }
+    if (errorResponse?.fieldErrors) {
+      console.warn('Field errors:', errorResponse.fieldErrors);
+    }
+    if (errorResponse?.details?.length) {
+      console.warn('Details:', errorResponse.details);
+    }
   }
 
   switch (toHttpStatusCode(error.status)) {
@@ -103,8 +124,10 @@ const handleError = (
       break;
   }
 
-  console.log('[HTTP ERROR] errorMessage: ', errorMessage);
-  console.error('[HTTP ERROR]', error);
+  if (isDevMode()) {
+    console.error('Response body:', error.error);
+    console.groupEnd();
+  }
 
   return throwError(() => new Error(errorMessage));
 };
