@@ -38,6 +38,9 @@ public class ShoppingListService {
 
     @Transactional
     public void updateShoppingListItemStatus(Long mealPlanId, UpdateShoppingListItemDTO dto) {
+        mealPlanRepository.findByIdAndUser(mealPlanId, authenticationService.getCurrentUser())
+                .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", mealPlanId));
+
         ShoppingList shoppingList = shoppingListRepository.findByMealPlanIdWithItems(mealPlanId)
                 .orElseThrow(() -> new ResourceNotFoundException("ShoppingList", "mealPlanId", mealPlanId));
 

@@ -134,6 +134,8 @@ class ShoppingListServiceUnitTest {
             dto.setIngredientName("Chicken Breast");
             dto.setBought(true);
 
+            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(mealPlanRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testMealPlan));
             when(shoppingListRepository.findByMealPlanIdWithItems(1L)).thenReturn(Optional.of(testShoppingList));
             when(shoppingListRepository.save(any(ShoppingList.class))).thenReturn(testShoppingList);
 
@@ -150,6 +152,8 @@ class ShoppingListServiceUnitTest {
             dto.setIngredientName("Chicken Breast");
             dto.setBought(true);
 
+            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(mealPlanRepository.findByIdAndUser(999L, testUser)).thenReturn(Optional.of(testMealPlan));
             when(shoppingListRepository.findByMealPlanIdWithItems(999L)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> shoppingListService.updateShoppingListItemStatus(999L, dto))
@@ -164,6 +168,8 @@ class ShoppingListServiceUnitTest {
             dto.setIngredientName("Non-existent Ingredient");
             dto.setBought(true);
 
+            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(mealPlanRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testMealPlan));
             when(shoppingListRepository.findByMealPlanIdWithItems(1L)).thenReturn(Optional.of(testShoppingList));
 
             assertThatThrownBy(() -> shoppingListService.updateShoppingListItemStatus(1L, dto))
@@ -178,6 +184,8 @@ class ShoppingListServiceUnitTest {
             dto.setIngredientName("CHICKEN BREAST");
             dto.setBought(true);
 
+            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(mealPlanRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testMealPlan));
             when(shoppingListRepository.findByMealPlanIdWithItems(1L)).thenReturn(Optional.of(testShoppingList));
             when(shoppingListRepository.save(any(ShoppingList.class))).thenReturn(testShoppingList);
 
