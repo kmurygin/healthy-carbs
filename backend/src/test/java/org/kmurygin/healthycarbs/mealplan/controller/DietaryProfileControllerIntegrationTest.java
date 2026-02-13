@@ -63,10 +63,12 @@ class DietaryProfileControllerIntegrationTest {
     private StorageProvider storageProvider;
     private User userWithProfile;
     private User userWithoutProfile;
+    private User dietitianUser;
     private DietaryProfile testProfile;
     private DietType standardDietType;
     private String tokenWithProfile;
     private String tokenWithoutProfile;
+    private String dietitianToken;
 
     @BeforeEach
     void setUp() {
@@ -78,6 +80,9 @@ class DietaryProfileControllerIntegrationTest {
 
         userWithoutProfile = userRepository.save(
                 UserTestUtils.createUserForPersistence("user_without_profile", uniqueSuffix, Role.USER, passwordEncoder));
+
+        dietitianUser = userRepository.save(
+                UserTestUtils.createUserForPersistence("dietitian_profile", uniqueSuffix, Role.DIETITIAN, passwordEncoder));
 
         testProfile = dietaryProfileRepository.save(DietaryProfile.builder()
                 .user(userWithProfile)
@@ -96,6 +101,7 @@ class DietaryProfileControllerIntegrationTest {
 
         tokenWithProfile = jwtService.generateToken(userWithProfile);
         tokenWithoutProfile = jwtService.generateToken(userWithoutProfile);
+        dietitianToken = jwtService.generateToken(dietitianUser);
     }
 
     private DietaryProfilePayload createValidPayload() {
@@ -115,10 +121,10 @@ class DietaryProfileControllerIntegrationTest {
     class GetByIdTests {
 
         @Test
-        @DisplayName("getById_whenProfileExists_shouldReturnProfile")
-        void getById_whenProfileExists_shouldReturnProfile() throws Exception {
+        @DisplayName("getById_whenDietitianAndProfileExists_shouldReturnProfile")
+        void getById_whenDietitianAndProfileExists_shouldReturnProfile() throws Exception {
             mockMvc.perform(get(BASE_URL + "/{id}", testProfile.getId())
-                            .header("Authorization", "Bearer " + tokenWithProfile))
+                            .header("Authorization", "Bearer " + dietitianToken))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.id", is(testProfile.getId().intValue())))
                     .andExpect(jsonPath("$.data.weight", is(70.0)));
@@ -128,8 +134,16 @@ class DietaryProfileControllerIntegrationTest {
         @DisplayName("getById_whenProfileNotFound_shouldReturnNotFound")
         void getById_whenProfileNotFound_shouldReturnNotFound() throws Exception {
             mockMvc.perform(get(BASE_URL + "/{id}", 999999L)
-                            .header("Authorization", "Bearer " + tokenWithProfile))
+                            .header("Authorization", "Bearer " + dietitianToken))
                     .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("getById_whenRegularUser_shouldReturnForbidden")
+        void getById_whenRegularUser_shouldReturnForbidden() throws Exception {
+            mockMvc.perform(get(BASE_URL + "/{id}", testProfile.getId())
+                            .header("Authorization", "Bearer " + tokenWithProfile))
+                    .andExpect(status().isForbidden());
         }
     }
 

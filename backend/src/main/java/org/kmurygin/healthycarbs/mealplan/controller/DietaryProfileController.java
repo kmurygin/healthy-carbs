@@ -10,6 +10,7 @@ import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +26,7 @@ public class DietaryProfileController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<DietaryProfileDTO>> getById(@PathVariable Long id) {
         DietaryProfile dietaryProfile = dietaryProfileService.findById(id);
         return ApiResponses.success(dietaryProfileMapper.toDTO(dietaryProfile));
