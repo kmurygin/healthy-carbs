@@ -158,7 +158,7 @@ class PasswordRecoveryServiceUnitTest {
 
             assertThatThrownBy(() -> passwordRecoveryService.verifyOtp("nonexistent", "123456"))
                     .isInstanceOf(InvalidOtpException.class)
-                    .hasMessageContaining("Invalid request");
+                    .hasMessageContaining("Invalid or expired OTP");
         }
 
         @Test
@@ -169,7 +169,7 @@ class PasswordRecoveryServiceUnitTest {
 
             assertThatThrownBy(() -> passwordRecoveryService.verifyOtp("testuser", "123456"))
                     .isInstanceOf(InvalidOtpException.class)
-                    .hasMessageContaining("not been generated");
+                    .hasMessageContaining("Invalid or expired OTP");
         }
 
         @Test
@@ -188,7 +188,7 @@ class PasswordRecoveryServiceUnitTest {
 
             assertThatThrownBy(() -> passwordRecoveryService.verifyOtp("testuser", "wrongOtp"))
                     .isInstanceOf(InvalidOtpException.class)
-                    .hasMessageContaining("Invalid OTP code");
+                    .hasMessageContaining("Invalid or expired OTP");
         }
 
         @Test
@@ -207,7 +207,7 @@ class PasswordRecoveryServiceUnitTest {
 
             assertThatThrownBy(() -> passwordRecoveryService.verifyOtp("testuser", "123456"))
                     .isInstanceOf(InvalidOtpException.class)
-                    .hasMessageContaining("expired");
+                    .hasMessageContaining("Invalid or expired OTP");
         }
     }
 

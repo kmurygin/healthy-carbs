@@ -77,10 +77,10 @@ public class AuthenticationService {
     @Transactional
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         User user = repository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new UnauthorizedException("User not found"));
+                .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
 
         if (!Boolean.TRUE.equals(user.getIsActive())) {
-            throw new UnauthorizedException("Account is deactivated. Please contact an administrator.");
+            throw new UnauthorizedException("Invalid username or password");
         }
 
         try {
@@ -90,10 +90,8 @@ public class AuthenticationService {
                             request.getPassword()
                     )
             );
-        } catch (BadCredentialsException e) {
+        } catch (BadCredentialsException | UsernameNotFoundException e) {
             throw new UnauthorizedException("Invalid username or password");
-        } catch (UsernameNotFoundException e) {
-            throw new UnauthorizedException("User not found with the provided username");
         }
 
         user.setLastLoginAt(Instant.now());

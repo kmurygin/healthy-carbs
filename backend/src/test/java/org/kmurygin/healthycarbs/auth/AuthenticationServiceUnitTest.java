@@ -239,7 +239,7 @@ class AuthenticationServiceUnitTest {
 
             assertThatThrownBy(() -> authenticationService.authenticate(request))
                     .isInstanceOf(UnauthorizedException.class)
-                    .hasMessageContaining("User not found");
+                    .hasMessageContaining("Invalid username or password");
         }
 
         @Test
@@ -255,7 +255,7 @@ class AuthenticationServiceUnitTest {
 
             assertThatThrownBy(() -> authenticationService.authenticate(request))
                     .isInstanceOf(UnauthorizedException.class)
-                    .hasMessageContaining("deactivated");
+                    .hasMessageContaining("Invalid username or password");
         }
 
         @Test

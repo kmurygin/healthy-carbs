@@ -68,17 +68,17 @@ public class PasswordRecoveryService {
 
     public void verifyOtp(String username, String otp) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new InvalidOtpException("Invalid request"));
+                .orElseThrow(() -> new InvalidOtpException("Invalid or expired OTP"));
 
         PasswordRecoveryToken recoveryToken = tokenRepository.findByUser(user)
-                .orElseThrow(() -> new InvalidOtpException("OTP for %s has not been generated".formatted(username)));
+                .orElseThrow(() -> new InvalidOtpException("Invalid or expired OTP"));
 
         if (!passwordEncoder.matches(otp, recoveryToken.getToken())) {
-            throw new InvalidOtpException("Invalid OTP code provided.");
+            throw new InvalidOtpException("Invalid or expired OTP");
         }
 
         if (recoveryToken.getExpiryDate().isBefore(Instant.now())) {
-            throw new InvalidOtpException("OTP code has expired.");
+            throw new InvalidOtpException("Invalid or expired OTP");
         }
     }
 
