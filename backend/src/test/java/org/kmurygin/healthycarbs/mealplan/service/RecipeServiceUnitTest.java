@@ -353,6 +353,7 @@ class RecipeServiceUnitTest {
                     .build();
 
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(ingredientRepository.findById(1L)).thenReturn(Optional.of(ingredient));
             when(recipeRepository.save(any(Recipe.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -366,6 +367,7 @@ class RecipeServiceUnitTest {
         @DisplayName("addIngredient_whenIngredientNotFound_shouldThrowResourceNotFound")
         void addIngredient_whenIngredientNotFound_shouldThrowResourceNotFound() {
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(ingredientRepository.findById(999L)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> recipeService.addIngredient(1L, 999L, 100.0))
@@ -389,6 +391,7 @@ class RecipeServiceUnitTest {
             testRecipe.getIngredients().add(ri);
 
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(recipeRepository.save(any(Recipe.class))).thenAnswer(i -> i.getArgument(0));
 
             Recipe result = recipeService.removeIngredient(1L, 1L);
@@ -400,6 +403,7 @@ class RecipeServiceUnitTest {
         @DisplayName("removeIngredient_whenIngredientNotInRecipe_shouldThrowResourceNotFound")
         void removeIngredient_whenIngredientNotInRecipe_shouldThrowResourceNotFound() {
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
+            when(userService.getCurrentUser()).thenReturn(testUser);
 
             assertThatThrownBy(() -> recipeService.removeIngredient(1L, 999L))
                     .isInstanceOf(ResourceNotFoundException.class);

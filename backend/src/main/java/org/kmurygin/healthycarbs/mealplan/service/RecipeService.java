@@ -103,15 +103,7 @@ public class RecipeService {
     public Recipe update(Long id, Recipe updatedRecipe, String dietTypeName) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
-        User currentUser = userService.getCurrentUser();
-        User author = recipe.getAuthor();
-
-        if (author == null) {
-            throw new AccessDeniedException("Recipe author is null");
-        }
-        if (!author.getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
-            throw new ForbiddenException("You are not authorized to update this recipe.");
-        }
+        assertAuthorOrAdmin(recipe);
 
         recipeMapper.updateFromEntity(updatedRecipe, recipe);
         resolveDietType(recipe, dietTypeName);
@@ -130,17 +122,20 @@ public class RecipeService {
         }
     }
 
-    public void deleteById(Long id) {
-        Recipe recipe = findById(id);
+    private void assertAuthorOrAdmin(Recipe recipe) {
         User currentUser = userService.getCurrentUser();
         User author = recipe.getAuthor();
-
         if (author == null) {
             throw new AccessDeniedException("Recipe author is null");
         }
         if (!author.getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
-            throw new ForbiddenException("You are not authorized to delete this recipe.");
+            throw new ForbiddenException("You are not authorized to modify this recipe.");
         }
+    }
+
+    public void deleteById(Long id) {
+        Recipe recipe = findById(id);
+        assertAuthorOrAdmin(recipe);
         if (mealPlanRecipeRepository.existsByRecipeId(id)) {
             throw new BadRequestException("Cannot delete recipe because it is used in one or more meal plans.");
         }
@@ -151,6 +146,7 @@ public class RecipeService {
     public Recipe addIngredient(Long recipeId, Long ingredientId, double quantity) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", recipeId));
+        assertAuthorOrAdmin(recipe);
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ingredient", "id", ingredientId));
 
@@ -165,6 +161,7 @@ public class RecipeService {
     @Transactional
     public Recipe removeIngredient(Long recipeId, Long ingredientId) {
         Recipe recipe = findById(recipeId);
+        assertAuthorOrAdmin(recipe);
 
         RecipeIngredient recipeIngredient = recipe.getIngredients().stream()
                 .filter(ri -> ri.getIngredient().getId().equals(ingredientId))

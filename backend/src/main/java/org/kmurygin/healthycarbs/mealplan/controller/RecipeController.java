@@ -79,7 +79,7 @@ public class RecipeController {
     @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<RecipeDTO>> update(
             @PathVariable Long id,
-            @RequestBody RecipeDTO recipeDTO
+            @Valid @RequestBody RecipeDTO recipeDTO
     ) {
         recipeDTO.setId(id);
         Recipe recipe = recipeService.update(id, recipeMapper.toEntity(recipeDTO), recipeDTO.getDietType());
@@ -117,6 +117,7 @@ public class RecipeController {
     }
 
     @DeleteMapping("/{recipeId}/ingredients/{ingredientId}")
+    @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     public ResponseEntity<ApiResponse<RecipeDTO>> removeIngredient(
             @PathVariable Long recipeId,
             @PathVariable Long ingredientId

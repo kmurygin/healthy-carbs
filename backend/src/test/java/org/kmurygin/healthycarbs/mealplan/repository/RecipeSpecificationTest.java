@@ -226,8 +226,7 @@ class RecipeSpecificationTest {
         @Test
         @DisplayName("combinedSpec_shouldApplyMultipleFilters")
         void combinedSpec_shouldApplyMultipleFilters() {
-            Specification<Recipe> spec = Specification
-                    .where(RecipeSpecification.hasMealType(MealType.BREAKFAST))
+            Specification<Recipe> spec = RecipeSpecification.hasMealType(MealType.BREAKFAST)
                     .and(RecipeSpecification.hasDietType(standardDietType));
 
             Page<Recipe> result = recipeRepository.findAll(spec, PageRequest.of(0, 100));

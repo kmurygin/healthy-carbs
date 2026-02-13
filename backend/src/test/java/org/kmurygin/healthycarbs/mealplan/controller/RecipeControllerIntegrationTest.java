@@ -354,13 +354,23 @@ class RecipeControllerIntegrationTest {
     class RemoveIngredientTests {
 
         @Test
-        @DisplayName("removeIngredient_shouldReturnOk")
-        void removeIngredient_shouldReturnOk() throws Exception {
+        @DisplayName("removeIngredient_whenDietitian_shouldReturnOk")
+        void removeIngredient_whenDietitian_shouldReturnOk() throws Exception {
             mockMvc.perform(delete(BASE_URL + "/{recipeId}/ingredients/{ingredientId}",
                             testRecipe.getId(), testIngredient.getId())
                             .header("Authorization", "Bearer " + dietitianToken)
                             .with(csrf()))
                     .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("removeIngredient_whenUser_shouldReturnForbidden")
+        void removeIngredient_whenUser_shouldReturnForbidden() throws Exception {
+            mockMvc.perform(delete(BASE_URL + "/{recipeId}/ingredients/{ingredientId}",
+                            testRecipe.getId(), testIngredient.getId())
+                            .header("Authorization", "Bearer " + userToken)
+                            .with(csrf()))
+                    .andExpect(status().isForbidden());
         }
     }
 
