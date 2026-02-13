@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.payments.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationService;
+import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.offers.mealPlanTemplate.MealPlanTemplateService;
 import org.kmurygin.healthycarbs.offers.mealPlanTemplate.MealPlanTemplateUtil;
@@ -80,10 +81,15 @@ public class PaymentService {
                 ));
     }
 
-    public PaymentStatusResponse getStatus(String localOrderId) {
-        return paymentRepository.findByLocalOrderId(localOrderId)
-                .map(payment -> new PaymentStatusResponse(localOrderId, payment.getStatus()))
+    public PaymentStatusResponse getStatus(String localOrderId, User currentUser) {
+        Payment payment = paymentRepository.findByLocalOrderId(localOrderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "localOrderId", localOrderId));
+
+        if (!payment.getUser().getId().equals(currentUser.getId())) {
+            throw new ForbiddenException("You are not authorized to view this payment status.");
+        }
+
+        return new PaymentStatusResponse(localOrderId, payment.getStatus());
     }
 
     private boolean isCollaborationOrder(String localOrderId) {

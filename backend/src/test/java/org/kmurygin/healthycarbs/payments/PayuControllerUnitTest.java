@@ -27,6 +27,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -153,6 +154,19 @@ class PayuControllerUnitTest {
         }
 
         @Test
+        @DisplayName("notify_withUnsupportedAlgorithm_shouldThrowSecurityException")
+        void notify_withUnsupportedAlgorithm_shouldThrowSecurityException() {
+            String body = "{\"order\":{\"extOrderId\":\"ORDER-123\",\"status\":\"COMPLETED\"}}";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("OpenPayu-Signature", "signature=abc123;algorithm=SHA-1");
+
+            assertThatThrownBy(() -> payuController.notify(headers, body))
+                    .isInstanceOf(SecurityException.class)
+                    .hasMessageContaining("Unsupported PayU signature algorithm");
+        }
+
+        @Test
         @DisplayName("notify_withNullExtOrderId_shouldNotCallUpdateStatus")
         void notify_withNullExtOrderId_shouldNotCallUpdateStatus() throws Exception {
             String body = objectMapper.writeValueAsString(
@@ -189,7 +203,8 @@ class PayuControllerUnitTest {
         @DisplayName("status_shouldReturnPaymentStatus")
         void status_shouldReturnPaymentStatus() {
             PaymentStatusResponse statusResponse = new PaymentStatusResponse("ORDER-123", PaymentStatus.COMPLETED);
-            when(paymentService.getStatus("ORDER-123")).thenReturn(statusResponse);
+            when(userService.getCurrentUser()).thenReturn(testUser);
+            when(paymentService.getStatus("ORDER-123", testUser)).thenReturn(statusResponse);
 
             ResponseEntity<ApiResponse<PaymentStatusResponse>> response = payuController.status("ORDER-123");
 
@@ -211,8 +226,9 @@ class PayuControllerUnitTest {
                     "ORDER-123", "Test", 9900, "PLN", OffsetDateTime.now(), PaymentStatus.COMPLETED
             );
 
-            when(paymentService.getStatus("ORDER-123")).thenReturn(statusResponse);
-            when(orderService.getByLocalOrderId("ORDER-123", PaymentStatus.COMPLETED)).thenReturn(orderResponse);
+            when(userService.getCurrentUser()).thenReturn(testUser);
+            when(paymentService.getStatus("ORDER-123", testUser)).thenReturn(statusResponse);
+            when(orderService.getByLocalOrderId("ORDER-123", PaymentStatus.COMPLETED, testUser)).thenReturn(orderResponse);
 
             ResponseEntity<ApiResponse<OrderResponse>> response = payuController.order("ORDER-123");
 
