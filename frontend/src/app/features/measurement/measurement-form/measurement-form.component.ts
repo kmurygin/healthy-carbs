@@ -74,6 +74,7 @@ export class MeasurementFormComponent {
   private readonly measurementService = inject(UserMeasurementService);
   private readonly notificationService = inject(NotificationService);
 
+  // noinspection JSUnusedLocalSymbols — Angular effect must be stored to stay alive
   private readonly _prefillEffect = effect(() => {
     const measurement = this.initialMeasurement();
 

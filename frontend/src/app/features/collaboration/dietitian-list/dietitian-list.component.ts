@@ -188,14 +188,6 @@ export class DietitianListComponent {
     });
   }
 
-  private addActiveCollaboration(userId: number): void {
-    this.activeCollaborationIds.update((set) => {
-      const next = new Set(set);
-      next.add(userId);
-      return next;
-    });
-  }
-
   private removeActiveCollaboration(userId: number): void {
     this.activeCollaborationIds.update((set) => {
       const next = new Set(set);
