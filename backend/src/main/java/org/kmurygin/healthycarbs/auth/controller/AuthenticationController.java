@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.auth.dto.*;
 import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.auth.service.PasswordRecoveryService;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +45,30 @@ public class AuthenticationController {
                 HttpStatus.OK,
                 authResponse,
                 "Authentication successful"
+        );
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AuthenticationResponse>> refresh(
+            @Valid @RequestBody RefreshTokenRequest request
+    ) {
+        AuthenticationResponse response = authenticationService.refreshToken(request.getRefreshToken());
+        return ApiResponses.success(
+                HttpStatus.OK,
+                response,
+                "Token refreshed successfully"
+        );
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @AuthenticationPrincipal User user
+    ) {
+        authenticationService.logout(user);
+        return ApiResponses.success(
+                HttpStatus.OK,
+                null,
+                "Logged out successfully"
         );
     }
 

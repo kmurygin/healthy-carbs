@@ -73,6 +73,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST, "/api/v1/auth/forgot-password").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/auth/verify-otp").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/auth/reset-password").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/payments/payu/notify").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/payments/payu/continue").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/blog/images/**").permitAll()

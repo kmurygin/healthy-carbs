@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.auth.dto.AuthenticationRequest;
 import org.kmurygin.healthycarbs.auth.dto.AuthenticationResponse;
 import org.kmurygin.healthycarbs.auth.dto.RegisterRequest;
+import org.kmurygin.healthycarbs.auth.model.RefreshToken;
 import org.kmurygin.healthycarbs.config.JwtService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
@@ -38,6 +39,7 @@ public class AuthenticationService {
     private final UserService userService;
     private final EmailService emailService;
     private final SpringTemplateEngine templateEngine;
+    private final RefreshTokenService refreshTokenService;
 
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -70,8 +72,12 @@ public class AuthenticationService {
         ));
 
         String jwtToken = jwtService.generateToken(getExtraClaims(user), user);
+        String refreshToken = refreshTokenService.createRefreshToken(user);
 
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     @Transactional
@@ -98,8 +104,30 @@ public class AuthenticationService {
         repository.save(user);
 
         String jwtToken = jwtService.generateToken(getExtraClaims(user), user);
+        String refreshToken = refreshTokenService.createRefreshToken(user);
 
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    @Transactional
+    public AuthenticationResponse refreshToken(String refreshTokenValue) {
+        RefreshToken rotatedToken = refreshTokenService.rotateRefreshToken(refreshTokenValue);
+        User user = rotatedToken.getUser();
+
+        String jwtToken = jwtService.generateToken(getExtraClaims(user), user);
+
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .refreshToken(rotatedToken.getToken())
+                .build();
+    }
+
+    @Transactional
+    public void logout(User user) {
+        refreshTokenService.revokeAllUserTokens(user);
     }
 
     private Map<String, Object> getExtraClaims(User user) {
