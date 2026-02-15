@@ -69,7 +69,12 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   return safeResponse$.pipe(
     catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse) {
-        if (toHttpStatusCode(error.status) === HttpStatusCode.Unauthorized && !shouldSkipRefresh(req.url)) {
+        const isUnauthorized = toHttpStatusCode(error.status) === HttpStatusCode.Unauthorized;
+        if (isUnauthorized && shouldSkipRefresh(req.url)) {
+          const errorResponse = error.error as { message?: string } | null;
+          return throwError(() => new Error(errorResponse?.message ?? 'Authentication failed'));
+        }
+        if (isUnauthorized) {
           return handleUnauthorized(req, next, authService);
         }
         return handleError(error, authService, router);
@@ -143,7 +148,7 @@ const handleError = (
   }
 
   if (isDevMode()) {
-    console.group(`[HTTP ERROR] ${error.status} ${error.statusText} — ${error.url}`);
+    console.group(`[HTTP ERROR] ${error.status} — ${error.url}`);
     if (errorResponse?.traceId) {
       console.warn('Trace ID:', errorResponse.traceId);
     }
