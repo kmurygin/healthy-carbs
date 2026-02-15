@@ -25,6 +25,7 @@ export class PaymentResultComponent {
   readonly status = signal<PaymentStatus>(PaymentStatus.PENDING);
   readonly order = signal<Order | null>(null);
   readonly paidAmount = computed(() => (this.order()?.totalAmount ?? 0) / 100);
+  readonly viewData = computed(() => viewConfig[this.viewState()]);
   private readonly confettiService = inject(ConfettiService);
   private readonly payuService = inject(PayuService);
   private readonly route = inject(ActivatedRoute);
@@ -33,7 +34,6 @@ export class PaymentResultComponent {
     if (!this.localOrderId()) return 'INVALID_ORDER';
     return statusToViewState[this.status()];
   });
-  readonly viewData = computed(() => viewConfig[this.viewState()]);
   private readonly pollIntervalMs = 1500;
 
   constructor() {

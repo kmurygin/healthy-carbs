@@ -62,20 +62,22 @@ class UserControllerIntegrationTest {
     class GetUserByIdTests {
 
         @Test
-        @WithMockUser
         @DisplayName("getUserById_whenUserExists_shouldReturnUser")
         void getUserById_whenUserExists_shouldReturnUser() throws Exception {
-            mockMvc.perform(get(BASE_URL + "/{id}", savedUser.getId()))
+            mockMvc.perform(get(BASE_URL + "/{id}", savedUser.getId())
+                            .with(user(savedUser)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.id", is(savedUser.getId().intValue())))
                     .andExpect(jsonPath("$.data.username", is(savedUser.getUsername())));
         }
 
         @Test
-        @WithMockUser
         @DisplayName("getUserById_whenUserNotExists_shouldReturnNotFound")
         void getUserById_whenUserNotExists_shouldReturnNotFound() throws Exception {
-            mockMvc.perform(get(BASE_URL + "/{id}", 999999L))
+            User admin = userRepository.save(
+                    UserTestUtils.createAdminForPersistence("getById_" + uniqueSuffix, passwordEncoder));
+            mockMvc.perform(get(BASE_URL + "/{id}", 999999L)
+                            .with(user(admin)))
                     .andExpect(status().isNotFound());
         }
     }
@@ -85,19 +87,21 @@ class UserControllerIntegrationTest {
     class GetUserByUsernameTests {
 
         @Test
-        @WithMockUser
         @DisplayName("getUserByUsername_whenUserExists_shouldReturnUser")
         void getUserByUsername_whenUserExists_shouldReturnUser() throws Exception {
-            mockMvc.perform(get(BASE_URL + "/username/{username}", savedUser.getUsername()))
+            mockMvc.perform(get(BASE_URL + "/username/{username}", savedUser.getUsername())
+                            .with(user(savedUser)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.username", is(savedUser.getUsername())));
         }
 
         @Test
-        @WithMockUser
         @DisplayName("getUserByUsername_whenUserNotExists_shouldReturnNotFound")
         void getUserByUsername_whenUserNotExists_shouldReturnNotFound() throws Exception {
-            mockMvc.perform(get(BASE_URL + "/username/{username}", "nonexistent_user"))
+            User admin = userRepository.save(
+                    UserTestUtils.createAdminForPersistence("getByName_" + uniqueSuffix, passwordEncoder));
+            mockMvc.perform(get(BASE_URL + "/username/{username}", "nonexistent_user")
+                            .with(user(admin)))
                     .andExpect(status().isNotFound());
         }
     }
@@ -159,7 +163,6 @@ class UserControllerIntegrationTest {
     class UpdateUserTests {
 
         @Test
-        @WithMockUser
         @DisplayName("updateUser_whenValidRequest_shouldReturnUpdatedUser")
         void updateUser_whenValidRequest_shouldReturnUpdatedUser() throws Exception {
             UpdateUserRequest request = new UpdateUserRequest(
@@ -167,6 +170,7 @@ class UserControllerIntegrationTest {
 
             mockMvc.perform(put(BASE_URL + "/{id}", savedUser.getId())
                             .with(csrf())
+                            .with(user(savedUser))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
@@ -175,13 +179,15 @@ class UserControllerIntegrationTest {
         }
 
         @Test
-        @WithMockUser
         @DisplayName("updateUser_whenUserNotFound_shouldReturnNotFound")
         void updateUser_whenUserNotFound_shouldReturnNotFound() throws Exception {
+            User admin = userRepository.save(
+                    UserTestUtils.createAdminForPersistence("update_" + uniqueSuffix, passwordEncoder));
             UpdateUserRequest request = new UpdateUserRequest("Updated", "Name", "test@example.com");
 
             mockMvc.perform(put(BASE_URL + "/{id}", 999999L)
                             .with(csrf())
+                            .with(user(admin))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isNotFound());
@@ -193,20 +199,22 @@ class UserControllerIntegrationTest {
     class DeleteUserTests {
 
         @Test
-        @WithMockUser
         @DisplayName("deleteUser_whenUserExists_shouldReturnNoContent")
         void deleteUser_whenUserExists_shouldReturnNoContent() throws Exception {
             mockMvc.perform(delete(BASE_URL + "/{id}", savedUser.getId())
-                            .with(csrf()))
+                            .with(csrf())
+                            .with(user(savedUser)))
                     .andExpect(status().isNoContent());
         }
 
         @Test
-        @WithMockUser
         @DisplayName("deleteUser_whenUserNotFound_shouldReturnNotFound")
         void deleteUser_whenUserNotFound_shouldReturnNotFound() throws Exception {
+            User admin = userRepository.save(
+                    UserTestUtils.createAdminForPersistence("delete_" + uniqueSuffix, passwordEncoder));
             mockMvc.perform(delete(BASE_URL + "/{id}", 999999L)
-                            .with(csrf()))
+                            .with(csrf())
+                            .with(user(admin)))
                     .andExpect(status().isNotFound());
         }
     }

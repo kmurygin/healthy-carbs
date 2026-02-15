@@ -39,6 +39,7 @@ public class Ingredient {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private IngredientCategory category = IngredientCategory.OTHER;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -53,6 +54,7 @@ public class Ingredient {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
+    @ToString.Exclude
     private User author;
 
     @CreationTimestamp

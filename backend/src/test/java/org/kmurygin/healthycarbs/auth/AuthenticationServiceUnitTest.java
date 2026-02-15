@@ -9,6 +9,7 @@ import org.kmurygin.healthycarbs.auth.dto.AuthenticationRequest;
 import org.kmurygin.healthycarbs.auth.dto.AuthenticationResponse;
 import org.kmurygin.healthycarbs.auth.dto.RegisterRequest;
 import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.auth.service.RefreshTokenService;
 import org.kmurygin.healthycarbs.config.JwtService;
 import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.exception.UnauthorizedException;
@@ -60,6 +61,9 @@ class AuthenticationServiceUnitTest {
     @Mock
     private SpringTemplateEngine templateEngine;
 
+    @Mock
+    private RefreshTokenService refreshTokenService;
+
     private AuthenticationService authenticationService;
 
     private User testUser;
@@ -73,7 +77,8 @@ class AuthenticationServiceUnitTest {
                 authenticationManager,
                 userService,
                 emailService,
-                templateEngine);
+                templateEngine,
+                refreshTokenService);
 
         testUser = UserTestUtils.createTestUser(1L, "testuser");
     }
@@ -158,10 +163,12 @@ class AuthenticationServiceUnitTest {
                 return u;
             });
             when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
+            when(refreshTokenService.createRefreshToken(any(User.class))).thenReturn("test-refresh-token");
 
             AuthenticationResponse result = authenticationService.register(request);
 
             assertThat(result.getToken()).isEqualTo("jwt-token");
+            assertThat(result.getRefreshToken()).isEqualTo("test-refresh-token");
             verify(userService).save(any(User.class));
             verify(emailService).sendMail(any());
         }
@@ -179,6 +186,7 @@ class AuthenticationServiceUnitTest {
 
             when(passwordEncoder.encode("password123456")).thenReturn("encodedPassword");
             when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
+            when(refreshTokenService.createRefreshToken(any(User.class))).thenReturn("test-refresh-token");
 
             authenticationService.register(request);
 
@@ -198,6 +206,7 @@ class AuthenticationServiceUnitTest {
 
             when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
             when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
+            when(refreshTokenService.createRefreshToken(any(User.class))).thenReturn("test-refresh-token");
 
             authenticationService.register(request);
 
@@ -220,10 +229,12 @@ class AuthenticationServiceUnitTest {
             when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
             when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
             when(userRepository.save(any(User.class))).thenReturn(testUser);
+            when(refreshTokenService.createRefreshToken(any(User.class))).thenReturn("test-refresh-token");
 
             AuthenticationResponse result = authenticationService.authenticate(request);
 
             assertThat(result.getToken()).isEqualTo("jwt-token");
+            assertThat(result.getRefreshToken()).isEqualTo("test-refresh-token");
             verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         }
 
@@ -239,7 +250,7 @@ class AuthenticationServiceUnitTest {
 
             assertThatThrownBy(() -> authenticationService.authenticate(request))
                     .isInstanceOf(UnauthorizedException.class)
-                    .hasMessageContaining("User not found");
+                    .hasMessageContaining("Invalid username or password");
         }
 
         @Test
@@ -255,7 +266,7 @@ class AuthenticationServiceUnitTest {
 
             assertThatThrownBy(() -> authenticationService.authenticate(request))
                     .isInstanceOf(UnauthorizedException.class)
-                    .hasMessageContaining("deactivated");
+                    .hasMessageContaining("Invalid username or password");
         }
 
         @Test
@@ -286,6 +297,7 @@ class AuthenticationServiceUnitTest {
             when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
             when(jwtService.generateToken(anyMap(), any(User.class))).thenReturn("jwt-token");
             when(userRepository.save(any(User.class))).thenReturn(testUser);
+            when(refreshTokenService.createRefreshToken(any(User.class))).thenReturn("test-refresh-token");
 
             authenticationService.authenticate(request);
 

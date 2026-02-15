@@ -237,7 +237,7 @@ class PaymentServiceUnitTest {
         void getStatus_whenPaymentExists_shouldReturnStatusResponse() {
             when(paymentRepository.findByLocalOrderId("ORDER-12345")).thenReturn(Optional.of(testPayment));
 
-            PaymentStatusResponse result = paymentService.getStatus("ORDER-12345");
+            PaymentStatusResponse result = paymentService.getStatus("ORDER-12345", testUser);
 
             assertThat(result.localOrderId()).isEqualTo("ORDER-12345");
             assertThat(result.status()).isEqualTo(PaymentStatus.PENDING);
@@ -248,7 +248,7 @@ class PaymentServiceUnitTest {
         void getStatus_whenPaymentNotExists_shouldThrowResourceNotFoundException() {
             when(paymentRepository.findByLocalOrderId("INVALID")).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> paymentService.getStatus("INVALID"))
+            assertThatThrownBy(() -> paymentService.getStatus("INVALID", testUser))
                     .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessageContaining("Payment");
         }

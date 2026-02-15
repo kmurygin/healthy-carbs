@@ -110,7 +110,7 @@
           </h2>
           @if (instructionSteps().length !== 0) {
             <ol class="list-decimal marker:text-emerald-700 ms-5 space-y-2 mt-4">
-              @for (step of instructionSteps(); track i; let i = $index) {
+              @for (step of instructionSteps(); track $index) {
                 <li class="text-gray-800 leading-relaxed">
                   {{ step }}
                 </li>

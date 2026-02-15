@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.mealplan.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationService;
 import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.MealPlanSource;
@@ -75,6 +76,8 @@ class MealPlanServiceIntegrationTest {
     private UserService userService;
     @MockitoBean
     private ShoppingListService shoppingListService;
+    @MockitoBean
+    private CollaborationService collaborationService;
 
     private User persistedUser;
 
@@ -177,6 +180,7 @@ class MealPlanServiceIntegrationTest {
 
         when(recipeService.findById(recipe1.getId())).thenReturn(recipe1);
         when(recipeService.findById(recipe2.getId())).thenReturn(recipe2);
+        when(collaborationService.getActiveClients(persistedUser)).thenReturn(List.of(clientUser));
 
         ManualMealPlanDayDTO dayDTO = new ManualMealPlanDayDTO(1, List.of(recipe1.getId(), recipe2.getId()));
         CreateMealPlanRequest request = new CreateMealPlanRequest(

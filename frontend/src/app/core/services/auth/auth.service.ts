@@ -1,10 +1,12 @@
-import {computed, effect, inject, Injectable, signal} from '@angular/core';
+import {computed, effect, inject, Injectable, isDevMode, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {jwtDecode} from 'jwt-decode';
-import {map, tap} from 'rxjs';
+import type {Observable} from 'rxjs';
+import {BehaviorSubject, map, switchMap, tap} from 'rxjs';
 import {LocalStorage} from '../../constants/constants';
 import {ApiEndpoints} from '../../constants/api-endpoints';
+import {UserService} from '../user/user.service';
 import type {RegisterPayload} from '../../models/payloads/register.payload';
 import type {ApiResponse} from '../../models/api-response.model';
 import type {LoginPayload} from '../../models/payloads/login.payload';
@@ -14,8 +16,14 @@ import type {JwtClaims} from './jwt-claims';
 @Injectable({providedIn: 'root'})
 export class AuthService {
   readonly isLoggedIn = computed(() => !this.isTokenExpired());
+  readonly user = computed(() => this.claims()?.sub ?? null);
+  readonly userId = computed(() => this.claims()?.id ?? null);
+  readonly userRole = computed(() => this.claims()?.role ?? null);
+  isRefreshing = false;
+  refreshTokenSubject = new BehaviorSubject<string | null>(null);
   private readonly httpClient = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly userService = inject(UserService);
   private readonly token = signal<string | null>(localStorage.getItem(LocalStorage.token));
   readonly jwtToken = this.token.asReadonly();
   readonly claims = computed<JwtClaims | null>(() => {
@@ -24,13 +32,14 @@ export class AuthService {
     try {
       return jwtDecode<JwtClaims>(jwtToken);
     } catch (e) {
-      console.error('Failed to decode JWT token:', e);
+      if (isDevMode()) {
+        console.error('Failed to decode JWT token:', e);
+      }
       return null;
     }
   });
-  readonly user = computed(() => this.claims()?.sub ?? null);
-  readonly userId = computed(() => this.claims()?.id ?? null);
-  readonly userRole = computed(() => this.claims()?.role ?? null);
+  private readonly refreshTokenSignal = signal<string | null>(localStorage.getItem(LocalStorage.refreshToken));
+  readonly refreshTokenValue = this.refreshTokenSignal.asReadonly();
 
   constructor() {
     effect(() => {
@@ -39,6 +48,18 @@ export class AuthService {
         localStorage.setItem(LocalStorage.token, jwtToken);
       } else {
         localStorage.removeItem(LocalStorage.token);
+      }
+      if (isDevMode()) {
+        console.debug('[Auth] Token updated, logged in:', !this.isTokenExpired());
+      }
+    });
+
+    effect(() => {
+      const rt = this.refreshTokenSignal();
+      if (rt) {
+        localStorage.setItem(LocalStorage.refreshToken, rt);
+      } else {
+        localStorage.removeItem(LocalStorage.refreshToken);
       }
     });
   }
@@ -52,10 +73,16 @@ export class AuthService {
   }
 
   register(payload: RegisterPayload) {
+    if (isDevMode()) {
+      console.debug('[Auth] Register attempt for:', payload.email);
+    }
     return this.httpClient.post<ApiResponse<AuthenticationResponse>>(ApiEndpoints.Auth.Register, payload).pipe(
       map(res => {
         if (!res.status) {
           throw new Error(res.message ?? 'Registration failed');
+        }
+        if (isDevMode()) {
+          console.debug('[Auth] Registration successful for:', payload.email);
         }
         return res;
       })
@@ -63,6 +90,9 @@ export class AuthService {
   }
 
   login(payload: LoginPayload) {
+    if (isDevMode()) {
+      console.debug('[Auth] Login attempt for:', payload.username);
+    }
     return this.httpClient.post<ApiResponse<AuthenticationResponse>>(ApiEndpoints.Auth.Login, payload).pipe(
       map(res => {
         if (!res.status || !res.data?.token) {
@@ -73,13 +103,51 @@ export class AuthService {
       tap(res => {
         if (res.data?.token) {
           this.token.set(res.data.token);
+          this.refreshTokenSignal.set(res.data.refreshToken);
+          if (isDevMode()) {
+            const claims = this.claims();
+            console.debug('[Auth] Login successful, role:', claims?.role, 'expires:', claims?.exp ? new Date(claims.exp * 1000).toLocaleTimeString() : 'unknown');
+          }
+        }
+      }),
+      switchMap(res => this.userService.refreshUserByUsername(payload.username).pipe(
+        map(() => res)
+      ))
+    );
+  }
+
+  refreshAccessToken(): Observable<ApiResponse<AuthenticationResponse>> {
+    return this.httpClient.post<ApiResponse<AuthenticationResponse>>(
+      ApiEndpoints.Auth.Refresh,
+      {refreshToken: this.refreshTokenSignal()}
+    ).pipe(
+      tap(res => {
+        if (res.data?.token) {
+          this.token.set(res.data.token);
+          this.refreshTokenSignal.set(res.data.refreshToken);
         }
       })
     );
   }
 
   logout(): void {
+    if (isDevMode()) {
+      console.debug('[Auth] Logout, user:', this.user());
+    }
+
+    const currentToken = this.jwtToken();
+    if (currentToken) {
+      this.httpClient.post(ApiEndpoints.Auth.Logout, {}, {
+        headers: {Authorization: `Bearer ${currentToken}`}
+      }).subscribe({
+        error: () => { /* best-effort, ignore errors */
+        }
+      });
+    }
+
     this.token.set(null);
+    this.refreshTokenSignal.set(null);
+    this.userService.clearCurrentUser();
     this.router.navigate(['login'], {replaceUrl: true})
       .catch((err: unknown) => {
         console.error('Navigation failed', err);

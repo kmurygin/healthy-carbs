@@ -3,17 +3,22 @@ package org.kmurygin.healthycarbs.mealplan.mapper;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
+import org.kmurygin.healthycarbs.user.mapper.UserMapper;
 import org.mapstruct.*;
 
 import java.util.Set;
 
-@Mapper(componentModel = "spring", uses = {RecipeIngredientMapper.class})
+@Mapper(componentModel = "spring", uses = {RecipeIngredientMapper.class, UserMapper.class})
 public interface RecipeMapper {
 
     @Mapping(target = "dietType", expression = "java(mapDietTypeToString(recipe.getDietType()))")
+    @Mapping(target = "isFavourite", constant = "false")
     RecipeDTO toDTO(Recipe recipe);
 
     @Mapping(target = "dietType", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "favouritesUsers", ignore = true)
     Recipe toEntity(RecipeDTO dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

@@ -23,6 +23,10 @@ export class UserService {
     return this.buildFallbackAvatar(user);
   });
 
+  clearCurrentUser(): void {
+    this.currentUser.set(null);
+  }
+
   getUserByUsername(username: string) {
     return this.httpClient.get<ApiResponse<UserDto>>(
       ApiEndpoints.User.GetByUsername + username

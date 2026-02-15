@@ -103,7 +103,10 @@ export class RegisterComponent {
     lastName: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
     username: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
     email: this.formBuilder.control('', {validators: [Validators.required, Validators.email], nonNullable: true}),
-    password: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
+    password: this.formBuilder.control('', {
+      validators: [Validators.required, Validators.minLength(12)],
+      nonNullable: true
+    }),
     confirmPassword: this.formBuilder.control('', {validators: [Validators.required], nonNullable: true}),
   }, {
     validators: passwordMatchValidator('password', 'confirmPassword')

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.payments.config.PayuProperties;
 import org.kmurygin.healthycarbs.payments.dto.*;
@@ -27,15 +28,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/payments/payu")
+@SuppressWarnings({"UnknownHttpHeader", "HttpUrlsUsage"}) // OpenPayu-Signature is a valid PayU custom header
 public class PayuController {
 
     private static final Logger logger = LoggerFactory.getLogger(PayuController.class);
     private static final String SIGNATURE_HEADER = "OpenPayu-Signature";
+    private static final Set<String> ALLOWED_HASH_ALGORITHMS = Set.of("MD5", "SHA-256", "SHA256");
 
     private final ObjectMapper objectMapper;
     private final PaymentService paymentService;
@@ -46,7 +50,7 @@ public class PayuController {
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<InitPaymentResponse>> create(
-            @RequestBody InitPaymentRequest initPaymentRequest,
+            @Valid @RequestBody InitPaymentRequest initPaymentRequest,
             HttpServletRequest httpServletRequest
     ) {
         String ip = httpServletRequest.getRemoteAddr();
@@ -102,10 +106,14 @@ public class PayuController {
 
         Map<String, String> params = parseSignatureHeader(signatureHeader);
         String incomingSignature = params.get("signature");
-        String algorithm = params.getOrDefault("algorithm", "MD5");
+        String algorithm = params.getOrDefault("algorithm", "MD5").toUpperCase();
 
         if (incomingSignature == null) {
             throw new SecurityException("Invalid PayU signature header format");
+        }
+
+        if (!ALLOWED_HASH_ALGORITHMS.contains(algorithm)) {
+            throw new SecurityException("Unsupported PayU signature algorithm: " + algorithm);
         }
 
         String expectedSignature = computeHash(body + payuProperties.secondKey(), algorithm);
@@ -113,7 +121,7 @@ public class PayuController {
         if (!MessageDigest.isEqual(
                 expectedSignature.getBytes(StandardCharsets.UTF_8),
                 incomingSignature.getBytes(StandardCharsets.UTF_8))) {
-            logger.warn("[PayU] Signature mismatch — expected: {}, incoming: {}", expectedSignature, incomingSignature);
+            logger.warn("[PayU] Signature mismatch for notification");
             throw new SecurityException("PayU signature verification failed");
         }
         logger.info("[PayU] Signature verified successfully");
@@ -138,14 +146,16 @@ public class PayuController {
 
     @GetMapping("/status/{localOrderId}")
     public ResponseEntity<ApiResponse<PaymentStatusResponse>> status(@PathVariable String localOrderId) {
-        PaymentStatusResponse data = paymentService.getStatus(localOrderId);
+        User currentUser = userService.getCurrentUser();
+        PaymentStatusResponse data = paymentService.getStatus(localOrderId, currentUser);
         return ApiResponses.success(HttpStatus.OK, data, "OK");
     }
 
     @GetMapping("/order/{localOrderId}")
     public ResponseEntity<ApiResponse<OrderResponse>> order(@PathVariable String localOrderId) {
-        PaymentStatus status = paymentService.getStatus(localOrderId).status();
-        OrderResponse data = orderService.getByLocalOrderId(localOrderId, status);
+        User currentUser = userService.getCurrentUser();
+        PaymentStatus status = paymentService.getStatus(localOrderId, currentUser).status();
+        OrderResponse data = orderService.getByLocalOrderId(localOrderId, status, currentUser);
         return ApiResponses.success(HttpStatus.OK, data, "OK");
     }
 }

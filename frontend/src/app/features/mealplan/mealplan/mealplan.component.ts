@@ -271,10 +271,10 @@ export class MealPlanComponent implements OnInit {
       const planId = this.mealPlanIdSignal();
       if (planId) {
         await this.loadPlanById(planId);
+        await this.updateLastGeneratedDate();
       } else {
-        await this.loadLatestPlan()
+        await this.loadLatestPlan();
       }
-      await this.updateLastGeneratedDate();
     } catch (error: unknown) {
       setError(this.errorMessage, error, 'Failed to fetch meal plan. Please try again.');
       if (!this.mealPlanIdSignal()) {
@@ -286,12 +286,7 @@ export class MealPlanComponent implements OnInit {
   private async updateLastGeneratedDate(): Promise<void> {
     try {
       const history = await firstValueFrom(this.mealPlanService.getHistory());
-      const generatedPlans = history
-        .filter(p => p.source === MealPlanSource.GENERATED)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      if (generatedPlans.length > 0) {
-        this.lastGeneratedAt.set(new Date(generatedPlans[0].createdAt));
-      }
+      this.setLastGeneratedDateFromHistory(history);
     } catch {
       // Non-critical — cooldown check will default to allowing generation
     }
@@ -321,8 +316,18 @@ export class MealPlanComponent implements OnInit {
   private async loadLatestPlan(): Promise<void> {
     await this.loadPlan(async () => {
       const history = await firstValueFrom(this.mealPlanService.getHistory());
+      this.setLastGeneratedDateFromHistory(history);
       return history.length > 0 ? history[history.length - 1] : null;
     }, 'Failed to load your latest meal plan.');
+  }
+
+  private setLastGeneratedDateFromHistory(history: MealPlanDto[]): void {
+    const latestGenerated = history
+      .filter(p => p.source === MealPlanSource.GENERATED)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    if (latestGenerated.length > 0) {
+      this.lastGeneratedAt.set(new Date(latestGenerated[0].createdAt));
+    }
   }
 
   private async loadPlanById(id: number): Promise<void> {

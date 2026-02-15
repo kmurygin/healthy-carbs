@@ -6,6 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.kmurygin.healthycarbs.config.JwtService;
+import org.kmurygin.healthycarbs.dietitian.collaboration.Collaboration;
+import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationRepository;
 import org.kmurygin.healthycarbs.mealplan.*;
 import org.kmurygin.healthycarbs.mealplan.dto.CreateMealPlanRequest;
 import org.kmurygin.healthycarbs.mealplan.dto.ManualMealPlanDayDTO;
@@ -33,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +68,8 @@ class MealPlanControllerIntegrationTest {
     private DietaryProfileRepository dietaryProfileRepository;
     @Autowired
     private DietTypeRepository dietTypeRepository;
+    @Autowired
+    private CollaborationRepository collaborationRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -146,6 +151,12 @@ class MealPlanControllerIntegrationTest {
         day.setMealPlan(testMealPlan);
         day.addRecipe(testRecipe);
         testMealPlan = mealPlanRepository.save(testMealPlan);
+
+        collaborationRepository.save(Collaboration.builder()
+                .dietitian(dietitianUser)
+                .client(clientUser)
+                .startedAt(OffsetDateTime.now())
+                .build());
 
         userToken = jwtService.generateToken(regularUser);
         dietitianToken = jwtService.generateToken(dietitianUser);

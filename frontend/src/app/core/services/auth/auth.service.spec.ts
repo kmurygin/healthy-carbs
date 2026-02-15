@@ -3,8 +3,10 @@ import {HttpTestingController, provideHttpClientTesting} from '@angular/common/h
 import {provideHttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {of} from 'rxjs';
 
 import {AuthService} from './auth.service';
+import {UserService} from '../user/user.service';
 import {ApiEndpoints} from '../../constants/api-endpoints';
 import {LocalStorage} from '../../constants/constants';
 
@@ -18,6 +20,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
   let routerMock: { navigate: ReturnType<typeof vi.fn> };
+  let userServiceMock: Partial<UserService>;
 
   const validClaims = {
     sub: 'testuser',
@@ -34,12 +37,18 @@ describe('AuthService', () => {
       navigate: vi.fn().mockResolvedValue(true),
     };
 
+    userServiceMock = {
+      refreshUserByUsername: vi.fn().mockReturnValue(of(null)),
+      clearCurrentUser: vi.fn(),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         AuthService,
         provideHttpClient(),
         provideHttpClientTesting(),
         {provide: Router, useValue: routerMock},
+        {provide: UserService, useValue: userServiceMock},
       ],
     });
 
@@ -64,7 +73,6 @@ describe('AuthService', () => {
     it('isTokenExpired_whenClaimsHaveNoExp_shouldReturnTrue', () => {
       const token = createJwt({sub: 'testuser', id: 1});
       localStorage.setItem(LocalStorage.token, token);
-      // Re-create service to pick up localStorage token
       service = TestBed.inject(AuthService);
       expect(service.isTokenExpired()).toBe(true);
     });
@@ -224,7 +232,8 @@ describe('AuthService', () => {
   describe('login', () => {
     it('login_whenSuccess_shouldSetTokenAndReturn', () => {
       const payload = {username: 'test', password: 'pass123'};
-      const mockResponse = {status: true, data: {token: 'jwt-token-123'}};
+      const token = createJwt(validClaims);
+      const mockResponse = {status: true, data: {token}};
 
       service.login(payload).subscribe((res) => {
         expect(res).toEqual(mockResponse);
@@ -234,7 +243,8 @@ describe('AuthService', () => {
       expect(req.request.method).toBe('POST');
       req.flush(mockResponse);
 
-      expect(service.jwtToken()).toBe('jwt-token-123');
+      expect(service.jwtToken()).toBe(token);
+      expect(userServiceMock.refreshUserByUsername).toHaveBeenCalledWith('test');
     });
 
     it('login_whenStatusFalse_shouldThrowError', () => {
@@ -271,6 +281,7 @@ describe('AuthService', () => {
 
       expect(service.jwtToken()).toBeNull();
       expect(routerMock.navigate).toHaveBeenCalledWith(['login'], {replaceUrl: true});
+      expect(userServiceMock.clearCurrentUser).toHaveBeenCalled();
     });
   });
 });

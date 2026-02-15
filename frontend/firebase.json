@@ -11,7 +11,7 @@
         "source": "/api/v1/**",
         "run": {
           "serviceId": "healthy-carbs-backend",
-          "region": "europe-west1"
+          "region": "europe-central2"
         }
       },
       {

@@ -62,6 +62,15 @@ export function setError(signal: WritableSignal<string | null>, err: unknown, fa
   console.error(fallback, err);
 }
 
+export function parseInstructionSteps(instructions: string | undefined | null): string[] {
+  const trimmed = instructions?.trim() ?? '';
+  if (!trimmed) return [];
+  return trimmed
+    .split(/\r?\n+|\s+(?=\d+\.\s)/)
+    .map(line => line.trim().replace(/^\d+\.\s*/, ''))
+    .filter(line => line.length > 0);
+}
+
 export function setErrorNotification(service: NotificationService, err: unknown, fallback: string): void {
   const message = err instanceof Error && err.message.trim()
     ? err.message

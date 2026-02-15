@@ -1,4 +1,5 @@
 import type {ActivatedRoute, ParamMap} from '@angular/router';
+import {environment} from '../../../environments/environment';
 
 export function resolveLocalOrderId(route: ActivatedRoute): string | null {
   return (
@@ -55,4 +56,11 @@ export function saveLastLocalOrderId(localOrderId: string): void {
 
 export function safeRemoveLastLocalOrderId(): void {
   sessionStorage.removeItem('lastLocalOrderId');
+}
+
+export function validatePayuRedirectUrl(redirectUri: string): void {
+  const url = new URL(redirectUri);
+  if (!environment.payuAllowedHosts.includes(url.hostname) || url.protocol !== 'https:') {
+    throw new Error('Invalid redirect URL');
+  }
 }

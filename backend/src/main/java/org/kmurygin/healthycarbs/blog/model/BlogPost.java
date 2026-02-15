@@ -40,6 +40,7 @@ public class BlogPost {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt DESC")
     @ToString.Exclude
+    @Builder.Default
     private List<BlogComment> comments = new ArrayList<>();
 
     @CreationTimestamp

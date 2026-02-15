@@ -4,6 +4,7 @@ import {HttpClient, HttpStatusCode, provideHttpClient, withInterceptors} from '@
 import {Router} from '@angular/router';
 import {signal} from '@angular/core';
 import type {MockedObject} from 'vitest';
+import {BehaviorSubject} from 'rxjs';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 import {httpInterceptor} from './http.interceptor';
@@ -19,12 +20,13 @@ describe('httpInterceptor', () => {
   const apiUrl = environment.apiUrl;
 
   beforeEach(() => {
-    vi.useFakeTimers();
-
     authServiceMock = {
       isLoggedIn: signal(true),
       isTokenExpired: vi.fn().mockReturnValue(false),
       jwtToken: signal('test-jwt-token'),
+      refreshTokenValue: signal(null),
+      isRefreshing: false,
+      refreshTokenSubject: new BehaviorSubject<string | null>(null),
       logout: vi.fn(),
     } as unknown as MockedObject<Partial<AuthService>>;
 
@@ -47,7 +49,6 @@ describe('httpInterceptor', () => {
 
   afterEach(() => {
     httpMock.verify();
-    vi.useRealTimers();
   });
 
   it('httpInterceptor_whenApiCallAndLoggedIn_shouldAttachAuthorizationHeader', () => {
@@ -66,8 +67,20 @@ describe('httpInterceptor', () => {
     req.flush({});
   });
 
-  it('httpInterceptor_whenNotLoggedIn_shouldNotAttachAuthorizationHeader', () => {
-    authServiceMock.isLoggedIn = signal(false);
+  it('httpInterceptor_whenNoToken_shouldNotAttachAuthorizationHeader', () => {
+    authServiceMock.jwtToken = signal(null) as typeof authServiceMock.jwtToken;
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(withInterceptors([httpInterceptor])),
+        provideHttpClientTesting(),
+        {provide: AuthService, useValue: authServiceMock},
+        {provide: Router, useValue: routerMock},
+      ],
+    });
+    httpClient = TestBed.inject(HttpClient);
+    httpMock = TestBed.inject(HttpTestingController);
 
     httpClient.get(`${apiUrl}/test`).subscribe();
 
@@ -76,22 +89,9 @@ describe('httpInterceptor', () => {
     req.flush({});
   });
 
-  it('httpInterceptor_whenTokenExpired_shouldLogoutAndThrowError', () => {
-    authServiceMock.isTokenExpired = vi.fn().mockReturnValue(true) as typeof authServiceMock.isTokenExpired;
-
+  it('httpInterceptor_whenUnauthorizedAndNoRefreshToken_shouldLogout', () => {
     httpClient.get(`${apiUrl}/test`).subscribe({
-      error: (err: unknown) => {
-        expect((err as Error).message).toContain('Session expired');
-      },
-    });
-
-    expect(authServiceMock.logout).toHaveBeenCalled();
-  });
-
-  it('httpInterceptor_whenUnauthorizedError_shouldLogout', () => {
-    httpClient.get(`${apiUrl}/test`).subscribe({
-      error: () => { /* expected */
-      },
+      error: () => { /* expected */ },
     });
 
     const req = httpMock.expectOne(`${apiUrl}/test`);
@@ -99,16 +99,6 @@ describe('httpInterceptor', () => {
       {message: 'Unauthorized'},
       {status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized'}
     );
-
-    // retry(2) means 3 total attempts
-    for (let i = 0; i < 2; i++) {
-      vi.advanceTimersByTime(500);
-      const retryReq = httpMock.expectOne(`${apiUrl}/test`);
-      retryReq.flush(
-        {message: 'Unauthorized'},
-        {status: HttpStatusCode.Unauthorized, statusText: 'Unauthorized'}
-      );
-    }
 
     expect(authServiceMock.logout).toHaveBeenCalled();
   });
@@ -118,11 +108,9 @@ describe('httpInterceptor', () => {
     authServiceMock.logout = vi.fn() as typeof authServiceMock.logout;
 
     httpClient.post(loginUrl, {}).subscribe({
-      error: () => { /* expected */
-      },
+      error: () => { /* expected */ },
     });
 
-    // POST requests are not retried
     const req = httpMock.expectOne(loginUrl);
     req.flush(
       {message: 'Bad credentials'},
@@ -133,7 +121,7 @@ describe('httpInterceptor', () => {
   });
 
   it('httpInterceptor_whenForbiddenError_shouldReturnForbiddenMessage', () => {
-    httpClient.get(`${apiUrl}/test`).subscribe({
+    httpClient.post(`${apiUrl}/test`, {}).subscribe({
       error: (err: unknown) => {
         expect((err as Error).message).toContain('permission');
       },
@@ -144,21 +132,11 @@ describe('httpInterceptor', () => {
       {message: ''},
       {status: HttpStatusCode.Forbidden, statusText: 'Forbidden'}
     );
-
-    for (let i = 0; i < 2; i++) {
-      vi.advanceTimersByTime(500);
-      const retryReq = httpMock.expectOne(`${apiUrl}/test`);
-      retryReq.flush(
-        {message: ''},
-        {status: HttpStatusCode.Forbidden, statusText: 'Forbidden'}
-      );
-    }
   });
 
   it('httpInterceptor_whenNotFoundError_shouldNavigateToError404', () => {
-    httpClient.get(`${apiUrl}/test`).subscribe({
-      error: () => { /* expected */
-      },
+    httpClient.post(`${apiUrl}/test`, {}).subscribe({
+      error: () => { /* expected */ },
     });
 
     const req = httpMock.expectOne(`${apiUrl}/test`);
@@ -167,20 +145,11 @@ describe('httpInterceptor', () => {
       {status: HttpStatusCode.NotFound, statusText: 'Not Found'}
     );
 
-    for (let i = 0; i < 2; i++) {
-      vi.advanceTimersByTime(500);
-      const retryReq = httpMock.expectOne(`${apiUrl}/test`);
-      retryReq.flush(
-        {message: 'Not found'},
-        {status: HttpStatusCode.NotFound, statusText: 'Not Found'}
-      );
-    }
-
     expect(routerMock.navigate).toHaveBeenCalledWith(['/error/404']);
   });
 
   it('httpInterceptor_whenFieldErrors_shouldFormatErrorMessage', () => {
-    httpClient.get(`${apiUrl}/test`).subscribe({
+    httpClient.post(`${apiUrl}/test`, {}).subscribe({
       error: (err: unknown) => {
         expect((err as Error).message).toContain('email');
         expect((err as Error).message).toContain('Invalid email');
@@ -192,19 +161,10 @@ describe('httpInterceptor', () => {
       {message: 'Validation failed', fieldErrors: {email: 'Invalid email'}},
       {status: HttpStatusCode.BadRequest, statusText: 'Bad Request'}
     );
-
-    for (let i = 0; i < 2; i++) {
-      vi.advanceTimersByTime(500);
-      const retryReq = httpMock.expectOne(`${apiUrl}/test`);
-      retryReq.flush(
-        {message: 'Validation failed', fieldErrors: {email: 'Invalid email'}},
-        {status: HttpStatusCode.BadRequest, statusText: 'Bad Request'}
-      );
-    }
   });
 
   it('httpInterceptor_whenErrorWithDetails_shouldAppendDetails', () => {
-    httpClient.get(`${apiUrl}/test`).subscribe({
+    httpClient.post(`${apiUrl}/test`, {}).subscribe({
       error: (err: unknown) => {
         expect((err as Error).message).toContain('Detail A');
       },
@@ -215,19 +175,10 @@ describe('httpInterceptor', () => {
       {message: 'Error occurred', details: ['Detail A']},
       {status: HttpStatusCode.BadRequest, statusText: 'Bad Request'}
     );
-
-    for (let i = 0; i < 2; i++) {
-      vi.advanceTimersByTime(500);
-      const retryReq = httpMock.expectOne(`${apiUrl}/test`);
-      retryReq.flush(
-        {message: 'Error occurred', details: ['Detail A']},
-        {status: HttpStatusCode.BadRequest, statusText: 'Bad Request'}
-      );
-    }
   });
 
   it('httpInterceptor_whenInternalServerError_shouldReturnServerErrorMessage', () => {
-    httpClient.get(`${apiUrl}/test`).subscribe({
+    httpClient.post(`${apiUrl}/test`, {}).subscribe({
       error: (err: unknown) => {
         expect((err as Error).message).toContain('server error');
       },
@@ -238,15 +189,6 @@ describe('httpInterceptor', () => {
       {message: ''},
       {status: HttpStatusCode.InternalServerError, statusText: 'Internal Server Error'}
     );
-
-    for (let i = 0; i < 2; i++) {
-      vi.advanceTimersByTime(500);
-      const retryReq = httpMock.expectOne(`${apiUrl}/test`);
-      retryReq.flush(
-        {message: ''},
-        {status: HttpStatusCode.InternalServerError, statusText: 'Internal Server Error'}
-      );
-    }
   });
 
   it('httpInterceptor_whenSuccessfulRequest_shouldPassThrough', () => {

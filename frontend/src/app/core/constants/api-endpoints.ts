@@ -10,6 +10,8 @@ export const ApiEndpoints = {
     ForgotPassword: getUrl('auth/forgot-password'),
     VerifyOtp: getUrl('auth/verify-otp'),
     ResetPassword: getUrl('auth/reset-password'),
+    Refresh: getUrl('auth/refresh'),
+    Logout: getUrl('auth/logout'),
   },
 
   User: {
