@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/payments/payu")
-@SuppressWarnings("UnknownHttpHeader") // OpenPayu-Signature is a valid PayU custom header
+@SuppressWarnings({"UnknownHttpHeader", "HttpUrlsUsage"}) // OpenPayu-Signature is a valid PayU custom header
 public class PayuController {
 
     private static final Logger logger = LoggerFactory.getLogger(PayuController.class);
