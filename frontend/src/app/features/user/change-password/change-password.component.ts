@@ -25,7 +25,7 @@ export class ChangePasswordComponent {
 
   form: ChangePasswordForm = this.formBuilder.nonNullable.group({
     oldPassword: ['', Validators.required],
-    newPassword: ['', Validators.required],
+    newPassword: ['', [Validators.required, Validators.minLength(12)]],
   });
   private readonly userPasswordService = inject(UserPasswordService);
 

@@ -44,6 +44,8 @@ import {DashboardNavGridComponent} from '../dashboard-nav-grid/dashboard-nav-gri
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent {
+  private readonly measurementService = inject(UserMeasurementService);
+  readonly weightHistory = toSignal(this.measurementService.getAllHistory());
   readonly currentWeight = computed(() => {
     const data = this.weightHistory();
     return data?.length ? data[data.length - 1].weight : null;
@@ -56,6 +58,4 @@ export class DashboardComponent {
     const prev = data[data.length - 2];
     return Number((latest.weight - prev.weight).toFixed(1));
   });
-  private readonly measurementService = inject(UserMeasurementService);
-  readonly weightHistory = toSignal(this.measurementService.getAllHistory());
 }
