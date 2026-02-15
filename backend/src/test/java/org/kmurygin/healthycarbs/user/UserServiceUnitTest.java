@@ -13,7 +13,6 @@ import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
 import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
-import org.kmurygin.healthycarbs.user.model.UserProfileImage;
 import org.kmurygin.healthycarbs.user.repository.UserRepository;
 import org.kmurygin.healthycarbs.user.service.UserProfileImageService;
 import org.kmurygin.healthycarbs.user.service.UserService;
