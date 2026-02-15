@@ -34,3 +34,5 @@ build/
 
 .env
 qodana-results/
+
+uploads/

@@ -41,3 +41,15 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# Reports and temp files
+eslint-report.json
+test-results.json
+
+# Firebase
+.firebaserc
