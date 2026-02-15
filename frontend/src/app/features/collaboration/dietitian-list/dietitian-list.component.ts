@@ -13,7 +13,7 @@ import {setErrorNotification} from '@shared/utils';
 import {generateUiAvatarsUrl} from "@features/collaboration/collaboration.utils";
 import {ContactFormComponent} from '@shared/components/contact-form/contact-form.component';
 import type {InitPaymentRequest} from '@features/payments/dto/init-payment-request';
-import {saveLastLocalOrderId} from '@features/payments/utils';
+import {saveLastLocalOrderId, validatePayuRedirectUrl} from '@features/payments/utils';
 
 @Component({
   selector: 'app-dietitian-list',
@@ -79,7 +79,13 @@ export class DietitianListComponent {
       next: (response) => {
         saveLastLocalOrderId(localOrderId);
         if (typeof window !== 'undefined') {
-          window.location.assign(response.redirectUri);
+          try {
+            validatePayuRedirectUrl(response.redirectUri);
+            window.location.assign(response.redirectUri);
+          } catch {
+            this.removePending(dietitian.id);
+            this.notificationService.error('Failed to redirect to payment page.');
+          }
         }
       },
       error: (error: unknown) => {
