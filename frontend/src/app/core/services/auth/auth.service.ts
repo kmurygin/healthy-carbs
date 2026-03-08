@@ -74,7 +74,7 @@ export class AuthService {
 
   register(payload: RegisterPayload) {
     if (isDevMode()) {
-      console.debug('[Auth] Register attempt for:', payload.email);
+      console.debug('[Auth] Register attempt');
     }
     return this.httpClient.post<ApiResponse<AuthenticationResponse>>(ApiEndpoints.Auth.Register, payload).pipe(
       map(res => {
@@ -82,7 +82,7 @@ export class AuthService {
           throw new Error(res.message ?? 'Registration failed');
         }
         if (isDevMode()) {
-          console.debug('[Auth] Registration successful for:', payload.email);
+          console.debug('[Auth] Registration successful');
         }
         return res;
       })
@@ -91,7 +91,7 @@ export class AuthService {
 
   login(payload: LoginPayload) {
     if (isDevMode()) {
-      console.debug('[Auth] Login attempt for:', payload.username);
+      console.debug('[Auth] Login attempt');
     }
     return this.httpClient.post<ApiResponse<AuthenticationResponse>>(ApiEndpoints.Auth.Login, payload).pipe(
       map(res => {
@@ -117,14 +117,24 @@ export class AuthService {
   }
 
   refreshAccessToken(): Observable<ApiResponse<AuthenticationResponse>> {
+    const currentRefreshToken = this.refreshTokenSignal();
+    if (isDevMode()) {
+      console.debug('[Auth] Calling refresh endpoint');
+    }
+
     return this.httpClient.post<ApiResponse<AuthenticationResponse>>(
       ApiEndpoints.Auth.Refresh,
-      {refreshToken: this.refreshTokenSignal()}
+      {refreshToken: currentRefreshToken}
     ).pipe(
       tap(res => {
         if (res.data?.token) {
           this.token.set(res.data.token);
           this.refreshTokenSignal.set(res.data.refreshToken);
+          if (isDevMode()) {
+            console.debug('[Auth] Tokens updated after refresh');
+          }
+        } else if (isDevMode()) {
+          console.warn('[Auth] Refresh response did not contain new tokens');
         }
       })
     );
@@ -132,7 +142,7 @@ export class AuthService {
 
   logout(): void {
     if (isDevMode()) {
-      console.debug('[Auth] Logout, user:', this.user());
+      console.debug('[Auth] Logout');
     }
 
     const currentToken = this.jwtToken();

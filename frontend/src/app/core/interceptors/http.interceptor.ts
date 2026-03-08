@@ -90,6 +90,9 @@ const handleUnauthorized = (
   authService: AuthService,
 ): Observable<HttpEvent<unknown>> => {
   if (!authService.refreshTokenValue()) {
+    if (isDevMode()) {
+      console.warn('[Auth Refresh] No refresh token available, logging out');
+    }
     authService.logout();
     return throwError(() => new Error('Session expired. Please log in again.'));
   }
@@ -97,11 +100,21 @@ const handleUnauthorized = (
   if (!authService.isRefreshing) {
     authService.isRefreshing = true;
     authService.refreshTokenSubject.next(null);
+    if (isDevMode()) {
+      console.debug('[Auth Refresh] Starting token refresh');
+    }
 
     return authService.refreshAccessToken().pipe(
       switchMap(res => {
         authService.isRefreshing = false;
         const newToken = res.data?.token;
+        if (isDevMode()) {
+          if (newToken) {
+            console.debug('[Auth Refresh] Token refresh successful, retrying original request');
+          } else {
+            console.warn('[Auth Refresh] Refresh response missing token');
+          }
+        }
         authService.refreshTokenSubject.next(newToken ?? null);
 
         return next(req.clone({
@@ -110,18 +123,31 @@ const handleUnauthorized = (
       }),
       catchError((err: unknown) => {
         authService.isRefreshing = false;
+        if (isDevMode()) {
+          const errorDetail = err instanceof HttpErrorResponse ? `${err.status}` : 'unknown';
+          console.error('[Auth Refresh] Token refresh failed, logging out. Status:', errorDetail);
+        }
+        authService.refreshTokenSubject.next(null);
         authService.logout();
         return throwError(() => err);
       })
     );
   }
 
+  if (isDevMode()) {
+    console.debug('[Auth Refresh] Refresh already in progress, queuing request');
+  }
   return authService.refreshTokenSubject.pipe(
     filter(token => token != null),
     take(1),
-    switchMap(token => next(req.clone({
-      setHeaders: {Authorization: `Bearer ${token}`}
-    })))
+    switchMap(token => {
+      if (isDevMode()) {
+        console.debug('[Auth Refresh] Queued request retrying with new token');
+      }
+      return next(req.clone({
+        setHeaders: {Authorization: `Bearer ${token}`}
+      }));
+    })
   );
 };
 
@@ -161,10 +187,6 @@ const handleError = (
   }
 
   switch (toHttpStatusCode(error.status)) {
-    case HttpStatusCode.Unauthorized:
-      authService.logout();
-      break;
-
     case HttpStatusCode.Forbidden:
       errorMessage ||= 'You do not have permission to perform this action.';
       break;
@@ -183,7 +205,6 @@ const handleError = (
   }
 
   if (isDevMode()) {
-    console.error('Response body:', error.error);
     console.groupEnd();
   }
 
