@@ -6,6 +6,7 @@ import {
   effect,
   inject,
   Injector,
+  isDevMode,
   signal,
   untracked,
   viewChild
@@ -107,12 +108,14 @@ export class HeaderComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (user) => {
-          if (!user) {
-            console.warn('User details not found for:', username);
+          if (!user && isDevMode()) {
+            console.warn('User details not found');
           }
         },
         error: (err: unknown) => {
-          console.error('Failed to fetch user details', err);
+          if (isDevMode()) {
+            console.error('Failed to fetch user details', err);
+          }
         }
       });
   }
