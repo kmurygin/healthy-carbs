@@ -3,3 +3,7 @@
 .env
 .env.prod
 .env.dev
+
+key.json
+*-credentials.json
+*-service-account.json
