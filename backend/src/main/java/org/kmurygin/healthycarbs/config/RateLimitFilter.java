@@ -13,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,12 +22,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private static final int MAX_AUTH_REQUESTS_PER_WINDOW = 10;
+    private static final int MAX_SENSITIVE_REQUESTS_PER_WINDOW = 5;
     private static final long RATE_LIMIT_WINDOW_MILLIS = 60_000;
     private static final long EVICTION_INTERVAL_MILLIS = 60_000;
     private static final String RATE_LIMITED_PATH_PREFIX = "/api/v1/auth/";
     private static final String FORWARDED_FOR_HEADER = "X-Forwarded-For";
 
+    private static final Set<String> SENSITIVE_PATHS = Set.of(
+            "/api/v1/auth/verify-otp",
+            "/api/v1/auth/forgot-password",
+            "/api/v1/auth/reset-password"
+    );
+
     private final Map<String, ClientRequestWindow> requestCountByIp = new ConcurrentHashMap<>();
+    private final Map<String, ClientRequestWindow> sensitiveRequestCountByIp = new ConcurrentHashMap<>();
 
     @Override
     protected void doFilterInternal(
@@ -43,13 +52,15 @@ public class RateLimitFilter extends OncePerRequestFilter {
         String clientIp = resolveClientIp(request);
         long currentTimeMillis = System.currentTimeMillis();
 
-        boolean isWithinLimit = requestCountByIp.compute(clientIp, (ip, existingWindow) -> {
-            if (existingWindow == null || currentTimeMillis - existingWindow.windowStartMillis() > RATE_LIMIT_WINDOW_MILLIS) {
-                return new ClientRequestWindow(currentTimeMillis, new AtomicInteger(1));
-            }
-            existingWindow.requestCount().incrementAndGet();
-            return existingWindow;
-        }).requestCount().get() <= MAX_AUTH_REQUESTS_PER_WINDOW;
+        boolean isWithinLimit = checkLimit(
+                requestCountByIp, clientIp, currentTimeMillis, MAX_AUTH_REQUESTS_PER_WINDOW
+        );
+
+        if (isWithinLimit && SENSITIVE_PATHS.contains(request.getRequestURI())) {
+            isWithinLimit = checkLimit(
+                    sensitiveRequestCountByIp, clientIp, currentTimeMillis, MAX_SENSITIVE_REQUESTS_PER_WINDOW
+            );
+        }
 
         if (!isWithinLimit) {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
@@ -62,10 +73,31 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @Scheduled(fixedRate = EVICTION_INTERVAL_MILLIS)
     void evictExpiredWindows() {
-        long currentTimeMillis = System.currentTimeMillis();
-        requestCountByIp.entrySet().removeIf(entry ->
-                currentTimeMillis - entry.getValue().windowStartMillis() > RATE_LIMIT_WINDOW_MILLIS
+        long now = System.currentTimeMillis();
+        requestCountByIp.entrySet().removeIf(
+                entry -> isExpiredOrAbsent(entry.getValue(), now)
         );
+        sensitiveRequestCountByIp.entrySet().removeIf(
+                entry -> isExpiredOrAbsent(entry.getValue(), now)
+        );
+    }
+
+    private boolean checkLimit(
+            Map<String, ClientRequestWindow> windowMap,
+            String clientIp,
+            long currentTimeMillis,
+            int maxRequests
+    ) {
+        ClientRequestWindow window = windowMap.compute(clientIp, (ip, existing) ->
+                isExpiredOrAbsent(existing, currentTimeMillis)
+                        ? new ClientRequestWindow(currentTimeMillis, new AtomicInteger(1))
+                        : existing.incrementAndGet()
+        );
+        return window.requestCount().get() <= maxRequests;
+    }
+
+    private boolean isExpiredOrAbsent(ClientRequestWindow window, long currentTimeMillis) {
+        return window == null || currentTimeMillis - window.windowStartMillis() > RATE_LIMIT_WINDOW_MILLIS;
     }
 
     private String resolveClientIp(HttpServletRequest request) {
@@ -77,5 +109,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     private record ClientRequestWindow(long windowStartMillis, AtomicInteger requestCount) {
+        ClientRequestWindow incrementAndGet() {
+            requestCount.incrementAndGet();
+            return this;
+        }
     }
 }
