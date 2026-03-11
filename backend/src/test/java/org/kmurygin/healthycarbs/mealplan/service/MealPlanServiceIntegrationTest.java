@@ -2,7 +2,6 @@ package org.kmurygin.healthycarbs.mealplan.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationService;
 import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.mealplan.DietType;
@@ -59,8 +58,6 @@ class MealPlanServiceIntegrationTest {
     private UserRepository userRepository;
 
     @MockitoBean
-    private AuthenticationService authenticationService;
-    @MockitoBean
     private DietaryProfileService dietaryProfileService;
     @MockitoBean
     private FitnessFactory fitnessFactory;
@@ -89,7 +86,7 @@ class MealPlanServiceIntegrationTest {
         testUser.setEmail("integration_" + System.currentTimeMillis() + "@test.com");
 
         persistedUser = userRepository.save(testUser);
-        when(authenticationService.getCurrentUser()).thenReturn(persistedUser);
+        when(userService.getCurrentUser()).thenReturn(persistedUser);
     }
 
     @Test
@@ -114,7 +111,7 @@ class MealPlanServiceIntegrationTest {
         newUser.setEmail("new_user_" + System.currentTimeMillis() + "@test.com");
         newUser = userRepository.save(newUser);
 
-        when(authenticationService.getCurrentUser()).thenReturn(newUser);
+        when(userService.getCurrentUser()).thenReturn(newUser);
         setupMocksForGeneration();
 
         MealPlan saved = mealPlanService.generateMealPlan();
@@ -127,7 +124,7 @@ class MealPlanServiceIntegrationTest {
     }
 
     private void setupMocksForGeneration() {
-        User currentUser = authenticationService.getCurrentUser();
+        User currentUser = userService.getCurrentUser();
 
         when(dietaryProfileService.getByUserId(currentUser.getId()))
                 .thenReturn(DietaryProfile.builder().dietType(DietType.builder().id(3L).name("VEGAN").compatibilityLevel(3).build()).build());

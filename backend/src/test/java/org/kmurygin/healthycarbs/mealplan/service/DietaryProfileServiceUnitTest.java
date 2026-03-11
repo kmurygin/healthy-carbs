@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.ActivityLevel;
 import org.kmurygin.healthycarbs.mealplan.DietGoal;
@@ -41,7 +41,7 @@ class DietaryProfileServiceUnitTest {
     private UserRepository userRepository;
 
     @Mock
-    private AuthenticationService authenticationService;
+    private UserService userService;
 
     private DietaryProfileService dietaryProfileService;
 
@@ -55,7 +55,7 @@ class DietaryProfileServiceUnitTest {
                 dietaryProfileRepository,
                 dietTypeRepository,
                 userRepository,
-                authenticationService);
+                userService);
 
         testUser = UserTestUtils.createTestUser(1L, "testuser");
 
@@ -98,7 +98,7 @@ class DietaryProfileServiceUnitTest {
             payload.setDietType("STANDARD");
             payload.setActivityLevel(ActivityLevel.MODERATE);
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(dietaryProfileRepository.findByUser(testUser)).thenReturn(null);
             when(dietTypeRepository.findByName("STANDARD")).thenReturn(java.util.Optional.of(standardDietType));
             when(dietaryProfileRepository.save(any(DietaryProfile.class))).thenAnswer(i -> {
@@ -132,7 +132,7 @@ class DietaryProfileServiceUnitTest {
                     .compatibilityLevel(2)
                     .build();
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(dietaryProfileRepository.findByUser(testUser)).thenReturn(testProfile);
             when(dietTypeRepository.findByName("VEGETARIAN")).thenReturn(java.util.Optional.of(vegetarianDietType));
             when(dietaryProfileRepository.save(any(DietaryProfile.class))).thenAnswer(i -> i.getArgument(0));
@@ -156,7 +156,7 @@ class DietaryProfileServiceUnitTest {
             payload.setDietType("STANDARD");
             payload.setActivityLevel(ActivityLevel.MODERATE);
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(dietaryProfileRepository.findByUser(testUser)).thenReturn(null);
             when(dietTypeRepository.findByName("STANDARD")).thenReturn(java.util.Optional.of(standardDietType));
             when(dietaryProfileRepository.save(any(DietaryProfile.class))).thenAnswer(i -> i.getArgument(0));
@@ -228,7 +228,7 @@ class DietaryProfileServiceUnitTest {
         @Test
         @DisplayName("isCreated_whenProfileExists_shouldReturnProfile")
         void isCreated_whenProfileExists_shouldReturnProfile() {
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(dietaryProfileRepository.findByUser(testUser)).thenReturn(testProfile);
 
             DietaryProfile result = dietaryProfileService.findCurrentUserProfile();
@@ -239,7 +239,7 @@ class DietaryProfileServiceUnitTest {
         @Test
         @DisplayName("isCreated_whenProfileNotExists_shouldReturnNull")
         void isCreated_whenProfileNotExists_shouldReturnNull() {
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(dietaryProfileRepository.findByUser(testUser)).thenReturn(null);
 
             DietaryProfile result = dietaryProfileService.findCurrentUserProfile();

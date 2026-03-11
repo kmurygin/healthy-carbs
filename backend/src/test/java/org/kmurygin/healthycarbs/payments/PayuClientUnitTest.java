@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.payments.config.PayuProperties;
 import org.kmurygin.healthycarbs.payments.dto.CreateOrderResponse;
 import org.kmurygin.healthycarbs.payments.dto.InitPaymentRequest;
@@ -40,7 +40,7 @@ class PayuClientUnitTest {
     private PayuTokenService tokenService;
 
     @Mock
-    private AuthenticationService authenticationService;
+    private UserService userService;
 
     @Mock
     private WebClient.RequestBodyUriSpec requestBodyUriSpec;
@@ -63,7 +63,7 @@ class PayuClientUnitTest {
                 "http://localhost", "123", "123", "secret", "key",
                 "http://continue.url", "http://notify.url", "PLN"
         );
-        payuClient = new PayuClient(webClient, tokenService, authenticationService, props);
+        payuClient = new PayuClient(webClient, tokenService, userService, props);
     }
 
     @Nested
@@ -82,7 +82,7 @@ class PayuClientUnitTest {
             CreateOrderResponse expectedResponse = new CreateOrderResponse("SUCCESS", "http://redirect", "PAYU-123");
 
             when(tokenService.getAccessToken()).thenReturn("test-token");
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(webClient.post()).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
             when(requestBodySpec.contentType(any())).thenReturn(requestBodySpec);
@@ -107,7 +107,7 @@ class PayuClientUnitTest {
             CreateOrderResponse expectedResponse = new CreateOrderResponse("SUCCESS", "http://redirect", "PAYU-456");
 
             when(tokenService.getAccessToken()).thenReturn("test-token");
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(webClient.post()).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
             when(requestBodySpec.contentType(any())).thenReturn(requestBodySpec);
@@ -130,7 +130,7 @@ class PayuClientUnitTest {
             CreateOrderResponse expectedResponse = new CreateOrderResponse("SUCCESS", "http://redirect", "PAYU-789");
 
             when(tokenService.getAccessToken()).thenReturn("test-token");
-            when(authenticationService.getCurrentUser()).thenReturn(null);
+            when(userService.getCurrentUser()).thenReturn(null);
             when(webClient.post()).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
             when(requestBodySpec.contentType(any())).thenReturn(requestBodySpec);

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.dto.UpdateShoppingListItemDTO;
 import org.kmurygin.healthycarbs.mealplan.model.*;
@@ -36,7 +36,7 @@ class ShoppingListServiceUnitTest {
     private MealPlanRepository mealPlanRepository;
 
     @Mock
-    private AuthenticationService authenticationService;
+    private UserService userService;
 
     private ShoppingListService shoppingListService;
 
@@ -50,7 +50,7 @@ class ShoppingListServiceUnitTest {
         shoppingListService = new ShoppingListService(
                 shoppingListRepository,
                 mealPlanRepository,
-                authenticationService
+                userService
         );
 
         testUser = UserTestUtils.createTestUser(1L, "testuser");
@@ -88,7 +88,7 @@ class ShoppingListServiceUnitTest {
         @Test
         @DisplayName("getShoppingList_whenMealPlanAndShoppingListExist_shouldReturnShoppingList")
         void getShoppingList_whenMealPlanAndShoppingListExist_shouldReturnShoppingList() {
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(mealPlanRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testMealPlan));
             when(shoppingListRepository.findByMealPlanIdWithItems(1L)).thenReturn(Optional.of(testShoppingList));
 
@@ -102,7 +102,7 @@ class ShoppingListServiceUnitTest {
         @Test
         @DisplayName("getShoppingList_whenMealPlanNotFound_shouldThrowResourceNotFoundException")
         void getShoppingList_whenMealPlanNotFound_shouldThrowResourceNotFoundException() {
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(mealPlanRepository.findByIdAndUser(999L, testUser)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> shoppingListService.getShoppingList(999L))
@@ -113,7 +113,7 @@ class ShoppingListServiceUnitTest {
         @Test
         @DisplayName("getShoppingList_whenShoppingListNotFound_shouldThrowResourceNotFoundException")
         void getShoppingList_whenShoppingListNotFound_shouldThrowResourceNotFoundException() {
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(mealPlanRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testMealPlan));
             when(shoppingListRepository.findByMealPlanIdWithItems(1L)).thenReturn(Optional.empty());
 
@@ -134,7 +134,7 @@ class ShoppingListServiceUnitTest {
             dto.setIngredientName("Chicken Breast");
             dto.setBought(true);
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(mealPlanRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testMealPlan));
             when(shoppingListRepository.findByMealPlanIdWithItems(1L)).thenReturn(Optional.of(testShoppingList));
             when(shoppingListRepository.save(any(ShoppingList.class))).thenReturn(testShoppingList);
@@ -152,7 +152,7 @@ class ShoppingListServiceUnitTest {
             dto.setIngredientName("Chicken Breast");
             dto.setBought(true);
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(mealPlanRepository.findByIdAndUser(999L, testUser)).thenReturn(Optional.of(testMealPlan));
             when(shoppingListRepository.findByMealPlanIdWithItems(999L)).thenReturn(Optional.empty());
 
@@ -168,7 +168,7 @@ class ShoppingListServiceUnitTest {
             dto.setIngredientName("Non-existent Ingredient");
             dto.setBought(true);
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(mealPlanRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testMealPlan));
             when(shoppingListRepository.findByMealPlanIdWithItems(1L)).thenReturn(Optional.of(testShoppingList));
 
@@ -184,7 +184,7 @@ class ShoppingListServiceUnitTest {
             dto.setIngredientName("CHICKEN BREAST");
             dto.setBought(true);
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(mealPlanRepository.findByIdAndUser(1L, testUser)).thenReturn(Optional.of(testMealPlan));
             when(shoppingListRepository.findByMealPlanIdWithItems(1L)).thenReturn(Optional.of(testShoppingList));
             when(shoppingListRepository.save(any(ShoppingList.class))).thenReturn(testShoppingList);

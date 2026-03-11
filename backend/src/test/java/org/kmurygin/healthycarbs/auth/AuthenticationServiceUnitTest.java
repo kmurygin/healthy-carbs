@@ -22,9 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
@@ -81,64 +78,6 @@ class AuthenticationServiceUnitTest {
                 refreshTokenService);
 
         testUser = UserTestUtils.createTestUser(1L, "testuser");
-    }
-
-    @Nested
-    @DisplayName("getCurrentUser")
-    class GetCurrentUserTests {
-
-        @Test
-        @DisplayName("getCurrentUser_whenAuthenticated_shouldReturnUser")
-        void getCurrentUser_whenAuthenticated_shouldReturnUser() {
-            SecurityContext securityContext = mock(SecurityContext.class);
-            Authentication authentication = mock(Authentication.class);
-
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-            when(authentication.isAuthenticated()).thenReturn(true);
-            when(authentication.getPrincipal()).thenReturn(testUser);
-
-            SecurityContextHolder.setContext(securityContext);
-
-            User result = authenticationService.getCurrentUser();
-
-            assertThat(result).isEqualTo(testUser);
-
-            SecurityContextHolder.clearContext();
-        }
-
-        @Test
-        @DisplayName("getCurrentUser_whenNotAuthenticated_shouldThrowUnauthorized")
-        void getCurrentUser_whenNotAuthenticated_shouldThrowUnauthorized() {
-            SecurityContext securityContext = mock(SecurityContext.class);
-            when(securityContext.getAuthentication()).thenReturn(null);
-
-            SecurityContextHolder.setContext(securityContext);
-
-            assertThatThrownBy(() -> authenticationService.getCurrentUser())
-                    .isInstanceOf(UnauthorizedException.class)
-                    .hasMessageContaining("No authenticated user found");
-
-            SecurityContextHolder.clearContext();
-        }
-
-        @Test
-        @DisplayName("getCurrentUser_whenPrincipalNotUser_shouldThrowUnauthorized")
-        void getCurrentUser_whenPrincipalNotUser_shouldThrowUnauthorized() {
-            SecurityContext securityContext = mock(SecurityContext.class);
-            Authentication authentication = mock(Authentication.class);
-
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-            when(authentication.isAuthenticated()).thenReturn(true);
-            when(authentication.getPrincipal()).thenReturn("anonymousUser");
-
-            SecurityContextHolder.setContext(securityContext);
-
-            assertThatThrownBy(() -> authenticationService.getCurrentUser())
-                    .isInstanceOf(UnauthorizedException.class)
-                    .hasMessageContaining("No authenticated user found");
-
-            SecurityContextHolder.clearContext();
-        }
     }
 
     @Nested

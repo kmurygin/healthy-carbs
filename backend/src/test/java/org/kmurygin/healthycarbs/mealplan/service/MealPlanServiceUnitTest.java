@@ -3,7 +3,6 @@ package org.kmurygin.healthycarbs.mealplan.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
@@ -52,8 +51,6 @@ class MealPlanServiceUnitTest {
     @Mock
     private MealPlanRepository mealPlanRepository;
     @Mock
-    private AuthenticationService authenticationService;
-    @Mock
     private FitnessFactory fitnessFactory;
     @Mock
     private ApplicationEventPublisher eventPublisher;
@@ -77,7 +74,6 @@ class MealPlanServiceUnitTest {
                 recipeService,
                 dietaryProfileService,
                 mealPlanRepository,
-                authenticationService,
                 Runnable::run,
                 fitnessFactory,
                 eventPublisher,
@@ -128,7 +124,7 @@ class MealPlanServiceUnitTest {
         dayGenome.setTotalProtein(20.0);
         dayGenome.setTotalFat(5.0);
 
-        when(authenticationService.getCurrentUser()).thenReturn(user);
+        when(userService.getCurrentUser()).thenReturn(user);
         when(dietaryProfileService.getByUserId(1L))
                 .thenReturn(DietaryProfile.builder().dietType(DietType.builder().id(3L).name("VEGAN").compatibilityLevel(3).build()).build());
         when(fitnessFactory.createCalorieFitness(any())).thenReturn(fitness);
@@ -154,7 +150,7 @@ class MealPlanServiceUnitTest {
     @Test
     void getMealPlansHistory_shouldReturnPlansForCurrentUser() {
         User user = UserTestUtils.createTestUser(1L, "user");
-        when(authenticationService.getCurrentUser()).thenReturn(user);
+        when(userService.getCurrentUser()).thenReturn(user);
         when(mealPlanRepository.findByUserOrderByCreatedAtAsc(user)).thenReturn(List.of(new MealPlan(), new MealPlan()));
 
         List<MealPlan> history = mealPlanService.getMealPlansHistory();
@@ -166,7 +162,7 @@ class MealPlanServiceUnitTest {
     @Test
     void findById_shouldThrowNotFound_whenMissing() {
         User user = UserTestUtils.createTestUser(1L, "user");
-        when(authenticationService.getCurrentUser()).thenReturn(user);
+        when(userService.getCurrentUser()).thenReturn(user);
         when(mealPlanRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> mealPlanService.findById(1L))
@@ -182,7 +178,7 @@ class MealPlanServiceUnitTest {
         plan.setId(10L);
         plan.setUser(owner);
 
-        when(authenticationService.getCurrentUser()).thenReturn(current);
+        when(userService.getCurrentUser()).thenReturn(current);
         when(mealPlanRepository.findById(10L)).thenReturn(Optional.of(plan));
 
         assertThatThrownBy(() -> mealPlanService.findById(10L))
@@ -199,7 +195,7 @@ class MealPlanServiceUnitTest {
         plan.setId(10L);
         plan.setUser(current);
 
-        when(authenticationService.getCurrentUser()).thenReturn(current);
+        when(userService.getCurrentUser()).thenReturn(current);
         when(mealPlanRepository.findById(10L)).thenReturn(Optional.of(plan));
 
         MealPlan result = mealPlanService.findById(10L);
@@ -214,7 +210,7 @@ class MealPlanServiceUnitTest {
         creator.setLastName("Test");
         creator.setEmail("creator@test.com");
 
-        when(authenticationService.getCurrentUser()).thenReturn(creator);
+        when(userService.getCurrentUser()).thenReturn(creator);
 
         Recipe recipe1 = Recipe.builder().id(10L).calories(100.0).carbs(10.0).protein(5.0).fat(2.0).build();
         Recipe recipe2 = Recipe.builder().id(11L).calories(200.0).carbs(20.0).protein(10.0).fat(4.0).build();
@@ -267,7 +263,7 @@ class MealPlanServiceUnitTest {
         User client = UserTestUtils.createTestUser(2L, "client");
         client.setEmail("client@test.com");
 
-        when(authenticationService.getCurrentUser()).thenReturn(dietitian);
+        when(userService.getCurrentUser()).thenReturn(dietitian);
         when(userService.getUserById(2L)).thenReturn(Optional.of(client));
         when(collaborationService.getActiveClients(dietitian)).thenReturn(List.of(client));
 
@@ -307,7 +303,7 @@ class MealPlanServiceUnitTest {
         User client = UserTestUtils.createTestUser(2L, "client");
         client.setEmail("client@test.com");
 
-        when(authenticationService.getCurrentUser()).thenReturn(dietitian);
+        when(userService.getCurrentUser()).thenReturn(dietitian);
         when(userService.getUserById(2L)).thenReturn(Optional.of(client));
         when(collaborationService.getActiveClients(dietitian)).thenReturn(List.of());
 
@@ -327,7 +323,7 @@ class MealPlanServiceUnitTest {
         User dietitian = UserTestUtils.createTestUser(1L, "dietitian");
         User client = UserTestUtils.createTestUser(2L, "client");
 
-        when(authenticationService.getCurrentUser()).thenReturn(dietitian);
+        when(userService.getCurrentUser()).thenReturn(dietitian);
         when(userService.getUserById(2L)).thenReturn(Optional.of(client));
 
         when(mealPlanRepository.findByUserAndAuthor(client, dietitian))
@@ -342,7 +338,7 @@ class MealPlanServiceUnitTest {
     @Test
     void getDietitianMealPlansForClient_shouldThrowNotFound_whenClientMissing() {
         User dietitian = UserTestUtils.createTestUser(1L, "dietitian");
-        when(authenticationService.getCurrentUser()).thenReturn(dietitian);
+        when(userService.getCurrentUser()).thenReturn(dietitian);
         when(userService.getUserById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> mealPlanService.getDietitianMealPlansForClient(999L))

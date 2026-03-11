@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.service.DietaryProfileService;
 import org.kmurygin.healthycarbs.measurements.mapper.UserMeasurementMapper;
@@ -37,7 +37,7 @@ class UserMeasurementServiceUnitTest {
     private DietaryProfileService dietaryProfileService;
 
     @Mock
-    private AuthenticationService authenticationService;
+    private UserService userService;
 
     @Mock
     private UserMeasurementMapper userMeasurementMapper;
@@ -52,7 +52,7 @@ class UserMeasurementServiceUnitTest {
         userMeasurementService = new UserMeasurementService(
                 userMeasurementRepository,
                 dietaryProfileService,
-                authenticationService,
+                userService,
                 userMeasurementMapper
         );
 
@@ -80,7 +80,7 @@ class UserMeasurementServiceUnitTest {
                     .waistCircumference(84.0)
                     .build();
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(userMeasurementRepository.save(any(UserMeasurement.class))).thenReturn(newMeasurement);
 
             userMeasurementService.addMeasurement(newMeasurement);
@@ -98,7 +98,7 @@ class UserMeasurementServiceUnitTest {
                     .waistCircumference(84.0)
                     .build();
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(userMeasurementRepository.save(any(UserMeasurement.class))).thenReturn(newMeasurement);
 
             userMeasurementService.addMeasurement(newMeasurement);
@@ -122,7 +122,7 @@ class UserMeasurementServiceUnitTest {
                     .date(Instant.now().plusSeconds(3600))
                     .build();
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(userMeasurementRepository.findAllByUserIdOrderByDateAsc(1L))
                     .thenReturn(List.of(testMeasurement, measurement2));
 
@@ -136,7 +136,7 @@ class UserMeasurementServiceUnitTest {
         @Test
         @DisplayName("findAll_whenNoMeasurements_shouldReturnEmptyList")
         void findAll_whenNoMeasurements_shouldReturnEmptyList() {
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(userMeasurementRepository.findAllByUserIdOrderByDateAsc(1L))
                     .thenReturn(List.of());
 
@@ -158,7 +158,7 @@ class UserMeasurementServiceUnitTest {
                     .waistCircumference(83.0)
                     .build();
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(userMeasurementRepository.findFirstByUserIdOrderByDateDesc(1L))
                     .thenReturn(Optional.of(testMeasurement));
             doNothing().when(userMeasurementMapper).updateEntity(testMeasurement, update);
@@ -178,7 +178,7 @@ class UserMeasurementServiceUnitTest {
                     .weight(76.0)
                     .build();
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(userMeasurementRepository.findFirstByUserIdOrderByDateDesc(1L))
                     .thenReturn(Optional.empty());
 
@@ -202,7 +202,7 @@ class UserMeasurementServiceUnitTest {
                     .date(Instant.now())
                     .build();
 
-            when(authenticationService.getCurrentUser()).thenReturn(testUser);
+            when(userService.getCurrentUser()).thenReturn(testUser);
             when(userMeasurementRepository.findFirstByUserIdOrderByDateDesc(1L))
                     .thenReturn(Optional.of(existingMeasurement));
             doNothing().when(userMeasurementMapper).updateEntity(existingMeasurement, update);
