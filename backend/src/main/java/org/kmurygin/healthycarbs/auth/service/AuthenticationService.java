@@ -16,8 +16,6 @@ import org.kmurygin.healthycarbs.user.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,14 +38,6 @@ public class AuthenticationService {
     private final EmailService emailService;
     private final SpringTemplateEngine templateEngine;
     private final RefreshTokenService refreshTokenService;
-
-    public User getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof User user) {
-            return user;
-        }
-        throw new UnauthorizedException("No authenticated user found");
-    }
 
     public AuthenticationResponse register(RegisterRequest request) {
         User user = User.builder()

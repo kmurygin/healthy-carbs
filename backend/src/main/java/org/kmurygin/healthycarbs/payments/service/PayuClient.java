@@ -1,7 +1,7 @@
 package org.kmurygin.healthycarbs.payments.service;
 
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.payments.config.PayuProperties;
 import org.kmurygin.healthycarbs.payments.dto.*;
 import org.kmurygin.healthycarbs.user.model.User;
@@ -19,7 +19,7 @@ public class PayuClient {
 
     private final WebClient webClient;
     private final PayuTokenService tokenService;
-    private final AuthenticationService authenticationService;
+    private final UserService userService;
     private final PayuProperties props;
 
     public CreateOrderResponse createOrder(InitPaymentRequest initPaymentRequest, String clientIp) {
@@ -60,7 +60,7 @@ public class PayuClient {
     }
 
     private Buyer getBuyerFromSecurityContext() {
-        User user = authenticationService.getCurrentUser();
+        User user = userService.getCurrentUser();
         if (user == null) {
             return new Buyer(
                     null,

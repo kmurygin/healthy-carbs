@@ -2,7 +2,6 @@ package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
@@ -46,7 +45,6 @@ public class MealPlanService {
     private final RecipeService recipeService;
     private final DietaryProfileService dietaryProfileService;
     private final MealPlanRepository mealPlanRepository;
-    private final AuthenticationService authenticationService;
     private final Executor taskExecutor;
     private final FitnessFactory fitnessFactory;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -60,7 +58,6 @@ public class MealPlanService {
             RecipeService recipeService,
             DietaryProfileService dietaryProfileService,
             MealPlanRepository mealPlanRepository,
-            AuthenticationService authenticationService,
             @Qualifier("applicationTaskExecutor") Executor taskExecutor,
             FitnessFactory fitnessFactory,
             ApplicationEventPublisher applicationEventPublisher,
@@ -73,7 +70,6 @@ public class MealPlanService {
         this.recipeService = recipeService;
         this.dietaryProfileService = dietaryProfileService;
         this.mealPlanRepository = mealPlanRepository;
-        this.authenticationService = authenticationService;
         this.taskExecutor = taskExecutor;
         this.fitnessFactory = fitnessFactory;
         this.applicationEventPublisher = applicationEventPublisher;
@@ -89,7 +85,7 @@ public class MealPlanService {
 
     @Transactional
     public MealPlan generateMealPlan() {
-        User user = authenticationService.getCurrentUser();
+        User user = userService.getCurrentUser();
         DietaryProfile dietaryProfile = dietaryProfileService.getByUserId(user.getId());
 
         LocalDate startOfWeek = getStartOfCurrentWeek();
@@ -144,12 +140,12 @@ public class MealPlanService {
     }
 
     public List<MealPlan> getMealPlansHistory() {
-        User user = authenticationService.getCurrentUser();
+        User user = userService.getCurrentUser();
         return mealPlanRepository.findByUserOrderByCreatedAtAsc(user);
     }
 
     public MealPlan findById(Long id) {
-        User user = authenticationService.getCurrentUser();
+        User user = userService.getCurrentUser();
         MealPlan mealPlan = mealPlanRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
 
@@ -162,7 +158,7 @@ public class MealPlanService {
 
     @Transactional
     public MealPlan createManualMealPlan(CreateMealPlanRequest request) {
-        User creator = authenticationService.getCurrentUser();
+        User creator = userService.getCurrentUser();
         User client = request.clientId() != null
                 ? userService.getUserById(request.clientId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.clientId().toString()))
@@ -208,7 +204,7 @@ public class MealPlanService {
     }
 
     public List<MealPlan> getDietitianMealPlansForClient(Long clientId) {
-        User dietitian = authenticationService.getCurrentUser();
+        User dietitian = userService.getCurrentUser();
         User client = userService.getUserById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", clientId.toString()));
 
@@ -319,7 +315,7 @@ public class MealPlanService {
     }
 
     private Boolean isAdminOrAuthor(Long id) {
-        User currentUser = authenticationService.getCurrentUser();
+        User currentUser = userService.getCurrentUser();
         MealPlan mealPlan = mealPlanRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
 

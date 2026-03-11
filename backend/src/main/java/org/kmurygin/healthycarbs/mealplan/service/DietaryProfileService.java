@@ -1,7 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.NutritionCalculator;
@@ -24,11 +24,11 @@ public class DietaryProfileService {
     private final DietaryProfileRepository dietaryProfileRepository;
     private final DietTypeRepository dietTypeRepository;
     private final UserRepository userRepository;
-    private final AuthenticationService authenticationService;
+    private final UserService userService;
 
     @Transactional
     public DietaryProfile save(DietaryProfilePayload payload) {
-        User currentUser = authenticationService.getCurrentUser();
+        User currentUser = userService.getCurrentUser();
         DietaryProfile profile = dietaryProfileRepository.findByUser(currentUser);
         if (profile == null) {
             profile = new DietaryProfile();
@@ -94,7 +94,7 @@ public class DietaryProfileService {
     }
 
     public DietaryProfile findCurrentUserProfile() {
-        User user = authenticationService.getCurrentUser();
+        User user = userService.getCurrentUser();
         return dietaryProfileRepository.findByUser(user);
     }
 

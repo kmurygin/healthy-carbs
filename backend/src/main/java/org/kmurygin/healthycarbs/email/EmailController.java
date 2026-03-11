@@ -1,7 +1,6 @@
 package org.kmurygin.healthycarbs.email;
 
 import jakarta.validation.Valid;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.service.UserService;
@@ -24,18 +23,15 @@ public class EmailController {
 
     private final EmailService emailService;
     private final UserService userService;
-    private final AuthenticationService authenticationService;
     private final SpringTemplateEngine templateEngine;
 
     public EmailController(
             EmailService emailService,
             UserService userService,
-            AuthenticationService authenticationService,
             SpringTemplateEngine templateEngine
     ) {
         this.emailService = emailService;
         this.userService = userService;
-        this.authenticationService = authenticationService;
         this.templateEngine = templateEngine;
     }
 
@@ -49,7 +45,7 @@ public class EmailController {
     @PostMapping("/contact")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<Void>> sendContactEmail(@RequestBody @Valid ContactEmailRequest request) {
-        User sender = authenticationService.getCurrentUser();
+        User sender = userService.getCurrentUser();
         User recipient = userService.getUserById(request.recipientUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.recipientUserId()));
 

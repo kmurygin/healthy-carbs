@@ -1,7 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.MealPlanGeneratedEvent;
 import org.kmurygin.healthycarbs.mealplan.dto.UpdateShoppingListItemDTO;
@@ -25,11 +25,11 @@ public class ShoppingListService {
     private static final Logger logger = LoggerFactory.getLogger(ShoppingListService.class);
     private final ShoppingListRepository shoppingListRepository;
     private final MealPlanRepository mealPlanRepository;
-    private final AuthenticationService authenticationService;
+    private final UserService userService;
 
     @Transactional
     public ShoppingList getShoppingList(Long mealPlanId) {
-        mealPlanRepository.findByIdAndUser(mealPlanId, authenticationService.getCurrentUser())
+        mealPlanRepository.findByIdAndUser(mealPlanId, userService.getCurrentUser())
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", mealPlanId));
 
         return shoppingListRepository.findByMealPlanIdWithItems(mealPlanId)
@@ -38,7 +38,7 @@ public class ShoppingListService {
 
     @Transactional
     public void updateShoppingListItemStatus(Long mealPlanId, UpdateShoppingListItemDTO dto) {
-        mealPlanRepository.findByIdAndUser(mealPlanId, authenticationService.getCurrentUser())
+        mealPlanRepository.findByIdAndUser(mealPlanId, userService.getCurrentUser())
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", mealPlanId));
 
         ShoppingList shoppingList = shoppingListRepository.findByMealPlanIdWithItems(mealPlanId)

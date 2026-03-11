@@ -1,7 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlanDay;
@@ -20,12 +20,12 @@ import java.util.Map;
 public class MealPlanPdfService {
 
     private final MealPlanRepository mealPlanRepository;
-    private final AuthenticationService authenticationService;
+    private final UserService userService;
     private final PdfGeneratorService pdfGeneratorService;
 
     @Transactional(readOnly = true)
     public byte[] generateMealPlanPdf(Long mealPlanId) {
-        User user = authenticationService.getCurrentUser();
+        User user = userService.getCurrentUser();
         MealPlan mealPlan = mealPlanRepository.findByIdAndUser(mealPlanId, user)
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan not found with id: " + mealPlanId));
 

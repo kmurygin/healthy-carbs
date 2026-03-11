@@ -2,7 +2,6 @@ package org.kmurygin.healthycarbs.mealplan.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
 import org.kmurygin.healthycarbs.mealplan.MealType;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeDTO;
 import org.kmurygin.healthycarbs.mealplan.dto.RecipeIngredientDTO;
@@ -31,7 +30,6 @@ public class RecipeController {
     private final RecipeService recipeService;
     private final RecipeMapper recipeMapper;
     private final UserService userService;
-    private final AuthenticationService authenticationService;
 
     @GetMapping
     ResponseEntity<ApiResponse<PaginatedResponse<RecipeDTO>>> findAll(
@@ -45,7 +43,7 @@ public class RecipeController {
         Set<Long> favouriteIds = userService.getFavouriteRecipesIds();
         Long userId = null;
         if (onlyFavourites != null) {
-            userId = authenticationService.getCurrentUser().getId();
+            userId = userService.getCurrentUser().getId();
         }
 
         Page<Recipe> page = recipeService.findAll(name, ingredient, diet, meal, userId, pageable);
@@ -139,7 +137,7 @@ public class RecipeController {
 
     @PostMapping("/{id}/favourite")
     public ResponseEntity<ApiResponse<Void>> addFavourite(@PathVariable Long id) {
-        User user = authenticationService.getCurrentUser();
+        User user = userService.getCurrentUser();
         recipeService.addFavourite(id, user.getId());
         return ApiResponses.success(
                 HttpStatus.NO_CONTENT,
@@ -150,7 +148,7 @@ public class RecipeController {
 
     @DeleteMapping("/{id}/favourite")
     public ResponseEntity<ApiResponse<Void>> removeFavourite(@PathVariable Long id) {
-        User user = authenticationService.getCurrentUser();
+        User user = userService.getCurrentUser();
         recipeService.removeFavourite(id, user.getId());
         return ApiResponses.success(
                 HttpStatus.NO_CONTENT,

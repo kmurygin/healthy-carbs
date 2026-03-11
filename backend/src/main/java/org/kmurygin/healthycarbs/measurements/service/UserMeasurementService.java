@@ -1,7 +1,7 @@
 package org.kmurygin.healthycarbs.measurements.service;
 
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.service.DietaryProfileService;
 import org.kmurygin.healthycarbs.measurements.mapper.UserMeasurementMapper;
@@ -20,12 +20,12 @@ public class UserMeasurementService {
 
     private final UserMeasurementRepository userMeasurementRepository;
     private final DietaryProfileService dietaryProfileService;
-    private final AuthenticationService authenticationService;
+    private final UserService userService;
     private final UserMeasurementMapper userMeasurementMapper;
 
     @Transactional
     public void addMeasurement(UserMeasurement measurement) {
-        User currentUser = authenticationService.getCurrentUser();
+        User currentUser = userService.getCurrentUser();
 
         measurement.setUser(currentUser);
         measurement.setDate(Instant.now());
@@ -38,13 +38,13 @@ public class UserMeasurementService {
     }
 
     public List<UserMeasurement> findAll() {
-        User currentUser = authenticationService.getCurrentUser();
+        User currentUser = userService.getCurrentUser();
         return userMeasurementRepository.findAllByUserIdOrderByDateAsc(currentUser.getId());
     }
 
     @Transactional
     public void updateRecentMeasurement(UserMeasurement update) {
-        User currentUser = authenticationService.getCurrentUser();
+        User currentUser = userService.getCurrentUser();
 
         UserMeasurement recent = userMeasurementRepository
                 .findFirstByUserIdOrderByDateDesc(currentUser.getId())

@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kmurygin.healthycarbs.auth.service.AuthenticationService;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.blog.dto.BlogCommentDTO;
 import org.kmurygin.healthycarbs.blog.dto.BlogPostDTO;
 import org.kmurygin.healthycarbs.blog.dto.CreateBlogCommentRequest;
@@ -40,7 +40,7 @@ public class BlogController {
 
     private final BlogService blogService;
     private final BlogMapper blogMapper;
-    private final AuthenticationService authenticationService;
+    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<PaginatedResponse<BlogPostDTO>>> getAllPosts(
@@ -66,7 +66,7 @@ public class BlogController {
         BlogPost post = blogMapper.toPostEntity(request);
         log.info("Received post: {}", request);
         log.info("Mapped post: {}", post);
-        BlogPost created = blogService.createPost(post, authenticationService.getCurrentUser());
+        BlogPost created = blogService.createPost(post, userService.getCurrentUser());
         return ApiResponses.success(
                 HttpStatus.CREATED, blogMapper.toPostDTO(created), "Post created"
         );
@@ -90,7 +90,7 @@ public class BlogController {
         BlogPost updatedPost = blogService.updatePost(
                 id,
                 postDetails,
-                authenticationService.getCurrentUser()
+                userService.getCurrentUser()
         );
 
         return ApiResponses.success(
@@ -104,7 +104,7 @@ public class BlogController {
             @RequestBody @Valid CreateBlogCommentRequest addedComment
     ) {
         BlogComment comment = blogService.addComment(
-                id, addedComment.getContent(), authenticationService.getCurrentUser()
+                id, addedComment.getContent(), userService.getCurrentUser()
         );
         return ApiResponses.success(
                 HttpStatus.CREATED, blogMapper.toCommentDTO(comment), "Comment added"
@@ -113,7 +113,7 @@ public class BlogController {
 
     @DeleteMapping("/comments/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteComment(@PathVariable Long id) {
-        blogService.deleteComment(id, authenticationService.getCurrentUser());
+        blogService.deleteComment(id, userService.getCurrentUser());
         return ApiResponses.success(
                 HttpStatus.NO_CONTENT, null, "Comment deleted"
         );
