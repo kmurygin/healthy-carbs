@@ -3,6 +3,7 @@ import type {ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router'
 import {beforeEach, describe, expect, it} from 'vitest';
 
 import {dietitianGuard} from './dietitian.guard';
+import {UserRole} from '@core/models/enum/user-role.enum';
 import {type GuardTestContext, overrideAuthServiceWithClaims, setupGuardTest} from '@testing/guard-test.util';
 
 describe('dietitianGuard', () => {
@@ -13,7 +14,7 @@ describe('dietitianGuard', () => {
   });
 
   it('dietitianGuard_whenRoleIsDietitian_shouldReturnTrue', () => {
-    overrideAuthServiceWithClaims({role: 'DIETITIAN'});
+    overrideAuthServiceWithClaims({role: UserRole.DIETITIAN});
 
     const result = TestBed.runInInjectionContext(() =>
       dietitianGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
@@ -22,7 +23,7 @@ describe('dietitianGuard', () => {
   });
 
   it('dietitianGuard_whenRoleIsAdmin_shouldReturnTrue', () => {
-    overrideAuthServiceWithClaims({role: 'ADMIN'});
+    overrideAuthServiceWithClaims({role: UserRole.ADMIN});
 
     const result = TestBed.runInInjectionContext(() =>
       dietitianGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
@@ -31,7 +32,7 @@ describe('dietitianGuard', () => {
   });
 
   it('dietitianGuard_whenRoleIsUser_shouldRedirectToRoot', () => {
-    overrideAuthServiceWithClaims({role: 'USER'});
+    overrideAuthServiceWithClaims({role: UserRole.USER});
 
     const result = TestBed.runInInjectionContext(() =>
       dietitianGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
