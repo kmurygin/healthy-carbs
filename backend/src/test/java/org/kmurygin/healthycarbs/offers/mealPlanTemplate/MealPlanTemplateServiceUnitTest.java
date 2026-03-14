@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
@@ -24,12 +25,14 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("MealPlanTemplateService Unit Tests")
 class MealPlanTemplateServiceUnitTest {
+
+    @Mock
+    private AccessControlService accessControlService;
 
     @Mock
     private MealPlanTemplateRepository mealPlanTemplateRepository;
@@ -59,6 +62,7 @@ class MealPlanTemplateServiceUnitTest {
     @BeforeEach
     void setUp() {
         mealPlanTemplateService = new MealPlanTemplateService(
+                accessControlService,
                 mealPlanTemplateRepository,
                 mealPlanService,
                 offerService,
@@ -187,7 +191,6 @@ class MealPlanTemplateServiceUnitTest {
                     .build();
 
             when(mealPlanTemplateRepository.findById(1L)).thenReturn(Optional.of(testTemplate));
-            when(userService.getCurrentUser()).thenReturn(authorUser);
             when(mealPlanTemplateRepository.save(any(MealPlanTemplate.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             MealPlanTemplate result = mealPlanTemplateService.update(1L, updatedData);
@@ -211,7 +214,6 @@ class MealPlanTemplateServiceUnitTest {
                     .build();
 
             when(mealPlanTemplateRepository.findById(1L)).thenReturn(Optional.of(testTemplate));
-            when(userService.getCurrentUser()).thenReturn(adminUser);
             when(mealPlanTemplateRepository.save(any(MealPlanTemplate.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             MealPlanTemplate result = mealPlanTemplateService.update(1L, updatedData);
@@ -228,7 +230,8 @@ class MealPlanTemplateServiceUnitTest {
                     .build();
 
             when(mealPlanTemplateRepository.findById(1L)).thenReturn(Optional.of(testTemplate));
-            when(userService.getCurrentUser()).thenReturn(otherUser);
+            doThrow(new ForbiddenException("You are not authorized to modify this MealPlanTemplate."))
+                    .when(accessControlService).assertAuthorOrAdmin(any(), any());
 
             assertThatThrownBy(() -> mealPlanTemplateService.update(1L, updatedData))
                     .isInstanceOf(ForbiddenException.class)
@@ -258,7 +261,6 @@ class MealPlanTemplateServiceUnitTest {
         @DisplayName("deleteById_whenAuthor_shouldDelete")
         void deleteById_whenAuthor_shouldDelete() {
             when(mealPlanTemplateRepository.findById(1L)).thenReturn(Optional.of(testTemplate));
-            when(userService.getCurrentUser()).thenReturn(authorUser);
 
             mealPlanTemplateService.deleteById(1L);
 
@@ -269,7 +271,6 @@ class MealPlanTemplateServiceUnitTest {
         @DisplayName("deleteById_whenAdmin_shouldDelete")
         void deleteById_whenAdmin_shouldDelete() {
             when(mealPlanTemplateRepository.findById(1L)).thenReturn(Optional.of(testTemplate));
-            when(userService.getCurrentUser()).thenReturn(adminUser);
 
             mealPlanTemplateService.deleteById(1L);
 
@@ -280,7 +281,8 @@ class MealPlanTemplateServiceUnitTest {
         @DisplayName("deleteById_whenNotAuthorOrAdmin_shouldThrowForbiddenException")
         void deleteById_whenNotAuthorOrAdmin_shouldThrowForbiddenException() {
             when(mealPlanTemplateRepository.findById(1L)).thenReturn(Optional.of(testTemplate));
-            when(userService.getCurrentUser()).thenReturn(otherUser);
+            doThrow(new ForbiddenException("You are not authorized to modify this MealPlanTemplate."))
+                    .when(accessControlService).assertAuthorOrAdmin(any(), any());
 
             assertThatThrownBy(() -> mealPlanTemplateService.deleteById(1L))
                     .isInstanceOf(ForbiddenException.class)

@@ -3,6 +3,7 @@ package org.kmurygin.healthycarbs.mealplan.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
@@ -31,6 +32,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +44,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class MealPlanServiceUnitTest {
 
+    @Mock
+    private AccessControlService accessControlService;
     @Mock
     private GeneticAlgorithm geneticAlgorithm;
     @Mock
@@ -70,6 +74,7 @@ class MealPlanServiceUnitTest {
     @BeforeEach
     void setUp() {
         mealPlanService = new MealPlanService(
+                accessControlService,
                 geneticAlgorithm,
                 recipeService,
                 dietaryProfileService,
@@ -214,8 +219,7 @@ class MealPlanServiceUnitTest {
 
         Recipe recipe1 = Recipe.builder().id(10L).calories(100.0).carbs(10.0).protein(5.0).fat(2.0).build();
         Recipe recipe2 = Recipe.builder().id(11L).calories(200.0).carbs(20.0).protein(10.0).fat(4.0).build();
-        when(recipeService.findById(10L)).thenReturn(recipe1);
-        when(recipeService.findById(11L)).thenReturn(recipe2);
+        when(recipeService.findAllByIds(List.of(10L, 11L))).thenReturn(Map.of(10L, recipe1, 11L, recipe2));
 
         CreateMealPlanRequest request = new CreateMealPlanRequest(
                 null,
@@ -268,7 +272,7 @@ class MealPlanServiceUnitTest {
         when(collaborationService.getActiveClients(dietitian)).thenReturn(List.of(client));
 
         Recipe recipe1 = Recipe.builder().id(10L).calories(100.0).carbs(10.0).protein(5.0).fat(2.0).build();
-        when(recipeService.findById(10L)).thenReturn(recipe1);
+        when(recipeService.findAllByIds(List.of(10L))).thenReturn(Map.of(10L, recipe1));
 
         LocalDate start = LocalDate.of(2026, 1, 19);
         CreateMealPlanRequest request = new CreateMealPlanRequest(

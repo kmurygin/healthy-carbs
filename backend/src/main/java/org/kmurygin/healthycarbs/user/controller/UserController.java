@@ -2,6 +2,7 @@ package org.kmurygin.healthycarbs.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.user.dto.ChangePasswordRequest;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
@@ -28,13 +29,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
+    private final AccessControlService accessControlService;
     private final UserService userService;
     private final UserPasswordService userPasswordService;
     private final UserMapper userMapper;
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserDTO>> getUserById(@PathVariable Long id) {
-        assertOwnerOrAdmin(id);
+        accessControlService.assertOwnerOrAdmin(id, "user");
         return userService.getUserById(id)
                 .map(user -> ApiResponses.success(userMapper.toDTO(user)))
                 .orElse(ApiResponses.failure(HttpStatus.NOT_FOUND, "User not found"));
@@ -63,23 +65,16 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserDTO>> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequest request) {
-        assertOwnerOrAdmin(id);
+        accessControlService.assertOwnerOrAdmin(id, "user");
         UserDTO dto = userMapper.toDTO(userService.update(id, request));
         return ApiResponses.success(dto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
-        assertOwnerOrAdmin(id);
+        accessControlService.assertOwnerOrAdmin(id, "user");
         userService.deleteUser(id);
         return ApiResponses.success(HttpStatus.NO_CONTENT, null, "User deleted");
-    }
-
-    private void assertOwnerOrAdmin(Long userId) {
-        User currentUser = userService.getCurrentUser();
-        if (!currentUser.getId().equals(userId) && currentUser.getRole() != Role.ADMIN) {
-            throw new ForbiddenException("You are not authorized to access this resource.");
-        }
     }
 
     @PostMapping("/change-password")

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.exception.BadRequestException;
 import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
@@ -37,6 +38,9 @@ import static org.mockito.Mockito.*;
 class IngredientServiceUnitTest {
 
     @Mock
+    private AccessControlService accessControlService;
+
+    @Mock
     private IngredientRepository ingredientRepository;
 
     @Mock
@@ -53,7 +57,7 @@ class IngredientServiceUnitTest {
 
     @BeforeEach
     void setUp() {
-        ingredientService = new IngredientService(ingredientRepository, userService, recipeIngredientRepository);
+        ingredientService = new IngredientService(accessControlService, ingredientRepository, userService, recipeIngredientRepository);
 
         testUser = UserTestUtils.createTestUser(1L, "testuser", Role.DIETITIAN);
         adminUser = UserTestUtils.createTestUser(2L, "admin", Role.ADMIN);
@@ -232,7 +236,6 @@ class IngredientServiceUnitTest {
                     .build();
 
             when(ingredientRepository.findById(1L)).thenReturn(Optional.of(testIngredient));
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(ingredientRepository.save(any(Ingredient.class))).thenReturn(testIngredient);
 
             Ingredient result = ingredientService.update(1L, updatedIngredient);
@@ -249,7 +252,6 @@ class IngredientServiceUnitTest {
                     .build();
 
             when(ingredientRepository.findById(1L)).thenReturn(Optional.of(testIngredient));
-            when(userService.getCurrentUser()).thenReturn(adminUser);
             when(ingredientRepository.save(any(Ingredient.class))).thenReturn(testIngredient);
 
             Ingredient result = ingredientService.update(1L, updatedIngredient);
@@ -261,13 +263,13 @@ class IngredientServiceUnitTest {
         @Test
         @DisplayName("update_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException")
         void update_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException() {
-            User otherUser = UserTestUtils.createTestUser(3L, "otheruser", Role.DIETITIAN);
             Ingredient updatedIngredient = Ingredient.builder()
                     .name("Unauthorized Update")
                     .build();
 
             when(ingredientRepository.findById(1L)).thenReturn(Optional.of(testIngredient));
-            when(userService.getCurrentUser()).thenReturn(otherUser);
+            doThrow(new ForbiddenException("You are not authorized to modify this ingredient."))
+                    .when(accessControlService).assertAuthorOrAdmin(any(), any());
 
             assertThatThrownBy(() -> ingredientService.update(1L, updatedIngredient))
                     .isInstanceOf(ForbiddenException.class)
@@ -296,7 +298,6 @@ class IngredientServiceUnitTest {
         @DisplayName("deleteById_whenAuthorAndNotUsedInRecipes_shouldDelete")
         void deleteById_whenAuthorAndNotUsedInRecipes_shouldDelete() {
             when(ingredientRepository.findById(1L)).thenReturn(Optional.of(testIngredient));
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(recipeIngredientRepository.existsByIngredientId(1L)).thenReturn(false);
             doNothing().when(ingredientRepository).delete(testIngredient);
 
@@ -309,7 +310,6 @@ class IngredientServiceUnitTest {
         @DisplayName("deleteById_whenAdminAndNotUsedInRecipes_shouldDelete")
         void deleteById_whenAdminAndNotUsedInRecipes_shouldDelete() {
             when(ingredientRepository.findById(1L)).thenReturn(Optional.of(testIngredient));
-            when(userService.getCurrentUser()).thenReturn(adminUser);
             when(recipeIngredientRepository.existsByIngredientId(1L)).thenReturn(false);
             doNothing().when(ingredientRepository).delete(testIngredient);
 
@@ -321,10 +321,9 @@ class IngredientServiceUnitTest {
         @Test
         @DisplayName("deleteById_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException")
         void deleteById_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException() {
-            User otherUser = UserTestUtils.createTestUser(3L, "otheruser", Role.DIETITIAN);
-
             when(ingredientRepository.findById(1L)).thenReturn(Optional.of(testIngredient));
-            when(userService.getCurrentUser()).thenReturn(otherUser);
+            doThrow(new ForbiddenException("You are not authorized to modify this ingredient."))
+                    .when(accessControlService).assertAuthorOrAdmin(any(), any());
 
             assertThatThrownBy(() -> ingredientService.deleteById(1L))
                     .isInstanceOf(ForbiddenException.class)
@@ -335,7 +334,6 @@ class IngredientServiceUnitTest {
         @DisplayName("deleteById_whenUsedInRecipes_shouldThrowBadRequestException")
         void deleteById_whenUsedInRecipes_shouldThrowBadRequestException() {
             when(ingredientRepository.findById(1L)).thenReturn(Optional.of(testIngredient));
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(recipeIngredientRepository.existsByIngredientId(1L)).thenReturn(true);
 
             assertThatThrownBy(() -> ingredientService.deleteById(1L))
