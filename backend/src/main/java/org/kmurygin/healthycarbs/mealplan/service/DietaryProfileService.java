@@ -1,7 +1,6 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.NutritionCalculator;
@@ -11,6 +10,7 @@ import org.kmurygin.healthycarbs.mealplan.repository.DietTypeRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.DietaryProfileRepository;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.repository.UserRepository;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

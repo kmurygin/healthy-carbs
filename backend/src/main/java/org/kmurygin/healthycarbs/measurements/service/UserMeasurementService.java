@@ -1,13 +1,13 @@
 package org.kmurygin.healthycarbs.measurements.service;
 
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.service.DietaryProfileService;
 import org.kmurygin.healthycarbs.measurements.mapper.UserMeasurementMapper;
 import org.kmurygin.healthycarbs.measurements.model.UserMeasurement;
 import org.kmurygin.healthycarbs.measurements.repository.UserMeasurementRepository;
 import org.kmurygin.healthycarbs.user.model.User;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

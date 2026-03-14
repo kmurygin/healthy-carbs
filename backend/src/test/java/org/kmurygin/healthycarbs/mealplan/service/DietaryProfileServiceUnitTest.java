@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.ActivityLevel;
 import org.kmurygin.healthycarbs.mealplan.DietGoal;
@@ -17,6 +16,7 @@ import org.kmurygin.healthycarbs.mealplan.repository.DietaryProfileRepository;
 import org.kmurygin.healthycarbs.user.UserTestUtils;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.repository.UserRepository;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 

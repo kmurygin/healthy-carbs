@@ -1,13 +1,13 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.MealPlanGeneratedEvent;
 import org.kmurygin.healthycarbs.mealplan.dto.UpdateShoppingListItemDTO;
 import org.kmurygin.healthycarbs.mealplan.model.*;
 import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.ShoppingListRepository;
+import org.kmurygin.healthycarbs.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
