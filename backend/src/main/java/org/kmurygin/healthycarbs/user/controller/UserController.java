@@ -18,8 +18,7 @@ import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,8 +42,10 @@ public class UserController {
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<ApiResponse<UserDTO>> getUserByUsername(@PathVariable String username) {
-        User currentUser = userService.getCurrentUser();
+    public ResponseEntity<ApiResponse<UserDTO>> getUserByUsername(
+            @PathVariable String username,
+            @AuthenticationPrincipal User currentUser
+    ) {
         if (!currentUser.getUsername().equals(username) && currentUser.getRole() != Role.ADMIN) {
             throw new ForbiddenException("You are not authorized to view this user profile.");
         }
@@ -79,9 +80,9 @@ public class UserController {
 
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
-            @Valid @RequestBody ChangePasswordRequest request) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
+            @Valid @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal User currentUser) {
+        String username = currentUser.getUsername();
         userPasswordService.changePassword(username, request.getOldPassword(), request.getNewPassword());
         return ApiResponses.success(
                 HttpStatus.OK, null, "Password has been changed successfully");

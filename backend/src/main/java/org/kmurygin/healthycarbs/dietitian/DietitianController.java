@@ -17,11 +17,11 @@ import org.kmurygin.healthycarbs.user.mapper.UserMapper;
 import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.service.UserAdminService;
-import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +31,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DietitianController {
 
-    private final UserService userService;
     private final UserAdminService userAdminService;
     private final CollaborationService collaborationService;
     private final DietaryProfileService dietaryProfileService;
@@ -52,8 +51,8 @@ public class DietitianController {
 
     @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     @GetMapping("/clients")
-    public ResponseEntity<ApiResponse<List<UserDTO>>> getMyClients() {
-        User dietitian = userService.getCurrentUser();
+    public ResponseEntity<ApiResponse<List<UserDTO>>> getMyClients(
+            @AuthenticationPrincipal User dietitian) {
         List<UserDTO> clients = collaborationService.getActiveClients(dietitian)
                 .stream()
                 .map(userMapper::toDTO)
@@ -64,8 +63,8 @@ public class DietitianController {
     @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     @GetMapping("/clients/{clientId}/measurements")
     public ResponseEntity<ApiResponse<List<UserMeasurementDTO>>> getClientMeasurements(
-            @PathVariable Long clientId) {
-        User dietitian = userService.getCurrentUser();
+            @PathVariable Long clientId,
+            @AuthenticationPrincipal User dietitian) {
         List<UserMeasurementDTO> measurements = collaborationService.getClientMeasurements(dietitian, clientId)
                 .stream()
                 .map(measurementMapper::toDTO)
@@ -76,8 +75,8 @@ public class DietitianController {
     @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     @GetMapping("/clients/{clientId}/dietary-profile")
     public ResponseEntity<ApiResponse<DietaryProfileDTO>> getClientDietaryProfile(
-            @PathVariable Long clientId) {
-        User dietitian = userService.getCurrentUser();
+            @PathVariable Long clientId,
+            @AuthenticationPrincipal User dietitian) {
 
         boolean hasAccess = collaborationService.getActiveClients(dietitian).stream()
                 .anyMatch(client -> client.getId().equals(clientId));
@@ -92,24 +91,26 @@ public class DietitianController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/my-collaborations")
-    public ResponseEntity<ApiResponse<List<Long>>> getMyCollaborations() {
-        User client = userService.getCurrentUser();
+    public ResponseEntity<ApiResponse<List<Long>>> getMyCollaborations(
+            @AuthenticationPrincipal User client) {
         List<Long> dietitianIds = collaborationService.getActiveCollaborationDietitianIds(client);
         return ApiResponses.success(dietitianIds);
     }
 
     @PreAuthorize("hasAnyRole('USER', 'DIETITIAN', 'ADMIN')")
     @PostMapping("/collaboration/{dietitianId}")
-    public ResponseEntity<ApiResponse<Boolean>> establishCollaboration(@PathVariable Long dietitianId) {
-        User client = userService.getCurrentUser();
+    public ResponseEntity<ApiResponse<Boolean>> establishCollaboration(
+            @PathVariable Long dietitianId,
+            @AuthenticationPrincipal User client) {
         collaborationService.establishCollaboration(dietitianId, client.getId());
         return ApiResponses.success(true);
     }
 
     @PreAuthorize("hasAnyRole('USER', 'DIETITIAN', 'ADMIN')")
     @DeleteMapping("/collaboration/{dietitianId}")
-    public ResponseEntity<ApiResponse<Boolean>> cancelCollaboration(@PathVariable Long dietitianId) {
-        User client = userService.getCurrentUser();
+    public ResponseEntity<ApiResponse<Boolean>> cancelCollaboration(
+            @PathVariable Long dietitianId,
+            @AuthenticationPrincipal User client) {
         collaborationService.cancelCollaboration(client, dietitianId);
         return ApiResponses.success(true);
     }
@@ -117,8 +118,8 @@ public class DietitianController {
     @PreAuthorize("hasAnyRole('DIETITIAN', 'ADMIN')")
     @GetMapping("/clients/{clientId}/meal-plans")
     public ResponseEntity<ApiResponse<List<MealPlanDTO>>> getClientMealPlans(
-            @PathVariable Long clientId) {
-        User dietitian = userService.getCurrentUser();
+            @PathVariable Long clientId,
+            @AuthenticationPrincipal User dietitian) {
 
         boolean hasAccess = collaborationService.getActiveClients(dietitian).stream()
                 .anyMatch(client -> client.getId().equals(clientId));

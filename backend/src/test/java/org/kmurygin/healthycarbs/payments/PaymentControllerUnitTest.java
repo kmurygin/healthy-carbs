@@ -9,7 +9,6 @@ import org.kmurygin.healthycarbs.payments.dto.PaymentSummaryDTO;
 import org.kmurygin.healthycarbs.payments.service.PaymentSummaryService;
 import org.kmurygin.healthycarbs.user.UserTestUtils;
 import org.kmurygin.healthycarbs.user.model.User;
-import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,16 +28,13 @@ class PaymentControllerUnitTest {
     @Mock
     private PaymentSummaryService paymentSummaryService;
 
-    @Mock
-    private UserService userService;
-
     private PaymentController paymentController;
 
     private User testUser;
 
     @BeforeEach
     void setUp() {
-        paymentController = new PaymentController(paymentSummaryService, userService);
+        paymentController = new PaymentController(paymentSummaryService);
         testUser = UserTestUtils.createTestUser(1L, "testuser");
     }
 
@@ -49,10 +45,9 @@ class PaymentControllerUnitTest {
                 new PaymentSummaryDTO(1L, "PayU", "Plan A", "ORD-1", 9900, "PLN", "COMPLETED", OffsetDateTime.now())
         );
 
-        when(userService.getCurrentUser()).thenReturn(testUser);
         when(paymentSummaryService.getPaymentSummariesByUserId(1L)).thenReturn(summaries);
 
-        ResponseEntity<ApiResponse<List<PaymentSummaryDTO>>> response = paymentController.getPaymentSummariesByUserId();
+        ResponseEntity<ApiResponse<List<PaymentSummaryDTO>>> response = paymentController.getPaymentSummariesByUserId(testUser);
 
         assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody()).isNotNull();
@@ -63,10 +58,9 @@ class PaymentControllerUnitTest {
     @Test
     @DisplayName("getPaymentSummaries_whenEmpty_shouldReturnEmptyList")
     void getPaymentSummaries_whenEmpty_shouldReturnEmptyList() {
-        when(userService.getCurrentUser()).thenReturn(testUser);
         when(paymentSummaryService.getPaymentSummariesByUserId(1L)).thenReturn(List.of());
 
-        ResponseEntity<ApiResponse<List<PaymentSummaryDTO>>> response = paymentController.getPaymentSummariesByUserId();
+        ResponseEntity<ApiResponse<List<PaymentSummaryDTO>>> response = paymentController.getPaymentSummariesByUserId(testUser);
 
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getData()).isEmpty();

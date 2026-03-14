@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.user.controller.UserController;
 import org.kmurygin.healthycarbs.user.dto.ChangePasswordRequest;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
@@ -20,9 +21,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
@@ -34,6 +32,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserController Unit Tests")
 class UserControllerUnitTest {
+
+    @Mock
+    private AccessControlService accessControlService;
 
     @Mock
     private UserService userService;
@@ -70,7 +71,6 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("getUserById_whenUserExists_shouldReturnUserDTO")
         void getUserById_whenUserExists_shouldReturnUserDTO() {
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(userService.getUserById(1L)).thenReturn(Optional.of(testUser));
             when(userMapper.toDTO(testUser)).thenReturn(testUserDTO);
 
@@ -84,8 +84,6 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("getUserById_whenUserNotExists_shouldReturnNotFound")
         void getUserById_whenUserNotExists_shouldReturnNotFound() {
-            User admin = UserTestUtils.createAdmin();
-            when(userService.getCurrentUser()).thenReturn(admin);
             when(userService.getUserById(999L)).thenReturn(Optional.empty());
 
             ResponseEntity<?> response = userController.getUserById(999L);
@@ -101,11 +99,10 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("getUserByUsername_whenUserExists_shouldReturnUserDTO")
         void getUserByUsername_whenUserExists_shouldReturnUserDTO() {
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(userService.getUserByUsername("userUsername")).thenReturn(Optional.of(testUser));
             when(userMapper.toDTO(testUser)).thenReturn(testUserDTO);
 
-            ResponseEntity<?> response = userController.getUserByUsername("userUsername");
+            ResponseEntity<?> response = userController.getUserByUsername("userUsername", testUser);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         }
@@ -114,10 +111,9 @@ class UserControllerUnitTest {
         @DisplayName("getUserByUsername_whenUserNotExists_shouldReturnNotFound")
         void getUserByUsername_whenUserNotExists_shouldReturnNotFound() {
             User admin = UserTestUtils.createAdmin();
-            when(userService.getCurrentUser()).thenReturn(admin);
             when(userService.getUserByUsername("unknown")).thenReturn(Optional.empty());
 
-            ResponseEntity<?> response = userController.getUserByUsername("unknown");
+            ResponseEntity<?> response = userController.getUserByUsername("unknown", admin);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         }
@@ -157,7 +153,6 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("updateUser_whenValidRequest_shouldReturnOk")
         void updateUser_whenValidRequest_shouldReturnOk() {
-            when(userService.getCurrentUser()).thenReturn(testUser);
             UpdateUserRequest request = UpdateUserRequest.builder()
                     .firstName("Updated")
                     .lastName("Name")
@@ -182,7 +177,6 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("deleteUser_whenUserExists_shouldReturnNoContent")
         void deleteUser_whenUserExists_shouldReturnNoContent() {
-            when(userService.getCurrentUser()).thenReturn(testUser);
             doNothing().when(userService).deleteUser(1L);
 
             ResponseEntity<?> response = userController.deleteUser(1L);
@@ -199,7 +193,7 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("changePassword_whenValidRequest_shouldReturnOk")
         void changePassword_whenValidRequest_shouldReturnOk() {
-            setupSecurityContext("testuser");
+            User user = UserTestUtils.createTestUser(1L, "testuser");
 
             ChangePasswordRequest request = ChangePasswordRequest.builder()
                     .oldPassword("oldPassword12")
@@ -208,20 +202,10 @@ class UserControllerUnitTest {
 
             doNothing().when(userPasswordService).changePassword("testuser", "oldPassword12", "newPassword123");
 
-            ResponseEntity<?> response = userController.changePassword(request);
+            ResponseEntity<?> response = userController.changePassword(request, user);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             verify(userPasswordService).changePassword("testuser", "oldPassword12", "newPassword123");
-
-            SecurityContextHolder.clearContext();
-        }
-
-        private void setupSecurityContext(String username) {
-            SecurityContext securityContext = mock(SecurityContext.class);
-            Authentication authentication = mock(Authentication.class);
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-            when(authentication.getName()).thenReturn(username);
-            SecurityContextHolder.setContext(securityContext);
         }
     }
 }

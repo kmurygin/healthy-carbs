@@ -12,7 +12,6 @@ import org.kmurygin.healthycarbs.user.mapper.UserMapper;
 import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.service.UserAdminService;
-import org.kmurygin.healthycarbs.user.service.UserService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,9 +32,6 @@ class UserAdminControllerUnitTest {
 
     @Mock
     private UserAdminService userAdminService;
-
-    @Mock
-    private UserService userService;
 
     @Mock
     private UserMapper userMapper;
@@ -102,11 +98,10 @@ class UserAdminControllerUnitTest {
             User updatedUser = User.builder().id(2L).role(Role.DIETITIAN).build();
             UserDTO updatedDTO = UserDTO.builder().id(2L).role(Role.DIETITIAN).build();
 
-            when(userService.getCurrentUser()).thenReturn(adminUser);
             when(userAdminService.changeUserRole(eq(2L), eq(Role.DIETITIAN), any())).thenReturn(updatedUser);
             when(userMapper.toDTO(updatedUser)).thenReturn(updatedDTO);
 
-            ResponseEntity<?> response = userAdminController.changeUserRole(2L, request);
+            ResponseEntity<?> response = userAdminController.changeUserRole(2L, request, adminUser);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             verify(userAdminService).changeUserRole(eq(2L), eq(Role.DIETITIAN), any());
@@ -123,11 +118,10 @@ class UserAdminControllerUnitTest {
             User toggledUser = User.builder().id(2L).isActive(false).build();
             UserDTO toggledDTO = UserDTO.builder().id(2L).isActive(false).build();
 
-            when(userService.getCurrentUser()).thenReturn(adminUser);
             when(userAdminService.toggleUserActiveStatus(eq(2L), any())).thenReturn(toggledUser);
             when(userMapper.toDTO(toggledUser)).thenReturn(toggledDTO);
 
-            ResponseEntity<?> response = userAdminController.toggleUserActiveStatus(2L);
+            ResponseEntity<?> response = userAdminController.toggleUserActiveStatus(2L, adminUser);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             verify(userAdminService).toggleUserActiveStatus(eq(2L), any());

@@ -9,6 +9,7 @@ import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,8 +45,9 @@ public class EmailController {
 
     @PostMapping("/contact")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<Void>> sendContactEmail(@RequestBody @Valid ContactEmailRequest request) {
-        User sender = userService.getCurrentUser();
+    public ResponseEntity<ApiResponse<Void>> sendContactEmail(
+            @RequestBody @Valid ContactEmailRequest request,
+            @AuthenticationPrincipal User sender) {
         User recipient = userService.getUserById(request.recipientUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.recipientUserId()));
 

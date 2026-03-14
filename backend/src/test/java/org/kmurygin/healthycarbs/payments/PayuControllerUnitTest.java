@@ -16,7 +16,6 @@ import org.kmurygin.healthycarbs.payments.service.PaymentService;
 import org.kmurygin.healthycarbs.payments.service.PayuClient;
 import org.kmurygin.healthycarbs.user.UserTestUtils;
 import org.kmurygin.healthycarbs.user.model.User;
-import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -43,15 +42,13 @@ class PayuControllerUnitTest {
     @Mock
     private PayuClient payuClient;
     @Mock
-    private UserService userService;
-    @Mock
     private PayuProperties payuProperties;
     private PayuController payuController;
     private User testUser;
 
     @BeforeEach
     void setUp() {
-        payuController = new PayuController(objectMapper, paymentService, orderService, payuClient, userService, payuProperties);
+        payuController = new PayuController(objectMapper, paymentService, orderService, payuClient, payuProperties);
         testUser = UserTestUtils.createTestUser(1L, "testuser");
     }
 
@@ -77,11 +74,10 @@ class PayuControllerUnitTest {
 
             HttpServletRequest httpRequest = mock(HttpServletRequest.class);
             when(httpRequest.getRemoteAddr()).thenReturn("192.168.1.1");
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(orderService.processPaymentRequest(request, testUser)).thenReturn(order);
             when(payuClient.createOrder(request, "192.168.1.1")).thenReturn(payuResponse);
 
-            ResponseEntity<ApiResponse<InitPaymentResponse>> response = payuController.create(request, httpRequest);
+            ResponseEntity<ApiResponse<InitPaymentResponse>> response = payuController.create(request, httpRequest, testUser);
 
             assertThat(response.getStatusCode().value()).isEqualTo(201);
             assertThat(response.getBody()).isNotNull();
@@ -203,10 +199,9 @@ class PayuControllerUnitTest {
         @DisplayName("status_shouldReturnPaymentStatus")
         void status_shouldReturnPaymentStatus() {
             PaymentStatusResponse statusResponse = new PaymentStatusResponse("ORDER-123", PaymentStatus.COMPLETED);
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(paymentService.getStatus("ORDER-123", testUser)).thenReturn(statusResponse);
 
-            ResponseEntity<ApiResponse<PaymentStatusResponse>> response = payuController.status("ORDER-123");
+            ResponseEntity<ApiResponse<PaymentStatusResponse>> response = payuController.status("ORDER-123", testUser);
 
             assertThat(response.getStatusCode().value()).isEqualTo(200);
             assertThat(response.getBody()).isNotNull();
@@ -226,11 +221,10 @@ class PayuControllerUnitTest {
                     "ORDER-123", "Test", 9900, "PLN", OffsetDateTime.now(), PaymentStatus.COMPLETED
             );
 
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(paymentService.getStatus("ORDER-123", testUser)).thenReturn(statusResponse);
             when(orderService.getByLocalOrderId("ORDER-123", PaymentStatus.COMPLETED, testUser)).thenReturn(orderResponse);
 
-            ResponseEntity<ApiResponse<OrderResponse>> response = payuController.order("ORDER-123");
+            ResponseEntity<ApiResponse<OrderResponse>> response = payuController.order("ORDER-123", testUser);
 
             assertThat(response.getStatusCode().value()).isEqualTo(200);
             assertThat(response.getBody()).isNotNull();

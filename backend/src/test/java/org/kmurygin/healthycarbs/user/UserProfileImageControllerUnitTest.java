@@ -9,7 +9,6 @@ import org.kmurygin.healthycarbs.user.controller.UserProfileImageController;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.model.UserProfileImage;
 import org.kmurygin.healthycarbs.user.service.UserProfileImageService;
-import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -27,9 +26,6 @@ class UserProfileImageControllerUnitTest {
 
     @Mock
     private UserProfileImageService profileImageService;
-
-    @Mock
-    private UserService userService;
 
     @InjectMocks
     private UserProfileImageController controller;
@@ -49,9 +45,8 @@ class UserProfileImageControllerUnitTest {
         @DisplayName("uploadProfileImage_shouldReturnOk")
         void uploadProfileImage_shouldReturnOk() {
             MultipartFile file = mock(MultipartFile.class);
-            when(userService.getCurrentUser()).thenReturn(testUser);
 
-            ResponseEntity<ApiResponse<Void>> response = controller.uploadProfileImage(1L, file);
+            ResponseEntity<ApiResponse<Void>> response = controller.uploadProfileImage(1L, file, testUser);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             verify(profileImageService).uploadProfileImage(1L, file, testUser);
