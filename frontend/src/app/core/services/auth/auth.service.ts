@@ -145,23 +145,21 @@ export class AuthService {
       return throwError(() => new Error('Session expired. Please log in again.'));
     }
 
-    if (!this.refreshInProgress$) {
-      this.refreshInProgress$ = this.refreshAccessToken().pipe(
-        map(res => {
-          const token = res.data?.token;
-          if (!token) throw new Error('Token refresh failed');
-          return token;
-        }),
-        catchError(err => {
-          this.logout();
-          return throwError(() => err);
-        }),
-        finalize(() => {
-          this.refreshInProgress$ = null;
-        }),
-        shareReplay(1)
-      );
-    }
+    this.refreshInProgress$ ??= this.refreshAccessToken().pipe(
+      map(res => {
+        const token = res.data?.token;
+        if (!token) throw new Error('Token refresh failed');
+        return token;
+      }),
+      catchError((err: unknown) => {
+        this.logout();
+        return throwError(() => err);
+      }),
+      finalize(() => {
+        this.refreshInProgress$ = null;
+      }),
+      shareReplay({bufferSize: 1, refCount: true})
+    );
 
     return this.refreshInProgress$;
   }
