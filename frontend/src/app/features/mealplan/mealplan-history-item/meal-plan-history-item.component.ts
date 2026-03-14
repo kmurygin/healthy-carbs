@@ -3,12 +3,13 @@ import {CommonModule, TitleCasePipe} from '@angular/common';
 import type {MealPlanDayDto} from '@core/models/dto/mealplan-day.dto';
 import type {MealPlanRecipeDto} from '@core/models/dto/mealplan-recipe.dto';
 import {RouterModule} from '@angular/router';
+import {MacroSummaryComponent} from '@shared/components/macro-summary/macro-summary.component';
 import type {Grouped, Macros} from "../mealplan.util";
 import {roundMacros} from "../mealplan.util";
 
 @Component({
   selector: 'app-mealplan-history-item',
-  imports: [CommonModule, TitleCasePipe, RouterModule],
+  imports: [CommonModule, TitleCasePipe, RouterModule, MacroSummaryComponent],
   templateUrl: './meal-plan-history-item.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

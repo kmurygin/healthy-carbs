@@ -2,12 +2,13 @@ import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core
 import {CommonModule, DatePipe} from '@angular/common';
 import {RouterLink} from '@angular/router';
 import {SourceTagComponent} from '@features/mealplan/source-tag/source-tag.component';
+import {MacroSummaryComponent} from '@shared/components/macro-summary/macro-summary.component';
 import {buildRows, type MealPlanRow} from '@features/mealplan/mealplan.util';
 import {type MealPlanDto} from '@core/models/dto/mealplan.dto';
 
 @Component({
   selector: 'app-mealplan-table',
-  imports: [CommonModule, RouterLink, DatePipe, SourceTagComponent],
+  imports: [CommonModule, RouterLink, DatePipe, SourceTagComponent, MacroSummaryComponent],
   template: `
     <div class="md:hidden space-y-4">
       @for (planRow of rows(); track planRow.id) {
@@ -27,24 +28,7 @@ import {type MealPlanDto} from '@core/models/dto/mealplan.dto';
               {{ planRow.daysCount }} days
             </div>
 
-            <div class="mt-2 flex flex-row flex-wrap gap-x-3 gap-y-1 text-sm text-gray-600">
-            <span class="inline-flex items-center gap-1.5 font-medium">
-              <i aria-hidden="true" class="fa-solid fa-fire w-3 text-center text-orange-500"></i>
-              {{ planRow.total.calories }} kcal
-            </span>
-              <span class="inline-flex items-center gap-1.5 font-medium">
-              <i aria-hidden="true" class="fa-solid fa-bread-slice w-3 text-center text-amber-600"></i>
-                {{ planRow.total.carbs }} g
-            </span>
-              <span class="inline-flex items-center gap-1.5 font-medium">
-              <i aria-hidden="true" class="fa-solid fa-drumstick-bite w-3 text-center text-red-500"></i>
-                {{ planRow.total.protein }} g
-            </span>
-              <span class="inline-flex items-center gap-1.5 font-medium">
-              <i aria-hidden="true" class="fa-solid fa-bottle-droplet w-3 text-center text-yellow-600"></i>
-                {{ planRow.total.fat }} g
-            </span>
-            </div>
+            <app-macro-summary class="mt-2" [macros]="planRow.total"/>
 
             <div class="mt-3 flex items-center justify-end text-emerald-600 text-sm font-medium">
               <i class="fa-solid fa-arrow-right ml-1.5"></i>
