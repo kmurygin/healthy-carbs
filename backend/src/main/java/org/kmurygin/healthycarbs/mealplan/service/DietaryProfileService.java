@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.NutritionCalculator;
@@ -11,16 +12,14 @@ import org.kmurygin.healthycarbs.mealplan.repository.DietaryProfileRepository;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.repository.UserRepository;
 import org.kmurygin.healthycarbs.user.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class DietaryProfileService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DietaryProfileService.class);
     private final DietaryProfileRepository dietaryProfileRepository;
     private final DietTypeRepository dietTypeRepository;
     private final UserRepository userRepository;
@@ -41,7 +40,7 @@ public class DietaryProfileService {
         profile.setProteinTarget(targets.proteinGrams());
         profile.setFatTarget(targets.fatGrams());
 
-        logger.info("Saving dietary profile for user {}: {}", currentUser.getId(), profile);
+        log.info("Saving dietary profile for user {}: {}", currentUser.getId(), profile);
         return dietaryProfileRepository.save(profile);
     }
 
@@ -53,7 +52,7 @@ public class DietaryProfileService {
             applyNutritionalTargets(profile);
             dietaryProfileRepository.save(profile);
 
-            logger.info("Updated weight for user {} to {} kg and recalculated targets.", user.getId(), newWeight);
+            log.info("Updated weight for user {} to {} kg and recalculated targets.", user.getId(), newWeight);
         }
     }
 

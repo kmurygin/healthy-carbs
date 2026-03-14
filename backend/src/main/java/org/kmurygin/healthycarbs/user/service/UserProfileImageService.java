@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.user.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.storage.StorageProperties;
 import org.kmurygin.healthycarbs.storage.StorageProvider;
@@ -9,8 +10,6 @@ import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.model.UserProfileImage;
 import org.kmurygin.healthycarbs.user.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +17,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserProfileImageService {
-
-    private static final Logger logger = LoggerFactory.getLogger(UserProfileImageService.class);
 
     private final UserRepository userRepository;
     private final StorageProvider storageProvider;
@@ -51,7 +49,7 @@ public class UserProfileImageService {
         try {
             storageProvider.deleteFileByKey(imageKey);
         } catch (Exception ex) {
-            logger.error("Failed to delete profile image from storage: {}", imageKey, ex);
+            log.error("Failed to delete profile image from storage: {}", imageKey, ex);
         }
     }
 
@@ -100,7 +98,7 @@ public class UserProfileImageService {
         try {
             storageProvider.deleteFileByKey(oldImageKey);
         } catch (Exception ex) {
-            logger.error("Failed to delete old profile image: {}", oldImageKey, ex);
+            log.error("Failed to delete old profile image: {}", oldImageKey, ex);
         }
     }
 }

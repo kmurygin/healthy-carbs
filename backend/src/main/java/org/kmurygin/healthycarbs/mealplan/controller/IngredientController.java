@@ -10,8 +10,7 @@ import org.kmurygin.healthycarbs.mealplan.service.IngredientService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.kmurygin.healthycarbs.util.PaginatedResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,12 +20,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/ingredients")
 public class IngredientController {
-
-    private static final Logger logger = LoggerFactory.getLogger(IngredientController.class);
     private final IngredientService ingredientService;
     private final IngredientMapper ingredientMapper;
 
@@ -45,7 +43,7 @@ public class IngredientController {
             @RequestParam(required = false) Boolean onlyMine,
             Pageable pageable
     ) {
-        logger.info("Params: name={}, category={}, onlyMine={}", name, category, onlyMine);
+        log.info("Params: name={}, category={}, onlyMine={}", name, category, onlyMine);
 
         Page<Ingredient> page = ingredientService.findAllPage(name, category, onlyMine, pageable);
         Page<IngredientDTO> dtoPage = page.map(ingredientMapper::toDTO);

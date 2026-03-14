@@ -1,6 +1,7 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.MealPlanGeneratedEvent;
 import org.kmurygin.healthycarbs.mealplan.dto.UpdateShoppingListItemDTO;
@@ -8,8 +9,6 @@ import org.kmurygin.healthycarbs.mealplan.model.*;
 import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.ShoppingListRepository;
 import org.kmurygin.healthycarbs.user.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ShoppingListService {
-
-    private static final Logger logger = LoggerFactory.getLogger(ShoppingListService.class);
     private final ShoppingListRepository shoppingListRepository;
     private final MealPlanRepository mealPlanRepository;
     private final UserService userService;
@@ -96,7 +94,7 @@ public class ShoppingListService {
     @Transactional
     @EventListener
     public void handleMealPlanGeneratedEvent(MealPlanGeneratedEvent event) {
-        logger.info("Meal plan generated event received: {}", event);
+        log.info("Meal plan generated event received: {}", event);
         createAndSaveShoppingList(event.mealPlan());
     }
 }

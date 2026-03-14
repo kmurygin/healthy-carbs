@@ -7,8 +7,7 @@ import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.crossover.Crossover;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.fitness.Fitness;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.mutation.Mutate;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.selection.Selection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -16,10 +15,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class GenerationProducer {
-
-    private static final Logger logger = LoggerFactory.getLogger(GenerationProducer.class);
 
     public List<Genome> createNextGeneration(
             List<Genome> currentPopulation,
@@ -60,7 +58,7 @@ public class GenerationProducer {
         Genome parent2 = selection.select(population);
         Genome child = crossover.crossover(parent1, parent2);
 
-        logger.debug("Created child from parents with fitness: {} and {}", parent1.getFitness(), parent2.getFitness());
+        log.debug("Created child from parents with fitness: {} and {}", parent1.getFitness(), parent2.getFitness());
 
         mutate.mutate(child, dietType);
 

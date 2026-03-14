@@ -9,19 +9,17 @@ import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.repository.IngredientRepository;
 import org.kmurygin.healthycarbs.mealplan.repository.RecipeIngredientRepository;
 import org.kmurygin.healthycarbs.user.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class IngredientService {
-
-    private static final Logger logger = LoggerFactory.getLogger(IngredientService.class);
     private final AccessControlService accessControlService;
     private final IngredientRepository ingredientRepository;
     private final UserService userService;

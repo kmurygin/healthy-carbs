@@ -17,8 +17,7 @@ import org.kmurygin.healthycarbs.mealplan.repository.*;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.repository.UserRepository;
 import org.kmurygin.healthycarbs.user.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,11 +31,10 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class RecipeService {
-
-    private static final Logger logger = LoggerFactory.getLogger(RecipeService.class);
     private final AccessControlService accessControlService;
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
@@ -103,7 +101,7 @@ public class RecipeService {
 
     @Transactional
     public Recipe create(Recipe recipe, String dietTypeName) {
-        logger.info("Creating recipe: {}", recipe);
+        log.info("Creating recipe: {}", recipe);
         recipe.setAuthor(userService.getCurrentUser());
         resolveDietType(recipe, dietTypeName);
         if (recipe.getIngredients() != null) {

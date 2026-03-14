@@ -15,8 +15,7 @@ import org.kmurygin.healthycarbs.payments.service.PayuClient;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +30,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/payments/payu")
 @SuppressWarnings({"UnknownHttpHeader", "HttpUrlsUsage"}) // OpenPayu-Signature is a valid PayU custom header
 public class PayuController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PayuController.class);
     private static final String SIGNATURE_HEADER = "OpenPayu-Signature";
     private static final Set<String> ALLOWED_HASH_ALGORITHMS = Set.of("MD5", "SHA-256", "SHA256");
 
@@ -85,13 +84,13 @@ public class PayuController {
             PaymentStatus status = PaymentStatus.valueOf(
                     orderNode.path("status").asText(String.valueOf(PaymentStatus.PENDING)));
 
-            logger.info("[PayU] Payment notification — extOrderId: {}, status: {}", extOrderId, status);
+            log.info("[PayU] Payment notification — extOrderId: {}, status: {}", extOrderId, status);
 
             if (extOrderId != null) {
                 paymentService.updatePaymentStatus(extOrderId, status);
             }
         } catch (JsonProcessingException e) {
-            logger.error("[PayU] Failed to parse notification body", e);
+            log.error("[PayU] Failed to parse notification body", e);
             return ApiResponses.success(HttpStatus.BAD_REQUEST, null, "Invalid body");
         }
         return ApiResponses.success(HttpStatus.OK, null, "OK");
@@ -120,10 +119,10 @@ public class PayuController {
         if (!MessageDigest.isEqual(
                 expectedSignature.getBytes(StandardCharsets.UTF_8),
                 incomingSignature.getBytes(StandardCharsets.UTF_8))) {
-            logger.warn("[PayU] Signature mismatch for notification");
+            log.warn("[PayU] Signature mismatch for notification");
             throw new SecurityException("PayU signature verification failed");
         }
-        logger.info("[PayU] Signature verified successfully");
+        log.info("[PayU] Signature verified successfully");
     }
 
     private Map<String, String> parseSignatureHeader(String header) {
