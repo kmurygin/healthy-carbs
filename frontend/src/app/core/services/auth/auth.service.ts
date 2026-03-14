@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {jwtDecode} from 'jwt-decode';
 import type {Observable} from 'rxjs';
-import {BehaviorSubject, map, switchMap, tap} from 'rxjs';
+import {catchError, finalize, map, shareReplay, switchMap, tap, throwError} from 'rxjs';
 import {LocalStorage} from '../../constants/constants';
 import {ApiEndpoints} from '../../constants/api-endpoints';
 import {UserService} from '../user/user.service';
@@ -19,8 +19,7 @@ export class AuthService {
   readonly user = computed(() => this.claims()?.sub ?? null);
   readonly userId = computed(() => this.claims()?.id ?? null);
   readonly userRole = computed(() => this.claims()?.role ?? null);
-  isRefreshing = false;
-  refreshTokenSubject = new BehaviorSubject<string | null>(null);
+  private refreshInProgress$: Observable<string> | null = null;
   private readonly httpClient = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly userService = inject(UserService);
@@ -138,6 +137,33 @@ export class AuthService {
         }
       })
     );
+  }
+
+  ensureFreshToken(): Observable<string> {
+    if (!this.refreshTokenValue()) {
+      this.logout();
+      return throwError(() => new Error('Session expired. Please log in again.'));
+    }
+
+    if (!this.refreshInProgress$) {
+      this.refreshInProgress$ = this.refreshAccessToken().pipe(
+        map(res => {
+          const token = res.data?.token;
+          if (!token) throw new Error('Token refresh failed');
+          return token;
+        }),
+        catchError(err => {
+          this.logout();
+          return throwError(() => err);
+        }),
+        finalize(() => {
+          this.refreshInProgress$ = null;
+        }),
+        shareReplay(1)
+      );
+    }
+
+    return this.refreshInProgress$;
   }
 
   logout(): void {
