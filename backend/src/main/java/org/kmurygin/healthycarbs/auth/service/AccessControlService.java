@@ -14,15 +14,27 @@ public class AccessControlService {
     private final UserService userService;
 
     public void assertAuthorOrAdmin(User author, String resourceName) {
-        User currentUser = userService.getCurrentUser();
-        if (author == null || (!author.getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN)) {
+        assertAuthorOrAdmin(author, userService.getCurrentUser(), resourceName);
+    }
+
+    public void assertAuthorOrAdmin(User author, User currentUser, String resourceName) {
+        if (currentUser.getRole() == Role.ADMIN) {
+            return;
+        }
+        if (author == null || !author.getId().equals(currentUser.getId())) {
             throw new ForbiddenException("You are not authorized to modify this " + resourceName + ".");
         }
     }
 
     public void assertOwnerOrAdmin(Long ownerId, String resourceName) {
-        User currentUser = userService.getCurrentUser();
-        if (ownerId == null || (!ownerId.equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN)) {
+        assertOwnerOrAdmin(ownerId, userService.getCurrentUser(), resourceName);
+    }
+
+    public void assertOwnerOrAdmin(Long ownerId, User currentUser, String resourceName) {
+        if (currentUser.getRole() == Role.ADMIN) {
+            return;
+        }
+        if (ownerId == null || !ownerId.equals(currentUser.getId())) {
             throw new ForbiddenException("You are not authorized to access this " + resourceName + ".");
         }
     }

@@ -74,14 +74,23 @@ class AccessControlServiceUnitTest {
         }
 
         @Test
-        @DisplayName("should_throwForbiddenException_when_authorIsNull")
-        void should_throwForbiddenException_when_authorIsNull() {
+        @DisplayName("should_throwForbiddenException_when_authorIsNullAndUserIsNotAdmin")
+        void should_throwForbiddenException_when_authorIsNullAndUserIsNotAdmin() {
             when(userService.getCurrentUser()).thenReturn(regularUser);
 
             assertThatThrownBy(() -> accessControlService.assertAuthorOrAdmin(null, "recipe"))
                     .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("not authorized")
                     .hasMessageContaining("recipe");
+        }
+
+        @Test
+        @DisplayName("should_pass_when_authorIsNullAndCurrentUserIsAdmin")
+        void should_pass_when_authorIsNullAndCurrentUserIsAdmin() {
+            when(userService.getCurrentUser()).thenReturn(adminUser);
+
+            assertThatCode(() -> accessControlService.assertAuthorOrAdmin(null, "recipe"))
+                    .doesNotThrowAnyException();
         }
     }
 
@@ -119,14 +128,23 @@ class AccessControlServiceUnitTest {
         }
 
         @Test
-        @DisplayName("should_throwForbiddenException_when_ownerIdIsNull")
-        void should_throwForbiddenException_when_ownerIdIsNull() {
+        @DisplayName("should_throwForbiddenException_when_ownerIdIsNullAndUserIsNotAdmin")
+        void should_throwForbiddenException_when_ownerIdIsNullAndUserIsNotAdmin() {
             when(userService.getCurrentUser()).thenReturn(regularUser);
 
             assertThatThrownBy(() -> accessControlService.assertOwnerOrAdmin(null, "measurement"))
                     .isInstanceOf(ForbiddenException.class)
                     .hasMessageContaining("not authorized")
                     .hasMessageContaining("measurement");
+        }
+
+        @Test
+        @DisplayName("should_pass_when_ownerIdIsNullAndCurrentUserIsAdmin")
+        void should_pass_when_ownerIdIsNullAndCurrentUserIsAdmin() {
+            when(userService.getCurrentUser()).thenReturn(adminUser);
+
+            assertThatCode(() -> accessControlService.assertOwnerOrAdmin(null, "measurement"))
+                    .doesNotThrowAnyException();
         }
     }
 }
