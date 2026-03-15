@@ -65,6 +65,17 @@ public class Ingredient {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    public void updateFrom(Ingredient source) {
+        this.name = source.getName();
+        this.unit = source.getUnit();
+        this.caloriesPerUnit = source.getCaloriesPerUnit();
+        this.carbsPerUnit = source.getCarbsPerUnit();
+        this.proteinPerUnit = source.getProteinPerUnit();
+        this.fatPerUnit = source.getFatPerUnit();
+        this.category = source.getCategory();
+        this.allergens = source.getAllergens();
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

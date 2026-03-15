@@ -2,6 +2,7 @@ package org.kmurygin.healthycarbs.mealplan.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationService;
 import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.mealplan.DietType;
@@ -32,6 +33,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,6 +59,8 @@ class MealPlanServiceIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @MockitoBean
+    private AccessControlService accessControlService;
     @MockitoBean
     private DietaryProfileService dietaryProfileService;
     @MockitoBean
@@ -175,8 +179,8 @@ class MealPlanServiceIntegrationTest {
                 .instructions("Test instructions 2")
                 .build());
 
-        when(recipeService.findById(recipe1.getId())).thenReturn(recipe1);
-        when(recipeService.findById(recipe2.getId())).thenReturn(recipe2);
+        when(recipeService.findAllByIds(List.of(recipe1.getId(), recipe2.getId())))
+                .thenReturn(Map.of(recipe1.getId(), recipe1, recipe2.getId(), recipe2));
         when(collaborationService.getActiveClients(persistedUser)).thenReturn(List.of(clientUser));
 
         ManualMealPlanDayDTO dayDTO = new ManualMealPlanDayDTO(1, List.of(recipe1.getId(), recipe2.getId()));

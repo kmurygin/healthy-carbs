@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import {inject, isDevMode} from '@angular/core';
 import type {Observable} from 'rxjs';
-import {catchError, filter, from, retry, switchMap, take, throwError, timer} from 'rxjs';
+import {catchError, from, retry, switchMap, throwError, timer} from 'rxjs';
 import {AuthService} from '../services/auth/auth.service';
 import {Router} from '@angular/router';
 import type {ErrorResponse} from '../models/error-response.model';
@@ -77,7 +77,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
         if (isUnauthorized) {
           return handleUnauthorized(req, next, authService);
         }
-        return handleError(error, authService, router);
+        return handleError(error, router);
       }
       return throwError(() => error instanceof Error ? error : new Error('An unknown error occurred'));
     })
@@ -89,71 +89,15 @@ const handleUnauthorized = (
   next: HttpHandlerFn,
   authService: AuthService,
 ): Observable<HttpEvent<unknown>> => {
-  if (!authService.refreshTokenValue()) {
-    if (isDevMode()) {
-      console.warn('[Auth Refresh] No refresh token available, logging out');
-    }
-    authService.logout();
-    return throwError(() => new Error('Session expired. Please log in again.'));
-  }
-
-  if (!authService.isRefreshing) {
-    authService.isRefreshing = true;
-    authService.refreshTokenSubject.next(null);
-    if (isDevMode()) {
-      console.debug('[Auth Refresh] Starting token refresh');
-    }
-
-    return authService.refreshAccessToken().pipe(
-      switchMap(res => {
-        authService.isRefreshing = false;
-        const newToken = res.data?.token;
-        if (isDevMode()) {
-          if (newToken) {
-            console.debug('[Auth Refresh] Token refresh successful, retrying original request');
-          } else {
-            console.warn('[Auth Refresh] Refresh response missing token');
-          }
-        }
-        authService.refreshTokenSubject.next(newToken ?? null);
-
-        return next(req.clone({
-          setHeaders: {Authorization: `Bearer ${newToken}`}
-        }));
-      }),
-      catchError((err: unknown) => {
-        authService.isRefreshing = false;
-        if (isDevMode()) {
-          const errorDetail = err instanceof HttpErrorResponse ? `${err.status}` : 'unknown';
-          console.error('[Auth Refresh] Token refresh failed, logging out. Status:', errorDetail);
-        }
-        authService.refreshTokenSubject.next(null);
-        authService.logout();
-        return throwError(() => err);
-      })
-    );
-  }
-
-  if (isDevMode()) {
-    console.debug('[Auth Refresh] Refresh already in progress, queuing request');
-  }
-  return authService.refreshTokenSubject.pipe(
-    filter(token => token != null),
-    take(1),
-    switchMap(token => {
-      if (isDevMode()) {
-        console.debug('[Auth Refresh] Queued request retrying with new token');
-      }
-      return next(req.clone({
-        setHeaders: {Authorization: `Bearer ${token}`}
-      }));
-    })
+  return authService.ensureFreshToken().pipe(
+    switchMap(token => next(req.clone({
+      setHeaders: {Authorization: `Bearer ${token}`}
+    })))
   );
 };
 
 const handleError = (
   error: HttpErrorResponse,
-  authService: AuthService,
   router: Router
 ): Observable<never> => {
   const errorResponse = error.error as ErrorResponse | null;

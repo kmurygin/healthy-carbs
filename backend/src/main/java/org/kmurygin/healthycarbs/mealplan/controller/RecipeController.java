@@ -11,6 +11,7 @@ import org.kmurygin.healthycarbs.mealplan.service.RecipeService;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.kmurygin.healthycarbs.util.PaginatedResponse;
 import org.springframework.data.domain.Page;
@@ -38,12 +39,13 @@ public class RecipeController {
             @RequestParam(required = false) String diet,
             @RequestParam(required = false) MealType meal,
             @RequestParam(required = false) Boolean onlyFavourites,
-            Pageable pageable
+            Pageable pageable,
+            @AuthenticationPrincipal User currentUser
     ) {
         Set<Long> favouriteIds = userService.getFavouriteRecipesIds();
         Long userId = null;
-        if (onlyFavourites != null) {
-            userId = userService.getCurrentUser().getId();
+        if (Boolean.TRUE.equals(onlyFavourites) && currentUser != null) {
+            userId = currentUser.getId();
         }
 
         Page<Recipe> page = recipeService.findAll(name, ingredient, diet, meal, userId, pageable);
@@ -136,9 +138,10 @@ public class RecipeController {
     }
 
     @PostMapping("/{id}/favourite")
-    public ResponseEntity<ApiResponse<Void>> addFavourite(@PathVariable Long id) {
-        User user = userService.getCurrentUser();
-        recipeService.addFavourite(id, user.getId());
+    public ResponseEntity<ApiResponse<Void>> addFavourite(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser) {
+        recipeService.addFavourite(id, currentUser.getId());
         return ApiResponses.success(
                 HttpStatus.NO_CONTENT,
                 null,
@@ -147,9 +150,10 @@ public class RecipeController {
     }
 
     @DeleteMapping("/{id}/favourite")
-    public ResponseEntity<ApiResponse<Void>> removeFavourite(@PathVariable Long id) {
-        User user = userService.getCurrentUser();
-        recipeService.removeFavourite(id, user.getId());
+    public ResponseEntity<ApiResponse<Void>> removeFavourite(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser) {
+        recipeService.removeFavourite(id, currentUser.getId());
         return ApiResponses.success(
                 HttpStatus.NO_CONTENT,
                 null,

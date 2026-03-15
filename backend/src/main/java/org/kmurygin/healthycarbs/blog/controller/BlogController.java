@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kmurygin.healthycarbs.user.service.UserService;
 import org.kmurygin.healthycarbs.blog.dto.BlogCommentDTO;
 import org.kmurygin.healthycarbs.blog.dto.BlogPostDTO;
 import org.kmurygin.healthycarbs.blog.dto.CreateBlogCommentRequest;
@@ -14,6 +13,7 @@ import org.kmurygin.healthycarbs.blog.model.BlogComment;
 import org.kmurygin.healthycarbs.blog.model.BlogPost;
 import org.kmurygin.healthycarbs.blog.model.BlogPostImage;
 import org.kmurygin.healthycarbs.blog.service.BlogService;
+import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.kmurygin.healthycarbs.util.PaginatedResponse;
@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,7 +41,6 @@ public class BlogController {
 
     private final BlogService blogService;
     private final BlogMapper blogMapper;
-    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<PaginatedResponse<BlogPostDTO>>> getAllPosts(
@@ -61,12 +61,13 @@ public class BlogController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'DIETITIAN')")
     public ResponseEntity<ApiResponse<BlogPostDTO>> createPost(
-            @RequestBody @Valid CreateBlogPostRequest request
+            @RequestBody @Valid CreateBlogPostRequest request,
+            @AuthenticationPrincipal User currentUser
     ) {
         BlogPost post = blogMapper.toPostEntity(request);
         log.info("Received post: {}", request);
         log.info("Mapped post: {}", post);
-        BlogPost created = blogService.createPost(post, userService.getCurrentUser());
+        BlogPost created = blogService.createPost(post, currentUser);
         return ApiResponses.success(
                 HttpStatus.CREATED, blogMapper.toPostDTO(created), "Post created"
         );
@@ -83,14 +84,15 @@ public class BlogController {
     @PreAuthorize("@blogSecurity.hasEditPermissionsForPost(#id, principal)")
     public ResponseEntity<ApiResponse<BlogPostDTO>> updatePost(
             @PathVariable Long id,
-            @RequestBody @Valid CreateBlogPostRequest request
+            @RequestBody @Valid CreateBlogPostRequest request,
+            @AuthenticationPrincipal User currentUser
     ) {
         BlogPost postDetails = blogMapper.toPostEntity(request);
 
         BlogPost updatedPost = blogService.updatePost(
                 id,
                 postDetails,
-                userService.getCurrentUser()
+                currentUser
         );
 
         return ApiResponses.success(
@@ -101,10 +103,11 @@ public class BlogController {
     @PostMapping("/{id}/comments")
     public ResponseEntity<ApiResponse<BlogCommentDTO>> addComment(
             @PathVariable Long id,
-            @RequestBody @Valid CreateBlogCommentRequest addedComment
+            @RequestBody @Valid CreateBlogCommentRequest addedComment,
+            @AuthenticationPrincipal User currentUser
     ) {
         BlogComment comment = blogService.addComment(
-                id, addedComment.getContent(), userService.getCurrentUser()
+                id, addedComment.getContent(), currentUser
         );
         return ApiResponses.success(
                 HttpStatus.CREATED, blogMapper.toCommentDTO(comment), "Comment added"
@@ -112,8 +115,11 @@ public class BlogController {
     }
 
     @DeleteMapping("/comments/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteComment(@PathVariable Long id) {
-        blogService.deleteComment(id, userService.getCurrentUser());
+    public ResponseEntity<ApiResponse<Void>> deleteComment(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        blogService.deleteComment(id, currentUser);
         return ApiResponses.success(
                 HttpStatus.NO_CONTENT, null, "Comment deleted"
         );

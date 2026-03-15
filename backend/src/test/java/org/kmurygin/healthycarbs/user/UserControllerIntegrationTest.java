@@ -230,7 +230,7 @@ class UserControllerIntegrationTest {
 
             mockMvc.perform(post(BASE_URL + "/change-password")
                             .with(csrf())
-                            .with(user(savedUser.getUsername()).password("Password12345!").roles("USER"))
+                            .with(user(savedUser))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk());
@@ -243,7 +243,7 @@ class UserControllerIntegrationTest {
 
             mockMvc.perform(post(BASE_URL + "/change-password")
                             .with(csrf())
-                            .with(user(savedUser.getUsername()).password("Password12345!").roles("USER"))
+                            .with(user(savedUser))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());

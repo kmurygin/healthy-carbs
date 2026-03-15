@@ -1,8 +1,8 @@
 package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.exception.BadRequestException;
-import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.DietType;
 import org.kmurygin.healthycarbs.mealplan.DietTypeUtil;
@@ -14,29 +14,28 @@ import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.model.RecipeIngredient;
 import org.kmurygin.healthycarbs.mealplan.repository.*;
-import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.repository.UserRepository;
 import org.kmurygin.healthycarbs.user.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class RecipeService {
-
-    private static final Logger logger = LoggerFactory.getLogger(RecipeService.class);
+    private final AccessControlService accessControlService;
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
     private final MealPlanRecipeRepository mealPlanRecipeRepository;
@@ -88,9 +87,21 @@ public class RecipeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
     }
 
+    public Map<Long, Recipe> findAllByIds(List<Long> ids) {
+        List<Recipe> recipes = recipeRepository.findAllById(ids);
+        Map<Long, Recipe> recipeMap = recipes.stream()
+                .collect(Collectors.toMap(Recipe::getId, r -> r));
+        for (Long id : ids) {
+            if (!recipeMap.containsKey(id)) {
+                throw new ResourceNotFoundException("Recipe", "id", id);
+            }
+        }
+        return recipeMap;
+    }
+
     @Transactional
     public Recipe create(Recipe recipe, String dietTypeName) {
-        logger.info("Creating recipe: {}", recipe);
+        log.info("Creating recipe: {}", recipe);
         recipe.setAuthor(userService.getCurrentUser());
         resolveDietType(recipe, dietTypeName);
         if (recipe.getIngredients() != null) {
@@ -103,7 +114,7 @@ public class RecipeService {
     public Recipe update(Long id, Recipe updatedRecipe, String dietTypeName) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
-        assertAuthorOrAdmin(recipe);
+        accessControlService.assertAuthorOrAdmin(recipe.getAuthor(), "recipe");
 
         recipeMapper.updateFromEntity(updatedRecipe, recipe);
         resolveDietType(recipe, dietTypeName);
@@ -122,20 +133,9 @@ public class RecipeService {
         }
     }
 
-    private void assertAuthorOrAdmin(Recipe recipe) {
-        User currentUser = userService.getCurrentUser();
-        User author = recipe.getAuthor();
-        if (author == null) {
-            throw new AccessDeniedException("Recipe author is null");
-        }
-        if (!author.getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
-            throw new ForbiddenException("You are not authorized to modify this recipe.");
-        }
-    }
-
     public void deleteById(Long id) {
         Recipe recipe = findById(id);
-        assertAuthorOrAdmin(recipe);
+        accessControlService.assertAuthorOrAdmin(recipe.getAuthor(), "recipe");
         if (mealPlanRecipeRepository.existsByRecipeId(id)) {
             throw new BadRequestException("Cannot delete recipe because it is used in one or more meal plans.");
         }
@@ -146,7 +146,7 @@ public class RecipeService {
     public Recipe addIngredient(Long recipeId, Long ingredientId, double quantity) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", recipeId));
-        assertAuthorOrAdmin(recipe);
+        accessControlService.assertAuthorOrAdmin(recipe.getAuthor(), "recipe");
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ingredient", "id", ingredientId));
 
@@ -161,7 +161,7 @@ public class RecipeService {
     @Transactional
     public Recipe removeIngredient(Long recipeId, Long ingredientId) {
         Recipe recipe = findById(recipeId);
-        assertAuthorOrAdmin(recipe);
+        accessControlService.assertAuthorOrAdmin(recipe.getAuthor(), "recipe");
 
         RecipeIngredient recipeIngredient = recipe.getIngredients().stream()
                 .filter(ri -> ri.getIngredient().getId().equals(ingredientId))

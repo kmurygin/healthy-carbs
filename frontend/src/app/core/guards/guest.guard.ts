@@ -1,16 +1,3 @@
-import type {CanMatchFn, UrlTree} from '@angular/router';
-import {Router} from '@angular/router';
-import {inject} from "@angular/core";
-import {AuthService} from "../services/auth/auth.service";
+import {createAuthStateGuard} from './role.guard';
 
-export const guestGuard: CanMatchFn = (): boolean | UrlTree => {
-
-  const authService = inject(AuthService);
-  const router = inject(Router);
-
-  if (authService.isLoggedIn()) {
-    return router.parseUrl('');
-  }
-
-  return true;
-};
+export const guestGuard = createAuthStateGuard(false, '/');

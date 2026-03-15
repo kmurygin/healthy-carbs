@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.exception.BadRequestException;
 import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
@@ -37,8 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("RecipeService Unit Tests")
@@ -46,6 +46,9 @@ class RecipeServiceUnitTest {
 
     @Mock
     private RecipeRepository recipeRepository;
+
+    @Mock
+    private AccessControlService accessControlService;
 
     @Mock
     private IngredientRepository ingredientRepository;
@@ -82,6 +85,7 @@ class RecipeServiceUnitTest {
     @BeforeEach
     void setUp() {
         recipeService = new RecipeService(
+                accessControlService,
                 recipeRepository,
                 ingredientRepository,
                 mealPlanRecipeRepository,
@@ -238,7 +242,6 @@ class RecipeServiceUnitTest {
                     .build();
 
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(recipeRepository.save(any(Recipe.class))).thenAnswer(i -> i.getArgument(0));
 
             Recipe result = recipeService.update(1L, updatedDetails, null);
@@ -255,7 +258,6 @@ class RecipeServiceUnitTest {
                     .build();
 
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
-            when(userService.getCurrentUser()).thenReturn(adminUser);
             when(recipeRepository.save(any(Recipe.class))).thenAnswer(i -> i.getArgument(0));
 
             recipeService.update(1L, updatedDetails, null);
@@ -266,11 +268,11 @@ class RecipeServiceUnitTest {
         @Test
         @DisplayName("update_whenNotAuthorized_shouldThrowForbiddenException")
         void update_whenNotAuthorized_shouldThrowForbiddenException() {
-            User otherUser = UserTestUtils.createTestUser(3L, "other");
             Recipe updatedDetails = Recipe.builder().name("Updated Name").build();
 
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
-            when(userService.getCurrentUser()).thenReturn(otherUser);
+            doThrow(new ForbiddenException("You are not authorized to modify this recipe."))
+                    .when(accessControlService).assertAuthorOrAdmin(any(), any());
 
             assertThatThrownBy(() -> recipeService.update(1L, updatedDetails, null))
                     .isInstanceOf(ForbiddenException.class)
@@ -295,7 +297,6 @@ class RecipeServiceUnitTest {
         @DisplayName("deleteById_whenAuthor_shouldDelete")
         void deleteById_whenAuthor_shouldDelete() {
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(mealPlanRecipeRepository.existsByRecipeId(1L)).thenReturn(false);
 
             recipeService.deleteById(1L);
@@ -307,7 +308,6 @@ class RecipeServiceUnitTest {
         @DisplayName("deleteById_whenAdmin_shouldDelete")
         void deleteById_whenAdmin_shouldDelete() {
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
-            when(userService.getCurrentUser()).thenReturn(adminUser);
             when(mealPlanRecipeRepository.existsByRecipeId(1L)).thenReturn(false);
 
             recipeService.deleteById(1L);
@@ -319,7 +319,6 @@ class RecipeServiceUnitTest {
         @DisplayName("deleteById_whenInMealPlan_shouldThrowBadRequest")
         void deleteById_whenInMealPlan_shouldThrowBadRequest() {
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(mealPlanRecipeRepository.existsByRecipeId(1L)).thenReturn(true);
 
             assertThatThrownBy(() -> recipeService.deleteById(1L))
@@ -330,10 +329,9 @@ class RecipeServiceUnitTest {
         @Test
         @DisplayName("deleteById_whenNotAuthorized_shouldThrowForbiddenException")
         void deleteById_whenNotAuthorized_shouldThrowForbiddenException() {
-            User otherUser = UserTestUtils.createTestUser(3L, "other");
-
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
-            when(userService.getCurrentUser()).thenReturn(otherUser);
+            doThrow(new ForbiddenException("You are not authorized to modify this recipe."))
+                    .when(accessControlService).assertAuthorOrAdmin(any(), any());
 
             assertThatThrownBy(() -> recipeService.deleteById(1L))
                     .isInstanceOf(ForbiddenException.class);
@@ -353,7 +351,6 @@ class RecipeServiceUnitTest {
                     .build();
 
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(ingredientRepository.findById(1L)).thenReturn(Optional.of(ingredient));
             when(recipeRepository.save(any(Recipe.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -367,7 +364,6 @@ class RecipeServiceUnitTest {
         @DisplayName("addIngredient_whenIngredientNotFound_shouldThrowResourceNotFound")
         void addIngredient_whenIngredientNotFound_shouldThrowResourceNotFound() {
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(ingredientRepository.findById(999L)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> recipeService.addIngredient(1L, 999L, 100.0))
@@ -391,7 +387,6 @@ class RecipeServiceUnitTest {
             testRecipe.getIngredients().add(ri);
 
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(recipeRepository.save(any(Recipe.class))).thenAnswer(i -> i.getArgument(0));
 
             Recipe result = recipeService.removeIngredient(1L, 1L);
@@ -403,7 +398,6 @@ class RecipeServiceUnitTest {
         @DisplayName("removeIngredient_whenIngredientNotInRecipe_shouldThrowResourceNotFound")
         void removeIngredient_whenIngredientNotInRecipe_shouldThrowResourceNotFound() {
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(testRecipe));
-            when(userService.getCurrentUser()).thenReturn(testUser);
 
             assertThatThrownBy(() -> recipeService.removeIngredient(1L, 999L))
                     .isInstanceOf(ResourceNotFoundException.class);

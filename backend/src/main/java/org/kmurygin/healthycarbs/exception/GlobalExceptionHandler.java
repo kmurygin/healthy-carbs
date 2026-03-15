@@ -3,8 +3,7 @@ package org.kmurygin.healthycarbs.exception;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
@@ -22,10 +21,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> notFound(ResourceNotFoundException ex, HttpServletRequest req) {
@@ -82,7 +80,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({OptimisticLockingFailureException.class, DataIntegrityViolationException.class})
     public ResponseEntity<ErrorResponse> conflict(RuntimeException ex, HttpServletRequest req) {
-        logger.error("Data conflict at {}: {}", req.getRequestURI(), ex.getMessage(), ex);
+        log.error("Data conflict at {}: {}", req.getRequestURI(), ex.getMessage(), ex);
         return buildErrorResponse("A data conflict occurred. Please try again.", req, HttpStatus.CONFLICT);
     }
 
@@ -116,7 +114,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> storageException(
             StorageException ex, HttpServletRequest req
     ) {
-        logger.error("Storage error: {}", ex.getMessage(), ex);
+        log.error("Storage error: {}", ex.getMessage(), ex);
         return buildErrorResponse(ex.getMessage(), req, ex.getStatus());
     }
 
@@ -129,13 +127,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> storageSpecialized(
             BaseException ex, HttpServletRequest req
     ) {
-        logger.error("Storage error: {}", ex.getMessage(), ex);
+        log.error("Storage error: {}", ex.getMessage(), ex);
         return buildErrorResponse(ex.getMessage(), req, ex.getStatus());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> unhandled(Exception ex, HttpServletRequest req) {
-        logger.error("Unhandled exception at {}: {}", req.getRequestURI(), ex.getMessage(), ex);
+        log.error("Unhandled exception at {}: {}", req.getRequestURI(), ex.getMessage(), ex);
         return buildErrorResponse("An internal server error occurred.", req, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

@@ -8,6 +8,7 @@ import {MealPlanService} from '@core/services/mealplan/mealplan.service';
 import {ConfirmationService} from '@core/services/ui/confirmation.service';
 import {NotificationService} from '@core/services/ui/notification.service';
 import {ErrorMessageComponent} from '@shared/components/error-message/error-message.component';
+import {MacroSummaryComponent} from '@shared/components/macro-summary/macro-summary.component';
 import {type MealPlanDto} from '@core/models/dto/mealplan.dto';
 import type {UserDto} from "@core/models/dto/user.dto";
 import {UserService} from "@core/services/user/user.service";
@@ -18,7 +19,8 @@ import {setErrorNotification} from '@shared/utils';
   standalone: true,
   imports: [
     CommonModule,
-    ErrorMessageComponent
+    ErrorMessageComponent,
+    MacroSummaryComponent
   ],
   template: `
     <div class="container mx-auto px-4 py-8 max-w-7xl">
@@ -46,14 +48,10 @@ import {setErrorNotification} from '@shared/utils';
                 <span class="text-xs font-medium text-gray-500 uppercase">{{ plan.source }}</span>
               </div>
 
-              <div class="flex flex-wrap gap-3 text-sm text-gray-600 mb-3">
-                <span><i class="fa-solid fa-fire text-orange-500"></i> {{ plan.totalCalories | number: '1.0-0' }}
-                  kcal</span>
-                <span><i class="fa-solid fa-bread-slice text-amber-600"></i> {{ plan.totalCarbs | number: '1.0-0' }} g carbs</span>
-                <span><i class="fa-solid fa-drumstick-bite text-red-500"></i> {{ plan.totalProtein | number: '1.0-0' }}
-                  g protein</span>
-                <span><i class="fa-solid fa-bottle-droplet text-yellow-600"></i> {{ plan.totalFat | number: '1.0-0' }} g fat</span>
-              </div>
+              <app-macro-summary
+                class="mb-3"
+                [macros]="{calories: plan.totalCalories, carbs: plan.totalCarbs, protein: plan.totalProtein, fat: plan.totalFat}"
+              />
 
               <div class="flex gap-2">
                 <button

@@ -1,17 +1,16 @@
 package org.kmurygin.healthycarbs.offers.mealPlanTemplate;
 
 import lombok.RequiredArgsConstructor;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
 import org.kmurygin.healthycarbs.exception.BadRequestException;
-import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.model.MealPlan;
 import org.kmurygin.healthycarbs.mealplan.service.MealPlanService;
 import org.kmurygin.healthycarbs.offers.offer.Offer;
 import org.kmurygin.healthycarbs.offers.offer.OfferService;
 import org.kmurygin.healthycarbs.payments.model.Order;
-import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.service.UserService;
 import org.springframework.stereotype.Service;
@@ -25,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class MealPlanTemplateService {
+    private final AccessControlService accessControlService;
     private final MealPlanTemplateRepository mealPlanTemplateRepository;
     private final MealPlanService mealPlanService;
     private final OfferService offerService;
@@ -52,13 +52,7 @@ public class MealPlanTemplateService {
     @Transactional
     public MealPlanTemplate update(Long id, MealPlanTemplate entity) {
         MealPlanTemplate mealPlanTemplate = findById(id);
-        User currentUser = userService.getCurrentUser();
-
-        if (!mealPlanTemplate.getAuthor().getId().equals(currentUser.getId()) &&
-                currentUser.getRole() != Role.ADMIN
-        ) {
-            throw new ForbiddenException("You are not authorized to update this MealPlanTemplate.");
-        }
+        accessControlService.assertAuthorOrAdmin(mealPlanTemplate.getAuthor(), "MealPlanTemplate");
 
         MealPlanTemplate updatedMealPlanTemplate = mealPlanTemplate.toBuilder()
                 .name(entity.getName())
@@ -77,13 +71,7 @@ public class MealPlanTemplateService {
     public void deleteById(Long id) {
         MealPlanTemplate mealPlanTemplate = mealPlanTemplateRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlanTemplate", "id", id));
-        User currentUser = userService.getCurrentUser();
-
-        if (!mealPlanTemplate.getAuthor().getId().equals(currentUser.getId()) &&
-                currentUser.getRole() != Role.ADMIN
-        ) {
-            throw new ForbiddenException("You are not authorized to delete this MealPlanTemplate.");
-        }
+        accessControlService.assertAuthorOrAdmin(mealPlanTemplate.getAuthor(), "MealPlanTemplate");
 
         mealPlanTemplateRepository.deleteById(id);
     }
@@ -108,12 +96,7 @@ public class MealPlanTemplateService {
     public void shareMealPlanWithClient(Long templateId, Long clientId) {
         MealPlanTemplate template = findById(templateId);
         User currentUser = userService.getCurrentUser();
-
-        if (!template.getAuthor().getId().equals(currentUser.getId()) &&
-                currentUser.getRole() != Role.ADMIN
-        ) {
-            throw new ForbiddenException("You are not authorized to share this MealPlanTemplate.");
-        }
+        accessControlService.assertAuthorOrAdmin(template.getAuthor(), currentUser, "MealPlanTemplate");
 
         User client = userService.getUserById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", clientId));

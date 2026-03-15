@@ -2,13 +2,12 @@ package org.kmurygin.healthycarbs.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.exception.ForbiddenException;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.user.dto.ChangePasswordRequest;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UserDTO;
 import org.kmurygin.healthycarbs.user.mapper.UserMapper;
-import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.service.UserPasswordService;
 import org.kmurygin.healthycarbs.user.service.UserService;
@@ -17,8 +16,7 @@ import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,13 +26,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
+    private final AccessControlService accessControlService;
     private final UserService userService;
     private final UserPasswordService userPasswordService;
     private final UserMapper userMapper;
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserDTO>> getUserById(@PathVariable Long id) {
-        assertOwnerOrAdmin(id);
+        accessControlService.assertOwnerOrAdmin(id, "user");
         return userService.getUserById(id)
                 .map(user -> ApiResponses.success(userMapper.toDTO(user)))
                 .orElse(ApiResponses.failure(HttpStatus.NOT_FOUND, "User not found"));
@@ -42,12 +41,11 @@ public class UserController {
 
     @GetMapping("/username/{username}")
     public ResponseEntity<ApiResponse<UserDTO>> getUserByUsername(@PathVariable String username) {
-        User currentUser = userService.getCurrentUser();
-        if (!currentUser.getUsername().equals(username) && currentUser.getRole() != Role.ADMIN) {
-            throw new ForbiddenException("You are not authorized to view this user profile.");
-        }
         return userService.getUserByUsername(username)
-                .map(user -> ApiResponses.success(userMapper.toDTO(user)))
+                .map(user -> {
+                    accessControlService.assertOwnerOrAdmin(user.getId(), "user");
+                    return ApiResponses.success(userMapper.toDTO(user));
+                })
                 .orElse(ApiResponses.failure(HttpStatus.NOT_FOUND, "User not found"));
     }
 
@@ -63,30 +61,23 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserDTO>> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequest request) {
-        assertOwnerOrAdmin(id);
+        accessControlService.assertOwnerOrAdmin(id, "user");
         UserDTO dto = userMapper.toDTO(userService.update(id, request));
         return ApiResponses.success(dto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
-        assertOwnerOrAdmin(id);
+        accessControlService.assertOwnerOrAdmin(id, "user");
         userService.deleteUser(id);
         return ApiResponses.success(HttpStatus.NO_CONTENT, null, "User deleted");
     }
 
-    private void assertOwnerOrAdmin(Long userId) {
-        User currentUser = userService.getCurrentUser();
-        if (!currentUser.getId().equals(userId) && currentUser.getRole() != Role.ADMIN) {
-            throw new ForbiddenException("You are not authorized to access this resource.");
-        }
-    }
-
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
-            @Valid @RequestBody ChangePasswordRequest request) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
+            @Valid @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal User currentUser) {
+        String username = currentUser.getUsername();
         userPasswordService.changePassword(username, request.getOldPassword(), request.getNewPassword());
         return ApiResponses.success(
                 HttpStatus.OK, null, "Password has been changed successfully");

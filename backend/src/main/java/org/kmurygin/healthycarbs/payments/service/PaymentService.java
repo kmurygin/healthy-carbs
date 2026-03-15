@@ -22,15 +22,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class PaymentService {
-
-    private static final String COLLABORATION_ORDER_PREFIX = "healthy-carbs-collab-";
 
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
@@ -51,9 +48,9 @@ public class PaymentService {
             Order order = orderRepository.findByLocalOrderId(localOrderId)
                     .orElseThrow(() -> new ResourceNotFoundException("Order", "localOrderId", localOrderId));
 
-            if (isCollaborationOrder(localOrderId)) {
-                Long dietitianId = parseCollaborationDietitianId(localOrderId);
-                collaborationService.establishCollaboration(dietitianId, order.getUser().getId());
+            Optional<CollaborationOrderUtil.CollaborationOrderInfo> collabInfo = CollaborationOrderUtil.parse(localOrderId);
+            if (collabInfo.isPresent()) {
+                collaborationService.establishCollaboration(collabInfo.get().dietitianId(), order.getUser().getId());
             } else {
                 mealPlanTemplateService.activateMealPlanForOrder(order);
                 publishPaymentCompletedEvent(order);
@@ -90,21 +87,6 @@ public class PaymentService {
         }
 
         return new PaymentStatusResponse(localOrderId, payment.getStatus());
-    }
-
-    private boolean isCollaborationOrder(String localOrderId) {
-        try {
-            String decoded = new String(Base64.getDecoder().decode(localOrderId), StandardCharsets.UTF_8);
-            return decoded.startsWith(COLLABORATION_ORDER_PREFIX);
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    private Long parseCollaborationDietitianId(String localOrderId) {
-        String decoded = new String(Base64.getDecoder().decode(localOrderId), StandardCharsets.UTF_8);
-        String[] parts = decoded.split("-");
-        return Long.parseLong(parts[3]);
     }
 
     private void publishPaymentCompletedEvent(Order order) {

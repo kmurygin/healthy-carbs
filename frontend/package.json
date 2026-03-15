@@ -72,6 +72,7 @@
     "vitest": "^4.0.18"
   },
   "overrides": {
-    "undici": "^7.18.2"
+    "undici": "^7.18.2",
+    "@noble/hashes": "^2.0.1"
   }
 }

@@ -4,7 +4,7 @@ import {HttpClient, HttpStatusCode, provideHttpClient, withInterceptors} from '@
 import {Router} from '@angular/router';
 import {signal} from '@angular/core';
 import type {MockedObject} from 'vitest';
-import {BehaviorSubject} from 'rxjs';
+import {throwError} from 'rxjs';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 
 import {httpInterceptor} from './http.interceptor';
@@ -25,10 +25,14 @@ describe('httpInterceptor', () => {
       isTokenExpired: vi.fn().mockReturnValue(false),
       jwtToken: signal('test-jwt-token'),
       refreshTokenValue: signal(null),
-      isRefreshing: false,
-      refreshTokenSubject: new BehaviorSubject<string | null>(null),
       logout: vi.fn(),
+      ensureFreshToken: vi.fn(),
     } as unknown as MockedObject<Partial<AuthService>>;
+
+    (authServiceMock.ensureFreshToken as ReturnType<typeof vi.fn>).mockImplementation(() => {
+      authServiceMock.logout!();
+      return throwError(() => new Error('Session expired'));
+    });
 
     routerMock = {
       navigate: vi.fn().mockResolvedValue(true),

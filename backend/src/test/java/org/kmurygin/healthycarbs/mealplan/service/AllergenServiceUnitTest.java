@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.exception.ResourceNotFoundException;
 import org.kmurygin.healthycarbs.mealplan.model.Allergen;
@@ -29,6 +30,9 @@ import static org.mockito.Mockito.*;
 class AllergenServiceUnitTest {
 
     @Mock
+    private AccessControlService accessControlService;
+
+    @Mock
     private AllergenRepository allergenRepository;
 
     @Mock
@@ -42,7 +46,7 @@ class AllergenServiceUnitTest {
 
     @BeforeEach
     void setUp() {
-        allergenService = new AllergenService(allergenRepository, userService);
+        allergenService = new AllergenService(accessControlService, allergenRepository, userService);
 
         testUser = UserTestUtils.createTestUser(1L, "testuser", Role.DIETITIAN);
         adminUser = UserTestUtils.createTestUser(2L, "admin", Role.ADMIN);
@@ -151,7 +155,6 @@ class AllergenServiceUnitTest {
                     .build();
 
             when(allergenRepository.findById(1L)).thenReturn(Optional.of(testAllergen));
-            when(userService.getCurrentUser()).thenReturn(testUser);
             when(allergenRepository.save(any(Allergen.class))).thenReturn(testAllergen);
 
             Allergen result = allergenService.update(1L, updatedAllergen);
@@ -168,7 +171,6 @@ class AllergenServiceUnitTest {
                     .build();
 
             when(allergenRepository.findById(1L)).thenReturn(Optional.of(testAllergen));
-            when(userService.getCurrentUser()).thenReturn(adminUser);
             when(allergenRepository.save(any(Allergen.class))).thenReturn(testAllergen);
 
             Allergen result = allergenService.update(1L, updatedAllergen);
@@ -180,13 +182,13 @@ class AllergenServiceUnitTest {
         @Test
         @DisplayName("update_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException")
         void update_whenNotAuthorAndNotAdmin_shouldThrowForbiddenException() {
-            User otherUser = UserTestUtils.createTestUser(3L, "otheruser", Role.DIETITIAN);
             Allergen updatedAllergen = Allergen.builder()
                     .name("Unauthorized Update")
                     .build();
 
             when(allergenRepository.findById(1L)).thenReturn(Optional.of(testAllergen));
-            when(userService.getCurrentUser()).thenReturn(otherUser);
+            doThrow(new ForbiddenException("You are not authorized to modify this allergen."))
+                    .when(accessControlService).assertAuthorOrAdmin(any(), any());
 
             assertThatThrownBy(() -> allergenService.update(1L, updatedAllergen))
                     .isInstanceOf(ForbiddenException.class)
@@ -215,7 +217,6 @@ class AllergenServiceUnitTest {
         @DisplayName("deleteById_shouldCallRepositoryDelete")
         void deleteById_shouldCallRepositoryDelete() {
             when(allergenRepository.findById(1L)).thenReturn(Optional.of(testAllergen));
-            when(userService.getCurrentUser()).thenReturn(testUser);
             doNothing().when(allergenRepository).deleteById(1L);
 
             allergenService.deleteById(1L);

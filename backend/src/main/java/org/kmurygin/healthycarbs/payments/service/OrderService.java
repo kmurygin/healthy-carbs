@@ -16,14 +16,10 @@ import org.kmurygin.healthycarbs.user.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
 @RequiredArgsConstructor
 @Service
 public class OrderService {
 
-    private static final String COLLABORATION_ORDER_PREFIX = "healthy-carbs-collab-";
     private static final int COLLABORATION_PRICE = 5000;
 
     private final OrderRepository orderRepository;
@@ -74,7 +70,7 @@ public class OrderService {
         String localOrderId = init.localOrderId();
         int clientAmount = init.totalAmount();
 
-        if (isCollaborationOrder(localOrderId)) {
+        if (CollaborationOrderUtil.isCollaborationOrder(localOrderId)) {
             if (clientAmount != COLLABORATION_PRICE) {
                 throw new BadRequestException("Invalid payment amount for collaboration order.");
             }
@@ -85,15 +81,6 @@ public class OrderService {
             if (clientAmount != expectedAmount) {
                 throw new BadRequestException("Invalid payment amount. Expected: " + expectedAmount);
             }
-        }
-    }
-
-    private boolean isCollaborationOrder(String localOrderId) {
-        try {
-            String decoded = new String(Base64.getDecoder().decode(localOrderId), StandardCharsets.UTF_8);
-            return decoded.startsWith(COLLABORATION_ORDER_PREFIX);
-        } catch (IllegalArgumentException e) {
-            return false;
         }
     }
 }

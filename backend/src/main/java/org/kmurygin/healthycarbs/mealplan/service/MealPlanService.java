@@ -2,6 +2,7 @@ package org.kmurygin.healthycarbs.mealplan.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.dietitian.collaboration.CollaborationService;
 import org.kmurygin.healthycarbs.email.EmailDetails;
 import org.kmurygin.healthycarbs.email.EmailService;
@@ -34,6 +35,7 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -41,6 +43,7 @@ import java.util.concurrent.Executor;
 @Slf4j
 @Service
 public class MealPlanService {
+    private final AccessControlService accessControlService;
     private final GeneticAlgorithm geneticAlgorithm;
     private final RecipeService recipeService;
     private final DietaryProfileService dietaryProfileService;
@@ -54,6 +57,7 @@ public class MealPlanService {
     private final CollaborationService collaborationService;
 
     public MealPlanService(
+            AccessControlService accessControlService,
             GeneticAlgorithm geneticAlgorithm,
             RecipeService recipeService,
             DietaryProfileService dietaryProfileService,
@@ -66,6 +70,7 @@ public class MealPlanService {
             ShoppingListService shoppingListService,
             CollaborationService collaborationService
     ) {
+        this.accessControlService = accessControlService;
         this.geneticAlgorithm = geneticAlgorithm;
         this.recipeService = recipeService;
         this.dietaryProfileService = dietaryProfileService;
@@ -180,8 +185,9 @@ public class MealPlanService {
 
         LocalDate startDate = request.startDate() != null ? request.startDate() : LocalDate.now();
 
+        Map<Long, Recipe> recipeMap = prefetchRecipes(request.days());
         List<MealPlanDay> days = request.days().stream()
-                .map(dayDto -> createDayFromDto(dayDto, startDate))
+                .map(dayDto -> createDayFromDto(dayDto, startDate, recipeMap))
                 .toList();
 
         mealPlan.setDays(days);
@@ -218,14 +224,13 @@ public class MealPlanService {
         MealPlan mealPlan = mealPlanRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
 
-        if (!isAdminOrAuthor(id)) {
-            throw new ForbiddenException("You are not authorized to update this meal plan.");
-        }
+        accessControlService.assertOwnerOrAdmin(getMealPlanOwnerId(mealPlan), "meal plan");
 
         LocalDate startDate = request.startDate() != null ? request.startDate() : LocalDate.now();
 
+        Map<Long, Recipe> recipeMap = prefetchRecipes(request.days());
         List<MealPlanDay> days = request.days().stream()
-                .map(dayDto -> createDayFromDto(dayDto, startDate))
+                .map(dayDto -> createDayFromDto(dayDto, startDate, recipeMap))
                 .toList();
 
         mealPlan.setDays(days);
@@ -242,22 +247,32 @@ public class MealPlanService {
         MealPlan mealPlan = mealPlanRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
 
-        if (!isAdminOrAuthor(id)) {
-            throw new ForbiddenException("You are not authorized to delete this meal plan.");
-        }
+        accessControlService.assertOwnerOrAdmin(getMealPlanOwnerId(mealPlan), "meal plan");
 
         shoppingListService.deleteByMealPlan(mealPlan);
         mealPlanRepository.delete(mealPlan);
     }
 
-    private MealPlanDay createDayFromDto(ManualMealPlanDayDTO dayDto, LocalDate startDate) {
+    private Long getMealPlanOwnerId(MealPlan mealPlan) {
+        return mealPlan.getAuthor() != null ? mealPlan.getAuthor().getId() : mealPlan.getUser().getId();
+    }
+
+    private Map<Long, Recipe> prefetchRecipes(List<ManualMealPlanDayDTO> days) {
+        List<Long> allRecipeIds = days.stream()
+                .flatMap(day -> day.recipeIds().stream())
+                .distinct()
+                .toList();
+        return recipeService.findAllByIds(allRecipeIds);
+    }
+
+    private MealPlanDay createDayFromDto(ManualMealPlanDayDTO dayDto, LocalDate startDate, Map<Long, Recipe> recipeMap) {
         MealPlanDay day = new MealPlanDay();
         LocalDate date = startDate.plusDays(dayDto.dayOffset());
         day.setDate(date);
         day.setDayOfWeek(date.getDayOfWeek());
 
         List<Recipe> recipes = dayDto.recipeIds().stream()
-                .map(recipeService::findById)
+                .map(recipeMap::get)
                 .toList();
 
         recipes.forEach(day::addRecipe);
@@ -312,17 +327,5 @@ public class MealPlanService {
         mealPlan.setTotalCarbs(totalCarbs);
         mealPlan.setTotalProtein(totalProtein);
         mealPlan.setTotalFat(totalFat);
-    }
-
-    private Boolean isAdminOrAuthor(Long id) {
-        User currentUser = userService.getCurrentUser();
-        MealPlan mealPlan = mealPlanRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
-
-        boolean isAuthor = mealPlan.getAuthor() != null && Objects.equals(mealPlan.getAuthor().getId(), currentUser.getId());
-        boolean isAdmin = currentUser.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
-        return isAdmin || isAuthor;
     }
 }
