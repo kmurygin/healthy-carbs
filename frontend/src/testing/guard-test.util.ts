@@ -18,6 +18,7 @@ export function setupGuardTest(): GuardTestContext {
 
   const authServiceMock = {
     claims: signal(null),
+    isLoggedIn: signal(false),
   } as unknown as MockedObject<Partial<AuthService>>;
 
   const routerMock = {
@@ -37,6 +38,7 @@ export function setupGuardTest(): GuardTestContext {
 export function overrideAuthServiceWithClaims(claims: Record<string, unknown> | null): MockedObject<Partial<AuthService>> {
   const authServiceMock = {
     claims: signal(claims),
+    isLoggedIn: signal(claims !== null),
   } as unknown as MockedObject<Partial<AuthService>>;
   TestBed.overrideProvider(AuthService, {useValue: authServiceMock});
   return authServiceMock;

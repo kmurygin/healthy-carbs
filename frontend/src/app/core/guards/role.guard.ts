@@ -9,8 +9,11 @@ export function createRoleGuard(...allowedRoles: UserRole[]): CanMatchFn {
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    const claims = authService.claims();
+    if (!authService.isLoggedIn()) {
+      return router.createUrlTree(['/']);
+    }
 
+    const claims = authService.claims();
     if (claims && allowedRoles.includes(claims.role as UserRole)) {
       return true;
     }

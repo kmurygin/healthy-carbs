@@ -1,5 +1,5 @@
 import {TestBed} from '@angular/core/testing';
-import type {ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
+import type {Route, UrlSegment} from '@angular/router';
 import {beforeEach, describe, expect, it} from 'vitest';
 
 import {adminGuard} from './admin.guard';
@@ -17,7 +17,7 @@ describe('adminGuard', () => {
     overrideAuthServiceWithClaims({role: UserRole.ADMIN});
 
     const result = TestBed.runInInjectionContext(() =>
-      adminGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
+      adminGuard({} as Route, [] as UrlSegment[])
     );
     expect(result).toBe(true);
   });
@@ -26,7 +26,7 @@ describe('adminGuard', () => {
     overrideAuthServiceWithClaims({role: UserRole.USER});
 
     const result = TestBed.runInInjectionContext(() =>
-      adminGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
+      adminGuard({} as Route, [] as UrlSegment[])
     );
     expect(ctx.routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(ctx.fakeUrlTree);
@@ -36,15 +36,15 @@ describe('adminGuard', () => {
     overrideAuthServiceWithClaims({role: UserRole.DIETITIAN});
 
     const result = TestBed.runInInjectionContext(() =>
-      adminGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
+      adminGuard({} as Route, [] as UrlSegment[])
     );
     expect(ctx.routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(ctx.fakeUrlTree);
   });
 
-  it('adminGuard_whenClaimsNull_shouldRedirectToRoot', () => {
+  it('adminGuard_whenClaimsNull_shouldRedirectToIndex', () => {
     const result = TestBed.runInInjectionContext(() =>
-      adminGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
+      adminGuard({} as Route, [] as UrlSegment[])
     );
     expect(ctx.routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(ctx.fakeUrlTree);

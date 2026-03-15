@@ -1,5 +1,5 @@
 import {TestBed} from '@angular/core/testing';
-import type {ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
+import type {Route, UrlSegment} from '@angular/router';
 import {beforeEach, describe, expect, it} from 'vitest';
 
 import {dietitianGuard} from './dietitian.guard';
@@ -17,7 +17,7 @@ describe('dietitianGuard', () => {
     overrideAuthServiceWithClaims({role: UserRole.DIETITIAN});
 
     const result = TestBed.runInInjectionContext(() =>
-      dietitianGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
+      dietitianGuard({} as Route, [] as UrlSegment[])
     );
     expect(result).toBe(true);
   });
@@ -26,7 +26,7 @@ describe('dietitianGuard', () => {
     overrideAuthServiceWithClaims({role: UserRole.ADMIN});
 
     const result = TestBed.runInInjectionContext(() =>
-      dietitianGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
+      dietitianGuard({} as Route, [] as UrlSegment[])
     );
     expect(result).toBe(true);
   });
@@ -35,15 +35,15 @@ describe('dietitianGuard', () => {
     overrideAuthServiceWithClaims({role: UserRole.USER});
 
     const result = TestBed.runInInjectionContext(() =>
-      dietitianGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
+      dietitianGuard({} as Route, [] as UrlSegment[])
     );
     expect(ctx.routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(ctx.fakeUrlTree);
   });
 
-  it('dietitianGuard_whenClaimsNull_shouldRedirectToRoot', () => {
+  it('dietitianGuard_whenClaimsNull_shouldRedirectToIndex', () => {
     const result = TestBed.runInInjectionContext(() =>
-      dietitianGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
+      dietitianGuard({} as Route, [] as UrlSegment[])
     );
     expect(ctx.routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(ctx.fakeUrlTree);
