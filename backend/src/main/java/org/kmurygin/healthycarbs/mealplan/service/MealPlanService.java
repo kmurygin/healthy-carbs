@@ -225,7 +225,7 @@ public class MealPlanService {
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
 
         accessControlService.assertOwnerOrAdmin(
-                mealPlan.getAuthor() != null ? mealPlan.getAuthor().getId() : null, "meal plan");
+                mealPlan.getAuthor() != null ? mealPlan.getAuthor().getId() : mealPlan.getUser().getId(), "meal plan");
 
         LocalDate startDate = request.startDate() != null ? request.startDate() : LocalDate.now();
 
@@ -249,7 +249,7 @@ public class MealPlanService {
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
 
         accessControlService.assertOwnerOrAdmin(
-                mealPlan.getAuthor() != null ? mealPlan.getAuthor().getId() : null, "meal plan");
+                mealPlan.getAuthor() != null ? mealPlan.getAuthor().getId() : mealPlan.getUser().getId(), "meal plan");
 
         shoppingListService.deleteByMealPlan(mealPlan);
         mealPlanRepository.delete(mealPlan);

@@ -95,12 +95,13 @@ public class MealPlanTemplateService {
     @Transactional
     public void shareMealPlanWithClient(Long templateId, Long clientId) {
         MealPlanTemplate template = findById(templateId);
-        accessControlService.assertAuthorOrAdmin(template.getAuthor(), "MealPlanTemplate");
+        User currentUser = userService.getCurrentUser();
+        accessControlService.assertAuthorOrAdmin(template.getAuthor(), currentUser, "MealPlanTemplate");
 
         User client = userService.getUserById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", clientId));
 
-        MealPlan mealPlan = MealPlanTemplateUtil.createMealPlanFromTemplate(template, client, userService.getCurrentUser());
+        MealPlan mealPlan = MealPlanTemplateUtil.createMealPlanFromTemplate(template, client, currentUser);
         mealPlanService.savePlanAndGenerateShoppingList(mealPlan);
 
         Context context = new Context();
