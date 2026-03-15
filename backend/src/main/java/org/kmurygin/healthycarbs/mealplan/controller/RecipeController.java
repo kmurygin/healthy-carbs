@@ -44,7 +44,7 @@ public class RecipeController {
     ) {
         Set<Long> favouriteIds = userService.getFavouriteRecipesIds();
         Long userId = null;
-        if (onlyFavourites != null) {
+        if (Boolean.TRUE.equals(onlyFavourites) && currentUser != null) {
             userId = currentUser.getId();
         }
 
