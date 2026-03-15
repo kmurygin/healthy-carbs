@@ -29,7 +29,7 @@ public class PaymentController {
         List<PaymentSummaryDTO> paymentSummaries = paymentSummaryService.getPaymentSummariesByUserId(
                 currentUser.getId()
         );
-        log.info(paymentSummaries.toString());
+        log.debug("Fetched {} payment summaries for userId={}", paymentSummaries.size(), currentUser.getId());
         return ApiResponses.success(paymentSummaries);
     }
 }
