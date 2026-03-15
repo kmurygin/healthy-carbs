@@ -224,8 +224,7 @@ public class MealPlanService {
         MealPlan mealPlan = mealPlanRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
 
-        accessControlService.assertOwnerOrAdmin(
-                mealPlan.getAuthor() != null ? mealPlan.getAuthor().getId() : mealPlan.getUser().getId(), "meal plan");
+        accessControlService.assertOwnerOrAdmin(getMealPlanOwnerId(mealPlan), "meal plan");
 
         LocalDate startDate = request.startDate() != null ? request.startDate() : LocalDate.now();
 
@@ -248,11 +247,14 @@ public class MealPlanService {
         MealPlan mealPlan = mealPlanRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", id));
 
-        accessControlService.assertOwnerOrAdmin(
-                mealPlan.getAuthor() != null ? mealPlan.getAuthor().getId() : mealPlan.getUser().getId(), "meal plan");
+        accessControlService.assertOwnerOrAdmin(getMealPlanOwnerId(mealPlan), "meal plan");
 
         shoppingListService.deleteByMealPlan(mealPlan);
         mealPlanRepository.delete(mealPlan);
+    }
+
+    private Long getMealPlanOwnerId(MealPlan mealPlan) {
+        return mealPlan.getAuthor() != null ? mealPlan.getAuthor().getId() : mealPlan.getUser().getId();
     }
 
     private Map<Long, Recipe> prefetchRecipes(List<ManualMealPlanDayDTO> days) {
