@@ -5,8 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.user.controller.UserProfileImageController;
-import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.model.UserProfileImage;
 import org.kmurygin.healthycarbs.user.service.UserProfileImageService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
@@ -25,17 +25,13 @@ import static org.mockito.Mockito.*;
 class UserProfileImageControllerUnitTest {
 
     @Mock
+    private AccessControlService accessControlService;
+
+    @Mock
     private UserProfileImageService profileImageService;
 
     @InjectMocks
     private UserProfileImageController controller;
-
-    private User testUser;
-
-    @BeforeEach
-    void setUp() {
-        testUser = UserTestUtils.createTestUser(1L, "testuser");
-    }
 
     @Nested
     @DisplayName("uploadProfileImage")
@@ -46,10 +42,10 @@ class UserProfileImageControllerUnitTest {
         void uploadProfileImage_shouldReturnOk() {
             MultipartFile file = mock(MultipartFile.class);
 
-            ResponseEntity<ApiResponse<Void>> response = controller.uploadProfileImage(1L, file, testUser);
+            ResponseEntity<ApiResponse<Void>> response = controller.uploadProfileImage(1L, file);
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-            verify(profileImageService).uploadProfileImage(1L, file, testUser);
+            verify(profileImageService).uploadProfileImage(1L, file);
         }
     }
 

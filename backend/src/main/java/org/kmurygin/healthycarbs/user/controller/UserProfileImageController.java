@@ -2,7 +2,7 @@ package org.kmurygin.healthycarbs.user.controller;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.kmurygin.healthycarbs.user.model.User;
+import org.kmurygin.healthycarbs.auth.service.AccessControlService;
 import org.kmurygin.healthycarbs.user.model.UserProfileImage;
 import org.kmurygin.healthycarbs.user.service.UserProfileImageService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
@@ -10,7 +10,6 @@ import org.kmurygin.healthycarbs.util.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,14 +21,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api/v1/users")
 public class UserProfileImageController {
 
+    private final AccessControlService accessControlService;
     private final UserProfileImageService profileImageService;
 
     @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Void>> uploadProfileImage(
             @PathVariable Long id,
-            @NotNull @RequestParam("file") MultipartFile file,
-            @AuthenticationPrincipal User currentUser) {
-        profileImageService.uploadProfileImage(id, file, currentUser);
+            @NotNull @RequestParam("file") MultipartFile file) {
+        accessControlService.assertOwnerOrAdmin(id, "profile image");
+        profileImageService.uploadProfileImage(id, file);
         return ApiResponses.success(
                 HttpStatus.OK, null, "Profile image updated successfully");
     }

@@ -102,7 +102,7 @@ class UserControllerUnitTest {
             when(userService.getUserByUsername("userUsername")).thenReturn(Optional.of(testUser));
             when(userMapper.toDTO(testUser)).thenReturn(testUserDTO);
 
-            ResponseEntity<?> response = userController.getUserByUsername("userUsername", testUser);
+            ResponseEntity<?> response = userController.getUserByUsername("userUsername");
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         }
@@ -110,10 +110,9 @@ class UserControllerUnitTest {
         @Test
         @DisplayName("getUserByUsername_whenUserNotExists_shouldReturnNotFound")
         void getUserByUsername_whenUserNotExists_shouldReturnNotFound() {
-            User admin = UserTestUtils.createAdmin();
             when(userService.getUserByUsername("unknown")).thenReturn(Optional.empty());
 
-            ResponseEntity<?> response = userController.getUserByUsername("unknown", admin);
+            ResponseEntity<?> response = userController.getUserByUsername("unknown");
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         }

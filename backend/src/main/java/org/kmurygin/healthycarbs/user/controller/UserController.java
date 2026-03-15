@@ -3,13 +3,11 @@ package org.kmurygin.healthycarbs.user.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.kmurygin.healthycarbs.auth.service.AccessControlService;
-import org.kmurygin.healthycarbs.exception.ForbiddenException;
 import org.kmurygin.healthycarbs.user.dto.ChangePasswordRequest;
 import org.kmurygin.healthycarbs.user.dto.CreateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UpdateUserRequest;
 import org.kmurygin.healthycarbs.user.dto.UserDTO;
 import org.kmurygin.healthycarbs.user.mapper.UserMapper;
-import org.kmurygin.healthycarbs.user.model.Role;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.service.UserPasswordService;
 import org.kmurygin.healthycarbs.user.service.UserService;
@@ -42,15 +40,12 @@ public class UserController {
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<ApiResponse<UserDTO>> getUserByUsername(
-            @PathVariable String username,
-            @AuthenticationPrincipal User currentUser
-    ) {
-        if (!currentUser.getUsername().equals(username) && currentUser.getRole() != Role.ADMIN) {
-            throw new ForbiddenException("You are not authorized to view this user profile.");
-        }
+    public ResponseEntity<ApiResponse<UserDTO>> getUserByUsername(@PathVariable String username) {
         return userService.getUserByUsername(username)
-                .map(user -> ApiResponses.success(userMapper.toDTO(user)))
+                .map(user -> {
+                    accessControlService.assertOwnerOrAdmin(user.getId(), "user");
+                    return ApiResponses.success(userMapper.toDTO(user));
+                })
                 .orElse(ApiResponses.failure(HttpStatus.NOT_FOUND, "User not found"));
     }
 

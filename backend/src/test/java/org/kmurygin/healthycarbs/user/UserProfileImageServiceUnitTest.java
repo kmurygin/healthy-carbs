@@ -15,7 +15,6 @@ import org.kmurygin.healthycarbs.user.repository.UserRepository;
 import org.kmurygin.healthycarbs.user.service.UserProfileImageService;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,7 +44,6 @@ class UserProfileImageServiceUnitTest {
     private UserProfileImageService userProfileImageService;
 
     private User testUser;
-    private User adminUser;
 
     @BeforeEach
     void setUp() {
@@ -56,9 +54,6 @@ class UserProfileImageServiceUnitTest {
                 transactionTemplate);
 
         testUser = UserTestUtils.createTestUser(1L, "testuser");
-
-        adminUser = UserTestUtils.createAdmin();
-        adminUser.setId(2L);
     }
 
     @Nested
@@ -144,27 +139,6 @@ class UserProfileImageServiceUnitTest {
     class UploadProfileImageValidationTests {
 
         @Test
-        @DisplayName("uploadProfileImage_whenNotOwnerAndNotAdmin_shouldThrowAccessDenied")
-        void uploadProfileImage_whenNotOwnerAndNotAdmin_shouldThrowAccessDenied() {
-            User otherUser = UserTestUtils.createTestUser(3L, "other");
-            MultipartFile file = mock(MultipartFile.class);
-
-            assertThatThrownBy(() -> userProfileImageService.uploadProfileImage(1L, file, otherUser))
-                    .isInstanceOf(AccessDeniedException.class)
-                    .hasMessageContaining("can only update your own");
-        }
-
-        @Test
-        @DisplayName("uploadProfileImage_whenNullUser_shouldThrowAccessDenied")
-        void uploadProfileImage_whenNullUser_shouldThrowAccessDenied() {
-            MultipartFile file = mock(MultipartFile.class);
-
-            assertThatThrownBy(() -> userProfileImageService.uploadProfileImage(1L, file, null))
-                    .isInstanceOf(AccessDeniedException.class)
-                    .hasMessageContaining("must be logged in");
-        }
-
-        @Test
         @DisplayName("uploadProfileImage_whenOwner_shouldSucceed")
         void uploadProfileImage_whenOwner_shouldSucceed() {
             MultipartFile file = mock(MultipartFile.class);
@@ -183,31 +157,7 @@ class UserProfileImageServiceUnitTest {
                 return null;
             }).when(transactionTemplate).executeWithoutResult(any());
 
-            userProfileImageService.uploadProfileImage(1L, file, testUser);
-
-            verify(storageProvider).uploadFile(eq(file), eq("profile-images/1"));
-        }
-
-        @Test
-        @DisplayName("uploadProfileImage_whenAdmin_shouldSucceed")
-        void uploadProfileImage_whenAdmin_shouldSucceed() {
-            MultipartFile file = mock(MultipartFile.class);
-            StorageUploadResult uploadResult = new StorageUploadResult(
-                    "http://example.com/new-image.jpg",
-                    "profile-images/1/new-image.jpg",
-                    "image/jpeg");
-
-            when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-            when(storageProperties.getUserProfileImagePrefix()).thenReturn("profile-images");
-            when(storageProvider.uploadFile(any(), any())).thenReturn(uploadResult);
-            doAnswer(inv -> {
-                java.util.function.Consumer<org.springframework.transaction.TransactionStatus> callback = inv
-                        .getArgument(0);
-                callback.accept(null);
-                return null;
-            }).when(transactionTemplate).executeWithoutResult(any());
-
-            userProfileImageService.uploadProfileImage(1L, file, adminUser);
+            userProfileImageService.uploadProfileImage(1L, file);
 
             verify(storageProvider).uploadFile(eq(file), eq("profile-images/1"));
         }
