@@ -27,6 +27,6 @@ export function createAuthStateGuard(requireAuth: boolean, redirectPath: string)
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    return authService.isLoggedIn() === requireAuth || router.createUrlTree([redirectPath]);
+    return authService.isLoggedIn() === requireAuth ? true : router.createUrlTree([redirectPath]);
   };
 }

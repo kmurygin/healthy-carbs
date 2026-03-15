@@ -32,6 +32,6 @@ export class MacroSummaryComponent {
 
   protected readonly items = computed(() => {
     const m = this.macros();
-    return MACRO_CONFIG.map(c => ({...c, value: m[c.key]}));
+    return MACRO_CONFIG.map(c => ({...c, value: Math.round(m[c.key])}));
   });
 }
