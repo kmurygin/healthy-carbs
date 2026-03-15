@@ -9,8 +9,8 @@ import {createAuthStateGuard, createRoleGuard} from './role.guard';
 import {UserRole} from '@core/models/enum/user-role.enum';
 import {AuthService} from '../services/auth/auth.service';
 
-const dummyRoute = {} as Route;
-const dummySegments = [] as UrlSegment[];
+const dummyRoute: Route = {};
+const dummySegments: UrlSegment[] = [];
 
 describe('createRoleGuard', () => {
   let routerMock: MockedObject<Partial<Router>>;

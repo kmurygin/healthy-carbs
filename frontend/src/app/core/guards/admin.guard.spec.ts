@@ -6,6 +6,9 @@ import {adminGuard} from './admin.guard';
 import {UserRole} from '@core/models/enum/user-role.enum';
 import {type GuardTestContext, overrideAuthServiceWithClaims, setupGuardTest} from '@testing/guard-test.util';
 
+const dummyRoute: Route = {};
+const dummySegments: UrlSegment[] = [];
+
 describe('adminGuard', () => {
   let ctx: GuardTestContext;
 
@@ -17,7 +20,7 @@ describe('adminGuard', () => {
     overrideAuthServiceWithClaims({role: UserRole.ADMIN});
 
     const result = TestBed.runInInjectionContext(() =>
-      adminGuard({} as Route, [] as UrlSegment[])
+      adminGuard(dummyRoute, dummySegments)
     );
     expect(result).toBe(true);
   });
@@ -26,7 +29,7 @@ describe('adminGuard', () => {
     overrideAuthServiceWithClaims({role: UserRole.USER});
 
     const result = TestBed.runInInjectionContext(() =>
-      adminGuard({} as Route, [] as UrlSegment[])
+      adminGuard(dummyRoute, dummySegments)
     );
     expect(ctx.routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(ctx.fakeUrlTree);
@@ -36,7 +39,7 @@ describe('adminGuard', () => {
     overrideAuthServiceWithClaims({role: UserRole.DIETITIAN});
 
     const result = TestBed.runInInjectionContext(() =>
-      adminGuard({} as Route, [] as UrlSegment[])
+      adminGuard(dummyRoute, dummySegments)
     );
     expect(ctx.routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(ctx.fakeUrlTree);
@@ -44,7 +47,7 @@ describe('adminGuard', () => {
 
   it('adminGuard_whenClaimsNull_shouldRedirectToIndex', () => {
     const result = TestBed.runInInjectionContext(() =>
-      adminGuard({} as Route, [] as UrlSegment[])
+      adminGuard(dummyRoute, dummySegments)
     );
     expect(ctx.routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(ctx.fakeUrlTree);
