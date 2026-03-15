@@ -45,7 +45,7 @@ export const routes: Routes = [
   },
   {
     path: 'mealplan/:id',
-    canActivate: [authGuard],
+    canMatch: [authGuard],
     loadComponent: () =>
       import('./features/mealplan/mealplan/mealplan.component').then(
         (m) => m.MealPlanComponent,
@@ -93,13 +93,13 @@ export const routes: Routes = [
   },
   {
     path: 'dietitian',
-    canActivate: [dietitianGuard],
+    canMatch: [dietitianGuard],
     loadChildren: () => import('./features/dietitian/dietitian.routes')
       .then(m => m.DIETITIAN_ROUTES)
   },
   {
     path: 'admin',
-    canActivate: [adminGuard],
+    canMatch: [adminGuard],
     loadChildren: () => import('./features/admin/admin.routes')
       .then(m => m.ADMIN_ROUTES)
   },
@@ -122,7 +122,7 @@ export const routes: Routes = [
   },
   {
     path: 'blog',
-    canActivate: [authGuard],
+    canMatch: [authGuard],
     loadChildren: () => import('./features/blog/blog.routes')
       .then(m => m.BLOG_ROUTES)
   },

@@ -1,10 +1,10 @@
 import {inject} from '@angular/core';
-import type {CanActivateFn} from '@angular/router';
+import type {CanMatchFn} from '@angular/router';
 import {Router} from '@angular/router';
 import {AuthService} from '../services/auth/auth.service';
 import {type UserRole} from '@core/models/enum/user-role.enum';
 
-export function createRoleGuard(...allowedRoles: UserRole[]): CanActivateFn {
+export function createRoleGuard(...allowedRoles: UserRole[]): CanMatchFn {
   return () => {
     const authService = inject(AuthService);
     const router = inject(Router);
@@ -19,7 +19,7 @@ export function createRoleGuard(...allowedRoles: UserRole[]): CanActivateFn {
   };
 }
 
-export function createAuthStateGuard(requireAuth: boolean, redirectPath: string): CanActivateFn {
+export function createAuthStateGuard(requireAuth: boolean, redirectPath: string): CanMatchFn {
   return () => {
     const authService = inject(AuthService);
     const router = inject(Router);
