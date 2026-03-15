@@ -11,18 +11,16 @@ import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.crossover.Crossover;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.fitness.Fitness;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.mutation.Mutate;
 import org.kmurygin.healthycarbs.mealplan.genetic_algorithm.selection.Selection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.function.Supplier;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GeneticAlgorithm {
-
-    private static final Logger logger = LoggerFactory.getLogger(GeneticAlgorithm.class);
     private final Crossover crossover;
     private final Mutate mutate;
     private final Selection selection;
@@ -36,19 +34,33 @@ public class GeneticAlgorithm {
         List<Genome> population = initializer.generateInitialPopulation(genomeSupplier, config.getPopulationSize());
         Genome bestGenome = null;
 
-        for (int generation = 0; generation < config.getMaxGenerations(); generation++) {
-            logger.info("Generation: {}", generation);
-            logger.info("Best genome fitness: {}", bestGenome != null ? bestGenome.getFitness() : "n/a");
+        log.info("[GA-START] populationSize={}, maxGenerations={}, mutationRate={}, targetFitness={}, eliteCount={}",
+                config.getPopulationSize(), config.getMaxGenerations(), config.getMutationRate(),
+                config.getTargetFitness(), config.getEliteCount());
 
+        for (int generation = 0; generation < config.getMaxGenerations(); generation++) {
             evaluator.evaluate(population, fitness);
             bestGenome = bestGenomeSelector.findBestGenome(population, bestGenome);
 
-            if (bestGenome.getFitness() >= config.getTargetFitness()) break;
+            if (log.isInfoEnabled()) {
+                double avgFitness = population.stream().mapToDouble(Genome::getFitness).average().orElse(0);
+                log.info("[GA-GEN] gen={} | bestFitness={} | avgFitness={} | cal={} carb={} prot={} fat={}",
+                        generation, String.format("%.4f", bestGenome.getFitness()),
+                        String.format("%.4f", avgFitness),
+                        String.format("%.0f", bestGenome.getTotalCalories()),
+                        String.format("%.0f", bestGenome.getTotalCarbs()),
+                        String.format("%.0f", bestGenome.getTotalProtein()),
+                        String.format("%.0f", bestGenome.getTotalFat()));
+            }
+
+            if (bestGenome.getFitness() >= config.getTargetFitness()) {
+                log.info("[GA-CONVERGED] Reached target fitness at generation {}", generation);
+                break;
+            }
 
             population = generationProducer.createNextGeneration(
                     population, fitness, dietType, config, crossover, mutate, selection);
         }
-
         return bestGenome;
     }
 }

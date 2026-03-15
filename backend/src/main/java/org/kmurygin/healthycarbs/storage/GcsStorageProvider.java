@@ -21,7 +21,8 @@ public class GcsStorageProvider extends AbstractStorageProvider {
 
     private final Storage storage;
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") // Storage bean provided by GcsStorageConfig in prod profile
+    // Storage bean provided by GcsStorageConfig in prod profile
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public GcsStorageProvider(Storage storage,
                               StorageProperties storageProperties,
                               StorageFolderValidator storageFolderValidator,
