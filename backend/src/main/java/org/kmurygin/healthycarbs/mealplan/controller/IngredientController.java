@@ -2,6 +2,7 @@ package org.kmurygin.healthycarbs.mealplan.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kmurygin.healthycarbs.mealplan.IngredientCategory;
 import org.kmurygin.healthycarbs.mealplan.dto.IngredientDTO;
 import org.kmurygin.healthycarbs.mealplan.mapper.IngredientMapper;
@@ -9,8 +10,8 @@ import org.kmurygin.healthycarbs.mealplan.model.Ingredient;
 import org.kmurygin.healthycarbs.mealplan.service.IngredientService;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
+import org.kmurygin.healthycarbs.util.LogSanitizer;
 import org.kmurygin.healthycarbs.util.PaginatedResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class IngredientController {
             @RequestParam(required = false) Boolean onlyMine,
             Pageable pageable
     ) {
-        log.info("Params: name={}, category={}, onlyMine={}", name, category, onlyMine);
+        log.info("Params: name={}, category={}, onlyMine={}", LogSanitizer.clean(name), category, onlyMine);
 
         Page<Ingredient> page = ingredientService.findAllPage(name, category, onlyMine, pageable);
         Page<IngredientDTO> dtoPage = page.map(ingredientMapper::toDTO);

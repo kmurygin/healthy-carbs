@@ -25,6 +25,7 @@ import org.kmurygin.healthycarbs.mealplan.model.Recipe;
 import org.kmurygin.healthycarbs.mealplan.repository.MealPlanRepository;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.user.service.UserService;
+import org.kmurygin.healthycarbs.util.LogSanitizer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -215,7 +216,7 @@ public class MealPlanService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", clientId.toString()));
 
         List<MealPlan> matchedMealPlans = mealPlanRepository.findByUserAndAuthor(client, dietitian);
-        log.info("Found {} meal plans for client {}", matchedMealPlans.size(), clientId);
+        log.info("Found {} meal plans for client {}", matchedMealPlans.size(), LogSanitizer.clean(clientId));
         return matchedMealPlans;
     }
 
