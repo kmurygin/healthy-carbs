@@ -61,14 +61,6 @@ public class PayuClient {
 
     private Buyer getBuyerFromSecurityContext() {
         User user = userService.getCurrentUser();
-        if (user == null) {
-            return new Buyer(
-                    null,
-                    null,
-                    null,
-                    "en"
-            );
-        }
         return new Buyer(
                 user.getEmail(),
                 user.getFirstName(),
