@@ -72,7 +72,7 @@ export class MealPlanRecipeFilterComponent {
         takeUntilDestroyed()
       )
       .subscribe((formValue) => {
-        this.filterChange.emit(formValue as unknown as RecipeFilters);
+        this.filterChange.emit(formValue);
       });
   }
 }

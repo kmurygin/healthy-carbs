@@ -23,7 +23,7 @@ function isApiCall(url: string): boolean {
 }
 
 function toHttpStatusCode(n: number) {
-  return HttpStatusCode[n] ? (n as HttpStatusCode) : null;
+  return HttpStatusCode[n] ? (n) : null;
 }
 
 function shouldSkipRefresh(url: string): boolean {
