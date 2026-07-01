@@ -1,11 +1,14 @@
 import {TestBed} from '@angular/core/testing';
-import type {UrlTree} from '@angular/router';
+import type {PartialMatchRouteSnapshot, Route, UrlSegment, UrlTree} from '@angular/router';
 import {Router} from '@angular/router';
 import {signal} from '@angular/core';
 import type {MockedObject} from 'vitest';
 import {vi} from 'vitest';
-
 import {AuthService} from '@core/services/auth/auth.service';
+
+export const dummyRoute: Route = {};
+export const dummySegments: UrlSegment[] = [];
+export const dummySnapshot = {} as unknown as PartialMatchRouteSnapshot;
 
 export interface GuardTestContext {
   authServiceMock: MockedObject<Partial<AuthService>>;
