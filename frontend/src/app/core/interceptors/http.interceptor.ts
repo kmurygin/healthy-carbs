@@ -22,7 +22,8 @@ function isApiCall(url: string): boolean {
   return requestUrl.origin === apiUrl.origin && requestUrl.pathname.startsWith(apiUrl.pathname);
 }
 
-function toHttpStatusCode(n: number) {
+function toHttpStatusCode(n: number): HttpStatusCode | null {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   return HttpStatusCode[n] ? (n as HttpStatusCode) : null;
 }
 

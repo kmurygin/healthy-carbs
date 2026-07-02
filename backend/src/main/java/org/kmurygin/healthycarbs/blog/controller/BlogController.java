@@ -16,6 +16,7 @@ import org.kmurygin.healthycarbs.blog.service.BlogService;
 import org.kmurygin.healthycarbs.user.model.User;
 import org.kmurygin.healthycarbs.util.ApiResponse;
 import org.kmurygin.healthycarbs.util.ApiResponses;
+import org.kmurygin.healthycarbs.util.LogSanitizer;
 import org.kmurygin.healthycarbs.util.PaginatedResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -65,8 +66,8 @@ public class BlogController {
             @AuthenticationPrincipal User currentUser
     ) {
         BlogPost post = blogMapper.toPostEntity(request);
-        log.info("Received post: {}", request);
-        log.info("Mapped post: {}", post);
+        log.info("Received post: {}", LogSanitizer.clean(request));
+        log.info("Mapped post: {}", LogSanitizer.clean(post));
         BlogPost created = blogService.createPost(post, currentUser);
         return ApiResponses.success(
                 HttpStatus.CREATED, blogMapper.toPostDTO(created), "Post created"

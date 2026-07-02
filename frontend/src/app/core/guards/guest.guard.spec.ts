@@ -1,5 +1,5 @@
 import {TestBed} from '@angular/core/testing';
-import type {ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree} from '@angular/router';
+import type {UrlTree} from '@angular/router';
 import {Router} from '@angular/router';
 import {signal} from '@angular/core';
 import type {MockedObject} from 'vitest';
@@ -7,6 +7,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest';
 
 import {guestGuard} from './guest.guard';
 import {AuthService} from '../services/auth/auth.service';
+import {dummyRoute, dummySegments, dummySnapshot} from '@testing/guard-test.util';
 
 describe('guestGuard', () => {
   let authServiceMock: MockedObject<Partial<AuthService>>;
@@ -32,7 +33,7 @@ describe('guestGuard', () => {
 
   it('guestGuard_whenUserNotLoggedIn_shouldReturnTrue', () => {
     const result = TestBed.runInInjectionContext(() =>
-      guestGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
+      guestGuard(dummyRoute, dummySegments, dummySnapshot)
     );
     expect(result).toBe(true);
   });
@@ -44,7 +45,7 @@ describe('guestGuard', () => {
     TestBed.overrideProvider(AuthService, {useValue: authServiceMock});
 
     const result = TestBed.runInInjectionContext(() =>
-      guestGuard({} as unknown as ActivatedRouteSnapshot, {} as unknown as RouterStateSnapshot)
+      guestGuard(dummyRoute, dummySegments, dummySnapshot)
     );
     expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(fakeUrlTree);

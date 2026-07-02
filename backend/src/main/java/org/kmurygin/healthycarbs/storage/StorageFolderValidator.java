@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 import java.util.Set;
 
 @Service
-public class StorageFolderValidator {
+public final class StorageFolderValidator {
 
     private final Set<String> allowedFolders;
 

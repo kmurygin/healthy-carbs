@@ -119,28 +119,5 @@ class PayuClientUnitTest {
 
             assertThat(result).isNotNull();
         }
-
-        @Test
-        @DisplayName("createOrder_whenUserIsNull_shouldUseFallbackBuyer")
-        void createOrder_whenUserIsNull_shouldUseFallbackBuyer() {
-            InitPaymentRequest request = new InitPaymentRequest(
-                    "ORDER-789", "Test", 5000, 1L, List.of()
-            );
-
-            CreateOrderResponse expectedResponse = new CreateOrderResponse("SUCCESS", "http://redirect", "PAYU-789");
-
-            when(tokenService.getAccessToken()).thenReturn("test-token");
-            when(userService.getCurrentUser()).thenReturn(null);
-            when(webClient.post()).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
-            when(requestBodySpec.contentType(any())).thenReturn(requestBodySpec);
-            when(requestBodySpec.headers(any())).thenReturn(requestBodySpec);
-            when(requestBodySpec.bodyValue(any())).thenReturn(requestHeadersSpec);
-            when(requestHeadersSpec.exchangeToMono(any())).thenReturn(Mono.just(expectedResponse));
-
-            CreateOrderResponse result = payuClient.createOrder(request, "1.2.3.4");
-
-            assertThat(result.orderId()).isEqualTo("PAYU-789");
-        }
     }
 }

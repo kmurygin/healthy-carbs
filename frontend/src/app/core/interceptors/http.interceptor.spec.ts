@@ -72,7 +72,7 @@ describe('httpInterceptor', () => {
   });
 
   it('httpInterceptor_whenNoToken_shouldNotAttachAuthorizationHeader', () => {
-    authServiceMock.jwtToken = signal(null) as typeof authServiceMock.jwtToken;
+    authServiceMock.jwtToken = signal(null);
 
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
