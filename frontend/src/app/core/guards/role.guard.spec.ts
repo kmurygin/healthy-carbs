@@ -1,5 +1,5 @@
 import {TestBed} from '@angular/core/testing';
-import type {Route, UrlSegment, UrlTree} from '@angular/router';
+import type {UrlTree} from '@angular/router';
 import {Router} from '@angular/router';
 import {signal} from '@angular/core';
 import type {MockedObject} from 'vitest';
@@ -8,9 +8,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {createAuthStateGuard, createRoleGuard} from './role.guard';
 import {UserRole} from '@core/models/enum/user-role.enum';
 import {AuthService} from '../services/auth/auth.service';
-
-const dummyRoute: Route = {};
-const dummySegments: UrlSegment[] = [];
+import {dummyRoute, dummySegments, dummySnapshot} from '@testing/guard-test.util';
 
 describe('createRoleGuard', () => {
   let routerMock: MockedObject<Partial<Router>>;
@@ -41,7 +39,7 @@ describe('createRoleGuard', () => {
     provideAuthWithClaims({role: UserRole.ADMIN});
     const guard = createRoleGuard(UserRole.ADMIN);
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(result).toBe(true);
   });
@@ -50,7 +48,7 @@ describe('createRoleGuard', () => {
     provideAuthWithClaims({role: UserRole.USER});
     const guard = createRoleGuard(UserRole.ADMIN);
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(fakeUrlTree);
@@ -60,7 +58,7 @@ describe('createRoleGuard', () => {
     provideAuthWithClaims({role: UserRole.DIETITIAN});
     const guard = createRoleGuard(UserRole.DIETITIAN, UserRole.ADMIN);
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(result).toBe(true);
   });
@@ -69,7 +67,7 @@ describe('createRoleGuard', () => {
     provideAuthWithClaims({role: UserRole.ADMIN});
     const guard = createRoleGuard(UserRole.DIETITIAN, UserRole.ADMIN);
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(result).toBe(true);
   });
@@ -78,7 +76,7 @@ describe('createRoleGuard', () => {
     provideAuthWithClaims({role: UserRole.USER});
     const guard = createRoleGuard(UserRole.DIETITIAN, UserRole.ADMIN);
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(fakeUrlTree);
@@ -87,7 +85,7 @@ describe('createRoleGuard', () => {
   it('should_redirect_when_claimsAreNull', () => {
     const guard = createRoleGuard(UserRole.ADMIN);
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(fakeUrlTree);
@@ -97,7 +95,7 @@ describe('createRoleGuard', () => {
     provideAuthWithClaims({role: 'UNKNOWN_ROLE'});
     const guard = createRoleGuard(UserRole.ADMIN, UserRole.USER, UserRole.DIETITIAN);
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(fakeUrlTree);
@@ -130,7 +128,7 @@ describe('createAuthStateGuard', () => {
     provideAuthWithLoginState(true);
     const guard = createAuthStateGuard(true, '/login');
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(result).toBe(true);
   });
@@ -139,7 +137,7 @@ describe('createAuthStateGuard', () => {
     provideAuthWithLoginState(false);
     const guard = createAuthStateGuard(true, '/login');
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/login']);
     expect(result).toBe(fakeUrlTree);
@@ -149,7 +147,7 @@ describe('createAuthStateGuard', () => {
     provideAuthWithLoginState(false);
     const guard = createAuthStateGuard(false, '/');
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(result).toBe(true);
   });
@@ -158,7 +156,7 @@ describe('createAuthStateGuard', () => {
     provideAuthWithLoginState(true);
     const guard = createAuthStateGuard(false, '/');
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(fakeUrlTree);
@@ -168,7 +166,7 @@ describe('createAuthStateGuard', () => {
     provideAuthWithLoginState(false);
     const guard = createAuthStateGuard(true, '/custom-redirect');
 
-    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments));
+    const result = TestBed.runInInjectionContext(() => guard(dummyRoute, dummySegments, dummySnapshot));
 
     expect(routerMock.createUrlTree).toHaveBeenCalledWith(['/custom-redirect']);
     expect(result).toBe(fakeUrlTree);
