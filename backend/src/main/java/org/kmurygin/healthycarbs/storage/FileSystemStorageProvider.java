@@ -16,7 +16,7 @@ import java.nio.file.StandardCopyOption;
 @Slf4j
 @Service
 @Profile("dev")
-public class FileSystemStorageProvider extends AbstractStorageProvider {
+public final class FileSystemStorageProvider extends AbstractStorageProvider {
 
     private final Path baseDir;
 
@@ -48,7 +48,7 @@ public class FileSystemStorageProvider extends AbstractStorageProvider {
         }
 
         Files.createDirectories(targetDir);
-        Path tempPath = Files.createTempFile(targetDir, filename, ".tmp");
+        Path tempPath = Files.createTempFile(targetDir, "upload-", ".tmp");
         try {
             Files.copy(inputStream, tempPath, StandardCopyOption.REPLACE_EXISTING);
             try {
