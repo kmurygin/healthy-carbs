@@ -208,10 +208,10 @@ export class DietaryProfileFormComponent {
         age: formValue.age ?? 0,
         weight: formValue.weight ?? 0,
         height: formValue.height ?? 0,
-        gender: formValue.gender as Gender,
-        dietGoal: formValue.goal as DietGoal,
+        gender: formValue.gender,
+        dietGoal: formValue.goal,
         dietType: formValue.dietaryPreference,
-        activityLevel: formValue.activityLevel as ActivityLevel,
+        activityLevel: formValue.activityLevel,
         allergies: formValue.allergies,
       };
 

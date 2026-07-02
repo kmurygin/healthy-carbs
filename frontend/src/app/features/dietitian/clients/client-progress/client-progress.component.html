@@ -10,7 +10,9 @@
 
         <div>
           <h2 class="truncate text-2xl sm:text-3xl font-bold text-gray-900">
-            {{ client()?.firstName | titlecase }} {{ client()?.lastName | titlecase }}
+            @if (client(); as c) {
+              {{ c.firstName | titlecase }} {{ c.lastName | titlecase }}
+            }
           </h2>
         </div>
       </div>

@@ -13,9 +13,10 @@
         {{ field.label }}
       </span>
 
+      @let ctrl = formGroup.get(field.controlName);
       @if (field.inputType === 'text') {
         <input
-          [attr.aria-invalid]="formGroup.get(field.controlName)?.invalid ? 'true' : 'false'"
+          [attr.aria-invalid]="ctrl && ctrl.invalid ? 'true' : 'false'"
           [attr.inputmode]="field.input_mode ?? null"
           [attr.name]="field.controlName"
           [attr.placeholder]="field.placeholder"
@@ -26,7 +27,7 @@
         />
       } @else {
         <select
-          [attr.aria-invalid]="formGroup.get(field.controlName)?.invalid ? 'true' : 'false'"
+          [attr.aria-invalid]="ctrl && ctrl.invalid ? 'true' : 'false'"
           [attr.name]="field.controlName"
           [class]="controlClass"
           [formControlName]="field.controlName"

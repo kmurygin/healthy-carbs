@@ -101,7 +101,7 @@ export class RecipeFilterComponent {
       name: '',
       ingredient: '',
       diet: '',
-      meal: '' as '' | MealType,
+      meal: '',
       sort: '',
     });
   private readonly destroyRef = inject(DestroyRef);
