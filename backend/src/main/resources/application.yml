@@ -105,7 +105,7 @@ logging:
   level:
     io.netty.resolver.dns.DnsServerAddressStreamProviders: WARN
     liquibase: INFO
-    org.springframework.boot.autoconfigure.liquibase: DEBUG
+    org.springframework.boot.liquibase.autoconfigure: DEBUG
 
 
 ---
