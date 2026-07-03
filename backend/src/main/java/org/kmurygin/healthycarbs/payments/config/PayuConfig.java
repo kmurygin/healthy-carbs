@@ -4,7 +4,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
@@ -17,9 +16,7 @@ public class PayuConfig {
         return WebClient.builder()
                 .baseUrl(properties.baseUrl())
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create().followRedirect(false)))
-                .exchangeStrategies(ExchangeStrategies.builder()
-                        .codecs(c -> c.defaultCodecs().maxInMemorySize(4 * 1024 * 1024))
-                        .build())
+                .codecs(c -> c.defaultCodecs().maxInMemorySize(4 * 1024 * 1024))
                 .build();
     }
 }

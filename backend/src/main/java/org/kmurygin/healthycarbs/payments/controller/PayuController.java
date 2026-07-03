@@ -1,8 +1,8 @@
 package org.kmurygin.healthycarbs.payments.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -89,7 +89,7 @@ public class PayuController {
             if (extOrderId != null) {
                 paymentService.updatePaymentStatus(extOrderId, status);
             }
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("[PayU] Failed to parse notification body", e);
             return ApiResponses.success(HttpStatus.BAD_REQUEST, null, "Invalid body");
         }
