@@ -16,16 +16,17 @@ spring:
     port: 1234
     username: test
     password: test
-  cloud:
-    gcp:
-      sql:
-        enabled: false
-      core:
-        enabled: false
-      secretmanager:
-        enabled: false
-      storage:
-        enabled: false
+  # GCP config kept for a possible switch back
+  # cloud:
+  #   gcp:
+  #     sql:
+  #       enabled: false
+  #     core:
+  #       enabled: false
+  #     secretmanager:
+  #       enabled: false
+  #     storage:
+  #       enabled: false
 application:
   security:
     jwt:

@@ -5,19 +5,25 @@ server:
 spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
-  cloud:
-    gcp:
-      project-id: ${GCP_PROJECT_ID:}
-      sql:
-        enabled: true
-      storage:
-        enabled: ${GCP_STORAGE_ENABLED:true}
+
+  # GCP config kept for a possible switch back (requires the spring-cloud-gcp
+  # dependencies commented out in pom.xml and the Gcs* classes in storage/)
+  # cloud:
+  #   gcp:
+  #     project-id: ${GCP_PROJECT_ID:}
+  #     sql:
+  #       enabled: true
+  #     storage:
+  #       enabled: ${GCP_STORAGE_ENABLED:true}
 
   datasource:
     url: ${DB_URL}
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+    hikari:
+      # Supabase's session pooler has a modest client connection limit
+      maximum-pool-size: ${DB_POOL_SIZE:5}
 
   liquibase:
     enabled: true
@@ -65,11 +71,16 @@ application:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
   storage:
-    bucket-name: ${GCS_BUCKET_NAME}
-    public-base-url: ${GCS_PUBLIC_URL_BASE:}
-    user-profile-image-prefix: ${GCS_PROFILE_IMAGE_PREFIX:user-profile-images}
-    blog-post-image-prefix: ${GCS_BLOG_IMAGE_PREFIX:blog-post-images}
-    cache-control: ${GCS_CACHE_CONTROL:public, max-age=1209600}
+    bucket-name: ${STORAGE_BUCKET_NAME:}
+    public-base-url: ${STORAGE_PUBLIC_URL_BASE:}
+    user-profile-image-prefix: ${STORAGE_PROFILE_IMAGE_PREFIX:user-profile-images}
+    blog-post-image-prefix: ${STORAGE_BLOG_IMAGE_PREFIX:blog-post-images}
+    cache-control: ${STORAGE_CACHE_CONTROL:public, max-age=1209600}
+    s3:
+      endpoint: ${STORAGE_S3_ENDPOINT:}
+      region: ${STORAGE_S3_REGION:}
+      access-key: ${STORAGE_S3_ACCESS_KEY:}
+      secret-key: ${STORAGE_S3_SECRET_KEY:}
     local-upload-dir: ${LOCAL_UPLOAD_DIR:uploads}
     local-base-url: ${LOCAL_BASE_URL:/api/v1/files}
     max-file-size-bytes: ${STORAGE_MAX_FILE_SIZE_BYTES:5242880}
@@ -117,13 +128,14 @@ spring:
   config:
     activate:
       on-profile: dev
-  cloud:
-    gcp:
-      sql:
-        enabled: false
-      core:
-        enabled: false
-      storage:
-        enabled: false
-      secretmanager:
-        enabled: false
+  # GCP config kept for a possible switch back
+  # cloud:
+  #   gcp:
+  #     sql:
+  #       enabled: false
+  #     core:
+  #       enabled: false
+  #     storage:
+  #       enabled: false
+  #     secretmanager:
+  #       enabled: false

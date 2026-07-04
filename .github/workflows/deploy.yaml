@@ -1,18 +1,10 @@
-name: Deploy to Google Cloud Platform
+name: Deploy to Render and Vercel
 
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-
-env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  REGION: ${{ secrets.GCP_REGION }}
-  GAR_REPO: ${{ secrets.GCP_GAR_REPO }}
-  GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
-  GCS_PUBLIC_URL_BASE: ${{ secrets.GCS_PUBLIC_URL_BASE }}
-  BACKEND_IMAGE_NAME: healthy-carbs-backend
 
 jobs:
   changes:
@@ -191,96 +183,59 @@ jobs:
           reporter: java-junit
 
   deploy-backend:
-    name: Deploy Backend
+    name: Deploy Backend (Render)
     runs-on: ubuntu-latest
     needs: [changes, backend-test]
     if: ${{ needs.changes.outputs.backend == 'true' }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Authenticate to Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
-          token_format: 'access_token'
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Artifact Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGION }}-docker.pkg.dev
-          username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          push: true
-          tags: |
-            ${{ env.GAR_REPO }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
-            ${{ env.GAR_REPO }}/${{ env.BACKEND_IMAGE_NAME }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Deploy to Cloud Run
+      # Render pulls the pushed commit and builds backend/Dockerfile itself
+      - name: Trigger Render Deploy Hook
+        id: trigger
         run: |
-          gcloud run deploy ${{ env.BACKEND_IMAGE_NAME }} \
-            --image=${{ env.GAR_REPO }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }} \
-            --platform=managed \
-            --region=${{ env.REGION }} \
-            --allow-unauthenticated \
-            --memory=2Gi \
-            --cpu=2 \
-            --add-cloudsql-instances=${{ env.PROJECT_ID }}:${{ env.REGION }}:healthy-carbs-db \
-            --set-env-vars=GCS_BUCKET_NAME=${{ env.GCS_BUCKET_NAME }} \
-            --set-env-vars=GCS_PUBLIC_URL_BASE=${{ env.GCS_PUBLIC_URL_BASE }} \
-            --set-env-vars=SPRING_PROFILES_ACTIVE=prod \
-            --set-env-vars=SPRING_CLOUD_GCP_SQL_INSTANCE_CONNECTION_NAME=${{ env.PROJECT_ID }}:${{ env.REGION }}:healthy-carbs-db \
-            --set-env-vars=SPRING_CLOUD_GCP_SQL_DATABASE_NAME=healthycarbs \
-            --set-env-vars=SPRING_DATASOURCE_USERNAME=postgres \
-            --set-secrets=SPRING_DATASOURCE_PASSWORD=DB_PASSWORD:latest \
-            --set-secrets=JWT_SECRET_KEY=JWT_SECRET_KEY:latest \
-            --set-secrets=MAIL_HOST=MAIL_HOST:latest \
-            --set-secrets=MAIL_PORT=MAIL_PORT:latest \
-            --set-secrets=MAIL_USERNAME=MAIL_USERNAME:latest \
-            --set-secrets=MAIL_PASSWORD=MAIL_PASSWORD:latest \
-            --set-secrets=PAYU_BASE_URL=PAYU_BASE_URL:latest \
-            --set-secrets=PAYU_POS_ID=PAYU_POS_ID:latest \
-            --set-secrets=PAYU_CLIENT_ID=PAYU_CLIENT_ID:latest \
-            --set-secrets=PAYU_CLIENT_SECRET=PAYU_CLIENT_SECRET:latest \
-            --set-secrets=PAYU_SECOND_KEY=PAYU_SECOND_KEY:latest \
-            --set-secrets=PAYU_CONTINUE_URL=PAYU_CONTINUE_URL:latest \
-            --set-secrets=PAYU_NOTIFY_URL=PAYU_NOTIFY_URL:latest \
-            --set-secrets=PAYU_CURRENCY=PAYU_CURRENCY:latest \
-            --set-secrets=CORS_ALLOWED_ORIGINS=CORS_ALLOWED_ORIGINS:latest
+          DEPLOY_ID=$(curl -fsS "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" | jq -r '.deploy.id // empty')
+          echo "deploy_id=$DEPLOY_ID" >> "$GITHUB_OUTPUT"
+
+      # Deploy hooks are fire-and-forget; poll the API so a failed Render build fails CI.
+      # Statuses: live = success; *failed/canceled/deactivated = failure; others = in progress.
+      - name: Wait for Render Deploy
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          DEPLOY_ID: ${{ steps.trigger.outputs.deploy_id }}
+          SERVICE_ID: srv-d93ofstckfvc738tfqkg
+        run: |
+          if [ -z "$RENDER_API_KEY" ] || [ -z "$DEPLOY_ID" ]; then
+            echo "::warning::Deploy triggered but status cannot be polled (missing RENDER_API_KEY secret or deploy id) — check the Render dashboard."
+            exit 0
+          fi
+          for i in $(seq 1 60); do
+            STATUS=$(curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" \
+              "https://api.render.com/v1/services/$SERVICE_ID/deploys/$DEPLOY_ID" | jq -r '.status')
+            echo "[$i/60] deploy status: $STATUS"
+            case "$STATUS" in
+              live) echo "Deploy is live."; exit 0 ;;
+              *failed|canceled|deactivated) echo "::error::Render deploy ended with status: $STATUS"; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "::error::Timed out after 15 minutes waiting for the Render deploy to go live."
+          exit 1
 
   deploy-frontend:
-    name: Deploy Frontend
+    name: Deploy Frontend (Vercel)
     runs-on: ubuntu-latest
     needs: [changes, frontend-test]
     if: ${{ needs.changes.outputs.frontend == 'true' }}
     defaults:
       run:
         working-directory: ./frontend
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -289,15 +244,142 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install Dependencies
-        run: npm ci --legacy-peer-deps
+      - name: Install Vercel CLI
+        run: npm install -g vercel
 
-      - name: Build Angular App
-        run: npm run build -- --configuration production
+      - name: Pull Vercel Project Settings
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+      # vercel build runs the Angular production build via vercel.json buildCommand
+      - name: Build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Deploy to Firebase
-        run: |
-          firebase deploy --only hosting --project ${{ env.PROJECT_ID }}
+      - name: Deploy
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+# ---------------------------------------------------------------------------
+# Previous GCP deploy jobs — kept for a possible switch back to GCP.
+# Requires secrets: GCP_PROJECT_ID, GCP_REGION, GCP_GAR_REPO, GCP_SA_KEY,
+# GCS_BUCKET_NAME, GCS_PUBLIC_URL_BASE and the env block:
+#
+# env:
+#   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+#   REGION: ${{ secrets.GCP_REGION }}
+#   GAR_REPO: ${{ secrets.GCP_GAR_REPO }}
+#   GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
+#   GCS_PUBLIC_URL_BASE: ${{ secrets.GCS_PUBLIC_URL_BASE }}
+#   BACKEND_IMAGE_NAME: healthy-carbs-backend
+#
+#  deploy-backend-gcp:
+#    name: Deploy Backend (Cloud Run)
+#    runs-on: ubuntu-latest
+#    needs: [changes, backend-test]
+#    if: ${{ needs.changes.outputs.backend == 'true' }}
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v5
+#
+#      - name: Authenticate to Google Cloud
+#        id: auth
+#        uses: google-github-actions/auth@v2
+#        with:
+#          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+#          token_format: 'access_token'
+#
+#      - name: Set up Cloud SDK
+#        uses: google-github-actions/setup-gcloud@v2
+#
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
+#
+#      - name: Login to Artifact Registry
+#        uses: docker/login-action@v3
+#        with:
+#          registry: ${{ env.REGION }}-docker.pkg.dev
+#          username: oauth2accesstoken
+#          password: ${{ steps.auth.outputs.access_token }}
+#
+#      - name: Build and Push Docker Image
+#        uses: docker/build-push-action@v5
+#        with:
+#          context: ./backend
+#          file: ./backend/Dockerfile
+#          push: true
+#          tags: |
+#            ${{ env.GAR_REPO }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
+#            ${{ env.GAR_REPO }}/${{ env.BACKEND_IMAGE_NAME }}:latest
+#          cache-from: type=gha
+#          cache-to: type=gha,mode=max
+#
+#      - name: Deploy to Cloud Run
+#        run: |
+#          gcloud run deploy ${{ env.BACKEND_IMAGE_NAME }} \
+#            --image=${{ env.GAR_REPO }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }} \
+#            --platform=managed \
+#            --region=${{ env.REGION }} \
+#            --allow-unauthenticated \
+#            --memory=2Gi \
+#            --cpu=2 \
+#            --add-cloudsql-instances=${{ env.PROJECT_ID }}:${{ env.REGION }}:healthy-carbs-db \
+#            --set-env-vars=GCS_BUCKET_NAME=${{ env.GCS_BUCKET_NAME }} \
+#            --set-env-vars=GCS_PUBLIC_URL_BASE=${{ env.GCS_PUBLIC_URL_BASE }} \
+#            --set-env-vars=DB_URL=jdbc:postgresql:///healthycarbs?cloudSqlInstance=${{ env.PROJECT_ID }}:${{ env.REGION }}:healthy-carbs-db&socketFactory=com.google.cloud.sql.postgres.SocketFactory \
+#            --set-env-vars=GCP_PROJECT_ID=${{ env.PROJECT_ID }} \
+#            --set-env-vars=SPRING_PROFILES_ACTIVE=prod \
+#            --set-env-vars=SPRING_CLOUD_GCP_SQL_INSTANCE_CONNECTION_NAME=${{ env.PROJECT_ID }}:${{ env.REGION }}:healthy-carbs-db \
+#            --set-env-vars=SPRING_CLOUD_GCP_SQL_DATABASE_NAME=healthycarbs \
+#            --set-env-vars=SPRING_DATASOURCE_USERNAME=postgres \
+#            --set-secrets=SPRING_DATASOURCE_PASSWORD=DB_PASSWORD:latest \
+#            --set-secrets=JWT_SECRET_KEY=JWT_SECRET_KEY:latest \
+#            --set-secrets=MAIL_HOST=MAIL_HOST:latest \
+#            --set-secrets=MAIL_PORT=MAIL_PORT:latest \
+#            --set-secrets=MAIL_USERNAME=MAIL_USERNAME:latest \
+#            --set-secrets=MAIL_PASSWORD=MAIL_PASSWORD:latest \
+#            --set-secrets=PAYU_BASE_URL=PAYU_BASE_URL:latest \
+#            --set-secrets=PAYU_POS_ID=PAYU_POS_ID:latest \
+#            --set-secrets=PAYU_CLIENT_ID=PAYU_CLIENT_ID:latest \
+#            --set-secrets=PAYU_CLIENT_SECRET=PAYU_CLIENT_SECRET:latest \
+#            --set-secrets=PAYU_SECOND_KEY=PAYU_SECOND_KEY:latest \
+#            --set-secrets=PAYU_CONTINUE_URL=PAYU_CONTINUE_URL:latest \
+#            --set-secrets=PAYU_NOTIFY_URL=PAYU_NOTIFY_URL:latest \
+#            --set-secrets=PAYU_CURRENCY=PAYU_CURRENCY:latest \
+#            --set-secrets=CORS_ALLOWED_ORIGINS=CORS_ALLOWED_ORIGINS:latest
+#
+#  deploy-frontend-gcp:
+#    name: Deploy Frontend (Firebase Hosting)
+#    runs-on: ubuntu-latest
+#    needs: [changes, frontend-test]
+#    if: ${{ needs.changes.outputs.frontend == 'true' }}
+#    defaults:
+#      run:
+#        working-directory: ./frontend
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v5
+#
+#      - name: Authenticate to Google Cloud
+#        uses: google-github-actions/auth@v2
+#        with:
+#          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: '22'
+#          cache: 'npm'
+#          cache-dependency-path: frontend/package-lock.json
+#
+#      - name: Install Dependencies
+#        run: npm ci --legacy-peer-deps
+#
+#      - name: Build Angular App
+#        run: npm run build -- --configuration production
+#
+#      - name: Install Firebase CLI
+#        run: npm install -g firebase-tools
+#
+#      - name: Deploy to Firebase
+#        run: |
+#          firebase deploy --only hosting --project ${{ env.PROJECT_ID }}

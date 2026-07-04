@@ -80,6 +80,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.GET, "/api/v1/users/*/image").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/files/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/diet-types").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                             .anyRequest().authenticated();
                 })
                 .sessionManagement(sessionManagement ->
