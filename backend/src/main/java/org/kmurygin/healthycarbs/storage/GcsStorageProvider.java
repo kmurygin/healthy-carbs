@@ -1,3 +1,7 @@
+// DISABLED during GCP -> Render/Vercel/Supabase migration (S3StorageProvider replaced it).
+// To re-enable: uncomment this file and GcsStorageConfig, restore the spring-cloud-gcp
+// dependencies commented out in pom.xml, and remove/disable the S3 storage beans.
+/*
 package org.kmurygin.healthycarbs.storage;
 
 import com.google.cloud.WriteChannel;
@@ -94,3 +98,4 @@ public class GcsStorageProvider extends AbstractStorageProvider {
         return buildUrl(getBaseUrl(), objectName);
     }
 }
+*/
