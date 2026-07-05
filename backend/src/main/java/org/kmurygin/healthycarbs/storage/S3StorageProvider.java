@@ -1,44 +1,38 @@
-// DISABLED during GCP -> Render/Vercel/Supabase migration (S3StorageProvider replaced it).
-// To re-enable: uncomment this file and GcsStorageConfig, restore the spring-cloud-gcp
-// dependencies commented out in pom.xml, and remove/disable the S3 storage beans.
-/*
 package org.kmurygin.healthycarbs.storage;
 
-import com.google.cloud.WriteChannel;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.Channels;
 
 @Slf4j
 @Service
 @Profile("prod")
-public class GcsStorageProvider extends AbstractStorageProvider {
+public class S3StorageProvider extends AbstractStorageProvider {
 
-    private static final String DEFAULT_PUBLIC_URL_BASE = "https://storage.googleapis.com";
+    private final S3Client s3Client;
 
-    private final Storage storage;
-
-    // Storage bean provided by GcsStorageConfig in prod profile
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public GcsStorageProvider(Storage storage,
-                              StorageProperties storageProperties,
-                              StorageFolderValidator storageFolderValidator,
-                              ImageValidator imageValidator
+    public S3StorageProvider(S3Client s3Client,
+                             StorageProperties storageProperties,
+                             StorageFolderValidator storageFolderValidator,
+                             ImageValidator imageValidator
     ) {
         super(storageProperties, storageFolderValidator, imageValidator);
-        this.storage = storage;
+        this.s3Client = s3Client;
     }
 
     @PostConstruct
     void validateConfiguration() {
         getBucketName();
+        getBaseUrl();
     }
 
     @Override
@@ -49,14 +43,15 @@ public class GcsStorageProvider extends AbstractStorageProvider {
         String bucketName = getBucketName();
         String objectName = buildObjectName(folder, filename);
 
-        BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, objectName)
-                .setContentType(contentType)
-                .setCacheControl(storageProperties.getCacheControl())
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectName)
+                .contentType(contentType)
+                .cacheControl(storageProperties.getCacheControl())
                 .build();
 
-        try (WriteChannel writer = storage.writer(blobInfo)) {
-            inputStream.transferTo(Channels.newOutputStream(writer));
-        }
+        byte[] content = inputStream.readAllBytes();
+        s3Client.putObject(request, RequestBody.fromBytes(content));
 
         return buildPublicUrl(objectName);
     }
@@ -66,18 +61,17 @@ public class GcsStorageProvider extends AbstractStorageProvider {
         String bucketName = getBucketName();
         String objectName = buildObjectName(folder, filename);
 
-        boolean deleted = storage.delete(bucketName, objectName);
-        if (!deleted) {
-            log.debug("GCS object not found or already deleted: {}", objectName);
-        }
+        s3Client.deleteObject(DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectName)
+                .build());
     }
 
     @Override
     protected String getBaseUrl() {
         String base = storageProperties.getPublicBaseUrl();
-        String bucketName = getBucketName();
         if (base == null || base.isBlank()) {
-            return DEFAULT_PUBLIC_URL_BASE + "/" + bucketName;
+            throw new IllegalStateException("Storage public base URL is not configured.");
         }
         return base;
     }
@@ -85,7 +79,7 @@ public class GcsStorageProvider extends AbstractStorageProvider {
     private String getBucketName() {
         String bucketName = storageProperties.getBucketName();
         if (bucketName == null || bucketName.isBlank()) {
-            throw new IllegalStateException("GCS bucket name is not configured.");
+            throw new IllegalStateException("Storage bucket name is not configured.");
         }
         return bucketName;
     }
@@ -98,4 +92,3 @@ public class GcsStorageProvider extends AbstractStorageProvider {
         return buildUrl(getBaseUrl(), objectName);
     }
 }
-*/

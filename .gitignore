@@ -7,3 +7,5 @@
 key.json
 *-credentials.json
 *-service-account.json
+.vercel
+.env.local

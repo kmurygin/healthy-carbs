@@ -15,6 +15,7 @@ public class StorageProperties {
     private String localUploadDir = "uploads";
     private String localBaseUrl = "/api/v1/files";
     private String cacheControl = "public, max-age=1209600";
+    private final S3 s3 = new S3();
     private long maxFileSizeBytes = 5L * 1024 * 1024;
     private int maxImageDimension = 5000;
     private java.util.List<SupportedImageType> allowedContentTypes = java.util.List.of(
@@ -39,5 +40,14 @@ public class StorageProperties {
         return value.endsWith("/")
                 ? value.substring(0, value.length() - 1)
                 : value;
+    }
+
+    @Getter
+    @Setter
+    public static class S3 {
+        private String endpoint;
+        private String region;
+        private String accessKey;
+        private String secretKey;
     }
 }
